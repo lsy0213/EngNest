@@ -559,6 +559,42 @@ class Api:
             (new / "migrate_from.txt").write_text(str(self._dir), encoding="utf-8")
         return {"ok": True, "dir": str(new)}
 
+    def save_text_file(self, name, content):
+        """弹出保存对话框，把文字存成文件（导出单词表等）。取消返回 None"""
+        import webview
+
+        kind = getattr(getattr(webview, "FileDialog", None), "SAVE", None) or webview.SAVE_DIALOG
+        ext = os.path.splitext(name)[1].lower() or ".txt"
+        label = {".csv": "CSV 文件 (*.csv)", ".tsv": "制表符分隔 (*.tsv)", ".txt": "文本文件 (*.txt)"}.get(ext, f"文件 (*{ext})")
+        path = self._window.create_file_dialog(kind, save_filename=name, file_types=(label,))
+        if not path:
+            return None
+        path = path[0] if isinstance(path, (list, tuple)) else path
+        # CSV 加 BOM，Excel 打开中文才不乱码
+        with open(path, "w", encoding="utf-8-sig" if ext == ".csv" else "utf-8", newline="") as f:
+            f.write(content)
+        return str(path)
+
+    def open_text_file(self):
+        """弹出打开对话框，读一个文本文件（导入单词表）。返回 {name, text}，取消返回 None"""
+        import webview
+
+        kind = getattr(getattr(webview, "FileDialog", None), "OPEN", None) or webview.OPEN_DIALOG
+        paths_ = self._window.create_file_dialog(kind, allow_multiple=False,
+                                                 file_types=("单词表 (*.txt;*.csv;*.tsv)", "所有文件 (*.*)"))
+        if not paths_:
+            return None
+        p = paths_[0] if isinstance(paths_, (list, tuple)) else paths_
+        if os.path.getsize(p) > 10_000_000:
+            return {"error": "文件太大了（超过 10 MB）"}
+        raw = open(p, "rb").read()
+        for enc in ("utf-8-sig", "gb18030"):
+            try:
+                return {"name": os.path.basename(p), "text": raw.decode(enc)}
+            except UnicodeDecodeError:
+                continue
+        return {"name": os.path.basename(p), "text": raw.decode("latin-1")}
+
     def pick_folder(self):
         import webview
 

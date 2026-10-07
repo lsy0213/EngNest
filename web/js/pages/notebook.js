@@ -5,13 +5,15 @@ App.pages.notebook = {
     const tab = params[0] === "sentences" ? "sentences" : "words";
     const nb = Store.data.notebook, sn = sentNb();
     root.innerHTML = pageHead("生词本", "",
-      tabsHtml([["words", `单词 (${nb.length})`], ["sentences", `短语和句子 (${sn.length})`]], tab)) + `<div id="nb-body"></div>`;
+      `<div class="row">${tabsHtml([["words", `单词 (${nb.length})`], ["sentences", `短语和句子 (${sn.length})`]], tab)}
+        <button class="btn ghost" id="nb-io" title="导出到 Anki / Excel，或从文件导入单词表">⇅ 导入 / 导出</button></div>`) + `<div id="nb-body"></div>`;
+    $("#nb-io", root).onclick = () => WordIO.openMenu();
     $$(".tab", root).forEach((b) => (b.onclick = () => Router.go(b.dataset.tab === "words" ? "notebook" : "notebook/sentences")));
     const body = $("#nb-body", root);
     if (tab === "sentences") return this.sentences(root, body);
 
     if (!nb.length) {
-      body.innerHTML = `<div class="card empty"><div class="big">⭐</div><h3>还没有收藏单词</h3><p>遇到记不住的词，点一下 ★，或者用鼠标选中它。</p><a class="btn primary" href="#/reading">去阅读找生词</a></div>`;
+      body.innerHTML = `<div class="card empty"><div class="big">⭐</div><h3>还没有收藏单词</h3><p>遇到记不住的词，点一下 ★，或者用鼠标选中它。也可以从文件导入单词表（右上角「导入 / 导出」）。</p><a class="btn primary" href="#/reading">去阅读找生词</a></div>`;
       return;
     }
     body.innerHTML = `<div class="row" style="margin-bottom:12px"><button class="btn primary" id="study">🃏 过一遍</button>

@@ -1643,3 +1643,11 @@ details.mm-card[open] > summary { margin-bottom: 12px; }
 /* 卡片方向反过来（→ 记住了）时，印章也换边 */
 .swap-dir .fc-stamp.ok { left: auto; right: 24px; transform: rotate(14deg); }
 .swap-dir .fc-stamp.no { right: auto; left: 24px; transform: rotate(-14deg); }
+
+/* 水平测试 */
+.level-q { max-width: 640px; margin: 0 auto; }
+.level-prompt { font-size: 20px; line-height: 1.6; text-align: center; }
+.level-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.level-opt { white-space: normal; text-align: left; justify-content: flex-start; min-height: 48px; }
+.level-badge { font-size: 64px; font-weight: 800; color: var(--brand); line-height: 1.1; margin: 8px 0; }
+@media (max-width: 640px) { .level-opts { grid-template-columns: 1fr; } }

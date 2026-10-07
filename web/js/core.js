@@ -846,7 +846,7 @@ const KV = {
   },
 };
 
-const LEARNER_PROFILE = "The learner is a Chinese adult who passed CET-4 (College English Test Band 4) several years ago but has become rusty; their current level is roughly CEFR A2-B1.";
+// LEARNER_PROFILE（给 AI 看的学习者水平）按水平测试结果变化，定义在 pages/level.js
 
 // ---------- 导航 & 路由 ----------
 const NAV = [

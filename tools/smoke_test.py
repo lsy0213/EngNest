@@ -18,7 +18,7 @@ from engnest.paths import web_index  # noqa: E402
 
 PAGES = ["home", "course", "course/hello/0", "course/patterns", "course/daily", "builder", "builder/daily", "builder/emergency", "builder/modals", "builder/long", "builder/conditional", "words/new", "words/review", "words/quiz", "words/list", "topics", "topics/fruits", "notebook/sentences", "typing/sentence/phrase",
          "words/practice", "course/typing", "typing/words", "typing/sentence", "grammar", "grammar/inversion", "listening", "speaking",
-         "reading", "reading/alice", "reading/signal-1", "reading/moonlanding", "book/oz", "book/pride/13", "video", "writing/translate", "tutor", "tutor/scenes", "tutor/partner", "listening/voa", "listening/gen", "listening/dictation", "notebook", "settings"]
+         "reading", "reading/alice", "reading/signal-1", "reading/moonlanding", "book/oz", "book/pride/13", "video", "writing/translate", "tutor", "tutor/scenes", "tutor/partner", "listening/voa", "listening/gen", "listening/dictation", "notebook", "settings", "about", "level"]
 results = {}
 
 
@@ -101,6 +101,12 @@ def run(window):
     time.sleep(0.5)
     results["kv"] = window._js_api.kv_get("smoke", ["k"]).get("k") == {"v": 1}
     results["data_dir"] = str(paths.data_dir())
+    # 新功能：FSRS 已加载、生词本有导入导出入口、AI 提示词随水平变化
+    js("location.hash = '#/notebook'")
+    time.sleep(1)
+    results["fsrs_loaded"] = js("typeof FSRS === 'object' && typeof Fsrs.schedule === 'function'")
+    results["notebook_io"] = js("!!document.querySelector('#nb-io')")
+    results["learner_profile"] = js("LEARNER_PROFILE.slice(0, 40)")
     results["local_storage_persisted"] = js("(() => { try { localStorage.setItem('engnest-smoke', '1'); return true; } catch { return false; } })()")
     window.destroy()
 
