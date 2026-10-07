@@ -67,17 +67,14 @@ App.pages.life = {
         <div class="lf-card-foot"><span class="badge">${esc(S.level)}</span><span class="badge">${S.chapters.length} 章${S.more ? " · 连载中" : ""}</span><span class="badge">结局 ${got}/${S.endings.length}</span><span class="spacer"></span>
           <span class="small">${esc(where)}</span></div></a>`);
     }
-    for (const u of LIFE.upcoming) {
-      cards.push(`<div class="lf-card card soon"><div class="lf-card-ico">${u.ico}</div><b>${esc(u.title)}</b>
-        <div class="small muted">${esc(u.sub)}</div>
-        <div class="lf-card-foot"><span class="badge">${esc(u.level)}</span><span class="spacer"></span><span class="small faint">筹备中</span></div></div>`);
-    }
+    // 还没写好的剧本不放进剧本架（点进去什么都没有），只在下面提一句
+    const upcoming = LIFE.upcoming.length ? `<p class="small faint center mt">还在写的剧本：${LIFE.upcoming.map((u) => `${u.ico} ${esc(u.title)}`).join(" · ")}。写好了会出现在上面。</p>` : "";
     this.root.innerHTML = `<div class="lf-shelf-head card">
         <div style="font-size:44px">🎭</div>
         <div><h1>人生剧场 <span class="faint" style="font-weight:400;font-size:16px">每个选择，都是另一种人生</span></h1>
           <p class="muted small">在英语世界里过一段人生。<b>说什么</b>决定你英语地不地道，<b>做什么</b>决定你走向哪种人生。选错了英语不会毁掉人生，
           但说得好，关键时刻能帮你过关。走完一段人生，可以回到任何一个路口，换个选择再活一次。</p></div></div>
-      <div class="lf-shelf">${cards.join("")}</div>`;
+      <div class="lf-shelf">${cards.join("")}</div>${upcoming}`;
   },
 
   // ---------- 开始画面 ----------

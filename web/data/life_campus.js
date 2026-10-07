@@ -126,7 +126,6 @@
       social: { ico: "🤝", name: "人缘", init: 20, max: 100 },
       confidence: { ico: "💪", name: "自信", init: 30, max: 100 },
     },
-    more: true,
     chapters: [
       {
         id: "c1", title: "Freshers' Week", zh: "第 1 章 · 新生周",
