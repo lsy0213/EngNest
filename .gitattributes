@@ -1,0 +1,9 @@
+# 统一用 LF 换行；Windows 批处理必须是 CRLF
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.mp3 binary
+*.ico binary
+*.pdf binary
+*.db binary
