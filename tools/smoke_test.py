@@ -18,7 +18,7 @@ from engnest.paths import web_index  # noqa: E402
 
 PAGES = ["home", "course", "course/hello/0", "course/patterns", "course/daily", "builder", "builder/daily", "builder/emergency", "builder/modals", "builder/long", "builder/conditional", "words/new", "words/review", "words/quiz", "words/list", "topics", "topics/fruits", "notebook/sentences", "typing/sentence/phrase",
          "words/practice", "course/typing", "typing/words", "typing/sentence", "grammar", "grammar/inversion", "listening", "speaking",
-         "reading", "reading/alice", "reading/signal-1", "reading/moonlanding", "book/oz", "book/pride/13", "video", "writing/translate", "tutor", "tutor/scenes", "tutor/partner", "listening/voa", "listening/gen", "listening/dictation", "notebook", "settings", "about", "level"]
+         "reading", "reading/alice", "reading/signal-1", "reading/moonlanding", "book/oz", "book/pride/13", "video", "writing/translate", "tutor", "tutor/scenes", "tutor/partner", "listening/voa", "listening/gen", "listening/dictation", "notebook", "settings", "about", "level", "stats"]
 results = {}
 
 

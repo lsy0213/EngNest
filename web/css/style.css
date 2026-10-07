@@ -1651,3 +1651,33 @@ details.mm-card[open] > summary { margin-bottom: 12px; }
 .level-opt { white-space: normal; text-align: left; justify-content: flex-start; min-height: 48px; }
 .level-badge { font-size: 64px; font-weight: 800; color: var(--brand); line-height: 1.1; margin: 8px 0; }
 @media (max-width: 640px) { .level-opts { grid-template-columns: 1fr; } }
+
+/* 阅读：按学习状态标出单词 */
+.mark-row { gap: 12px; margin-top: 6px; color: var(--ink-3); flex-wrap: wrap; }
+.mark-words .w.st-new { background: color-mix(in srgb, var(--brand) 16%, transparent); border-radius: 3px; }
+.mark-words .w.st-learning { border-bottom: 2px dotted color-mix(in srgb, var(--brand) 70%, transparent); }
+
+/* 学习统计 */
+.stats-tiles .stat { text-align: center; }
+.chart { width: 100%; height: auto; display: block; }
+.chart .grid-line { stroke: var(--line, var(--surface-3)); fill: none; stroke-width: 1; }
+.chart .target-line { stroke: var(--ink-3); stroke-dasharray: 4 4; stroke-width: 1; }
+.chart .line { fill: none; stroke: var(--brand); stroke-width: 2.5; stroke-linejoin: round; }
+.chart .dot { fill: var(--brand); }
+.chart .bar-rect { fill: var(--brand); opacity: .85; }
+.chart .axis { font-size: 10px; fill: var(--ink-3); }
+.chart .val { font-size: 11px; fill: var(--ink-2, var(--ink)); text-anchor: middle; }
+.chart.radar { max-width: 300px; margin: 0 auto; }
+.chart.radar .area { fill: color-mix(in srgb, var(--brand) 30%, transparent); stroke: var(--brand); stroke-width: 2; }
+.chart.radar .label { font-size: 12px; fill: var(--ink-2, var(--ink)); }
+.heat.heat-long { grid-template-columns: none; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; grid-auto-columns: 1fr; max-width: none; gap: 3px; }
+
+/* 首页：新手引导、学习目标 */
+.onboard { border: 2px solid color-mix(in srgb, var(--brand) 40%, transparent); }
+.onboard-step { margin-top: 12px; }
+.goal-opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 8px; }
+.goal-opt { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-align: left; cursor: pointer; color: inherit; font: inherit; }
+.goal-opt span { font-size: 22px; }
+.goal-opt small { color: var(--ink-3); }
+.goal-opt:hover, .goal-opt.active { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 10%, var(--surface)); }
+.sh-about { margin-top: 4px; } .sh-about summary { cursor: pointer; }

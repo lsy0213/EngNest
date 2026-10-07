@@ -422,7 +422,8 @@ Return JSON exactly in this shape:
       <a class="back-link" href="#/reading">‹ 返回文章列表</a>
       <div class="page-head"><div>
         <div class="page-title" style="font-family:var(--font-en)">${esc(p.title)}</div>
-        <div class="page-sub">${esc(p.level)} · ${esc(p.topic || "")} · 点击单词查释义 · 选中文字可以高亮、收进生词本</div></div>
+        <div class="page-sub">${esc(p.level)} · ${esc(p.topic || "")} · 点击单词查释义 · 选中文字可以高亮、收进生词本</div>
+        <div class="row small mark-row">${wordMarkHtml(textWordStats(p.paragraphs.map(([en]) => en)))}</div></div>
         <div class="row">
           ${switchHtml("zh-switch", "中文译文", Store.prefs.read_zh)}
           <button class="btn soft" id="read-all">🔊 朗读全文</button>
@@ -447,6 +448,7 @@ Return JSON exactly in this shape:
       ${this.nextHtml(p)}`;
 
     const reader = $("#reader", root);
+    bindWordMark(root, reader);
     bindWordClicks(reader);
     this.highlights(root, reader, p);
     reader.addEventListener("click", (e) => {
@@ -516,7 +518,7 @@ Return JSON exactly in this shape:
         $(".explain-slot", item).innerHTML = `<div class="explain ${ok ? "good" : "bad"}">${ok ? "✅" : "❌"} ${esc(q.e || "")}</div>`;
       });
       const first = !Store.data.reading[p.id];
-      Store.data.reading[p.id] = { score: right, date: today() };
+      Store.data.reading[p.id] = { score: right, n: p.questions.length, date: today() };
       addXP(first ? 10 + right * 2 : right, null, evt);
       $("#score", root).innerHTML = `答对 <b>${right} / ${p.questions.length}</b>`;
       evt.currentTarget.disabled = true;

@@ -447,10 +447,39 @@ Return JSON: {"w": base form of the word, "ph": British IPA like /ˈwɜːd/, "m"
 function wrapWords(text) {
   return text.split(/([A-Za-z][A-Za-z'’-]*)/).map((part, i) => {
     if (i % 2 === 0) return esc(part);
-    const known = lookupWord(part) ? " known" : "";
+    const it = lookupWord(part);
+    const known = it ? ` known st-${wordStatus(it.w)}` : ""; // st-new 没学过 / st-learning 正在学 / st-mastered 掌握了
     const saved = inNotebook(part) ? " saved" : "";
     return `<span class="w${known}${saved}">${esc(part)}</span>`;
   }).join("");
+}
+
+// 一段文字的生词率：词书里有、但还没学过的词，占全文词数的比例（2% 以下读起来轻松，5% 以上就偏难了）
+function textWordStats(texts) {
+  let total = 0, fresh = 0, learning = 0;
+  const freshSet = new Set();
+  for (const t of texts) {
+    for (const m of t.matchAll(/[A-Za-z][A-Za-z'’-]*/g)) {
+      total++;
+      const it = lookupWord(m[0]);
+      if (!it) continue;
+      const st = wordStatus(it.w);
+      if (st === "new") { fresh++; freshSet.add(it.w.toLowerCase()); } else if (st === "learning") learning++;
+    }
+  }
+  const rate = total ? fresh / total : 0;
+  return { total, fresh, unique: freshSet.size, learning, rate, verdict: rate <= 0.02 ? "轻松" : rate <= 0.05 ? "合适" : "偏难" };
+}
+// 阅读页头部：生词率 + 「标出生词」开关
+function wordMarkHtml(stats) {
+  const pct = (stats.rate * 100).toFixed(1);
+  return `<span class="mark-info" title="词书里还没学过的词占全文的比例：2% 以下轻松，2–5% 正合适，5% 以上偏难">生词率 ${pct}% · ${stats.verdict}（${stats.unique} 个没学过的词）</span>
+    ${switchHtml("mark-switch", "标出生词", Store.prefs.mark_words, "浅色底 = 词书里还没学过的词，虚线 = 正在学的词")}`;
+}
+function bindWordMark(root, reader) {
+  reader.classList.toggle("mark-words", !!Store.prefs.mark_words);
+  const sw = $("#mark-switch", root);
+  if (sw) sw.onchange = (e) => { Store.prefs.mark_words = e.target.checked; Store.save(); reader.classList.toggle("mark-words", e.target.checked); };
 }
 function bindWordClicks(root) {
   root.addEventListener("click", (e) => {

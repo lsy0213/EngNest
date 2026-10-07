@@ -268,7 +268,8 @@ const Shadow = {
               r.pauses ? `中间停顿 ${r.pauses} 次` : "",
             ].filter(Boolean).join(" · ")}</div>
           </div></div>
-        <div class="sh-legend small faint"><span class="sh-w good">清楚</span><span class="sh-w weak">不太清楚</span><span class="sh-w bad">没听清</span><span class="sh-w miss">漏读</span> 点词可以听原音</div>
+        <div class="sh-legend small faint"><span class="sh-w good">清楚</span><span class="sh-w weak">不太清楚</span><span class="sh-w bad">没听清</span><span class="sh-w miss">漏读</span> 点词可以听原音
+          <details class="sh-about"><summary>这个分数是怎么算的？</summary>离线语音识别（Whisper）把你的录音转成文字，看每个词有没有被认出来、认得有多确定，再加上语速和停顿。它反映的是「别人能不能听懂你」，<b>不是</b>逐个音素的发音打分：读成了相近的音、重音或语调不对，有时也会被判为清楚。开了 AI 时，AI 会再根据识别结果指出可能读错的音。</details></div>
         <div id="sh-ai"></div>`;
     };
 

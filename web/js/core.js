@@ -871,7 +871,7 @@ function renderNav() {
   const nav = $("#nav");
   if (!nav || !Store.data) return;
   // 连词成句、句子跟打听写并入了短语与句子，主题词汇和单词打字并入了单词
-  const cur = { about: "settings", sitcom: "life", builder: "course", topics: "words", book: "reading", ireading: "ielts", ilisten: "ielts", ispeak: "ielts", iwrite: "ielts" }[Router.current().page] || Router.current().page;
+  const cur = { about: "settings", stats: "home", level: "home", sitcom: "life", builder: "course", topics: "words", book: "reading", ireading: "ielts", ilisten: "ielts", ispeak: "ielts", iwrite: "ielts" }[Router.current().page] || Router.current().page;
   const due = dueWords().length;
   const item = (n) => {
     if (n.sep) return `<div class="nav-sep"></div>`;

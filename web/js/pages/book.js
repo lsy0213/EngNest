@@ -211,7 +211,8 @@ App.pages.book = {
       <div class="page-head"><div>
         <div class="small muted">${single ? `${b.level ? b.level + " · " : ""}${esc(b.intro || b.source || "")}` : `${esc(b.zh || b.title)} · 第 ${n} / ${total} 章`}</div>
         <div class="page-title" style="font-family:var(--font-en)">${esc(title || b.title)}</div>
-        <div class="page-sub">${b.chapters[n - 1][1].toLocaleString()} 词 · ${readTime(b.chapters[n - 1][1])} · 点单词查释义，选中文字可以高亮、收藏</div></div>
+        <div class="page-sub">${b.chapters[n - 1][1].toLocaleString()} 词 · ${readTime(b.chapters[n - 1][1])} · 点单词查释义，选中文字可以高亮、收藏</div>
+        <div class="row small mark-row">${wordMarkHtml(textWordStats(paras))}</div></div>
         <div class="row">
           ${switchHtml("zh-switch", "中文译文", P.read_zh && AI.enabled, AI.enabled ? "滚到哪段翻译哪段，译过的会存在本机" : "需要先在设置里接入 AI")}
           <button class="btn soft" id="read-all">🔊 朗读${single ? "全文" : "本章"}</button>
@@ -245,6 +246,7 @@ App.pages.book = {
     });
 
     const reader = $("#reader", root);
+    bindWordMark(root, reader);
     bindWordClicks(reader);
     // 高亮沿用阅读页的实现：每章当成一篇「文章」存
     App.pages.reading.highlights(root, reader, { id: `book-${b.id}-${n}`, paragraphs: paras.map((p) => [p, ""]) });
