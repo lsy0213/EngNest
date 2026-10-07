@@ -6,6 +6,7 @@
 
 import os
 import sys
+import urllib.parse
 
 import webview
 
@@ -26,7 +27,8 @@ def main():
     api._window = webview.create_window(
         APP_TITLE,
         # 用 file:// 直接加载本地文件：pywebview 内置的 HTTP 服务器扛不住几十个脚本同时请求
-        url=paths.web_index().as_uri(),
+        # #packs=：用户下载的资料包所在的文件夹（在数据目录里），页面启动时从那里加载（file:// 带 ? 参数会打不开）
+        url=paths.web_index().as_uri() + "#packs=" + urllib.parse.quote(paths.sub_dir("packs").as_uri(), safe=""),
         js_api=api,
         width=1200,
         height=800,

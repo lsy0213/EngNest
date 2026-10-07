@@ -195,6 +195,15 @@ class Dictionary:
                                   (lo, lo + "￿", lo, limit)).fetchall()
         return [dict(zip(("word", "phonetic", "trans", "tag", "collins", "rank"), r)) for r in rows]
 
+    def phonetic(self, word: str) -> str:
+        """只查音标（资料包转换时补音标用），查不到返回空字符串"""
+        with self._lock:
+            db = self._conn()
+            if not db:
+                return ""
+            r = db.execute("SELECT phonetic FROM dict WHERE lower=? AND phonetic != '' LIMIT 1", ((word or "").strip().lower(),)).fetchone()
+        return r[0] if r else ""
+
     def status(self) -> dict:
         with self._lock:
             db = self._conn()

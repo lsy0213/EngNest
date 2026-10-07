@@ -49,7 +49,44 @@ App.pages.ielts = {
     };
   },
 
+  // 雅思资料包（my-ielts）：原作者没有声明协议，不随软件分发，用户自己下载到本机
+  async packCard(box) {
+    const has = (window.ENGNEST_PACKS || []).includes("my-ielts");
+    if (!Store.bridge || Store.remote) {
+      box.innerHTML = has ? "" : `<div class="card-title">📦 雅思资料包</div><span class="small faint">还没有下载：需要在电脑上的 EngNest 里下载。</span>`;
+      if (has) box.remove();
+      return;
+    }
+    const st = await pywebview.api.pack_status();
+    const p = st.packs["my-ielts"];
+    if (has && p.installed && !st.running) {
+      box.innerHTML = `<div class="row"><span class="small muted">📦 已安装雅思资料包（${esc(p.desc)}）。${esc(p.license)}。</span><span class="spacer"></span>
+        <button class="btn sm ghost" data-p="remove">删除</button></div>`;
+    } else {
+      box.innerHTML = `<div class="card-title">📦 雅思资料包 <span class="badge">${p.installed ? "已下载，重启后生效" : "未下载"}</span></div>
+        <div class="small muted">${esc(p.desc)}。来自 GitHub 上一位考生的备考笔记
+          <a href="#" data-url="${esc(p.home)}">hefengxian/my-ielts</a>。<span class="faint">${esc(p.license)}，所以不放在安装包里，需要的话在这里下载（约 ${p.size_mb} MB）。</span></div>
+        <div class="row mt-s" style="gap:8px">${st.running && st.id === "my-ielts"
+          ? `<span class="small">${st.stage === "convert" ? "正在转换…" : `下载中 ${Math.round(st.progress * 100)}%`}</span><div class="bar" style="flex:1;max-width:240px"><i style="width:${st.progress * 100}%"></i></div>`
+          : p.installed ? `<button class="btn primary" data-p="reload">现在重新载入</button>`
+          : `<button class="btn primary" data-p="install">⬇ 下载雅思资料包</button>${st.error && st.id === "my-ielts" ? `<span class="small bad-text">上次下载失败：${esc(st.error)}</span>` : ""}`}</div>`;
+    }
+    box.onclick = async (e) => {
+      const k = e.target.closest("[data-p]")?.dataset.p;
+      if (k === "install") { await pywebview.api.pack_install("my-ielts"); this.packCard(box); }
+      if (k === "reload") { await Store.flush(); location.reload(); }
+      if (k === "remove" && (await confirmBox("删除雅思资料包", "删除后「雅思词汇真经」「179」「538」「写作 100 句」和语法讲义就看不到了（学习记录保留）。以后可以再下载。", "删除", true))) {
+        await pywebview.api.pack_remove("my-ielts");
+        await Store.flush();
+        location.reload();
+      }
+    };
+    if (st.running && st.id === "my-ielts") setTimeout(() => box.isConnected && this.packCard(box), 800);
+    else if (st.stage === "done" && st.id === "my-ielts" && !has) { await Store.flush(); location.reload(); }
+  },
+
   render(root) {
+    const hasPack = (window.ENGNEST_PACKS || []).includes("my-ielts");
     const ib = BOOK_MAP.ielts, it = BOOK_MAP.ielts_topic;
     const learned = (b) => (b ? bookItems(b).filter((x) => Store.data.words[x.w]).length : 0);
     const exam = (Store.prefs.exams || {}).ielts;
@@ -92,12 +129,13 @@ App.pages.ielts = {
         <div class="small muted">238 篇真题风格的阅读文章（P1 / P2 / P3，按高频、中频、低频分），14 种题型，左边文章右边做题、限时 20 分钟、交卷判分、逐题中文解析和段落翻译。题库下载到本机（约 35 MB）后就在软件里做题，不用开浏览器。
           <span class="faint">题源版权归原权利人，作者要求只用于个人学习，不要再公开分发。</span></div>
         <div class="row mt-s" id="ext-row" style="gap:8px"></div></div>
-      <div class="card"><div class="card-title">🧩 雅思语法（来自 my-ielts 备考笔记）</div>
+      <div class="card" id="pack-card"></div>
+      ${hasPack ? `<div class="card"><div class="card-title">🧩 雅思语法（来自 my-ielts 备考笔记）</div>
         <div class="small muted">「学完这个就会分析长难句了」：一份基础语法课程的思维导图和讲义。</div>
         <div class="row mt-s" style="gap:8px;flex-wrap:wrap">
           <button class="btn soft" id="g-map">🗺️ 看思维导图</button>
           <button class="btn soft" id="g-pdf">📄 打开讲义 PDF</button>
-          <button class="btn ghost" data-url="https://www.youtube.com/watch?v=bxvyZwACfNk">▶ 配套视频（YouTube）↗</button></div></div>
+          <button class="btn ghost" data-url="https://www.youtube.com/watch?v=bxvyZwACfNk">▶ 配套视频（YouTube）↗</button></div></div>` : ""}
       ${window.IELTS_SPELLING ? `<div class="card"><div class="card-title">🔤 英美拼写对照 <span class="small muted" style="font-weight:400">听力填空拼写要统一，英式美式都算对</span></div>
         ${IELTS_SPELLING.map((t) => `<details class="ielts-spell"><summary><b>${esc(t.title)}</b> <span class="small muted">${esc(t.desc)}（${t.rows.length} 个）</span></summary>
           <div class="link-table-wrap"><table class="link-table"><thead><tr>${t.columns.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead>
@@ -109,17 +147,18 @@ App.pages.ielts = {
     const pre = [() => { Store.prefs.book = "ielts_zj"; }, () => { Store.prefs.book = "ielts_l179"; }, () => { Store.prefs.book = "ielts_r538"; }, () => { Store.prefs.tr_src = "w100"; },
       () => { Store.prefs.book = "ielts"; }, () => { Store.prefs.book = "ielts_topic"; }, () => { Store.prefs.book = "ielts"; Store.prefs.word_practice = "fillin"; }];
     this.extRow($("#ext-row", root));
-    $("#g-map", root).onclick = () => {
+    this.packCard($("#pack-card", root));
+    if (hasPack) $("#g-map", root).onclick = () => {
       const m = modal(`<div class="row"><h3 style="margin:0">🗺️ 雅思语法思维导图</h3><span class="spacer"></span>
           <button class="btn sm ghost" data-z="-1">－</button><button class="btn sm ghost" data-z="1">＋</button><button class="btn sm ghost" data-close>✕</button></div>
-        <div class="g-map-box"><img src="ext/my-ielts/grammar-mindmap.svg" id="g-img" alt="雅思语法思维导图" style="width:100%"></div>`);
+        <div class="g-map-box"><img src="${esc(window.ENGNEST_PACK_BASE)}/my-ielts/grammar-mindmap.svg" id="g-img" alt="雅思语法思维导图" style="width:100%"></div>`);
       m.root.querySelector(".modal").style.maxWidth = "1100px";
       let z = 100;
       m.root.addEventListener("click", (e) => { const b = e.target.closest("[data-z]"); if (b) { z = Math.max(50, Math.min(300, z + 25 * +b.dataset.z)); $("#g-img", m.root).style.width = z + "%"; } });
     };
-    $("#g-pdf", root).onclick = async () => {
-      if (Store.bridge && !Store.remote && await pywebview.api.open_file("ext/my-ielts/grammar-notes.pdf")) return;
-      window.open("ext/my-ielts/grammar-notes.pdf", "_blank");
+    if (hasPack) $("#g-pdf", root).onclick = async () => {
+      if (Store.bridge && !Store.remote && await pywebview.api.pack_open_file("my-ielts", "grammar-notes.pdf")) return;
+      window.open(`${window.ENGNEST_PACK_BASE}/my-ielts/grammar-notes.pdf`, "_blank");
     };
     root.addEventListener("click", (e) => {
       const go = e.target.closest(".ielts-go");

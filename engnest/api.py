@@ -8,7 +8,7 @@ import os
 import threading
 import time
 
-from . import VERSION, ai_client, ai_usage, dictionary, ext, films, kvcache, lan, library, net, offline_tts, paths, progress, settings, stt, tts, wiki
+from . import VERSION, ai_client, ai_usage, dictionary, ext, films, kvcache, lan, library, net, offline_tts, packs, paths, progress, settings, stt, tts, wiki
 from .log import log_file
 from .paths import data_dir
 
@@ -32,6 +32,7 @@ class Api:
         self._piper = offline_tts.OfflineTTS()
         self._films = films.Films()
         self._ext = ext.Ext()
+        self._packs = packs.Packs(self._dict.phonetic)
         self._window = None  # main.py 创建窗口后设置，用来弹出选择文件的对话框
         self._streams = {}  # 正在流式生成的 AI 回复
         self._streams_lock = threading.Lock()
@@ -450,72 +451,23 @@ class Api:
     def ext_base(self, eid):
         return self._ext.base_uri(eid)
 
-    def open_file(self, rel):
-        """用系统默认程序打开软件自带的文件（比如语法讲义 PDF），只允许 web/ext/ 下面的。"""
-        from .paths import web_index
+    # ---------- 资料包（下载到本机、不随软件分发的学习资料） ----------
+    def pack_status(self):
+        return self._packs.status()
 
-        base = (web_index().parent / "ext").resolve()
-        path = (web_index().parent / rel).resolve()
-        if base not in path.parents or not path.exists():
+    def pack_install(self, pid):
+        return self._packs.install(pid)
+
+    def pack_remove(self, pid):
+        return self._packs.remove(pid)
+
+    def pack_open_file(self, pid, name):
+        """用系统默认程序打开资料包里的文件（比如语法讲义 PDF）"""
+        p = self._packs.file_path(pid, name)
+        if not p:
             return False
-        os.startfile(path)
+        os.startfile(p)
         return True
-
-    # ---------- 网络（代理、连通性检查） ----------
-    NET_CHECKS = [
-        ("GitHub（完整词典、扩展资料、资料包）", "https://raw.githubusercontent.com/skywind3000/ECDICT/master/README.md"),
-        ("GitHub 镜像", "https://ghfast.top/https://raw.githubusercontent.com/skywind3000/ECDICT/master/README.md"),
-        ("Hugging Face（语音识别模型）", "https://huggingface.co/api/models/Systran/faster-whisper-base.en"),
-        ("hf-mirror（模型国内镜像）", "https://hf-mirror.com/api/models/Systran/faster-whisper-base.en"),
-        ("维基百科", "https://simple.wikipedia.org/w/api.php?action=query&meta=siteinfo&format=json"),
-        ("VOA（原声音频、视频）", "https://learningenglish.voanews.com/"),
-        ("TED 视频", "https://py.tedcdn.com/"),
-    ]
-
-    def net_get(self):
-        cfg = self._settings.section("net", {"proxy": ""})
-        return {"proxy": cfg.get("proxy", ""), "system_proxy": "" if cfg.get("proxy") else net.proxy()}
-
-    def net_set(self, proxy):
-        proxy = (proxy or "").strip()
-        if proxy and not proxy.startswith(("http://", "https://", "socks5://")):
-            proxy = "http://" + proxy
-        self._settings.update("net", {"proxy": proxy})
-        net.set_proxy(proxy)
-        return self.net_get()
-
-    def net_test(self):
-        """逐个试一下常用的外部服务，返回 [{name, ok, ms, error}]"""
-        import concurrent.futures
-
-        def one(item):
-            name, url = item
-            t = time.time()
-            try:
-                with net.urlopen(url, timeout=8) as r:
-                    r.read(256)
-                return {"name": name, "ok": True, "ms": int((time.time() - t) * 1000), "error": ""}
-            except Exception as e:  # noqa: BLE001
-                code = getattr(e, "code", None)
-                if code and code < 500:  # 有回应（比如 403、404）说明网络是通的
-                    return {"name": name, "ok": True, "ms": int((time.time() - t) * 1000), "error": ""}
-                return {"name": name, "ok": False, "ms": 0, "error": str(getattr(e, "reason", e))[:80]}
-
-        def edge():
-            import asyncio
-
-            import edge_tts
-
-            t = time.time()
-            try:
-                asyncio.run(edge_tts.list_voices(proxy=net.proxy() or None))
-                return {"name": "微软神经语音（发音）", "ok": True, "ms": int((time.time() - t) * 1000), "error": ""}
-            except Exception as e:  # noqa: BLE001
-                return {"name": "微软神经语音（发音）", "ok": False, "ms": 0, "error": str(e)[:80]}
-
-        with concurrent.futures.ThreadPoolExecutor(len(self.NET_CHECKS) + 1) as pool:
-            tts_f = pool.submit(edge)
-            return [tts_f.result()] + list(pool.map(one, self.NET_CHECKS))
 
     # ---------- 其他 ----------
     def app_info(self):

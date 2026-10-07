@@ -118,7 +118,10 @@ if __name__ == "__main__":
     log.setup()
     paths.migrate_legacy()
     api = Api()
-    win = webview.create_window("EngNest smoke test", url=web_index().as_uri(), js_api=api, width=1100, height=750)
+    import urllib.parse
+
+    url = web_index().as_uri() + "#packs=" + urllib.parse.quote(paths.sub_dir("packs").as_uri(), safe="")
+    win = webview.create_window("EngNest smoke test", url=url, js_api=api, width=1100, height=750)
     win._js_api = api
     api._window = win
     webview.start(run, win, private_mode=False, storage_path=str(paths.sub_dir("webview")))

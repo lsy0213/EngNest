@@ -18,6 +18,7 @@ import socket
 import subprocess
 import threading
 import time
+import urllib.parse
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
@@ -38,7 +39,7 @@ ALLOWED = {
     "ai_chat", "ai_stream_start", "ai_stream_poll", "test_ai", "tts", "tts_offline", "offline_tts_status", "tts_voices", "tts_cache_info",
     "dict_lookup", "dict_search", "dict_status",
     "library_list", "library_load", "wiki_search", "wiki_article",  # 局域网设备只能看，不能导入和删除
-    "kv_get", "kv_all", "kv_set", "kv_set_many",
+    "kv_get", "kv_all", "kv_set", "kv_set_many", "pack_status",
 }
 
 
@@ -165,6 +166,18 @@ class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, server_ref=None, **kwargs):
         self.server_ref = server_ref
         super().__init__(*args, **kwargs)
+
+    def translate_path(self, path):
+        # /packs/... 是用户下载的资料包，在数据目录里，不在 web/ 下
+        clean = path.split("?", 1)[0].split("#", 1)[0]
+        if clean == "/packs" or clean.startswith("/packs/"):
+            from .packs import packs_dir
+
+            rel = urllib.parse.unquote(clean[len("/packs"):]).lstrip("/")
+            root = packs_dir().resolve()
+            target = (root / rel).resolve()
+            return str(target) if (target == root or root in target.parents) else str(root / "__forbidden__")
+        return super().translate_path(path)
 
     def log_message(self, *args):
         # 打包成无控制台的 exe 时 sys.stderr 是 None，默认日志会直接报错

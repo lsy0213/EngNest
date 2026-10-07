@@ -69,3 +69,19 @@ def test_body_too_large(server, monkeypatch):
     monkeypatch.setattr(lan, "MAX_BODY", 100)
     st, _ = call(port, "ping", "ABCD2345", body=b"x" * 1000)
     assert st == 413
+
+
+def test_packs_route_and_traversal(server, data_dir):
+    _, port = server
+    from engnest.packs import packs_dir
+
+    (packs_dir() / "index.js").write_text("window.X = 1;", encoding="utf-8")
+    (data_dir / "secret.txt").write_text("nope", encoding="utf-8")
+    with urllib.request.urlopen(f"http://127.0.0.1:{port}/packs/index.js", timeout=5) as r:
+        assert r.read() == b"window.X = 1;"
+    for bad in ("/packs/../secret.txt", "/packs/%2e%2e/secret.txt", "/packs/..%5csecret.txt"):
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}{bad}", timeout=5) as r:
+                assert b"nope" not in r.read()
+        except urllib.error.HTTPError as e:
+            assert e.code == 404
