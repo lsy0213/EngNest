@@ -6,7 +6,7 @@
   --surface-3: #EFE5D6;
   --ink: #2E2A24;
   --ink-2: #6B6358;
-  --ink-3: #9A9185;
+  --ink-3: #786F63; /* 提示文字：对比度 ≥ 4.5 */
   --line: #E8DFD1;
   --brand: #C2702C;
   --brand-ink: #FFFFFF;
@@ -37,7 +37,7 @@
     --surface-3: #3A342D;
     --ink: #F1EBE2;
     --ink-2: #BDB3A5;
-    --ink-3: #8C8375;
+    --ink-3: #A39A8C;
     --line: #3F3831;
     --brand: #E08A45;
     --brand-ink: #1E1B17;
@@ -62,7 +62,7 @@
   --surface-3: #3A342D;
   --ink: #F1EBE2;
   --ink-2: #BDB3A5;
-  --ink-3: #8C8375;
+  --ink-3: #A39A8C;
   --line: #3F3831;
   --brand: #E08A45;
   --brand-ink: #1E1B17;
@@ -1681,3 +1681,11 @@ details.mm-card[open] > summary { margin-bottom: 12px; }
 .goal-opt small { color: var(--ink-3); }
 .goal-opt:hover, .goal-opt.active { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 10%, var(--surface)); }
 .sh-about { margin-top: 4px; } .sh-about summary { cursor: pointer; }
+
+/* 键盘操作时清楚地看到焦点在哪 */
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.btn:focus-visible, .nav-item:focus-visible, .tab:focus-visible, .chip:focus-visible, .goal-opt:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+/* 系统设置了「减少动态效果」：关掉动画和过渡 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}

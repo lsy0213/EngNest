@@ -33,7 +33,7 @@
 /* 星河晚歌：原图的藏蓝 #4D4B63、丁香紫 #A88D9F、薄荷绿 #7DA094。 */
 :root[data-skin="starry"] {
   --bg: #F1EFF2; --surface: #FFFBFC; --surface-2: #EEEAF1; --surface-3: #DED9E3;
-  --ink: #393B50; --ink-2: #626276; --ink-3: #7B798D; --line: #D9D4E0;
+  --ink: #393B50; --ink-2: #626276; --ink-3: #6A6880; --line: #D9D4E0;
   --brand: #536D70; --brand-ink: #FFFFFF; --brand-soft: #E1ECE9; --brand-deep: #38585C;
   --good: #5B8A79; --good-soft: #E1EFE9; --bad: #BD6B77; --bad-soft: #F6E5E8;
   --warn: #9B8852; --warn-soft: #F5EFD9; --info: #756C96; --info-soft: #EBE7F4;
@@ -161,7 +161,7 @@
 /* 星河晚歌：深蓝绿裙摆、薄荷叶星和灰紫发卷三色并行，线条更密但避开正文。 */
 :root[data-skin="starry"] {
   --bg: #E9E9E6; --surface: #F6F3F5; --surface-2: #EBE9EC; --surface-3: #DADDE0;
-  --ink: #343C4A; --ink-2: #606474; --ink-3: #777786; --line: #BBB9C8;
+  --ink: #343C4A; --ink-2: #606474; --ink-3: #66667A; --line: #BBB9C8;
   --brand: #315F58; --brand-deep: #27574F; --brand-soft: #DCEAE1;
   --ornament-edge: rgba(97, 117, 111, .58); --ornament-faint: rgba(122, 162, 142, .17); --ornament-accent: #7C648A;
 }
