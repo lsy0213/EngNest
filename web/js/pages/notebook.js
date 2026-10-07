@@ -23,6 +23,7 @@ App.pages.notebook = {
     body.onclick = (e) => {
       const d = e.target.closest("[data-del]");
       if (!d) return;
+      markDeleted("notebook", RECORD_ID.notebook(nb[+d.dataset.del]));
       nb.splice(+d.dataset.del, 1);
       Store.save();
       Router.render();
@@ -56,7 +57,7 @@ App.pages.notebook = {
     $("#hide-zh", body).onchange = (e) => $("#sn-list", body).classList.toggle("hide-zh", e.target.checked);
     body.onclick = async (e) => {
       const d = e.target.closest("[data-del]"), tr = e.target.closest("[data-tr]");
-      if (d) { sn.splice(+d.dataset.del, 1); Store.save(); Router.render(); return; }
+      if (d) { markDeleted("sentence_nb", RECORD_ID.sentence_nb(sn[+d.dataset.del])); sn.splice(+d.dataset.del, 1); Store.save(); Router.render(); return; }
       if (tr) {
         tr.disabled = true;
         tr.textContent = "翻译中…";
@@ -64,6 +65,7 @@ App.pages.notebook = {
         const r = await AI.ask("You are an English-Chinese translator for Chinese learners. Reply with only a natural Chinese translation, nothing else.", x.en);
         if (!r.ok) { tr.disabled = false; tr.textContent = "重试"; toast(r.error, "bad", 4000); return; }
         x.zh = r.text.trim();
+        x.t = Date.now();
         Store.save();
         Router.render();
       }

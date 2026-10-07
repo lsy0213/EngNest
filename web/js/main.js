@@ -1,6 +1,7 @@
 // 启动：读取进度 → 初始化发音和 AI → 渲染页面
 (async function boot() {
   await Store.init();
+  await KV.migrate();
   TTS.init();
   await AI.refresh();
   renderSidebarFoot();

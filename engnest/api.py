@@ -3,12 +3,17 @@
 pywebview 会在独立线程里执行这些方法，所以 AI 请求阻塞也不会卡住界面。
 """
 
+import logging
 import os
 import threading
+import time
 
-from . import ai_client, dictionary, ext, films, lan, library, stt, tts, wiki
+from . import ai_client, dictionary, ext, films, kvcache, lan, library, paths, progress, stt, tts, wiki
+from .log import log_file
 from .paths import data_dir
 from .storage import load_json, save_json
+
+log = logging.getLogger(__name__)
 
 DEFAULT_AI = {"provider": "none", "base_url": "", "model": "", "api_key": ""}
 
@@ -16,8 +21,10 @@ DEFAULT_AI = {"provider": "none", "base_url": "", "model": "", "api_key": ""}
 class Api:
     def __init__(self):
         self._dir = data_dir()
-        self._progress_file = self._dir / "progress.json"
         self._settings_file = self._dir / "settings.json"
+        self._progress = progress.Progress()
+        self._kv = kvcache.KVCache()
+        self._backup_today()
         self._lan = lan.LanServer(self)
         self._dict = dictionary.Dictionary()
         self._lib = library.Library()
@@ -34,18 +41,97 @@ class Api:
         if cfg.get("enabled") and cfg.get("code"):
             self._lan.start(int(cfg.get("port") or lan.DEFAULT_PORT), cfg["code"])
 
-    # ---------- 学习进度 ----------
-    def load_progress(self):
-        return load_json(self._progress_file, None)
+    def _on_closing(self):
+        """窗口关闭前：让前端把还没保存的改动发过来，再备份一次。
+        在另一个线程里等前端（最多 3 秒），免得关闭窗口时卡住。"""
+        if self._window:
+            t = threading.Thread(target=lambda: self._window.evaluate_js("Store.flush().then(() => true)"), daemon=True)
+            t.start()
+            t.join(3)
+        try:
+            self._progress.backup()
+        except Exception:  # noqa: BLE001 — 关闭时出错不能拦着用户关窗口
+            log.exception("关闭时备份失败")
 
-    def save_progress(self, data):
-        save_json(self._progress_file, data)
-        return True
+    def _backup_today(self):
+        try:
+            self._progress.backup()
+        except Exception:  # noqa: BLE001
+            log.exception("自动备份失败")
+
+    # ---------- 学习进度 ----------
+    def progress_load(self):
+        """{data, rev, notice}：notice 是启动时发生的事（比如从备份恢复），前端提示一次"""
+        notice, self._progress.notice = self._progress.notice, ""
+        return {"data": self._progress.load(), "rev": self._progress.rev(), "notice": notice}
+
+    def progress_rev(self):
+        return self._progress.rev()
+
+    def progress_save(self, patch):
+        """只传改动过的字段，按记录合并后写入，返回 {rev, changed}"""
+        return self._progress.save_patch(patch)
+
+    # ---------- AI 结果缓存（翻译、精讲） ----------
+    def kv_get(self, ns, keys):
+        return self._kv.get_many(ns, keys)
+
+    def kv_all(self, ns):
+        return self._kv.get_all(ns)
+
+    def kv_set(self, ns, key, value):
+        return self._kv.set(ns, key, value)
+
+    def kv_set_many(self, ns, items):
+        return self._kv.set_many(ns, items)
 
     def reset_progress(self):
-        if self._progress_file.exists():
-            self._progress_file.unlink()
+        self._progress.reset(keep_prefs=True)
         return True
+
+    def progress_backups(self):
+        return {"dir": str(self._progress.backup_dir()), "items": self._progress.backups()}
+
+    def progress_backup_now(self):
+        return self._progress.backup(tag="manual").name
+
+    def progress_restore(self, name):
+        return self._progress.restore(name)
+
+    def progress_export(self):
+        """导出进度到用户选的位置。取消返回 None"""
+        import json
+
+        import webview
+
+        kind = getattr(getattr(webview, "FileDialog", None), "SAVE", None) or webview.SAVE_DIALOG
+        name = f"EngNest-进度-{time.strftime('%Y%m%d')}.json"
+        path = self._window.create_file_dialog(kind, save_filename=name, file_types=("JSON 文件 (*.json)",))
+        if not path:
+            return None
+        path = path[0] if isinstance(path, (list, tuple)) else path
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(self._progress.export_doc(), f, ensure_ascii=False, indent=1)
+        return str(path)
+
+    def progress_import(self, mode="merge"):
+        """从文件导入进度。mode=merge 和现在的合并，replace 整个替换（替换前自动备份）。取消返回 None"""
+        import webview
+
+        kind = getattr(getattr(webview, "FileDialog", None), "OPEN", None) or webview.OPEN_DIALOG
+        paths_ = self._window.create_file_dialog(kind, allow_multiple=False, file_types=("JSON 文件 (*.json)", "所有文件 (*.*)"))
+        if not paths_:
+            return None
+        try:
+            data = progress.read_export(paths_[0] if isinstance(paths_, (list, tuple)) else paths_)
+        except (OSError, ValueError) as e:
+            return {"error": f"导入失败：{e}"}
+        self._progress.backup(tag="before-import")
+        if mode == "replace":
+            self._progress.replace_all(data)
+        else:
+            self._progress.merge_in(data)
+        return {"ok": True}
 
     # ---------- AI 设置 ----------
     def _ai_cfg(self) -> dict:
@@ -298,6 +384,34 @@ class Api:
 
     def open_data_dir(self):
         os.startfile(self._dir)
+        return True
+
+    def data_location(self):
+        return {"dir": str(self._dir), "default": str(paths.default_data_dir()), "custom": paths.configured_data_dir() is not None}
+
+    def set_data_location(self, target):
+        """更改数据位置：下次启动生效，启动时自动把现有数据搬过去"""
+        target = (target or "").strip()
+        if not target:
+            return {"error": "请填写目录"}
+        try:
+            new = paths.set_data_location(target)
+        except OSError as e:
+            return {"error": f"这个目录不能用：{e}"}
+        if new.resolve() != self._dir.resolve():
+            # 让下次启动的 migrate_legacy 从当前目录搬：在新目录留一个来源记录
+            (new / "migrate_from.txt").write_text(str(self._dir), encoding="utf-8")
+        return {"ok": True, "dir": str(new)}
+
+    def pick_folder(self):
+        import webview
+
+        kind = getattr(getattr(webview, "FileDialog", None), "FOLDER", None) or webview.FOLDER_DIALOG
+        r = self._window.create_file_dialog(kind)
+        return (r[0] if isinstance(r, (list, tuple)) else r) if r else None
+
+    def open_logs(self):
+        os.startfile(log_file().parent)
         return True
 
 

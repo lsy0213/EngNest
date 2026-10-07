@@ -289,57 +289,149 @@ async function waitForBridge() {
   });
 }
 
+// 列表里怎么认出「同一条记录」：删除时按它留墓碑，多设备合并时按它对齐（必须和 engnest/progress.py 的 LIST_ID 一致）
+const recNorm = (s) => String(s ?? "").toLowerCase().split(/\s+/).filter(Boolean).join(" ");
+const RECORD_ID = {
+  notebook: (x) => recNorm(x.w),
+  sentence_nb: (x) => recNorm(x.en),
+  clips: (x) => `${x.video || ""}|${recNorm(x.en)}`,
+};
+// 删除一条记录：留一个墓碑，另一台设备上的旧数据合并时不会把它带回来
+function markDeleted(kind, id) {
+  ((Store.data.deleted ||= {})[kind] ||= {})[id] = Date.now();
+}
+// 重新加回来的记录：去掉墓碑，并打上修改时间
+function markAdded(kind, id, rec) {
+  const d = Store.data.deleted?.[kind];
+  if (d) delete d[id];
+  if (rec) rec.t = Date.now();
+  return rec;
+}
+
 const Store = {
   bridge: false,
   remote: false, // 是否是局域网里的其他设备
   data: null,
+  rev: 0,        // 电脑上进度的版本号，每写一次加一
+  stale: false,  // 保存时发现别的设备写过
+  _sent: {},     // 每个字段上次保存时的 JSON，用来找出改动过的字段
   _timer: null,
+  _flushing: null,
+  _drop: new Set(), // 要从进度里删掉的顶层字段
   async init() {
     this.bridge = await waitForBridge();
-    let saved = null;
+    let saved = null, notice = "";
     try {
-      if (this.bridge) saved = await pywebview.api.load_progress();
-      else saved = JSON.parse(localStorage.getItem("engnest-progress") || "null");
+      if (this.bridge) {
+        const r = await pywebview.api.progress_load();
+        saved = r.data;
+        this.rev = r.rev;
+        notice = r.notice;
+      } else saved = JSON.parse(localStorage.getItem("engnest-progress") || "null");
     } catch (e) {
       console.error("读取进度失败", e);
     }
-    this.data = fillDefaults(saved || {}, DEFAULT_PROGRESS());
+    this._adopt(saved || {});
+    if (notice) setTimeout(() => toast(notice, "bad", 10000), 800);
+  },
+  // 换成一份新读到的进度（补上默认值；默认值算「没保存过」，下次保存时写进去）
+  _adopt(saved) {
+    this._sent = {};
+    for (const k in saved) this._sent[k] = JSON.stringify(saved[k]);
+    this.data = fillDefaults(saved, DEFAULT_PROGRESS());
   },
   save() {
-    this.data.updated = Date.now();
     clearTimeout(this._timer);
     this._timer = setTimeout(() => this.flush(), 300);
   },
-  // 电脑和手机共用一份进度：切回这个窗口时，如果另一台设备有更新的进度，就拉过来
-  async syncFromOther() {
-    if (!this.bridge || this._timer) return;
-    try {
-      const other = await pywebview.api.load_progress();
-      if (other && (other.updated || 0) > (this.data.updated || 0)) {
-        this.data = fillDefaults(other, DEFAULT_PROGRESS());
-        renderSidebarFoot();
-        Router.render();
-        toast("已同步其他设备上的学习进度", "good");
-      }
-    } catch (e) {
-      console.warn("同步进度失败", e);
+  // 改动过的字段：{字段: JSON 字符串}
+  _changes() {
+    const out = {};
+    for (const k in this.data) {
+      const j = JSON.stringify(this.data[k]);
+      if (j !== this._sent[k]) out[k] = j;
     }
+    return out;
   },
   async flush() {
     clearTimeout(this._timer);
     this._timer = null;
-    try {
-      if (this.bridge) await pywebview.api.save_progress(this.data);
-      else localStorage.setItem("engnest-progress", JSON.stringify(this.data));
-    } catch (e) {
-      console.error("保存进度失败", e);
-      toast("保存进度失败", "bad");
+    if (!this.bridge) {
+      try { localStorage.setItem("engnest-progress", JSON.stringify(this.data)); }
+      catch (e) { console.error("保存进度失败", e); toast("保存进度失败", "bad"); }
+      return;
     }
+    while (this._flushing) await this._flushing; // 一次只发一个保存请求
+    const strs = this._changes(), keys = Object.keys(strs), drop = [...this._drop];
+    if (!keys.length && !drop.length) return;
+    const patch = {};
+    keys.forEach((k) => (patch[k] = JSON.parse(strs[k])));
+    if (drop.length) patch.__drop = drop;
+    this._flushing = (async () => {
+      try {
+        const r = await pywebview.api.progress_save(patch);
+        keys.forEach((k) => (this._sent[k] = strs[k]));
+        drop.forEach((k) => { this._drop.delete(k); delete this._sent[k]; });
+        if (r.prev !== this.rev) this.stale = true;
+        this.rev = r.rev;
+        let merged = 0;
+        for (const [k, v] of Object.entries(r.changed || {})) {
+          // 合并后和本机不一样（另一台设备也改过）：本机在这段时间没再改这个字段，就换成合并后的
+          if (!(k in this.data) || JSON.stringify(this.data[k]) === strs[k]) {
+            this.data[k] = v;
+            this._sent[k] = JSON.stringify(v);
+            merged++;
+          }
+        }
+        if (merged) { renderSidebarFoot(); renderNav(); }
+      } catch (e) {
+        console.error("保存进度失败", e);
+        toast("保存进度失败：" + (e.message || e), "bad", 4000);
+      }
+    })();
+    try { await this._flushing; } finally { this._flushing = null; }
+  },
+  // 电脑和手机共用一份进度：切回这个窗口时，如果别的设备写过，就拉最新的过来
+  async syncFromOther(rerender = true) {
+    if (!this.bridge || this._timer || this._flushing) return;
+    try {
+      const rev = await pywebview.api.progress_rev();
+      if (rev === this.rev && !this.stale) return;
+      if (Object.keys(this._changes()).length) { this.save(); return; } // 本机还有没保存的：先保存，合并结果会带回来
+      const r = await pywebview.api.progress_load();
+      if (this._timer || this._flushing) return;
+      this._adopt(r.data);
+      this.rev = r.rev;
+      this.stale = false;
+      renderSidebarFoot();
+      if (rerender) Router.render();
+      toast("已同步其他设备上的学习进度", "good");
+    } catch (e) {
+      console.warn("同步进度失败", e);
+    }
+  },
+  // 重新读一遍（导入、恢复备份、重置之后）
+  async reload() {
+    if (!this.bridge) return;
+    const r = await pywebview.api.progress_load();
+    this._adopt(r.data);
+    this.rev = r.rev;
+    this.stale = false;
+  },
+  // 把一个顶层字段从进度里删掉（搬到别处存了）
+  drop(key) {
+    delete this.data[key];
+    this._drop.add(key);
+    this.save();
   },
   get prefs() { return this.data.prefs; },
 };
 window.addEventListener("beforeunload", () => Store.flush());
-document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && Store.data) Store.syncFromOther(); });
+document.addEventListener("visibilitychange", () => {
+  if (!Store.data) return;
+  if (document.visibilityState === "visible") Store.syncFromOther();
+  else Store.flush(); // 切到后台（手机锁屏、切应用）时马上保存
+});
 window.addEventListener("focus", () => { if (Store.data) Store.syncFromOther(); });
 
 // ---------- 经验值 & 打卡 ----------
@@ -381,6 +473,7 @@ function gradeWord(w, grade) {
   const isNew = !Store.data.words[w];
   const s = Store.data.words[w] || { box: 0, due: today(), seen: 0, wrong: 0, first: today() };
   s.seen++;
+  s.t = Date.now();
   if (grade === 0) { s.box = 0; s.wrong++; }
   else if (grade === 1) s.box = Math.max(1, s.box - 1);
   else s.box = Math.min(s.box + 1, SRS_INTERVALS.length - 1);
@@ -417,8 +510,12 @@ function inNotebook(w) {
 function toggleNotebook(item) {
   const nb = Store.data.notebook;
   const i = nb.findIndex((x) => x.w.toLowerCase() === item.w.toLowerCase());
-  if (i >= 0) { nb.splice(i, 1); toast("已从生词本移除"); }
-  else { nb.unshift({ w: item.w, ph: item.ph || "", m: item.m || "", ex: item.ex || "", zh: item.zh || "", added: today() }); toast("已加入生词本 ⭐", "good"); }
+  if (i >= 0) { markDeleted("notebook", RECORD_ID.notebook(nb[i])); nb.splice(i, 1); toast("已从生词本移除"); }
+  else {
+    const rec = { w: item.w, ph: item.ph || "", m: item.m || "", ex: item.ex || "", zh: item.zh || "", added: today() };
+    nb.unshift(markAdded("notebook", RECORD_ID.notebook(rec), rec));
+    toast("已加入生词本 ⭐", "good");
+  }
   Store.save();
   renderNav();
   return i < 0;
@@ -548,6 +645,52 @@ const AI = {
     }
   },
 };
+// ---------- AI 结果缓存（翻译、精讲）：存在电脑上的 ai_cache.db；浏览器预览时退回 localStorage ----------
+const KV = {
+  mem: {}, // ns → Map，读过的都留在内存里
+  _m(ns) { return (this.mem[ns] ||= new Map()); },
+  peek(ns, key) { return this._m(ns).get(String(key)); },
+  async preload(ns) {
+    if (!Store.bridge) return;
+    try {
+      const all = await pywebview.api.kv_all(ns);
+      for (const k in all) this._m(ns).set(k, all[k]);
+    } catch (e) { console.warn("读取缓存失败", e); }
+  },
+  async get(ns, key) {
+    key = String(key);
+    const m = this._m(ns);
+    if (m.has(key)) return m.get(key);
+    let v = null;
+    if (Store.bridge) {
+      try { v = (await pywebview.api.kv_get(ns, [key]))[key] ?? null; } catch { v = null; }
+    } else {
+      try { const s = localStorage.getItem(`engnest-kv:${ns}:${key}`); v = s ? JSON.parse(s) : null; } catch { v = null; }
+    }
+    if (v != null) m.set(key, v);
+    return v;
+  },
+  async set(ns, key, value) {
+    key = String(key);
+    this._m(ns).set(key, value);
+    if (Store.bridge) {
+      try { await pywebview.api.kv_set(ns, key, value); } catch (e) { console.warn("缓存保存失败", e); }
+    } else {
+      try { localStorage.setItem(`engnest-kv:${ns}:${key}`, JSON.stringify(value)); } catch { /* 存不下就只留在内存里 */ }
+    }
+  },
+  // 旧版本把这些存在学习进度里：搬过来
+  async migrate() {
+    if (!Store.bridge) return;
+    for (const ns of ["line_notes", "film_zh"]) {
+      const old = Store.data[ns];
+      if (!old || typeof old !== "object") continue;
+      try { await pywebview.api.kv_set_many(ns, old); Store.drop(ns); } catch (e) { console.warn("搬迁缓存失败", e); }
+    }
+    await Promise.all([this.preload("line_notes"), this.preload("film_zh")]);
+  },
+};
+
 const LEARNER_PROFILE = "The learner is a Chinese adult who passed CET-4 (College English Test Band 4) several years ago but has become rusty; their current level is roughly CEFR A2-B1.";
 
 // ---------- 导航 & 路由 ----------

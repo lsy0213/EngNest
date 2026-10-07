@@ -3,7 +3,7 @@
 - 内置精简版 assets/ecdict.db：常用词（有词频排名 / 考试标签 / 柯林斯星级 / 牛津 3000）全部保留并带英文释义，
   再加上真实语料里出现过的其他单词（selfie、vlog……，用 wordfreq 判断）和由常用词组成的 3 词以内短语（give up、take after……）。
   由 tools/build_dict.py 生成。
-- 完整版：在设置里一键下载 ECDICT 全部 77 万条，在本机生成 %APPDATA%/EngNest/ecdict_full.db，有它时优先用它。
+- 完整版：在设置里一键下载 ECDICT 全部 77 万条，在本机生成 数据目录的 cache/dict/ecdict_full.db，有它时优先用它。
 
 表 dict：word 词头、lower 小写词头、phonetic 音标、trans 中文释义（按词性分行）、defn 英文释义、
         tag 考试标签（zk 中考 gk 高考 cet4 cet6 ky 考研 ielts toefl gre）、collins 柯林斯星级、oxford 是否牛津 3000、
@@ -18,7 +18,7 @@ import threading
 import urllib.request
 from pathlib import Path
 
-from .paths import data_dir, resource_dir
+from .paths import cache_dir, resource_dir
 
 URL = "https://raw.githubusercontent.com/skywind3000/ECDICT/master/ecdict.csv"
 CORE_DB = resource_dir() / "assets" / "ecdict.db"
@@ -28,7 +28,7 @@ csv.field_size_limit(10_000_000)
 
 
 def full_db() -> Path:
-    return data_dir() / "ecdict_full.db"
+    return cache_dir("dict") / "ecdict_full.db"
 
 
 # ---------- 生成数据库 ----------
@@ -206,7 +206,7 @@ class Dictionary:
         return True
 
     def _download_full(self):
-        csv_path = data_dir() / "ecdict.csv"
+        csv_path = cache_dir("dict") / "ecdict.csv"
         try:
             with urllib.request.urlopen(URL, timeout=60) as resp, open(csv_path.with_suffix(".part"), "wb") as out:
                 size = int(resp.headers.get("Content-Length") or 66_000_000)

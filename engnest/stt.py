@@ -1,6 +1,6 @@
 """离线语音识别：faster-whisper + Whisper base.en 英语模型（MIT 协议），在本机 CPU 上运行，不联网、不花钱。
 
-模型约 145 MB，第一次用时在设置里下载到 %APPDATA%/EngNest/whisper/（huggingface.co 连不上时自动改用 hf-mirror.com）。
+模型约 145 MB，第一次用时在设置里下载到数据目录的 cache/whisper/（huggingface.co 连不上时自动改用 hf-mirror.com）。
 前端录音后把 16 kHz 单声道的 16 位 PCM（base64）传过来，返回识别出的英文。
 faster-whisper 只在第一次识别时才导入，不影响启动速度；没装这个依赖时语音识别不可用，其他功能照常。
 """
@@ -9,7 +9,7 @@ import base64
 import threading
 import urllib.request
 
-from .paths import data_dir
+from .paths import cache_dir
 
 MODEL = "Systran/faster-whisper-base.en"
 FILES = ["config.json", "tokenizer.json", "vocabulary.txt", "model.bin"]
@@ -17,7 +17,7 @@ ENDPOINTS = ["https://huggingface.co", "https://hf-mirror.com"]
 
 
 def model_dir():
-    return data_dir() / "whisper" / "base.en"
+    return cache_dir("whisper") / "base.en"
 
 
 class Stt:

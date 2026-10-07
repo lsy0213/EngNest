@@ -322,7 +322,7 @@ App.pages.life = {
       if (st) st.classList.toggle("on", toggleSentNb({ en: st.dataset.en, zh: st.dataset.zh, from }));
       if (e.target.closest("#all-nb")) {
         let n = 0;
-        list.forEach((en) => { if (!inSentNb(en)) { sentNb().unshift({ en, zh: all.get(en)[0], from, added: today() }); n++; } });
+        list.forEach((en) => { if (!inSentNb(en)) { sentNb().unshift(markAdded("sentence_nb", recNorm(en), { en, zh: all.get(en)[0], from, added: today() })); n++; } });
         Store.save();
         renderNav();
         toast(n ? `收进了 ${n} 条` : "都已经在生词本里了", "good");

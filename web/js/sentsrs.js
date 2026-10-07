@@ -59,10 +59,14 @@ const SentSRS = {
   add(en, zh, src, due = addDays(today(), 1)) {
     const k = this.key(en), d = this.data();
     if (!k) return;
-    if (!d[k]) d[k] = { en, zh: zh || "", src: src || "", box: 0, due, seen: 0, wrong: 0, first: today() };
+    if (!d[k]) d[k] = markAdded("sent_srs", k, { en, zh: zh || "", src: src || "", box: 0, due, seen: 0, wrong: 0, first: today() });
     else if (zh && !d[k].zh) d[k].zh = zh;
   },
-  remove(en) { delete this.data()[this.key(en)]; },
+  remove(en) {
+    const k = this.key(en);
+    delete this.data()[k];
+    markDeleted("sent_srs", k);
+  },
   // 把学过的东西补进来：生词本里的短语句子、短语课里学过的短语（第二天开始复习）
   sync() {
     const before = Object.keys(this.data()).length;
@@ -79,6 +83,7 @@ const SentSRS = {
   count() { return this.due().length; },
   grade(x, g) {
     x.seen++;
+    x.t = Date.now();
     if (g === 0) { x.box = 0; x.wrong++; }
     else if (g === 1) x.box = Math.max(1, x.box - 1);
     else x.box = Math.min(x.box + 1, SRS_INTERVALS.length - 1);

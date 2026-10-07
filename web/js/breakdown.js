@@ -1,6 +1,6 @@
 // ============================================================
 // 逐句精讲：一句英文，每个词上面标音标、下面标中文；重点词（当前词书里的、不太基础的）高亮
-// 再加整句翻译；点「AI 精讲」得到按语境的逐词释义、核心词汇、核心短语和语法分析（结果存在 Store.data.line_notes）
+// 再加整句翻译；点「AI 精讲」得到按语境的逐词释义、核心词汇、核心短语和语法分析（结果存在 AI 缓存的 line_notes 里）
 // 影视精听播放时用，以后别的页面也可以直接调用 renderBreakdown(box, en, zh)
 // ============================================================
 const CONTRACT_ZH = {
@@ -50,7 +50,7 @@ async function renderBreakdown(box, en, zh = "", opt = {}) {
       base: it?.w || "", core: !!it && book.has(it.w.toLowerCase()) && !BD_BASIC().has(it.w.toLowerCase()) && it.w.length >= 4,
     });
   });
-  const notes = () => (Store.data.line_notes || {})[en];
+  const notes = () => KV.peek("line_notes", en);
 
   const draw = () => {
     if (box._bdRun !== my) return;
@@ -85,11 +85,7 @@ Pick at most 3 core words (skip very basic words) and at most 2 useful phrases; 
     if (!r.ok) { toast(r.error, "bad", 4000); if (btn) { btn.disabled = false; btn.textContent = "🤖 重试 AI 精讲"; } return; }
     const d = r.data;
     if (!Array.isArray(d.gloss) || d.gloss.length !== words.length) d.gloss = []; // 对不上就不用，免得释义错位
-    const all = (Store.data.line_notes ||= {});
-    all[en] = d;
-    const keys = Object.keys(all);
-    if (keys.length > 300) delete all[keys[0]];
-    Store.save();
+    KV.set("line_notes", en, d);
     opt.onZh?.(d.zh);
     draw();
   };

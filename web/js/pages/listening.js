@@ -506,11 +506,12 @@ Use exactly 3 questions. For a talk, every line uses speaker "A".`);
       const segs = (unit === "para" ? text.paras : text.paras.flatMap(splitSentences)).map((en) => ({ en }));
       const key = `voa-${a.id}-${unit}`;
       const translate = async (i) => {
-        const k = `engnest-trs:${key}:${i}`;
-        try { const c = localStorage.getItem(k); if (c) return c; } catch { /* 读不到就重新翻译 */ }
+        const k = `${key}:${i}`;
+        const c = await KV.get("tr_voa", k);
+        if (c) return c;
         const r = await AI.ask("You are an English-Chinese translator for Chinese learners. Reply with only a natural Chinese translation, nothing else.", segs[i].en);
         if (!r.ok) return null;
-        try { localStorage.setItem(k, r.text.trim()); } catch { /* 存不下就算了 */ }
+        KV.set("tr_voa", k, r.text.trim());
         return r.text.trim();
       };
       const unitTabs = `<div class="tabs sm">${[["sent", "按句"], ["para", "按段"]].map(([k, l]) => `<button class="tab ${unit === k ? "active" : ""}" data-unit="${k}">${l}</button>`).join("")}</div>`;

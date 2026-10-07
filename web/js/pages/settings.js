@@ -96,11 +96,10 @@ App.pages.settings = {
 
       ${Store.bridge && !Store.remote ? `<div class="card" id="dict-card"></div><div class="card" id="stt-card"></div>` : ""}
 
-      <div class="card">
-        <div class="card-title">💾 数据</div>
+      <div class="card" id="data-card">
+        <div class="card-title">💾 数据与备份</div>
         <p class="small muted" id="data-dir">学习进度自动保存在本机。</p>
-        <div class="row">${Store.bridge && !Store.remote ? `<button class="btn" id="open-dir">📂 打开数据文件夹</button><button class="btn bad" id="reset">重置学习进度</button>`
-          : Store.remote ? "" : `<button class="btn bad" id="reset">重置学习进度</button>`}</div>
+        ${Store.remote ? "" : `<div class="row"><button class="btn bad" id="reset">重置学习进度</button></div>`}
       </div>
 
       <p class="center small faint mt">EngNest 英语小窝 · 每天进步一点点 🪺</p>`;
@@ -165,28 +164,95 @@ App.pages.settings = {
     $("#try", root).onclick = () => TTS.speak("Practice makes perfect. Let's learn English together!");
 
     // 数据
-    if (Store.remote) {
-      $("#data-dir", root).textContent = "你正在通过局域网访问，学习进度保存在电脑上，和电脑共用一份进度。";
-    } else if (Store.bridge) {
-      pywebview.api.get_data_dir().then((d) => { $("#data-dir", root).innerHTML = `学习进度自动保存在：<code>${esc(d)}</code>`; });
-      $("#open-dir", root).onclick = () => pywebview.api.open_data_dir();
+    if (Store.remote) $("#data-dir", root).textContent = "你正在通过局域网访问，学习进度保存在电脑上，和电脑共用一份进度。";
+    else if (Store.bridge) this.dataCard($("#data-card", root));
+    else {
+      const rs = $("#reset", root);
+      rs.onclick = async () => {
+        if (!(await confirmBox("重置学习进度", "所有单词记录、经验值、打卡记录都会被清空。确定吗？", "确定重置", true))) return;
+        const prefs = Store.data.prefs;
+        Store.data = DEFAULT_PROGRESS();
+        Store.data.prefs = prefs;
+        await Store.flush();
+        toast("进度已重置");
+        Router.go("home");
+      };
     }
-    const rs = $("#reset", root);
-    if (rs) rs.onclick = async () => {
-      if (!(await confirmBox("重置学习进度", "所有单词记录、经验值、打卡记录都会被清空，且无法恢复。确定吗？", "确定重置", true))) return;
-      if (!(await confirmBox("再确认一次", "真的要清空全部学习进度吗？", "清空", true))) return;
-      const prefs = Store.data.prefs;
-      Store.data = DEFAULT_PROGRESS();
-      Store.data.prefs = prefs;
-      Store.data.updated = Date.now();
-      await Store.flush();
-      toast("进度已重置");
-      Router.go("home");
-    };
 
     await this.aiForm($("#ai-form", root), root);
     const lc = $("#lan-card", root);
     if (lc) this.lanCard(lc);
+  },
+
+  // ---------- 数据位置、备份、导入导出 ----------
+  async dataCard(box) {
+    const [loc, bk] = await Promise.all([pywebview.api.data_location(), pywebview.api.progress_backups()]);
+    const list = bk.items;
+    const item = (b) => `<div class="bk-item"><span>${esc(b.date)}</span><span class="small faint">${esc(b.name.replace(/^progress-|\.json$/g, ""))} · ${b.kb} KB</span>
+      <span class="spacer"></span><button class="btn sm ghost" data-restore="${esc(b.name)}">恢复到这份</button></div>`;
+    box.innerHTML = `<div class="card-title">💾 数据与备份</div>
+      <div class="field"><label>数据位置</label>
+        <div class="lan-url"><code>${esc(loc.dir)}</code><button class="btn sm ghost" id="open-dir">📂 打开</button><button class="btn sm ghost" id="move-dir">更改位置…</button></div>
+        <span class="help">学习进度、设置、导入的读物、下载的模型和语音缓存都在这里（缓存在 cache 子文件夹）。更改后重启 EngNest 生效，现有数据会自动搬过去。</span></div>
+      <div class="field mt"><label>备份</label>
+        <span class="help" style="margin-top:0">每天打开和关闭时自动备份一次，保留最近 7 天；导入、恢复、重置之前也会先备份。</span>
+        <div class="bk-list">${list.length ? list.slice(0, 4).map(item).join("") : `<span class="small faint">还没有备份</span>`}
+          ${list.length > 4 ? `<details class="small"><summary style="cursor:pointer">更早的备份（${list.length - 4} 份）</summary>${list.slice(4).map(item).join("")}</details>` : ""}</div>
+        <div class="row mt-s" style="flex-wrap:wrap">
+          <button class="btn soft" id="bk-now">立即备份</button>
+          <button class="btn" id="bk-export">⬆ 导出进度…</button>
+          <button class="btn" id="bk-import">⬇ 导入并合并…</button>
+          <button class="btn ghost" id="bk-replace">导入并替换…</button></div>
+        <span class="help">导出的 JSON 文件可以拷到另一台电脑上导入。「合并」会把两边的学习记录合在一起；「替换」用文件里的进度覆盖现在的。</span></div>
+      <div class="row mt" style="flex-wrap:wrap"><button class="btn ghost" id="open-logs">📄 打开日志文件夹</button>
+        <span class="spacer"></span><button class="btn bad" id="reset">重置学习进度</button></div>`;
+    const refresh = () => this.dataCard(box);
+    const reloadAll = async (msg) => { await Store.reload(); renderSidebarFoot(); renderNav(); toast(msg, "good"); Router.render(); };
+    $("#open-dir", box).onclick = () => pywebview.api.open_data_dir();
+    $("#open-logs", box).onclick = () => pywebview.api.open_logs();
+    $("#move-dir", box).onclick = async () => {
+      const dir = await pywebview.api.pick_folder();
+      if (!dir) return;
+      const target = /engnest$/i.test(dir) ? dir : dir.replace(/[\\/]+$/, "") + "\\EngNest";
+      if (!(await confirmBox("更改数据位置", `以后把数据放在 ${target}？重启 EngNest 后生效，现有的数据会自动搬过去。`, "确定"))) return;
+      const r = await pywebview.api.set_data_location(target);
+      if (r.error) return toast(r.error, "bad", 5000);
+      toast("已设置，重启 EngNest 后生效", "good", 5000);
+    };
+    $("#bk-now", box).onclick = async () => { await Store.flush(); await pywebview.api.progress_backup_now(); toast("已备份", "good"); refresh(); };
+    $("#bk-export", box).onclick = async () => {
+      await Store.flush();
+      const path = await pywebview.api.progress_export();
+      if (path) toast("已导出到 " + path, "good", 5000);
+    };
+    const imp = async (mode) => {
+      if (mode === "replace" && !(await confirmBox("导入并替换", "用文件里的进度覆盖现在的进度？现在的进度会先自动备份。", "选择文件", true))) return;
+      await Store.flush();
+      const r = await pywebview.api.progress_import(mode);
+      if (!r) return;
+      if (r.error) return toast(r.error, "bad", 5000);
+      await reloadAll(mode === "replace" ? "已导入" : "已导入并合并");
+    };
+    $("#bk-import", box).onclick = () => imp("merge");
+    $("#bk-replace", box).onclick = () => imp("replace");
+    box.onclick = async (e) => {
+      const b = e.target.closest("[data-restore]");
+      if (!b) return;
+      if (!(await confirmBox("恢复备份", `把学习进度恢复到这份备份（${b.dataset.restore}）？现在的进度会先自动备份。`, "恢复", true))) return;
+      await Store.flush();
+      if (await pywebview.api.progress_restore(b.dataset.restore)) await reloadAll("已恢复");
+      else toast("恢复失败：找不到这份备份", "bad");
+    };
+    $("#reset", box).onclick = async () => {
+      if (!(await confirmBox("重置学习进度", "所有单词记录、经验值、打卡记录都会被清空（会先自动备份一份，可以在上面恢复）。确定吗？", "确定重置", true))) return;
+      if (!(await confirmBox("再确认一次", "真的要清空全部学习进度吗？", "清空", true))) return;
+      await Store.flush();
+      await pywebview.api.reset_progress();
+      await Store.reload();
+      renderSidebarFoot();
+      toast("进度已重置");
+      Router.go("home");
+    };
   },
 
   // ---------- 局域网访问 ----------

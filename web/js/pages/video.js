@@ -238,8 +238,11 @@ App.pages.video = {
       const l = s.lines[i];
       const clips = (Store.data.clips ||= []);
       const k = clips.findIndex((c) => c.en === l.en && c.video === s.videoName);
-      if (k >= 0) clips.splice(k, 1);
-      else clips.unshift({ en: l.en, zh: l.zh, video: s.videoName, time: l.start, date: today() });
+      if (k >= 0) { markDeleted("clips", RECORD_ID.clips(clips[k])); clips.splice(k, 1); }
+      else {
+        const rec = { en: l.en, zh: l.zh, video: s.videoName, time: l.start, date: today() };
+        clips.unshift(markAdded("clips", RECORD_ID.clips(rec), rec));
+      }
       btn.classList.toggle("on", k < 0);
       $("#b-clips", root).textContent = `★ 收藏 (${clips.length})`;
       toast(k < 0 ? "已收藏这句" : "已取消收藏", k < 0 ? "good" : "");
@@ -269,6 +272,13 @@ App.pages.video = {
     bindWordClicks(vsub);
     vsub.addEventListener("mousedown", () => vid.pause()); // 点字幕查词时先暂停
 
+    const savePos = () => {
+      if (!s.videoName || !(vid.currentTime > 0)) return;
+      s._posSaved = vid.currentTime;
+      (Store.data.video_pos ||= {})[s.videoName] = vid.currentTime;
+      Store.save();
+    };
+    signal.addEventListener("abort", savePos); // 离开页面时记一下
     vid.addEventListener("timeupdate", () => {
       const t = vid.currentTime;
       $("#vtime", root).textContent = `${fmt(t)} / ${fmt(vid.duration || 0)}`;
@@ -293,11 +303,11 @@ App.pages.video = {
         if (this.autoPause && i >= 0 && !vid.paused && stopAt === null) stopAt = s.lines[i].end;
         drawShadow();
       }
-      // 每 5 秒记一次进度
-      if (s.videoName && Math.floor(t) % 5 === 0) { (Store.data.video_pos ||= {})[s.videoName] = t; Store.save(); }
+      // 播放位置：每走过 15 秒记一次（timeupdate 一秒触发好几次，按时间差判断，不按取整）
+      if (s.videoName && Math.abs(t - (s._posSaved ?? -99)) >= 15) savePos();
     });
     vid.addEventListener("play", () => { $("#b-play", root).textContent = "⏸"; });
-    vid.addEventListener("pause", () => { $("#b-play", root).textContent = "▶"; });
+    vid.addEventListener("pause", () => { $("#b-play", root).textContent = "▶"; savePos(); });
 
     const toggle = () => { if (!s.videoUrl) return; if (vid.paused) { if (this.autoPause && s.lines[cur]) stopAt = s.lines[cur].end; vid.play(); } else vid.pause(); };
     const step = (d) => {
@@ -491,6 +501,7 @@ App.pages.video = {
       m.root.addEventListener("click", (ev) => {
         const d = ev.target.closest("[data-del]");
         if (!d) return;
+        markDeleted("clips", RECORD_ID.clips(clips[+d.dataset.del]));
         clips.splice(+d.dataset.del, 1);
         Store.save();
         m.close();
@@ -616,7 +627,7 @@ App.pages.video = {
       // 有官方中文字幕的（TED）按时间和英文配对成双语；其他的只有英文，可以用 AI 翻译
       const rawZh = (window.FILM_SUBS_ZH || {})[id];
       s.lines = rawZh?.length ? Subs.merge(s.enCues, rawZh.map(([a, b, text]) => ({ start: a, end: b, text }))) : Subs.split(s.enCues);
-      const zh = (Store.data.film_zh || {})[id];
+      const zh = KV.peek("film_zh", id);
       if (zh) s.lines.forEach((l, k) => { if (zh[k] && !l.zh) l.zh = zh[k]; });
     }
     let local = "";
@@ -631,7 +642,7 @@ App.pages.video = {
     this.player(root, signal, s, {
       head,
       subTop: sr.group === "voa", // VOA 的视频画面里自带字幕，我们的字幕挪到画面上方，免得叠在一起
-      onZh: (lines) => { (Store.data.film_zh ||= {})[id] = lines.map((l) => l.zh || ""); Store.save(); },
+      onZh: (lines) => KV.set("film_zh", id, lines.map((l) => l.zh || "")),
     });
     $("#b-src", root).onclick = () => this.openUrl(it.page);
     this.dlButton($("#dl-slot", root), it, !!local, signal);

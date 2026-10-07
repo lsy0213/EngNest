@@ -1,20 +1,20 @@
 """影视精听片库：把在线视频下载到本机，断网也能看。
 
 视频来自 VOA（公有领域）和 Blender 开放电影（CC BY），片单和字幕在 web/data/films_index.js 里。
-下载的视频放在 %APPDATA%/EngNest/videos/<id>.mp4，一次只下载一个，前端轮询进度。
+下载的视频放在 数据目录的 cache/videos/<id>.mp4，一次只下载一个，前端轮询进度。
 """
 
 import re
 import threading
 import urllib.request
 
-from .paths import data_dir
+from .paths import cache_dir
 
 UA = "EngNest/0.3 (personal English-learning desktop app)"
 
 
 def video_dir():
-    return data_dir() / "videos"
+    return cache_dir("videos")
 
 
 def _path(fid: str):

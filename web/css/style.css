@@ -847,7 +847,7 @@ a.chip { text-decoration: none; display: inline-flex; align-items: baseline; gap
 .lan-qr { background: #fff; border-radius: 12px; padding: 8px; }
 .lan-qr svg { width: 100%; height: auto; display: block; }
 .lan-url { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
-.lan-url code { font-size: 16px; background: var(--surface-2); padding: 4px 10px; border-radius: 8px; }
+.lan-url code { font-size: 16px; word-break: break-all; background: var(--surface-2); padding: 4px 10px; border-radius: 8px; }
 .lan-code { font-family: Consolas, monospace; font-size: 30px; font-weight: 700; letter-spacing: 6px; color: var(--brand-deep); }
 .lan-login { max-width: 380px; margin: 60px auto; text-align: center; }
 .lan-login .input { text-align: center; font-size: 22px; letter-spacing: 6px; }
@@ -1628,3 +1628,8 @@ details.mm-card > summary::after { content: "展开"; margin-left: auto; font-si
 details.mm-card[open] > summary::after { content: "收起"; }
 details.mm-card[open] > summary { margin-bottom: 12px; }
 @media (max-width: 860px) { .mm-hint { display: none; } }
+
+/* 设置 → 数据与备份 */
+.bk-list { display: flex; flex-direction: column; gap: 2px; margin-top: 6px; }
+.bk-item { display: flex; align-items: center; gap: 10px; padding: 4px 8px; border-radius: 8px; }
+.bk-item:hover { background: var(--surface-2); }

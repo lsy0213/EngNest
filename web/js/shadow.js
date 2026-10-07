@@ -235,7 +235,7 @@ const Shadow = {
         result.pauses = ws.slice(1).filter((x, k) => x.s - ws[k].e > 0.6).length;
       }
       const key = selNorm(it.en), old = (Store.data.pron ||= {})[key];
-      Store.data.pron[key] = { best: Math.max(result.score, old?.best || 0), last: result.score, n: (old?.n || 0) + 1, date: today() };
+      Store.data.pron[key] = { best: Math.max(result.score, old?.best || 0), last: result.score, n: (old?.n || 0) + 1, date: today(), t: Date.now() };
       Store.data.stats.speaking++;
       addXP(result.score >= 80 ? 3 : 2);
       state = "done"; msg = ""; drawState(); drawTarget();

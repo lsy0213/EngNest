@@ -16,3 +16,6 @@ web/data/vocab_ielts_zj.js
 web/data/vocab_ielts_l179.js
 web/data/vocab_ielts_r538.js
 web/ext/my-ielts/
+
+# 本机的数据目录指向（每台电脑不一样）
+data_location.txt

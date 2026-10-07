@@ -486,11 +486,13 @@ function toggleSentNb(item) {
   const nb = sentNb(), k = selNorm(item.en);
   const i = nb.findIndex((x) => selNorm(x.en) === k);
   if (i >= 0) {
+    markDeleted("sentence_nb", RECORD_ID.sentence_nb(nb[i]));
     nb.splice(i, 1);
     if (SentSRS.data()[k]?.src !== "短语课") SentSRS.remove(item.en); // 短语课里学过的短语还留在复习计划里
     toast("已从生词本移除");
   } else {
-    nb.unshift({ en: item.en, zh: item.zh || "", from: item.from || "", added: today() });
+    const rec = { en: item.en, zh: item.zh || "", from: item.from || "", added: today() };
+    nb.unshift(markAdded("sentence_nb", RECORD_ID.sentence_nb(rec), rec));
     SentSRS.add(item.en, item.zh, item.from || "生词本");
     toast("已加入生词本 ⭐，明天开始安排复习", "good");
   }

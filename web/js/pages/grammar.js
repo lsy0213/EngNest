@@ -77,7 +77,7 @@ App.pages.grammar = {
     root.innerHTML = `
       <a class="back-link" href="#/grammar">‹ 返回语法列表</a>
       ${pageHead(`第 ${idx + 1} 课 · ${l.title}`, l.summary)}
-      <details class="card mm-card" id="mm-card" ${(() => { try { return localStorage.getItem("grammarMapClosed"); } catch { return null; } })() ? "" : "open"}>
+      <details class="card mm-card" id="mm-card" ${Store.prefs.grammar_map_closed ? "" : "open"}>
         <summary class="card-title">🧠 本课知识导图</summary><div id="mm"></div>
       </details>
       <div class="card lesson-body">${l.content}</div>
@@ -92,11 +92,12 @@ App.pages.grammar = {
         <div id="ask"></div>
       </div>`;
 
-    // 本课知识导图（收起状态记在本机）
+    // 本课知识导图（收起状态记在设置里）
     const mmCard = $("#mm-card", root);
     const mm = MindMap.mount($("#mm", root), { text: l.title, children: grammarPoints(l) }, { maxHeight: "60vh" });
     mmCard.addEventListener("toggle", () => {
-      try { mmCard.open ? localStorage.removeItem("grammarMapClosed") : localStorage.setItem("grammarMapClosed", "1"); } catch {}
+      Store.prefs.grammar_map_closed = !mmCard.open;
+      Store.save();
       if (mmCard.open) mm.show();
     });
 

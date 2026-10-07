@@ -1,4 +1,4 @@
-"""扩展资料：GitHub 上别人整理的学习系统，下载到本机（%APPDATA%/EngNest/ext/），用系统浏览器打开。只供自己学习用。
+"""扩展资料：GitHub 上别人整理的学习系统，下载到本机（数据目录的 cache/ext/），用系统浏览器打开。只供自己学习用。
 
 现在有一个：
 - IELTS-practice（sallowayma-git/IELTS-practice，代码 GPL-3.0）：雅思阅读练习系统（题库浏览、套题练习、成绩记录、错题分析）。
@@ -13,7 +13,7 @@ import threading
 import urllib.request
 import zipfile
 
-from .paths import data_dir
+from .paths import cache_dir
 
 UA = "EngNest/0.3 (personal English-learning desktop app)"
 EXTS = {
@@ -28,7 +28,7 @@ EXTS = {
 
 
 def ext_dir(eid: str):
-    return data_dir() / "ext" / eid
+    return cache_dir("ext") / eid
 
 
 class Ext:

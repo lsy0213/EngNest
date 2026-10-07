@@ -8,7 +8,7 @@ import asyncio
 import base64
 import hashlib
 
-from .paths import data_dir
+from .paths import cache_dir
 
 VOICES = {
     "en-US-AriaNeural": "Aria（美式 · 女）",
@@ -31,9 +31,7 @@ MAX_CHARS = 1500
 
 
 def _cache_dir():
-    path = data_dir() / "tts_cache"
-    path.mkdir(exist_ok=True)
-    return path
+    return cache_dir("tts")
 
 
 def _rate_str(rate: float) -> str:

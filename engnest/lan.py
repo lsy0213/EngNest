@@ -23,10 +23,11 @@ DEFAULT_PORT = 8766
 
 # 局域网设备可以调用的方法
 ALLOWED = {
-    "load_progress", "save_progress", "get_presets", "get_ai_settings",
+    "progress_load", "progress_rev", "progress_save", "get_presets", "get_ai_settings",
     "ai_chat", "test_ai", "tts", "tts_voices", "tts_cache_info",
     "dict_lookup", "dict_search", "dict_status",
     "library_list", "library_load", "wiki_search", "wiki_article",  # 局域网设备只能看，不能导入和删除
+    "kv_get", "kv_all", "kv_set", "kv_set_many",
 }
 
 

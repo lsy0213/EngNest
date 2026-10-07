@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import webview  # noqa: E402
 
+from engnest import log, paths  # noqa: E402
 from engnest.api import Api  # noqa: E402
 from engnest.paths import web_index  # noqa: E402
 
@@ -88,15 +89,34 @@ def run(window):
     audio = window._js_api.tts("Hello from EngNest.", "en-US-AriaNeural", 0.9)
     results["tts"] = audio["ok"] and audio["audio"].startswith("data:audio/mpeg;base64,")
     results["tts_error"] = audio.get("error")
-    results["progress_saved"] = js("Store.flush().then(() => true)") is not None
+    # 进度：改一个字段 → 保存 → 后端读出来是改过的；AI 缓存能写能读
+    js("Store.data.smoke_test = Date.now(); Store.save()")
+    time.sleep(1)
+    saved = window._js_api.progress_load()["data"]
+    results["progress_saved"] = bool(saved.get("smoke_test"))
+    js("Store.drop('smoke_test')")
+    time.sleep(1)
+    results["progress_dropped"] = "smoke_test" not in window._js_api.progress_load()["data"]
+    js("KV.set('smoke', 'k', {v: 1})")
+    time.sleep(0.5)
+    results["kv"] = window._js_api.kv_get("smoke", ["k"]).get("k") == {"v": 1}
+    results["data_dir"] = str(paths.data_dir())
+    results["local_storage_persisted"] = js("(() => { try { localStorage.setItem('engnest-smoke', '1'); return true; } catch { return false; } })()")
     window.destroy()
 
 
 if __name__ == "__main__":
+    for stream in (sys.stdout, sys.stderr):
+        if stream and hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")  # 中文 Windows 控制台默认 GBK，打印 emoji 会报错
+    log.setup()
+    paths.migrate_legacy()
     api = Api()
     win = webview.create_window("EngNest smoke test", url=web_index().as_uri(), js_api=api, width=1100, height=750)
     win._js_api = api
-    webview.start(run, win)
+    api._window = win
+    webview.start(run, win, private_mode=False, storage_path=str(paths.sub_dir("webview")))
     print(json.dumps(results, ensure_ascii=False, indent=2))
-    ok = results.get("bridge") and not results.get("page_errors") and results.get("tts") and results.get("dict_went") == "go"
+    ok = (results.get("bridge") and not results.get("page_errors") and results.get("tts") and results.get("dict_went") == "go"
+          and results.get("progress_saved") and results.get("progress_dropped") and results.get("kv"))
     sys.exit(0 if ok else 1)

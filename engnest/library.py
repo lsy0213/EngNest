@@ -1,6 +1,6 @@
 """「我的读物」：用户自己导入的文章和书（txt / epub / html 文件，或者粘贴的文字）。
 
-导入后按章节切好，保存在 %APPDATA%/EngNest/library/：
+导入后按章节切好，保存在 数据目录的 library/：
     index.json      书目 [{id, title, author, words, chapters: [[章节标题, 词数], ...], added, source}]
     <id>.json       正文 [[章节标题, [段落, ...]], ...]
 内容只保存在本机，阅读页用和原著全文一样的阅读器打开。

@@ -278,23 +278,17 @@ App.pages.book = {
       Store.save();
     }));
 
-    // AI 逐段翻译：译过的段落存在本机（localStorage），下次打开不用再译
-    const trCache = (this._tr ||= new Map());
-    const trKey = (i) => `engnest-tr:${b.id}:${n}:${i}`;
-    const cachedTr = (i) => {
-      if (trCache.has(trKey(i))) return trCache.get(trKey(i));
-      try { return localStorage.getItem(trKey(i)); } catch { return null; }
-    };
+    // AI 逐段翻译：译过的段落存在电脑上的 AI 缓存里，下次打开不用再译
+    const trKey = (i) => `${b.id}:${n}:${i}`;
     const translate = async (i, zh) => {
-      const c = cachedTr(i);
+      const c = await KV.get("tr_book", trKey(i));
       if (c) { zh.textContent = c; return; }
       zh.innerHTML = aiLoading("翻译中…");
       const res = await AI.ask(`You translate English into natural, faithful Chinese for learners. The text is from "${b.title}"${b.author ? ` by ${b.author}` : ""}. Reply with only the Chinese translation.`, paras[i]);
       if (!zh.isConnected) return;
       if (!res.ok) { zh.innerHTML = aiError(res.error); return; }
       const t = res.text.trim();
-      trCache.set(trKey(i), t);
-      try { localStorage.setItem(trKey(i), t); } catch { /* 存不下就只在本次打开时缓存 */ }
+      KV.set("tr_book", trKey(i), t);
       zh.textContent = t;
     };
     reader.addEventListener("click", (e) => {
