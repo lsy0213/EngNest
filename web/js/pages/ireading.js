@@ -1,51 +1,36 @@
 // 雅思阅读练习（软件内）：题库来自 IELTS-practice（GitHub sallowayma-git/IELTS-practice，个人学习用），
-// 在「雅思」页下载到 %APPDATA%/EngNest/ext/ielts-practice/ 后，这里直接读它的题库数据，用软件自己的界面做题：
+// 在「雅思」页下载到数据目录的 cache/ext/ielts-practice/ 后，这里读它的题库数据，用软件自己的界面做题：
 // 左边文章、右边题目，计时、交卷判分、逐题解析、段落翻译，成绩记在 Store.data.ireading
 // 路由：#/ireading 题库 · #/ireading/<题目 id> 做题
 const IR = {
   EXT: "ielts-practice",
   DIR: "assets/generated/",
   cache: {},
-  // 读题库文件：桌面版通过 Python 读本机文件；开发时直接从 web/ext/ 下取
-  async text(rel) {
-    if (Store.bridge && !Store.remote) return pywebview.api.ext_read(this.EXT, this.DIR + rel);
-    const r = await fetch(`ext/${this.EXT}/${this.DIR}${rel}`).catch(() => null);
-    return r && r.ok ? r.text() : null;
+  // 读题库数据：题库文件是「往全局注册」的 JS，由 Python 只解析里面的数据（不执行下载来的代码），只能在电脑上用
+  async data(rel) {
+    if (!Store.bridge || Store.remote) return null;
+    try { return await pywebview.api.ext_data(this.EXT, this.DIR + rel); } catch { return null; }
   },
   async base() {
     if (this._base !== undefined) return this._base;
     this._base = Store.bridge && !Store.remote ? (await pywebview.api.ext_base(this.EXT)) + this.DIR : `ext/${this.EXT}/${this.DIR}`;
     return this._base;
   },
-  // 题库文件是「往全局注册」的 JS：在一个假的 window 里执行，拿到注册的数据
-  run(code) {
-    const reg = {};
-    const win = {
-      __READING_EXAM_DATA__: { register: (k, v) => (reg[k] = v) },
-      __READING_EXPLANATION_DATA__: { register: (k, v) => (reg[k] = v) },
-    };
-    new Function("window", "globalThis", "global", "self", code)(win, win, win, win);
-    return { win, reg };
-  },
   async index() {
     if (this._index) return this._index;
-    const code = await this.text("reading-exams/manifest.js");
-    if (!code) return null;
-    const { win } = this.run(code);
+    const m = await this.data("reading-exams/manifest.js");
+    if (!m) return null;
     const freq = (f) => ({ low: "低频", 低频: "低频", 中频: "中频", 次高频: "次高频", 高频: "高频" }[f] || f || "");
-    this._index = (win.__READING_EXAM_INDEX__ || []).filter((e) => e.type !== "listening")
+    this._index = (m.index || []).filter((e) => e.type !== "listening")
       .map((e) => ({ id: e.id, title: e.title, cat: e.category, freq: freq(e.frequency), diff: e.difficultyScore || 0 }));
     return this._index;
   },
   async exam(id) {
     if (this.cache[id]) return this.cache[id];
-    const code = await this.text(`reading-exams/${id}.js`);
-    if (!code) return null;
-    const exam = this.run(code).reg[id];
-    let expl = null;
-    const ec = await this.text(`reading-explanations/${id}.js`);
-    if (ec) try { expl = this.run(ec).reg[id]; } catch { expl = null; }
-    return (this.cache[id] = { exam, expl });
+    const d = await this.data(`reading-exams/${id}.js`);
+    if (!d || d.id !== id) return null;
+    const e = await this.data(`reading-explanations/${id}.js`);
+    return (this.cache[id] = { exam: d.data, expl: e?.id === id ? e.data : null });
   },
 };
 

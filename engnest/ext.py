@@ -8,6 +8,7 @@ GitHub 连不上时换镜像。解压时跳过开发者文件夹，并检查每�
 一次只下载一个，前端轮询进度。
 """
 
+import logging
 import os
 import shutil
 import threading
@@ -16,6 +17,8 @@ from pathlib import Path, PurePosixPath
 
 from . import net
 from .paths import cache_dir
+
+log = logging.getLogger(__name__)
 
 EXTS = {
     "ielts-practice": {
@@ -90,6 +93,34 @@ class Ext:
         if not path.is_file() or path.stat().st_size > 20e6:
             return None
         return path.read_text(encoding="utf-8", errors="replace")
+
+    def read_data(self, eid: str, rel: str):
+        """读题库数据：只解析文件里的数据，不执行它的 JS。
+        - manifest.js（`const manifest = {...}`）→ {"index": [{id, title, category, frequency, difficultyScore, type}]}
+        - 题目 / 解析文件（`….register("id", {...})`）→ {"id": id, "data": {...}}
+        读不到或格式不对返回 None"""
+        import json
+        import re
+
+        from .packs import balanced, js_literal_to_json
+
+        text = self.read(eid, rel)
+        if not text:
+            return None
+        try:
+            m = re.search(r"const\s+manifest\s*=\s*\{", text)
+            if m:
+                manifest = json.loads(js_literal_to_json(balanced(text, m.end() - 1)))
+                index = [{"id": v.get("examId") or k, "title": v.get("title", ""), "category": v.get("category", ""),
+                          "frequency": v.get("frequency", ""), "difficultyScore": v.get("difficultyScore", 0),
+                          "type": v.get("type") or "reading"} for k, v in manifest.items() if isinstance(v, dict)]
+                return {"index": index}
+            m = re.search(r"\.register\(\s*([\"'])(.+?)\1\s*,\s*\{", text)
+            if m:
+                return {"id": m.group(2), "data": json.loads(js_literal_to_json(balanced(text, m.end() - 1)))}
+        except (ValueError, json.JSONDecodeError) as e:
+            log.warning("题库文件 %s 解析失败：%s", rel, e)
+        return None
 
     def base_uri(self, eid: str) -> str:
         """扩展文件夹的 file:// 地址（题目里的图片用）"""

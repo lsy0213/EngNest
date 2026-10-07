@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 内容安全策略：脚本只能来自软件自己的文件（不允许内联脚本和 eval），就算 AI 回复或下载的资料里混进了脚本也不会执行。
+       样式允许内联（模板里大量 style 属性）；图片、音视频可以来自网络（维基配图、VOA 原声、在线视频）。 -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file:; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data: blob: https:; media-src 'self' file: data: blob: https:; connect-src 'self' file: https: data: blob:; font-src 'self' file: data:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
   <title>EngNest · 英语小窝</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/skin-yarn.css">

@@ -107,6 +107,7 @@ def run(window):
     results["fsrs_loaded"] = js("typeof FSRS === 'object' && typeof Fsrs.schedule === 'function'")
     results["notebook_io"] = js("!!document.querySelector('#nb-io')")
     results["learner_profile"] = js("LEARNER_PROFILE.slice(0, 40)")
+    results["csp_violations"] = js("window.__csp || []")
     results["local_storage_persisted"] = js("(() => { try { localStorage.setItem('engnest-smoke', '1'); return true; } catch { return false; } })()")
     window.destroy()
 
@@ -127,5 +128,5 @@ if __name__ == "__main__":
     webview.start(run, win, private_mode=False, storage_path=str(paths.sub_dir("webview")))
     print(json.dumps(results, ensure_ascii=False, indent=2))
     ok = (results.get("bridge") and not results.get("page_errors") and results.get("tts") and results.get("dict_went") == "go"
-          and results.get("progress_saved") and results.get("progress_dropped") and results.get("kv"))
+          and results.get("progress_saved") and results.get("progress_dropped") and results.get("kv") and not results.get("csp_violations"))
     sys.exit(0 if ok else 1)

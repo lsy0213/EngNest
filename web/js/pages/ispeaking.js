@@ -61,7 +61,7 @@ App.pages.ispeak = {
     const hist = $("#hist", root);
     if (H.length) {
       hist.innerHTML = H.map((h, i) => `<div class="isp-hist"><div class="row"><b>${h.mode === "full" ? "完整模考" : `Part ${h.mode}`}</b><span class="badge">${h.date}</span>
-          ${h.band ? `<span class="badge brand">Band ${h.band}</span>` : ""}<span class="small muted">${h.wpm} 词/分 · ${h.words} 词 · ${ispFmt(h.secs)}</span><span class="spacer"></span><button class="btn sm ghost" data-i="${i}">展开</button></div>
+          ${h.band ? `<span class="badge brand">Band ${esc(h.band)}</span>` : ""}<span class="small muted">${h.wpm} 词/分 · ${h.words} 词 · ${ispFmt(h.secs)}</span><span class="spacer"></span><button class="btn sm ghost" data-i="${i}">展开</button></div>
           <div class="detail hidden"></div></div>`).join("");
       hist.onclick = (e) => {
         const b = e.target.closest("[data-i]");
@@ -343,8 +343,8 @@ Bands are 0-9 in steps of 0.5.`);
 
   aiHtml(d) {
     return `<div class="card isp-ai">
-      <div class="row"><div class="ib-big">${d.band}</div><div><b>预估总分</b><div class="muted small">${esc(d.summary || "")}</div></div></div>
-      <div class="ib-crits">${ISP_CRIT.map(([k, zh, en]) => `<div class="ib-crit"><div class="row"><b>${zh}</b><span class="spacer"></span><span class="ib-band">${d[k]?.band ?? "—"}</span></div>
+      <div class="row"><div class="ib-big">${esc(d.band)}</div><div><b>预估总分</b><div class="muted small">${esc(d.summary || "")}</div></div></div>
+      <div class="ib-crits">${ISP_CRIT.map(([k, zh, en]) => `<div class="ib-crit"><div class="row"><b>${zh}</b><span class="spacer"></span><span class="ib-band">${esc(d[k]?.band ?? "—")}</span></div>
         <div class="small faint">${en}</div><div class="small muted">${esc(d[k]?.comment || "")}</div></div>`).join("")}</div>
       ${(d.fixes || []).length ? `<div class="card-title mt">🔧 需要改的地方</div>${d.fixes.map((f) => `<div class="correction"><span class="from">${esc(f.wrong)}</span> → <span class="to">${esc(f.right)}</span><div class="small muted">${esc(f.why)}</div></div>`).join("")}` : ""}
       ${(d.upgrades || []).length ? `<div class="card-title mt">✨ Band 7 版本的回答</div>${d.upgrades.map((u) => `<div class="isp-up"><div class="small muted">${esc(u.q)}</div>

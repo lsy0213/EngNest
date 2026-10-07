@@ -95,7 +95,7 @@ App.pages.iwrite = {
     $("#drop", root)?.addEventListener("click", async () => { if (await confirmBox("删掉草稿？", "没写完的内容会被清除。", "删除")) { delete Store.data.iwrite_draft; Store.save(); this.home(root); } });
     const hist = $("#hist", root);
     if (!H.length) return;
-    hist.innerHTML = H.map((h, i) => `<div class="isp-hist"><div class="row"><b>${IW_TASKS[h.t].name}</b><span class="badge">${h.date}</span>${h.band ? `<span class="badge brand">Band ${h.band}</span>` : ""}
+    hist.innerHTML = H.map((h, i) => `<div class="isp-hist"><div class="row"><b>${IW_TASKS[h.t].name}</b><span class="badge">${h.date}</span>${h.band ? `<span class="badge brand">Band ${esc(h.band)}</span>` : ""}
         <span class="small muted">${h.words} 词 · 用时 ${Math.round(h.secs / 60)} 分钟</span><span class="spacer"></span><button class="btn sm ghost" data-i="${i}">展开</button></div>
         <div class="small muted en mt-s">${esc(h.task.q || h.task.title || "").slice(0, 140)}…</div><div class="detail hidden"></div></div>`).join("");
     hist.onclick = (e) => {
@@ -287,8 +287,8 @@ Bands are 0-9 in steps of 0.5.`);
   aiHtml(t, d) {
     const crit = IW_CRIT.map(([k, zh], j) => [k, j === 0 ? `${zh}（${IW_TASKS[t].crit}）` : zh]);
     return `<div class="card isp-ai mt">
-      <div class="row"><div class="ib-big">${d.band}</div><div><b>预估分数</b><div class="muted small">${esc(d.summary || "")}</div></div></div>
-      <div class="ib-crits">${crit.map(([k, zh]) => `<div class="ib-crit"><div class="row"><b>${zh}</b><span class="spacer"></span><span class="ib-band">${d[k]?.band ?? "—"}</span></div>
+      <div class="row"><div class="ib-big">${esc(d.band)}</div><div><b>预估分数</b><div class="muted small">${esc(d.summary || "")}</div></div></div>
+      <div class="ib-crits">${crit.map(([k, zh]) => `<div class="ib-crit"><div class="row"><b>${zh}</b><span class="spacer"></span><span class="ib-band">${esc(d[k]?.band ?? "—")}</span></div>
         <div class="small muted">${esc(d[k]?.comment || "")}</div></div>`).join("")}</div>
       ${(d.errors || []).length ? `<div class="card-title mt">🔧 逐条改错</div>${d.errors.map((e, n) => `<div class="correction"><sup>${n + 1}</sup> <span class="from">${esc(e.original)}</span> → <span class="to">${esc(e.corrected)}</span>${e.type ? ` <span class="badge">${esc(e.type)}</span>` : ""}<div class="small muted">${esc(e.explain || "")}</div></div>`).join("")}` : ""}
       ${(d.vocab || []).length ? `<div class="card-title mt">📈 词汇升级</div>${d.vocab.map((v) => `<div class="iw-vocab"><span class="en from">${esc(v.from)}</span> → <span class="en to">${esc(v.to)}</span> ${speakBtn(v.to, "sm")}<span class="small muted">${esc(v.note || "")}</span></div>`).join("")}` : ""}

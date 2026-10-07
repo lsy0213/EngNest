@@ -448,6 +448,9 @@ class Api:
     def ext_read(self, eid, rel):
         return self._ext.read(eid, rel)
 
+    def ext_data(self, eid, rel):
+        return self._ext.read_data(eid, rel)
+
     def ext_base(self, eid):
         return self._ext.base_uri(eid)
 

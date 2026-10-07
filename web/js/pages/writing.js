@@ -150,7 +150,7 @@ Review it and return JSON:
     const list = Store.data.essays;
     if (!list.length) { body.innerHTML = `<div class="card empty"><div class="big">📝</div>还没有批改记录</div>`; return; }
     body.innerHTML = list.map((e, i) => `<div class="card">
-      <div class="row"><b>${esc(e.topic)}</b><span class="badge">${e.date}</span><span class="badge brand">${e.result.score} 分</span><span class="spacer"></span><button class="btn sm ghost" data-i="${i}">展开</button></div>
+      <div class="row"><b>${esc(e.topic)}</b><span class="badge">${e.date}</span><span class="badge brand">${esc(e.result.score)} 分</span><span class="spacer"></span><button class="btn sm ghost" data-i="${i}">展开</button></div>
       <div class="small muted mt-s" style="font-family:var(--font-en)">${esc(e.text.slice(0, 160))}${e.text.length > 160 ? "…" : ""}</div>
       <div class="detail hidden"></div></div>`).join("");
     body.onclick = (ev) => {

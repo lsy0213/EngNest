@@ -117,9 +117,12 @@ def load_js_data(text: str):
     m = re.search(r"(?:export\s+default|=)\s*([\[{])", text)
     if not m:
         raise ValueError("没找到数据")
-    start = m.start(1)
+    return json.loads(js_literal_to_json(balanced(text, m.start(1))))
+
+
+def balanced(text: str, start: int) -> str:
+    """从 text[start]（[ 或 {）开始，截到和它配对的括号为止（跳过字符串里的括号）"""
     body = text[start:]
-    # 截到和开头配对的括号（之后可能还有 export default xxx）
     depth, quote, k = 0, "", 0
     while k < len(body):
         ch = body[k]
@@ -137,7 +140,7 @@ def load_js_data(text: str):
             if depth == 0:
                 break
         k += 1
-    return json.loads(js_literal_to_json(body[:k + 1]))
+    return body[:k + 1]
 
 
 # ---------- my-ielts 的转换（和以前的 tools/import_my_ielts.py 一样） ----------
