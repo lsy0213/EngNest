@@ -1,0 +1,59 @@
+# 推送 v* 标签（比如 git tag v0.4.0 && git push origin v0.4.0）：打包并发布到 GitHub Releases，
+# 软件里的「检查更新」读的就是这里的最新版本
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装依赖
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: 测试
+        run: python -m pytest -q tests
+
+      - name: 生成内置词典和版本信息
+        run: |
+          python tools/build_dict.py
+          python tools/make_version_info.py
+
+      - name: 检查版本号和标签一致
+        shell: pwsh
+        run: |
+          $v = python tools/make_version_info.py
+          if ("v$v" -ne "${{ github.ref_name }}") { throw "engnest/__init__.py 里的版本 $v 和标签 ${{ github.ref_name }} 不一致" }
+          "VERSION=$v" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: 打包
+        run: python -m PyInstaller --noconfirm --clean EngNest.spec
+
+      - name: 绿色版压缩包
+        shell: pwsh
+        run: Compress-Archive -Path dist/EngNest -DestinationPath "dist/EngNest-$env:VERSION-portable.zip"
+
+      - name: 安装包（Inno Setup）
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /Q "/DAppVersion=$env:VERSION" installer\EngNest.iss
+
+      - name: 发布
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/EngNest-*-portable.zip
+            dist/EngNest-Setup-*.exe
+          generate_release_notes: true
