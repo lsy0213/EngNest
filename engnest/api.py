@@ -46,7 +46,7 @@ class Api:
             if lan.is_weak(cfg["code"]):  # 旧版本的 6 位数字码换成 8 位的
                 cfg = {**self._lan_cfg(), "code": lan.new_code()}
                 self._save_lan_cfg(cfg)
-            self._lan.start(int(cfg.get("port") or lan.DEFAULT_PORT), cfg["code"])
+            self._lan.start(int(cfg.get("port") or lan.DEFAULT_PORT), cfg["code"], cfg.get("https", True))
 
     def _on_closing(self):
         """窗口关闭前：让前端把还没保存的改动发过来，再备份一次。
@@ -301,7 +301,8 @@ class Api:
 
     def lan_status(self):
         cfg = self._lan_cfg()
-        status = {**cfg, "running": self._lan.running, "error": self._lan.error, "urls": [], "qr": ""}
+        status = {**cfg, "https": cfg.get("https", True), "running": self._lan.running, "https_on": self._lan.https,
+                  "error": self._lan.error, "urls": [], "qr": ""}
         if self._lan.running:
             status["urls"] = self._lan.urls()
             try:
@@ -310,13 +311,15 @@ class Api:
                 status["qr"] = ""
         return status
 
-    def lan_set(self, enabled, port=None):
+    def lan_set(self, enabled, port=None, https=None):
         cfg = self._lan_cfg()
         cfg["enabled"] = bool(enabled)
         if port:
             cfg["port"] = int(port)
+        if https is not None:
+            cfg["https"] = bool(https)
         if cfg["enabled"]:
-            if not self._lan.start(cfg["port"], cfg["code"]):
+            if not self._lan.start(cfg["port"], cfg["code"], cfg.get("https", True)):
                 cfg["enabled"] = False
         else:
             self._lan.stop()

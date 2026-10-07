@@ -1,0 +1,14 @@
+{
+  "name": "EngNest 英语小窝",
+  "short_name": "英语小窝",
+  "description": "把英语重新捡起来：单词、短语、语法、听说读写和 AI 语伴",
+  "start_url": "./#/home",
+  "display": "standalone",
+  "background_color": "#FBF7F0",
+  "theme_color": "#2F4A3F",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

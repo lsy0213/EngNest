@@ -26,7 +26,7 @@ def free_port():
 def server():
     srv = lan.LanServer(FakeApi())
     port = free_port()
-    assert srv.start(port, "ABCD2345")
+    assert srv.start(port, "ABCD2345", https=False)
     yield srv, port
     srv.stop()
 
@@ -85,3 +85,28 @@ def test_packs_route_and_traversal(server, data_dir):
                 assert b"nope" not in r.read()
         except urllib.error.HTTPError as e:
             assert e.code == 404
+
+
+def test_https_mode(monkeypatch):
+    pytest.importorskip("cryptography")
+    import ssl
+
+    monkeypatch.setattr(lan, "local_ips", lambda: ["127.0.0.1"])
+    srv = lan.LanServer(FakeApi())
+    port = free_port()
+    assert srv.start(port, "ABCD2345", https=True) and srv.https
+    assert srv.urls()[0].startswith("https://")
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE  # 自签名证书
+    req = urllib.request.Request(f"https://127.0.0.1:{port}/api/progress_rev", data=b"{}", method="POST", headers={"X-EngNest-Key": "ABCD2345"})
+    with urllib.request.urlopen(req, timeout=10, context=ctx) as r:
+        assert json.loads(r.read())["result"] == 7
+    # 用 http 连 https 端口不会把服务弄挂
+    try:
+        urllib.request.urlopen(f"http://127.0.0.1:{port}/", timeout=5)
+    except Exception:
+        pass
+    with urllib.request.urlopen(req, timeout=10, context=ctx) as r:
+        assert r.status == 200
+    srv.stop()

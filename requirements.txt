@@ -7,3 +7,4 @@ ctranslate2==4.8.2
 onnxruntime==1.30.0     # faster-whisper 的静音检测（VAD）用
 numpy==2.4.6
 qrcode==8.2
+cryptography==50.0.2   # 局域网 HTTPS 的自签名证书（手机录音需要 HTTPS）

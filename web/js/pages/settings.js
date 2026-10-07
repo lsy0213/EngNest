@@ -402,7 +402,8 @@ App.pages.settings = {
                   <div class="faint">这台电脑装了虚拟机或代理软件，所以有多个网络地址。</div></details>` : ""}</div>
               <div class="field mt-s"><label>访问码</label><div class="lan-code">${esc(s.code.slice(0, 4))} ${esc(s.code.slice(4))}</div>
                 <span class="help">在其他设备上第一次打开时需要输入（不分大小写）；扫码进入会自动带上访问码。同一台设备输错 5 次会被锁 10 分钟。</span></div>
-              <div class="row mt"><button class="btn" id="lan-newcode">🔄 换一个访问码</button><button class="btn bad" id="lan-off">关闭局域网访问</button></div>
+              <div class="row mt" style="flex-wrap:wrap"><button class="btn" id="lan-newcode">🔄 换一个访问码</button><button class="btn bad" id="lan-off">关闭局域网访问</button>
+                ${switchHtml("lan-https", "HTTPS（手机可以录音）", s.https, "用这台电脑自己签的证书加密；手机第一次打开要点「继续访问」")}</div>
             </div>
           </div>
           <details class="mt small muted"><summary style="cursor:pointer">打不开？使用说明</summary>
@@ -410,7 +411,7 @@ App.pages.settings = {
               <li>手机和电脑必须连在<b>同一个 Wi-Fi / 路由器</b>下（手机不要用流量）。</li>
               <li>第一次开启时，Windows 可能弹出「防火墙」提示，请勾选<b>专用网络</b>并点「允许访问」。如果当时点了取消，需要到 Windows 安全中心的防火墙设置里允许 EngNest。</li>
               <li>公司、学校或酒店的 Wi-Fi 可能禁止设备之间互相访问，这种情况下连不上是正常的。</li>
-              <li>AI 对话、神经语音在其他设备上都能用；但手机浏览器通过局域网访问时不允许录音（需要 HTTPS），跟读录音请在电脑上使用。</li>
+              <li>AI 对话、神经语音在其他设备上都能用。${s.https_on ? "开着 HTTPS，手机上也能录音（跟读评测、和 AI 语伴说话）：第一次打开时浏览器会提示「不安全 / 证书无效」，这是因为证书是这台电脑自己签的，点「高级 → 继续访问」就行。" : "现在用的是 http：手机浏览器不允许录音。打开下面的 HTTPS 开关后就能录音了。"}</li>
               <li>AI Key 等设置只能在电脑上修改。EngNest 关闭后，局域网访问也会停止；下次打开 EngNest 会自动重新开启。</li>
             </ul></details>`
         : `<div class="row"><span class="small muted">端口</span><input class="input" id="lan-port" value="${s.port}" style="width:100px">
@@ -425,6 +426,8 @@ App.pages.settings = {
         if (st.running) toast("局域网访问已开启", "good");
       };
       if (off) off.onclick = async () => draw(await pywebview.api.lan_set(false));
+      const hs = $("#lan-https", box);
+      if (hs) hs.onchange = async (e) => { draw(await pywebview.api.lan_set(true, s.port, e.target.checked)); toast(e.target.checked ? "已改用 HTTPS，手机上要用新的地址（https://）" : "已改用 http", "good", 5000); };
       if (nc) nc.onclick = async () => { draw(await pywebview.api.lan_new_code()); toast("访问码已更换，旧的访问码立即失效"); };
       $$("[data-copy]", box).forEach((b) => (b.onclick = async () => {
         try { await navigator.clipboard.writeText(b.dataset.copy); toast("已复制", "good"); }

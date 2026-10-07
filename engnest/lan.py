@@ -40,6 +40,7 @@ ALLOWED = {
     "dict_lookup", "dict_search", "dict_status",
     "library_list", "library_load", "wiki_search", "wiki_article",  # 局域网设备只能看，不能导入和删除
     "kv_get", "kv_all", "kv_set", "kv_set_many", "pack_status",
+    "stt_status", "stt_transcribe", "stt_assess",  # 手机上通过 HTTPS 录音后，识别在电脑上做
 }
 
 
@@ -161,6 +162,7 @@ class Handler(SimpleHTTPRequestHandler):
         ".jpg": "image/jpeg",
         ".png": "image/png",
         ".ico": "image/x-icon",
+        ".webmanifest": "application/manifest+json",
     }
 
     def __init__(self, *args, server_ref=None, **kwargs):
@@ -235,6 +237,24 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(raw)
 
 
+class _Server(ThreadingHTTPServer):
+    """HTTPS 时在处理请求的线程里做 TLS 握手：慢的或者用 http 连进来的设备不会卡住其他请求"""
+
+    daemon_threads = True
+    tls = None
+
+    def finish_request(self, request, client_address):
+        if self.tls:
+            request.settimeout(15)
+            request = self.tls.wrap_socket(request, server_side=True)
+            request.settimeout(None)
+        super().finish_request(request, client_address)
+
+    def handle_error(self, request, client_address):
+        # 用 http 打开了 https 地址、证书被拒绝、手机锁屏断开……都很常见，记一下就行
+        log.debug("局域网连接出错 %s", client_address, exc_info=True)
+
+
 class LanServer:
     def __init__(self, api):
         self.api = api
@@ -242,24 +262,34 @@ class LanServer:
         self.port = DEFAULT_PORT
         self.httpd = None
         self.error = ""
+        self.https = False
         self.guard = Guard()
 
     @property
     def running(self) -> bool:
         return self.httpd is not None
 
-    def start(self, port: int, code: str) -> bool:
+    def start(self, port: int, code: str, https: bool = True) -> bool:
+        """https=True：用自签名证书提供 HTTPS（手机浏览器只有 HTTPS 才允许录音）"""
         self.stop()
         self.port, self.code, self.error = port, code, ""
         self.guard.reset()
         handler = partial(Handler, directory=str(resource_dir() / "web"), server_ref=self)
         try:
-            self.httpd = ThreadingHTTPServer(("0.0.0.0", port), handler)
+            self.httpd = _Server(("0.0.0.0", port), handler)
         except OSError as e:
             self.httpd = None
             self.error = f"端口 {port} 无法使用（{e.strerror or e}），换一个端口试试"
             return False
-        self.httpd.daemon_threads = True
+        self.https = False
+        if https:
+            try:
+                from . import lancert
+
+                self.httpd.tls = lancert.context(local_ips())
+                self.https = True
+            except Exception as e:  # noqa: BLE001 — 生成证书失败就退回 http（只是不能录音）
+                log.warning("局域网 HTTPS 证书生成失败，改用 http：%s", e)
         threading.Thread(target=self.httpd.serve_forever, daemon=True).start()
         return True
 
@@ -270,7 +300,8 @@ class LanServer:
             self.httpd = None
 
     def urls(self) -> list:
-        return [f"http://{ip}:{self.port}/" for ip in local_ips()]
+        scheme = "https" if self.https else "http"
+        return [f"{scheme}://{ip}:{self.port}/" for ip in local_ips()]
 
 
 def qr_svg(text: str) -> str:

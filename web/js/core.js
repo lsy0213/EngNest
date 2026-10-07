@@ -965,7 +965,7 @@ window.addEventListener("hashchange", () => Router.render());
 // 录音不可用时的提示：http 访问（局域网）时浏览器不开放麦克风
 function micUnavailable() {
   const msg = !window.isSecureContext
-    ? "通过局域网访问时，浏览器不允许录音（需要 HTTPS）。跟读录音请在电脑上使用。"
+    ? "通过 http 访问时，浏览器不允许录音。请在电脑上的「设置 → 局域网访问」打开 HTTPS，然后用 https:// 开头的地址打开。"
     : "当前环境不支持录音";
   toast(msg, "bad", 5000);
 }

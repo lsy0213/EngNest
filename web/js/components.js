@@ -114,10 +114,13 @@ function pcmWav(bytes) {
 const Stt = {
   status: null,
   async ready() {
-    if (!Store.bridge || Store.remote) { toast("语音输入只能在电脑上使用，可以先打字"); return false; }
+    if (!Store.bridge) { toast("语音输入需要在桌面版中使用，可以先打字"); return false; }
+    if (Store.remote && !window.isSecureContext) { micUnavailable(); return false; }
     this.status = await pywebview.api.stt_status();
     if (!this.status.available) { toast("这个版本没有带语音识别组件，可以先打字", "bad", 4000); return false; }
     if (this.status.model) return true;
+    // 局域网里的手机：识别在电脑上做，模型只能在电脑上下载
+    if (Store.remote) { toast("电脑上还没有下载语音识别模型：请在电脑上的「设置」里下载", "bad", 5000); return false; }
     return this.askDownload();
   },
   askDownload() {

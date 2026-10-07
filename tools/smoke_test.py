@@ -70,9 +70,15 @@ def run(window):
     results["lan_qr"] = bool(st["qr"])
     if st["running"]:
         import urllib.request
-        req = urllib.request.Request("http://127.0.0.1:8798/api/ping", data=b"{}", method="POST",
+        import ssl
+
+        ctx = ssl.create_default_context()
+        ctx.check_hostname, ctx.verify_mode = False, ssl.CERT_NONE  # 自签名证书
+        scheme = "https" if st.get("https_on") else "http"
+        req = urllib.request.Request(f"{scheme}://127.0.0.1:8798/api/ping", data=b"{}", method="POST",
                                      headers={"X-EngNest-Key": st["code"], "Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=10) as r:
+        results["lan_https"] = st.get("https_on")
+        with urllib.request.urlopen(req, timeout=10, context=ctx) as r:
             results["lan_ping"] = r.status
     js("location.hash = '#/settings'")
     time.sleep(2)
