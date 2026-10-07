@@ -1,16 +1,34 @@
 """影视精听片库：把在线视频下载到本机，断网也能看。
 
-视频来自 VOA（公有领域）和 Blender 开放电影（CC BY），片单和字幕在 web/data/films_index.js 里。
-下载的视频放在 数据目录的 cache/videos/<id>.mp4，一次只下载一个，前端轮询进度。
+视频来自 VOA（公有领域）、TED（CC BY-NC-ND）和 Blender 开放电影（CC BY），片单和字幕在 web/data/films_index.js 里。
+下载的视频放在数据目录的 cache/videos/<id>.mp4，一次只下载一个，前端轮询进度，支持断点续传。
+只能下载片单里登记过的视频：前端只传片子的 id，地址由这里从片单里查。
 """
 
+import json
+import logging
 import re
 import threading
-import urllib.request
 
-from .paths import cache_dir
+from . import net
+from .paths import cache_dir, resource_dir
 
-UA = "EngNest/0.3 (personal English-learning desktop app)"
+log = logging.getLogger(__name__)
+_catalog = None
+
+
+def catalog() -> dict:
+    """片单里的 {id: 视频地址}"""
+    global _catalog
+    if _catalog is None:
+        try:
+            text = (resource_dir() / "web" / "data" / "films_index.js").read_text(encoding="utf-8")
+            m = re.search(r"window\.FILM_SERIES = (\[.*?\n\]);", text, re.S)
+            _catalog = {it["id"]: it["url"] for sr in json.loads(m.group(1)) for it in sr["items"] if it.get("url")}
+        except (OSError, AttributeError, ValueError, KeyError) as e:
+            log.error("读不出片单：%s", e)
+            _catalog = {}
+    return _catalog
 
 
 def video_dir():
@@ -35,7 +53,9 @@ class Films:
         p = _path(fid)
         return p.as_uri() if p.exists() else ""
 
-    def download(self, fid: str, url: str) -> bool:
+    def download(self, fid: str, url: str = "") -> bool:
+        """url 参数只为兼容旧前端，不使用：地址一律从片单里查"""
+        url = catalog().get(fid, "")
         if self.task["running"] or not url.startswith("https://"):
             return False
         self._cancel = False
@@ -48,27 +68,16 @@ class Films:
         return True
 
     def _download(self, fid, url):
-        path = _path(fid)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        part = path.with_suffix(".part")
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=60) as r, open(part, "wb") as out:
-                size = int(r.headers.get("Content-Length") or 0)
-                got = 0
-                while chunk := r.read(1 << 20):
-                    if self._cancel:
-                        raise InterruptedError("已取消")
-                    out.write(chunk)
-                    got += len(chunk)
-                    if size:
-                        self.task["progress"] = got / size
-            part.replace(path)
+            net.download(url, _path(fid), progress=lambda got, total: self.task.update(progress=got / total if total else 0),
+                         cancel=lambda: self._cancel)
             self.task.update(running=False, progress=1.0)
-        except Exception as e:  # noqa: BLE001 — 断网、取消等直接告诉用户
-            part.unlink(missing_ok=True)
+        except net.Cancelled:
+            self.task.update(running=False, error="已取消（下次接着下）")
+        except Exception as e:  # noqa: BLE001 — 断网等直接告诉用户
             self.task.update(running=False, error=str(e))
 
     def remove(self, fid: str) -> bool:
         _path(fid).unlink(missing_ok=True)
+        _path(fid).with_name(_path(fid).name + ".part").unlink(missing_ok=True)
         return True

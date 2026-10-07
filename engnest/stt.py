@@ -7,13 +7,21 @@ faster-whisper 只在第一次识别时才导入，不影响启动速度；没�
 
 import base64
 import threading
-import urllib.request
 
+from . import net
 from .paths import cache_dir
 
 MODEL = "Systran/faster-whisper-base.en"
-FILES = ["config.json", "tokenizer.json", "vocabulary.txt", "model.bin"]
+REVISION = "3d3d5dee26484f91867d81cb899cfcf72b96be6c"  # 固定版本：模型仓库更新了也不受影响
+# 文件 → (大小, SHA256)，下载后核对
+FILES = {
+    "config.json": (2227, "f3bc3821e9fc76a27bae538e11ae5b677dcdd352b4600429ce7951d398569aeb"),
+    "tokenizer.json": (2128466, "929c5252409436dce1b38a75d1abbcb5e132d170d8e324e4e04ed915fa2d22df"),
+    "vocabulary.txt": (422309, "ff77588746d3a2595d32ab5b69ffd7b95ce2441ac57533cb66fc3eb575a115cf"),
+    "model.bin": (145216508, "2a166925539a16005f14ff328359f9b9adb9dc4fb631bb3b227526862e93e2ef"),
+}
 ENDPOINTS = ["https://huggingface.co", "https://hf-mirror.com"]
+TOTAL = sum(size for size, _ in FILES.values())
 
 
 def model_dir():
@@ -47,37 +55,16 @@ class Stt:
 
     def _download(self):
         d = model_dir()
-        d.mkdir(parents=True, exist_ok=True)
+        done = 0
         try:
-            for i, name in enumerate(FILES):
-                if (d / name).exists():
-                    continue
-                last_err = None
-                for ep in ENDPOINTS:
-                    try:
-                        self._fetch(f"{ep}/{MODEL}/resolve/main/{name}", d / name, i)
-                        last_err = None
-                        break
-                    except OSError as e:
-                        last_err = e
-                if last_err:
-                    raise last_err
+            for name, (size, sha) in FILES.items():
+                urls = [f"{ep}/{MODEL}/resolve/{REVISION}/{name}" for ep in ENDPOINTS]
+                net.download(urls, d / name, sha256=sha, size=size,
+                             progress=lambda got, _t, base=done: self.task.update(progress=(base + got) / TOTAL))
+                done += size
             self.task.update(running=False, progress=1.0, stage="done")
-        except Exception as e:  # noqa: BLE001 — 网络问题直接告诉用户
+        except Exception as e:  # noqa: BLE001 — 网络问题直接告诉用户（没下完的部分留着，下次接着下）
             self.task.update(running=False, stage="error", error=str(e))
-
-    def _fetch(self, url, path, index):
-        part = path.with_suffix(path.suffix + ".part")
-        req = urllib.request.Request(url, headers={"User-Agent": "EngNest"})
-        with urllib.request.urlopen(req, timeout=60) as r, open(part, "wb") as out:
-            size = int(r.headers.get("Content-Length") or 0)
-            got = 0
-            while chunk := r.read(512 * 1024):
-                out.write(chunk)
-                got += len(chunk)
-                if size and path.name == "model.bin":  # 进度主要看最大的模型文件
-                    self.task["progress"] = got / size
-        part.replace(path)
 
     def remove(self) -> bool:
         with self._lock:

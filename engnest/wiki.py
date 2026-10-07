@@ -9,8 +9,10 @@ import re
 import urllib.parse
 import urllib.request
 
+from . import net
+
 API = "https://simple.wikipedia.org/w/api.php"
-UA = "EngNest/0.3 (personal English-learning desktop app; educational use)"
+UA = net.UA + " educational use"
 LICENSE = "CC BY-SA 4.0"
 DROP_SECTIONS = {"references", "related pages", "other websites", "notes", "sources", "further reading", "external links",
                  "gallery", "footnotes", "bibliography"}
@@ -20,7 +22,7 @@ MAX_WORDS = 4000
 def _api(params: dict) -> dict:
     url = API + "?" + urllib.parse.urlencode({**params, "format": "json", "formatversion": "2"})
     req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=20) as r:
+    with net.urlopen(req, timeout=20) as r:
         return json.loads(r.read().decode("utf-8"))
 
 

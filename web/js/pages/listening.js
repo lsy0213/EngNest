@@ -481,7 +481,7 @@ Use exactly 3 questions. For a talk, every line uses speaker "A".`);
     bindWordClicks($("#script", root));
     const au = $("#au", root);
     au.playbackRate = P.voa_speed || 1;
-    au.onerror = () => toast("音频加载失败，可能没联网或者网站无法访问", "bad", 4000);
+    au.onerror = () => toast("VOA 原声加载失败：可能没联网，或者在中国大陆连不上 VOA（可以在「设置 → 网络」填代理后重启）。也可以切到「逐句听写」，用合成语音听。", "bad", 7000);
     $("#speed", root).onchange = (e) => { au.playbackRate = +e.target.value; P.voa_speed = +e.target.value; Store.save(); };
     $("#back5", root).onclick = () => { au.currentTime = Math.max(0, au.currentTime - 5); au.play(); };
     // AB 循环：第一次点记 A，第二次点记 B 并开始循环，第三次取消

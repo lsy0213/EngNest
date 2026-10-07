@@ -162,7 +162,7 @@ App.pages.video = {
         }
       }, { once: true });
       vid.addEventListener("error", () => toast(opt.local ? "这个视频格式无法播放，请换成 MP4（H.264 编码）"
-        : "视频加载失败：在线播放需要联网，可以联网时先「下载到本机」", "bad", 5000), { once: true });
+        : "视频加载失败：在线播放需要联网；在中国大陆 VOA 和 TED 的视频经常连不上，可以在「设置 → 网络」填代理后重启，或者能连上时先「下载到本机」", "bad", 8000), { once: true });
     };
     const loadSub = async (file, which) => {
       const text = await readText(file);
@@ -669,7 +669,7 @@ App.pages.video = {
     };
     slot.onclick = async (e) => {
       const k = e.target.closest("[data-dl]")?.dataset.dl;
-      if (k === "go") { await pywebview.api.film_download(it.id, it.url); poll(); }
+      if (k === "go") { await pywebview.api.film_download(it.id); poll(); }
       else if (k === "cancel") { await pywebview.api.film_cancel(); setTimeout(poll, 500); }
       else if (k === "del" && await confirmBox("删除下载的视频", "删除后还可以在线播放，或者重新下载。", "删除", true)) {
         await pywebview.api.film_remove(it.id);

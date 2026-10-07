@@ -3,7 +3,7 @@
 - 内置精简版 assets/ecdict.db：常用词（有词频排名 / 考试标签 / 柯林斯星级 / 牛津 3000）全部保留并带英文释义，
   再加上真实语料里出现过的其他单词（selfie、vlog……，用 wordfreq 判断）和由常用词组成的 3 词以内短语（give up、take after……）。
   由 tools/build_dict.py 生成。
-- 完整版：在设置里一键下载 ECDICT 全部 77 万条，在本机生成 数据目录的 cache/dict/ecdict_full.db，有它时优先用它。
+- 完整版：在设置里一键下载 ECDICT 全部 77 万条，在本机生成到数据目录的 cache/dict/ecdict_full.db，有它时优先用它。
 
 表 dict：word 词头、lower 小写词头、phonetic 音标、trans 中文释义（按词性分行）、defn 英文释义、
         tag 考试标签（zk 中考 gk 高考 cet4 cet6 ky 考研 ielts toefl gre）、collins 柯林斯星级、oxford 是否牛津 3000、
@@ -15,12 +15,16 @@ import csv
 import re
 import sqlite3
 import threading
-import urllib.request
 from pathlib import Path
 
+from . import net
 from .paths import cache_dir, resource_dir
 
-URL = "https://raw.githubusercontent.com/skywind3000/ECDICT/master/ecdict.csv"
+# 固定到某个提交，并核对 SHA256：GitHub 连不上时会换镜像下载，镜像的内容也要和原文件一模一样
+ECDICT_COMMIT = "82c9872576b23118d7c42e920c11beb77f510ae2"
+URL = f"https://raw.githubusercontent.com/skywind3000/ECDICT/{ECDICT_COMMIT}/ecdict.csv"
+CSV_SIZE = 65933428
+CSV_SHA256 = "1a6947e04785db63613a92e14903cdae7954f7e84860b10e68e5c7cbb3f9c3cf"
 CORE_DB = resource_dir() / "assets" / "ecdict.db"
 MAX_PHRASE_WORDS = 3  # 精简版里的短语最多几个词，更长的多半是专业术语
 FORM_KEYS = {"p", "d", "i", "3", "s", "r", "t"}
@@ -208,15 +212,8 @@ class Dictionary:
     def _download_full(self):
         csv_path = cache_dir("dict") / "ecdict.csv"
         try:
-            with urllib.request.urlopen(URL, timeout=60) as resp, open(csv_path.with_suffix(".part"), "wb") as out:
-                size = int(resp.headers.get("Content-Length") or 66_000_000)
-                got = 0
-                while chunk := resp.read(256 * 1024):
-                    out.write(chunk)
-                    got += len(chunk)
-                    self.task["progress"] = min(got / size, 1.0)
-            csv_path.unlink(missing_ok=True)
-            csv_path.with_suffix(".part").rename(csv_path)
+            net.download(net.github_mirrors(URL), csv_path, sha256=CSV_SHA256, size=CSV_SIZE,
+                         progress=lambda got, total: self.task.update(progress=min(got / (total or CSV_SIZE), 1.0)))
             self.task.update(stage="build", progress=0.0)
             with self._lock:  # 生成期间先关掉连接，生成完 _conn() 会自动切到完整版
                 if self._db:
@@ -225,8 +222,7 @@ class Dictionary:
             build(csv_path, full_db(), full=True, progress=lambda p: self.task.update(progress=p))
             csv_path.unlink(missing_ok=True)
             self.task.update(running=False, stage="done", progress=1.0)
-        except Exception as e:  # noqa: BLE001 — 网络、磁盘各种错误都直接告诉用户
-            csv_path.with_suffix(".part").unlink(missing_ok=True)
+        except Exception as e:  # noqa: BLE001 — 网络、磁盘各种错误都直接告诉用户（没下完的部分留着，下次接着下）
             self.task.update(running=False, stage="error", error=str(e))
 
     def remove_full(self) -> bool:

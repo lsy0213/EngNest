@@ -1633,3 +1633,5 @@ details.mm-card[open] > summary { margin-bottom: 12px; }
 .bk-list { display: flex; flex-direction: column; gap: 2px; margin-top: 6px; }
 .bk-item { display: flex; align-items: center; gap: 10px; padding: 4px 8px; border-radius: 8px; }
 .bk-item:hover { background: var(--surface-2); }
+.net-res { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.net-row { display: grid; grid-template-columns: 24px 1fr auto; gap: 8px; align-items: center; }

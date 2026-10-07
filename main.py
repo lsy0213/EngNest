@@ -4,6 +4,7 @@
     python main.py --debug  # 开启开发者工具（右键 → 检查）
 """
 
+import os
 import sys
 
 import webview
@@ -17,6 +18,10 @@ def main():
     log.setup(debug)
     paths.migrate_legacy()  # 旧版本的数据搬到当前的数据目录，必须在打开任何数据文件之前
     api = Api()
+    proxy = api.net_get()["proxy"]
+    if proxy:
+        # 网页里直接加载的音频、视频、图片走 WebView2 自己的网络，也让它用设置里的代理（改了要重启才生效）
+        os.environ["WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS"] = f"--proxy-server={proxy}"
     api._autostart_lan()
     api._window = webview.create_window(
         APP_TITLE,

@@ -8,10 +8,9 @@ import os
 import threading
 import time
 
-from . import ai_client, dictionary, ext, films, kvcache, lan, library, paths, progress, stt, tts, wiki
+from . import VERSION, ai_client, dictionary, ext, films, kvcache, lan, library, net, paths, progress, settings, stt, tts, wiki
 from .log import log_file
 from .paths import data_dir
-from .storage import load_json, save_json
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +20,8 @@ DEFAULT_AI = {"provider": "none", "base_url": "", "model": "", "api_key": ""}
 class Api:
     def __init__(self):
         self._dir = data_dir()
-        self._settings_file = self._dir / "settings.json"
+        self._settings = settings.Settings()
+        net.set_proxy(self._settings.section("net").get("proxy", ""))
         self._progress = progress.Progress()
         self._kv = kvcache.KVCache()
         self._backup_today()
@@ -37,7 +37,7 @@ class Api:
 
     def _autostart_lan(self):
         """启动时如果上次开着局域网访问，就自动打开。"""
-        cfg = load_json(self._settings_file, {}).get("lan", {})
+        cfg = self._settings.section("lan")
         if cfg.get("enabled") and cfg.get("code"):
             if lan.is_weak(cfg["code"]):  # 旧版本的 6 位数字码换成 8 位的
                 cfg = {**self._lan_cfg(), "code": lan.new_code()}
@@ -138,8 +138,7 @@ class Api:
 
     # ---------- AI 设置 ----------
     def _ai_cfg(self) -> dict:
-        settings = load_json(self._settings_file, {})
-        return {**DEFAULT_AI, **settings.get("ai", {})}
+        return self._settings.section("ai", DEFAULT_AI)
 
     def get_presets(self):
         return ai_client.PRESETS
@@ -163,9 +162,7 @@ class Api:
             cfg["api_key"] = new_cfg["api_key"].strip()
         if new_cfg.get("clear_key"):
             cfg["api_key"] = ""
-        settings = load_json(self._settings_file, {})
-        settings["ai"] = cfg
-        save_json(self._settings_file, settings)
+        self._settings.update("ai", cfg)
         return self.get_ai_settings()
 
     def test_ai(self):
@@ -202,15 +199,13 @@ class Api:
 
     # ---------- 局域网访问（只能在电脑上操作） ----------
     def _lan_cfg(self) -> dict:
-        cfg = {"enabled": False, "port": lan.DEFAULT_PORT, "code": "", **load_json(self._settings_file, {}).get("lan", {})}
+        cfg = self._settings.section("lan", {"enabled": False, "port": lan.DEFAULT_PORT, "code": ""})
         if not cfg["code"] or lan.is_weak(cfg["code"]):
             cfg["code"] = lan.new_code()
         return cfg
 
     def _save_lan_cfg(self, cfg: dict):
-        settings = load_json(self._settings_file, {})
-        settings["lan"] = cfg
-        save_json(self._settings_file, settings)
+        self._settings.update("lan", cfg)
 
     def lan_status(self):
         cfg = self._lan_cfg()
@@ -291,18 +286,20 @@ class Api:
             return {"error": f"导入失败：{e}"}
 
     # ---------- 简明英文维基百科（联网） ----------
+    WIKI_HINT = "维基百科在中国大陆通常无法直接访问：需要在「设置 → 网络」里填写代理，或者先读内置的维基精选文章。"
+
     def wiki_search(self, q):
         try:
             return {"ok": True, "results": wiki.search(q)}
         except OSError as e:
-            return {"ok": False, "error": f"连不上维基百科：{e}"}
+            return {"ok": False, "error": f"连不上维基百科（{e}）。{self.WIKI_HINT}"}
 
     def wiki_article(self, title):
         try:
             a = wiki.article(title)
             return {"ok": bool(a), "article": a, "error": "" if a else "没有找到这篇文章"}
         except OSError as e:
-            return {"ok": False, "error": f"连不上维基百科：{e}"}
+            return {"ok": False, "error": f"连不上维基百科（{e}）。{self.WIKI_HINT}"}
 
     # ---------- 离线语音识别 ----------
     def stt_status(self):
@@ -373,7 +370,66 @@ class Api:
         os.startfile(path)
         return True
 
+    # ---------- 网络（代理、连通性检查） ----------
+    NET_CHECKS = [
+        ("GitHub（完整词典、扩展资料、资料包）", "https://raw.githubusercontent.com/skywind3000/ECDICT/master/README.md"),
+        ("GitHub 镜像", "https://ghfast.top/https://raw.githubusercontent.com/skywind3000/ECDICT/master/README.md"),
+        ("Hugging Face（语音识别模型）", "https://huggingface.co/api/models/Systran/faster-whisper-base.en"),
+        ("hf-mirror（模型国内镜像）", "https://hf-mirror.com/api/models/Systran/faster-whisper-base.en"),
+        ("维基百科", "https://simple.wikipedia.org/w/api.php?action=query&meta=siteinfo&format=json"),
+        ("VOA（原声音频、视频）", "https://learningenglish.voanews.com/"),
+        ("TED 视频", "https://py.tedcdn.com/"),
+    ]
+
+    def net_get(self):
+        cfg = self._settings.section("net", {"proxy": ""})
+        return {"proxy": cfg.get("proxy", ""), "system_proxy": "" if cfg.get("proxy") else net.proxy()}
+
+    def net_set(self, proxy):
+        proxy = (proxy or "").strip()
+        if proxy and not proxy.startswith(("http://", "https://", "socks5://")):
+            proxy = "http://" + proxy
+        self._settings.update("net", {"proxy": proxy})
+        net.set_proxy(proxy)
+        return self.net_get()
+
+    def net_test(self):
+        """逐个试一下常用的外部服务，返回 [{name, ok, ms, error}]"""
+        import concurrent.futures
+
+        def one(item):
+            name, url = item
+            t = time.time()
+            try:
+                with net.urlopen(url, timeout=8) as r:
+                    r.read(256)
+                return {"name": name, "ok": True, "ms": int((time.time() - t) * 1000), "error": ""}
+            except Exception as e:  # noqa: BLE001
+                code = getattr(e, "code", None)
+                if code and code < 500:  # 有回应（比如 403、404）说明网络是通的
+                    return {"name": name, "ok": True, "ms": int((time.time() - t) * 1000), "error": ""}
+                return {"name": name, "ok": False, "ms": 0, "error": str(getattr(e, "reason", e))[:80]}
+
+        def edge():
+            import asyncio
+
+            import edge_tts
+
+            t = time.time()
+            try:
+                asyncio.run(edge_tts.list_voices(proxy=net.proxy() or None))
+                return {"name": "微软神经语音（发音）", "ok": True, "ms": int((time.time() - t) * 1000), "error": ""}
+            except Exception as e:  # noqa: BLE001
+                return {"name": "微软神经语音（发音）", "ok": False, "ms": 0, "error": str(e)[:80]}
+
+        with concurrent.futures.ThreadPoolExecutor(len(self.NET_CHECKS) + 1) as pool:
+            tts_f = pool.submit(edge)
+            return [tts_f.result()] + list(pool.map(one, self.NET_CHECKS))
+
     # ---------- 其他 ----------
+    def app_info(self):
+        return {"version": VERSION, "data_dir": str(self._dir)}
+
     def open_url(self, url):
         """用系统浏览器打开外部链接（正版观看、来源网站）。"""
         import webbrowser

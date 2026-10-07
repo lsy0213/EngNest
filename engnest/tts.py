@@ -7,6 +7,9 @@ Windows 自带的英文语音比较机械，而且很多中文版系统只有中
 import asyncio
 import base64
 import hashlib
+import logging
+import os
+import threading
 
 from .paths import cache_dir
 
@@ -28,6 +31,10 @@ VOICES = {
 }
 DEFAULT_VOICE = "en-US-AriaNeural"
 MAX_CHARS = 1500
+CACHE_LIMIT_MB = 500  # 语音缓存上限：超过后删掉最久没用过的
+log = logging.getLogger(__name__)
+_trim_lock = threading.Lock()
+_writes = 0
 
 
 def _cache_dir():
@@ -53,11 +60,61 @@ def synthesize(text: str, voice: str = DEFAULT_VOICE, rate: float = 1.0) -> str:
 
     key = hashlib.sha1(f"{voice}|{rate_s}|{text}".encode("utf-8")).hexdigest()
     path = _cache_dir() / f"{key}.mp3"
-    if not path.exists() or path.stat().st_size == 0:
-        tmp = path.with_suffix(".part")
-        asyncio.run(edge_tts.Communicate(text, voice, rate=rate_s).save(str(tmp)))
-        tmp.replace(path)
+    if path.exists() and path.stat().st_size > 0:
+        try:
+            os.utime(path)  # 记下「最近用过」，清理缓存时按这个时间删最旧的
+        except OSError:
+            pass
+    else:
+        from . import net
+
+        tmp = path.with_name(f"{key}.{threading.get_ident()}.part")  # 两个线程同时读同一句也不会互相覆盖
+        try:
+            asyncio.run(edge_tts.Communicate(text, voice, rate=rate_s, proxy=net.proxy() or None).save(str(tmp)))
+            tmp.replace(path)
+        finally:
+            tmp.unlink(missing_ok=True)
+        _after_write()
     return "data:audio/mpeg;base64," + base64.b64encode(path.read_bytes()).decode("ascii")
+
+
+def _after_write():
+    """每生成 50 句检查一次缓存大小"""
+    global _writes
+    _writes += 1
+    if _writes % 50 == 1:
+        threading.Thread(target=trim_cache, daemon=True).start()
+
+
+def trim_cache(limit_mb: float = CACHE_LIMIT_MB) -> int:
+    """缓存超过上限时，按最近使用时间删到上限的 80%。返回删掉的文件数。"""
+    if not _trim_lock.acquire(blocking=False):
+        return 0
+    try:
+        files = []
+        for f in _cache_dir().glob("*.mp3"):
+            try:
+                st = f.stat()
+                files.append((st.st_mtime, st.st_size, f))
+            except OSError:
+                continue
+        total = sum(s for _, s, _ in files)
+        if total <= limit_mb * 1024 * 1024:
+            return 0
+        target, n = limit_mb * 1024 * 1024 * 0.8, 0
+        for _, size, f in sorted(files):
+            if total <= target:
+                break
+            try:
+                f.unlink()
+                total -= size
+                n += 1
+            except OSError:
+                pass
+        log.info("语音缓存超过 %d MB，删掉了 %d 个最久没用的文件", limit_mb, n)
+        return n
+    finally:
+        _trim_lock.release()
 
 
 def cache_size_mb() -> float:

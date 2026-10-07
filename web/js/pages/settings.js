@@ -94,7 +94,7 @@ App.pages.settings = {
           <p><b>系统语音</b>：使用 Windows 自带的语音，完全离线，但音色比较机械。如果列表里没有英文发音人：打开 Windows「设置 → 时间和语言 → 语音」，在「管理语音」里添加「English (United States)」，然后重启 EngNest。</p></details>
       </div>
 
-      ${Store.bridge && !Store.remote ? `<div class="card" id="dict-card"></div><div class="card" id="stt-card"></div>` : ""}
+      ${Store.bridge && !Store.remote ? `<div class="card" id="dict-card"></div><div class="card" id="stt-card"></div><div class="card" id="net-card"></div>` : ""}
 
       <div class="card" id="data-card">
         <div class="card-title">💾 数据与备份</div>
@@ -106,6 +106,7 @@ App.pages.settings = {
 
     if ($("#dict-card", root)) this.dictCard($("#dict-card", root));
     if ($("#stt-card", root)) this.sttCard($("#stt-card", root));
+    if ($("#net-card", root)) this.netCard($("#net-card", root));
 
     // 界面风格
     $("#skins", root).onclick = (e) => {
@@ -182,6 +183,35 @@ App.pages.settings = {
     await this.aiForm($("#ai-form", root), root);
     const lc = $("#lan-card", root);
     if (lc) this.lanCard(lc);
+  },
+
+  // ---------- 网络：代理和连通性检查 ----------
+  async netCard(box) {
+    const n = await pywebview.api.net_get();
+    box.innerHTML = `<div class="card-title">🌐 网络</div>
+      <p class="small muted" style="margin-top:-4px">神经语音、AI、下载词典和模型、维基百科都要联网。在中国大陆，GitHub、维基百科、VOA、TED 经常连不上：下载会自动换国内镜像，其他的需要代理。</p>
+      <div class="field"><label>代理地址（可选）</label>
+        <div class="row"><input class="input" id="proxy" value="${esc(n.proxy)}" placeholder="${n.system_proxy ? `留空使用系统代理：${esc(n.system_proxy)}` : "如 http://127.0.0.1:7890，留空表示不用代理"}" style="flex:1">
+          <button class="btn" id="proxy-save">保存</button></div>
+        <span class="help">填你的代理软件提供的 HTTP 代理地址，AI、发音、下载马上生效；VOA 原声、在线视频这类网页里直接播放的要重启 EngNest 才生效。留空时自动使用 Windows 系统代理（如果开着）。</span></div>
+      <div class="row mt"><button class="btn soft" id="net-test">🔍 检查网络</button><span class="small faint" id="net-test-tip">看看哪些服务现在能连上</span></div>
+      <div id="net-res" class="net-res"></div>`;
+    $("#proxy-save", box).onclick = async () => {
+      await pywebview.api.net_set($("#proxy", box).value);
+      TTS.neuralFailedAt = 0;
+      toast("已保存", "good");
+      this.netCard(box);
+    };
+    $("#net-test", box).onclick = async (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      $("#net-res", box).innerHTML = aiLoading("正在检查，最多 10 秒…");
+      const rs = await pywebview.api.net_test();
+      btn.disabled = false;
+      $("#net-res", box).innerHTML = rs.map((r) => `<div class="net-row"><span>${r.ok ? "✅" : "❌"}</span><span>${esc(r.name)}</span>
+        <span class="small faint">${r.ok ? `${r.ms} ms` : esc(r.error)}</span></div>`).join("")
+        + (rs.some((r) => !r.ok) ? `<p class="small muted mt-s">连不上的服务：下载类会自动换镜像；维基百科、VOA、TED 视频需要代理。AI 服务商（DeepSeek、通义千问等）国内能直接用。</p>` : "");
+    };
   },
 
   // ---------- 数据位置、备份、导入导出 ----------
