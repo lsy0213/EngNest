@@ -102,11 +102,32 @@ App.pages.settings = {
         ${Store.remote ? "" : `<div class="row"><button class="btn bad" id="reset">重置学习进度</button></div>`}
       </div>
 
+      <div class="card" id="about-card">
+        <div class="card-title">ℹ️ 关于</div>
+        <div class="row" style="flex-wrap:wrap"><span>EngNest 英语小窝 <b id="app-ver"></b></span><span class="spacer"></span>
+          ${Store.bridge && !Store.remote ? `<button class="btn soft" id="upd">检查更新</button>` : ""}<a class="btn ghost" href="#/about">📜 内容来源与开源许可</a></div>
+        <div id="upd-res" class="mt-s"></div>
+      </div>
+
       <p class="center small faint mt">EngNest 英语小窝 · 每天进步一点点 🪺</p>`;
 
     if ($("#dict-card", root)) this.dictCard($("#dict-card", root));
     if ($("#stt-card", root)) this.sttCard($("#stt-card", root));
     if ($("#net-card", root)) this.netCard($("#net-card", root));
+    if (Store.bridge) pywebview.api.app_info().then((i) => { $("#app-ver", root).textContent = "v" + i.version; }).catch(() => {});
+    const upd = $("#upd", root);
+    if (upd) upd.onclick = async () => {
+      upd.disabled = true;
+      $("#upd-res", root).innerHTML = aiLoading("正在检查…");
+      const r = await pywebview.api.update_check();
+      upd.disabled = false;
+      $("#upd-res", root).innerHTML = !r.ok ? `<span class="small muted">${esc(r.error)}</span>`
+        : r.newer ? `<div class="explain good">有新版本 <b>v${esc(r.latest)}</b>（现在是 v${esc(r.current)}）。<a href="#" id="upd-go">去下载页</a>
+            ${r.notes ? `<details class="small mt-s"><summary style="cursor:pointer">更新内容</summary><div>${mdLite(r.notes)}</div></details>` : ""}</div>`
+        : `<span class="small muted">已经是最新版本（v${esc(r.current)}）。</span>`;
+      const go = $("#upd-go", root);
+      if (go) go.onclick = (e) => { e.preventDefault(); pywebview.api.open_url(r.url); };
+    };
 
     // 界面风格
     $("#skins", root).onclick = (e) => {
@@ -234,12 +255,16 @@ App.pages.settings = {
           <button class="btn" id="bk-import">⬇ 导入并合并…</button>
           <button class="btn ghost" id="bk-replace">导入并替换…</button></div>
         <span class="help">导出的 JSON 文件可以拷到另一台电脑上导入。「合并」会把两边的学习记录合在一起；「替换」用文件里的进度覆盖现在的。</span></div>
-      <div class="row mt" style="flex-wrap:wrap"><button class="btn ghost" id="open-logs">📄 打开日志文件夹</button>
+      <div class="row mt" style="flex-wrap:wrap"><button class="btn ghost" id="open-logs">📄 打开日志文件夹</button><button class="btn ghost" id="diag">🩺 导出诊断信息…</button>
         <span class="spacer"></span><button class="btn bad" id="reset">重置学习进度</button></div>`;
     const refresh = () => this.dataCard(box);
     const reloadAll = async (msg) => { await Store.reload(); renderSidebarFoot(); renderNav(); toast(msg, "good"); Router.render(); };
     $("#open-dir", box).onclick = () => pywebview.api.open_data_dir();
     $("#open-logs", box).onclick = () => pywebview.api.open_logs();
+    $("#diag", box).onclick = async () => {
+      const p = await pywebview.api.export_diagnostics();
+      if (p) toast("已导出到 " + p + "（不含 API Key 和学习内容）", "good", 6000);
+    };
     $("#move-dir", box).onclick = async () => {
       const dir = await pywebview.api.pick_folder();
       if (!dir) return;

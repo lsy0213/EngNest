@@ -136,6 +136,7 @@ const WORD_MAP = {}; // 小写单词 → 词条（优先用信息最丰富的四
 // 同一个词在多本词书里时，查词用信息最全的那本；行业词书只有词典释义，排在后面
 const BOOK_PRIORITY = { cet4: 5, cet6: 4, ielts: 3, ielts_topic: 2.9, ielts_zj: 2.5, ielts_l179: 2.4, ielts_r538: 2.4, toefl: 2, core: 1, topic: 0.5, med: 0.2, tech: 0.2, law: 0.2, fin: 0.2 };
 
+const WORD_POS = {}; // 小写单词 → 在 WORDS 里的位置（替换成信息更全的词条时用，避免每次 indexOf 全表扫描）
 BOOKS.forEach((b) => {
   BOOK_MAP[b.id] = b;
   b.count = 0;
@@ -144,9 +145,9 @@ BOOKS.forEach((b) => {
       const item = { w, ph, m, exs, phrases, mem, exam, ex: exs[0]?.[0] || "", zh: exs[0]?.[1] || "", book: b.id, unit: ui };
       const key = w.toLowerCase();
       const old = WORD_MAP[key];
-      if (!old) WORDS.push(item);
+      if (!old) WORD_POS[key] = WORDS.push(item) - 1;
       if (!old || BOOK_PRIORITY[b.id] > BOOK_PRIORITY[old.book]) {
-        if (old) WORDS[WORDS.indexOf(old)] = item;
+        if (old) WORDS[WORD_POS[key]] = item;
         WORD_MAP[key] = item;
       }
       return item;
@@ -717,7 +718,7 @@ function renderNav() {
   const nav = $("#nav");
   if (!nav || !Store.data) return;
   // 连词成句、句子跟打听写并入了短语与句子，主题词汇和单词打字并入了单词
-  const cur = { sitcom: "life", builder: "course", topics: "words", book: "reading", ireading: "ielts", ilisten: "ielts", ispeak: "ielts", iwrite: "ielts" }[Router.current().page] || Router.current().page;
+  const cur = { about: "settings", sitcom: "life", builder: "course", topics: "words", book: "reading", ireading: "ielts", ilisten: "ielts", ispeak: "ielts", iwrite: "ielts" }[Router.current().page] || Router.current().page;
   const due = dueWords().length;
   const item = (n) => {
     if (n.sep) return `<div class="nav-sep"></div>`;

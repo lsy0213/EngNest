@@ -430,6 +430,11 @@ class Api:
     def app_info(self):
         return {"version": VERSION, "data_dir": str(self._dir)}
 
+    def update_check(self):
+        from . import update
+
+        return update.check()
+
     def open_url(self, url):
         """用系统浏览器打开外部链接（正版观看、来源网站）。"""
         import webbrowser
@@ -473,6 +478,34 @@ class Api:
     def open_logs(self):
         os.startfile(log_file().parent)
         return True
+
+    def export_diagnostics(self):
+        """把日志和运行环境打包成 zip（不含 API Key、学习内容），方便反馈问题。取消返回 None"""
+        import json
+        import platform
+        import zipfile
+
+        import webview
+
+        kind = getattr(getattr(webview, "FileDialog", None), "SAVE", None) or webview.SAVE_DIALOG
+        path = self._window.create_file_dialog(kind, save_filename=f"EngNest-诊断-{time.strftime('%Y%m%d-%H%M')}.zip",
+                                               file_types=("ZIP 文件 (*.zip)",))
+        if not path:
+            return None
+        path = path[0] if isinstance(path, (list, tuple)) else path
+        ai = self.get_ai_settings()
+        info = {
+            "version": VERSION, "python": platform.python_version(), "os": platform.platform(),
+            "data_dir": str(self._dir), "ai": {k: ai.get(k) for k in ("provider", "model", "base_url", "has_key", "enabled")},
+            "proxy_set": bool(self._settings.section("net").get("proxy")), "lan_running": self._lan.running,
+            "dict": {k: v for k, v in self._dict.status().items() if k != "error"}, "stt": self._stt.status(),
+            "progress_rev": self._progress.rev(), "backups": len(self._progress.backups()), "ai_cache": self._kv.stats(),
+        }
+        with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+            z.writestr("info.json", json.dumps(info, ensure_ascii=False, indent=2))
+            for f in log_file().parent.glob("engnest.log*"):
+                z.write(f, f"logs/{f.name}")
+        return str(path)
 
 
 def _enabled(cfg: dict) -> bool:

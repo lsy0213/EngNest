@@ -19,3 +19,6 @@ web/ext/my-ielts/
 
 # 本机的数据目录指向（每台电脑不一样）
 data_location.txt
+
+# 打包时生成
+version_info.txt

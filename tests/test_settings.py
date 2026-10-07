@@ -48,3 +48,10 @@ def test_tts_trim(data_dir, monkeypatch):
     n = tts.trim_cache(limit_mb=1)  # 2 MB → 删到 0.8 MB 以下
     left = sorted(p.name for p in d.glob("*.mp3"))
     assert n == 6 and left == ["6.mp3", "7.mp3", "8.mp3", "9.mp3"]  # 留下最近用过的
+
+
+def test_version_compare():
+    from engnest import update
+
+    assert update.parse("v0.10.1") > update.parse("0.9.9")
+    assert update.parse("0.4") == (0, 4, 0)

@@ -1,0 +1,6 @@
+# 开发、打包、生成数据用（不打进 exe）
+-r requirements.txt
+pyinstaller==6.22.3
+pytest==9.1.1
+pillow==12.3.0           # tools/make_icon.py
+wordfreq==3.1.1          # tools/build_dict.py、build_vocab.py 等数据生成脚本
