@@ -134,6 +134,7 @@ App.pages.settings = {
 
       ${Store.bridge && !Store.remote ? `<div class="card" id="piper-card"></div><div class="card" id="dict-card"></div><div class="card" id="stt-card"></div><div class="card" id="net-card"></div>` : ""}
 
+      ${Store.bridge && !Store.remote ? `<div class="card" id="dav-card"></div>` : ""}
       <div class="card" id="data-card">
         <div class="card-title">💾 数据与备份</div>
         <p class="small muted" id="data-dir">学习进度自动保存在本机。</p>
@@ -153,6 +154,7 @@ App.pages.settings = {
     if ($("#stt-card", root)) this.sttCard($("#stt-card", root));
     if ($("#net-card", root)) this.netCard($("#net-card", root));
     if ($("#piper-card", root)) this.piperCard($("#piper-card", root));
+    if ($("#dav-card", root)) this.davCard($("#dav-card", root));
     if (Store.bridge) pywebview.api.app_info().then((i) => { $("#app-ver", root).textContent = "v" + i.version; }).catch(() => {});
     const upd = $("#upd", root);
     if (upd) upd.onclick = async () => {
@@ -307,6 +309,51 @@ App.pages.settings = {
       $("#net-res", box).innerHTML = rs.map((r) => `<div class="net-row"><span>${r.ok ? "✅" : "❌"}</span><span>${esc(r.name)}</span>
         <span class="small faint">${r.ok ? `${r.ms} ms` : esc(r.error)}</span></div>`).join("")
         + (rs.some((r) => !r.ok) ? `<p class="small muted mt-s">连不上的服务：下载类会自动换镜像；维基百科、VOA、TED 视频需要代理。AI 服务商（DeepSeek、通义千问等）国内能直接用。</p>` : "");
+    };
+  },
+
+  // ---------- 多台电脑同步（WebDAV） ----------
+  async davCard(box) {
+    const c = await pywebview.api.webdav_get();
+    box.innerHTML = `<div class="card-title">☁️ 多台电脑同步（WebDAV） <span class="badge ${c.url && c.has_password ? "good" : ""}">${c.url && c.has_password ? "已设置" : "未设置"}</span></div>
+      <p class="small muted" style="margin-top:-4px">家里和公司的电脑都装了 EngNest？通过支持 WebDAV 的网盘（坚果云、Nextcloud 等）同步学习进度：
+        每台电脑的学习记录会合在一起，不会互相覆盖。只同步学习进度，不同步设置和 API Key。</p>
+      <div class="form-grid">
+        <div class="field" style="grid-column:1/-1"><label>WebDAV 地址</label><input class="input" id="dav-url" value="${esc(c.url)}" placeholder="https://dav.jianguoyun.com/dav/"></div>
+        <div class="field"><label>用户名</label><input class="input" id="dav-user" value="${esc(c.user)}" placeholder="坚果云填登录邮箱" autocomplete="off"></div>
+        <div class="field"><label>密码</label><input class="input" id="dav-pass" type="password" autocomplete="off" placeholder="${c.has_password ? "已保存，留空表示不修改" : "坚果云要用「应用密码」"}"></div>
+        <div class="field"><label>网盘里的文件夹</label><input class="input" id="dav-folder" value="${esc(c.folder)}"></div>
+        <div class="field"><label>自动同步</label><label class="small row" style="gap:6px;cursor:pointer;margin-top:8px"><input type="checkbox" id="dav-auto" ${c.auto ? "checked" : ""}> 打开、关闭软件时和每 15 分钟同步一次</label></div>
+      </div>
+      <div class="row mt" style="flex-wrap:wrap"><button class="btn" id="dav-save">保存</button><button class="btn primary" id="dav-sync">🔄 立即同步</button>
+        ${c.url ? `<button class="btn ghost" id="dav-clear">清除设置</button>` : ""}
+        <span class="small muted" id="dav-state">${c.running ? "正在同步…" : c.error ? `<span class="bad-text">${esc(c.error)}</span>` : c.last ? `上次同步：${esc(c.last)}` : ""}</span></div>
+      <details class="mt small muted"><summary style="cursor:pointer">坚果云怎么设置？</summary>
+        <ol><li>登录坚果云网页版 → 右上角账户名 →「账户信息」→「安全选项」。</li>
+          <li>「第三方应用管理」里点「添加应用」，名字填 EngNest，生成一个<b>应用密码</b>。</li>
+          <li>这里填：地址 <code>https://dav.jianguoyun.com/dav/</code>，用户名是坚果云的登录邮箱，密码填刚生成的应用密码。</li>
+          <li>每台电脑都这样设置一次，同步的文件夹名要一样。</li></ol>
+        <p>密码在这台电脑上加密保存。学习进度会存成网盘里的 EngNest/progress.json。</p></details>`;
+    const val = () => ({ url: $("#dav-url", box).value, user: $("#dav-user", box).value, password: $("#dav-pass", box).value,
+      folder: $("#dav-folder", box).value, auto: $("#dav-auto", box).checked });
+    $("#dav-save", box).onclick = async () => { await pywebview.api.webdav_set(val()); toast("已保存", "good"); this.davCard(box); };
+    $("#dav-sync", box).onclick = async (e) => {
+      e.currentTarget.disabled = true;
+      $("#dav-state", box).textContent = "正在同步…";
+      await pywebview.api.webdav_set(val());
+      await Store.flush();
+      const r = await pywebview.api.webdav_sync();
+      if (r.ok) {
+        if (r.changed_local) { await Store.reload(); renderSidebarFoot(); renderNav(); }
+        toast(r.changed_local ? "同步完成，已合并其他电脑上的学习记录" : "同步完成", "good");
+      } else toast(r.error, "bad", 6000);
+      this.davCard(box);
+    };
+    const clr = $("#dav-clear", box);
+    if (clr) clr.onclick = async () => {
+      if (!(await confirmBox("清除 WebDAV 设置", "以后不再同步（网盘里已经同步的文件不会删除）。"))) return;
+      await pywebview.api.webdav_set({ clear: true });
+      this.davCard(box);
     };
   },
 

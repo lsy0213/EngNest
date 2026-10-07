@@ -348,7 +348,11 @@ class Progress:
 
 def read_export(path: Path) -> dict:
     """读导出 / 备份文件，兼容直接是进度对象的旧格式。"""
-    doc = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    return read_export_bytes(Path(path).read_bytes())
+
+
+def read_export_bytes(raw: bytes) -> dict:
+    doc = json.loads(raw.decode("utf-8-sig"))
     data = doc.get("data") if isinstance(doc, dict) and isinstance(doc.get("data"), dict) and "app" in doc else doc
     if not isinstance(data, dict) or not any(k in data for k in ("words", "prefs", "days", "xp")):
         raise ValueError("这不是 EngNest 的进度文件")

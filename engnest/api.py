@@ -8,7 +8,7 @@ import os
 import threading
 import time
 
-from . import VERSION, ai_client, ai_usage, dictionary, ext, films, kvcache, lan, library, net, offline_tts, packs, paths, progress, settings, stt, tts, wiki
+from . import VERSION, ai_client, ai_usage, dictionary, ext, films, kvcache, lan, library, net, offline_tts, packs, paths, progress, settings, stt, tts, webdav, wiki
 from .log import log_file
 from .paths import data_dir
 
@@ -25,6 +25,8 @@ class Api:
         self._progress = progress.Progress()
         self._kv = kvcache.KVCache()
         self._backup_today()
+        self._webdav = webdav.Sync(self._settings, self._progress)
+        self._webdav.start_auto()
         self._lan = lan.LanServer(self)
         self._dict = dictionary.Dictionary()
         self._lib = library.Library()
@@ -56,6 +58,11 @@ class Api:
             t.start()
             t.join(3)
         self._piper.stop()
+        self._webdav.stop()
+        if self._webdav.configured() and self._webdav.cfg().get("auto", True):
+            t = threading.Thread(target=self._webdav.sync, daemon=True)  # 关闭前同步一次，最多等 10 秒
+            t.start()
+            t.join(10)
         try:
             self._progress.backup()
         except Exception:  # noqa: BLE001 — 关闭时出错不能拦着用户关窗口
@@ -474,6 +481,83 @@ class Api:
             return False
         os.startfile(p)
         return True
+
+    # ---------- 网络（代理、连通性检查） ----------
+    NET_CHECKS = [
+        ("GitHub（完整词典、扩展资料、资料包）", "https://raw.githubusercontent.com/skywind3000/ECDICT/master/README.md"),
+        ("GitHub 镜像", "https://ghfast.top/https://raw.githubusercontent.com/skywind3000/ECDICT/master/README.md"),
+        ("Hugging Face（语音识别模型）", "https://huggingface.co/api/models/Systran/faster-whisper-base.en"),
+        ("hf-mirror（模型国内镜像）", "https://hf-mirror.com/api/models/Systran/faster-whisper-base.en"),
+        ("维基百科", "https://simple.wikipedia.org/w/api.php?action=query&meta=siteinfo&format=json"),
+        ("VOA（原声音频、视频）", "https://learningenglish.voanews.com/"),
+        ("TED 视频", "https://py.tedcdn.com/"),
+    ]
+
+    def net_get(self):
+        cfg = self._settings.section("net", {"proxy": ""})
+        return {"proxy": cfg.get("proxy", ""), "system_proxy": "" if cfg.get("proxy") else net.proxy()}
+
+    def net_set(self, proxy):
+        proxy = (proxy or "").strip()
+        if proxy and not proxy.startswith(("http://", "https://", "socks5://")):
+            proxy = "http://" + proxy
+        self._settings.update("net", {"proxy": proxy})
+        net.set_proxy(proxy)
+        return self.net_get()
+
+    def net_test(self):
+        """逐个试一下常用的外部服务，返回 [{name, ok, ms, error}]"""
+        import concurrent.futures
+
+        def one(item):
+            name, url = item
+            t = time.time()
+            try:
+                with net.urlopen(url, timeout=8) as r:
+                    r.read(256)
+                return {"name": name, "ok": True, "ms": int((time.time() - t) * 1000), "error": ""}
+            except Exception as e:  # noqa: BLE001
+                code = getattr(e, "code", None)
+                if code and code < 500:  # 有回应（比如 403、404）说明网络是通的
+                    return {"name": name, "ok": True, "ms": int((time.time() - t) * 1000), "error": ""}
+                return {"name": name, "ok": False, "ms": 0, "error": str(getattr(e, "reason", e))[:80]}
+
+        def edge():
+            import asyncio
+
+            import edge_tts
+
+            t = time.time()
+            try:
+                asyncio.run(edge_tts.list_voices(proxy=net.proxy() or None))
+                return {"name": "微软神经语音（发音）", "ok": True, "ms": int((time.time() - t) * 1000), "error": ""}
+            except Exception as e:  # noqa: BLE001
+                return {"name": "微软神经语音（发音）", "ok": False, "ms": 0, "error": str(e)[:80]}
+
+        with concurrent.futures.ThreadPoolExecutor(len(self.NET_CHECKS) + 1) as pool:
+            tts_f = pool.submit(edge)
+            return [tts_f.result()] + list(pool.map(one, self.NET_CHECKS))
+
+    # ---------- WebDAV 同步（坚果云等网盘） ----------
+    def webdav_get(self):
+        c = self._webdav.cfg()
+        return {"url": c.get("url", ""), "user": c.get("user", ""), "has_password": bool(c.get("password")),
+                "folder": c.get("folder") or "EngNest", "auto": c.get("auto", True), **self._webdav.state}
+
+    def webdav_set(self, cfg):
+        cur = self._webdav.cfg()
+        new = {"url": (cfg.get("url") or "").strip(), "user": (cfg.get("user") or "").strip(),
+               "folder": (cfg.get("folder") or "EngNest").strip() or "EngNest", "auto": bool(cfg.get("auto", True)),
+               "password": cfg.get("password") or cur.get("password", "")}
+        if cfg.get("clear"):
+            new = {"url": "", "user": "", "folder": "EngNest", "auto": True, "password": ""}
+        self._settings.update("webdav", new)
+        self._webdav.stop()
+        self._webdav.start_auto()
+        return self.webdav_get()
+
+    def webdav_sync(self):
+        return self._webdav.sync()
 
     # ---------- 其他 ----------
     def app_info(self):
