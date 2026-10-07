@@ -3,11 +3,15 @@
 - 静态文件：直接提供 web/ 目录
 - 接口：POST /api/<方法名>，body 为 {"args": [...]}，需要请求头 X-EngNest-Key 带上访问码
 - 只开放学习需要的方法；改 AI 设置、打开文件夹等只能在电脑上操作
+- 访问码是 8 位字母数字（约 1 万亿种）；同一个地址 10 分钟内输错 5 次锁 10 分钟，
+  所有地址加起来 10 分钟内错 30 次就全部锁 10 分钟，防止在局域网里暴力猜
+- 请求体最大 20 MB
 """
 
 import hmac
 import ipaddress
 import json
+import logging
 import os
 import secrets
 import socket
@@ -20,6 +24,13 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from .paths import resource_dir
 
 DEFAULT_PORT = 8766
+MAX_BODY = 20 * 1024 * 1024
+CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"  # 去掉了容易看错的 0 O 1 I L
+WINDOW = 600          # 统计输错次数的时间窗口（秒）
+LOCK = 600            # 锁定时长（秒）
+MAX_FAIL_PER_IP = 5
+MAX_FAIL_TOTAL = 30
+log = logging.getLogger(__name__)
 
 # 局域网设备可以调用的方法
 ALLOWED = {
@@ -32,7 +43,55 @@ ALLOWED = {
 
 
 def new_code() -> str:
-    return f"{secrets.randbelow(1_000_000):06d}"
+    return "".join(secrets.choice(CODE_CHARS) for _ in range(8))
+
+
+def norm_code(code: str) -> str:
+    """输入时可以带空格、横线，不分大小写"""
+    return "".join(ch for ch in str(code or "").upper() if ch.isalnum())
+
+
+def is_weak(code: str) -> bool:
+    """旧版本的 6 位数字访问码：太短，启动时自动换成新的"""
+    return len(norm_code(code)) < 8
+
+
+class Guard:
+    """输错访问码的限流"""
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self.fails = {}       # ip → [时间, ...]
+        self.locked = {}      # ip → 解锁时间；"*" 表示全部锁住
+        self.total = []
+
+    def blocked(self, ip: str) -> float:
+        now = time.time()
+        with self._lock:
+            return max(self.locked.get(ip, 0), self.locked.get("*", 0)) - now
+
+    def fail(self, ip: str):
+        now = time.time()
+        with self._lock:
+            lst = [t for t in self.fails.get(ip, []) if now - t < WINDOW] + [now]
+            self.fails[ip] = lst
+            self.total = [t for t in self.total if now - t < WINDOW] + [now]
+            if len(lst) >= MAX_FAIL_PER_IP:
+                self.locked[ip] = now + LOCK
+                self.fails[ip] = []
+                log.warning("局域网访问：%s 连续输错访问码，锁定 %d 分钟", ip, LOCK // 60)
+            if len(self.total) >= MAX_FAIL_TOTAL:
+                self.locked["*"] = now + LOCK
+                self.total = []
+                log.warning("局域网访问：短时间内大量输错访问码，全部锁定 %d 分钟", LOCK // 60)
+
+    def ok(self, ip: str):
+        with self._lock:
+            self.fails.pop(ip, None)
+
+    def reset(self):
+        with self._lock:
+            self.fails, self.locked, self.total = {}, {}, []
 
 
 _FAKE_NET = ipaddress.ip_network("198.18.0.0/15")  # 代理软件 TUN 模式常用的网段
@@ -122,14 +181,24 @@ class Handler(SimpleHTTPRequestHandler):
             length = int(self.headers.get("Content-Length") or 0)
         except ValueError:
             length = 0
+        if length > MAX_BODY:
+            self.close_connection = True
+            return self._json(413, {"error": "请求太大"})
         raw = self.rfile.read(length) if length > 0 else b""
         if not self.path.startswith("/api/"):
             return self._json(404, {"error": "not found"})
         name = self.path[5:].split("?")[0]
-        key = self.headers.get("X-EngNest-Key", "")
+        ip = self.client_address[0]
+        guard = self.server_ref.guard
+        wait = guard.blocked(ip)
+        if wait > 0:
+            return self._json(429, {"error": f"访问码输错太多次，请 {int(wait // 60) + 1} 分钟后再试", "wait": int(wait)})
+        key = norm_code(self.headers.get("X-EngNest-Key", ""))
         # 按字节比较：请求头里混进非 ASCII 字符时 compare_digest(str, str) 会直接抛异常
-        if not hmac.compare_digest(key.encode("utf-8", "replace"), self.server_ref.code.encode()):
+        if not hmac.compare_digest(key.encode("utf-8", "replace"), norm_code(self.server_ref.code).encode()):
+            guard.fail(ip)
             return self._json(401, {"error": "访问码不正确"})
+        guard.ok(ip)
         if name == "ping":
             return self._json(200, {"ok": True})
         if name not in ALLOWED:
@@ -137,8 +206,11 @@ class Handler(SimpleHTTPRequestHandler):
         try:
             body = json.loads(raw or b"{}")
             result = getattr(self.server_ref.api, name)(*body.get("args", []))
+            if name == "get_ai_settings" and isinstance(result, dict):
+                result = {k: v for k, v in result.items() if k != "key_hint"}  # Key 的任何部分都不发给其他设备
             return self._json(200, {"result": result})
         except Exception as e:  # 接口出错不影响服务继续运行
+            log.exception("局域网接口 %s 出错", name)
             return self._json(500, {"error": str(e)})
 
     def _json(self, code, data):
@@ -157,6 +229,7 @@ class LanServer:
         self.port = DEFAULT_PORT
         self.httpd = None
         self.error = ""
+        self.guard = Guard()
 
     @property
     def running(self) -> bool:
@@ -165,6 +238,7 @@ class LanServer:
     def start(self, port: int, code: str) -> bool:
         self.stop()
         self.port, self.code, self.error = port, code, ""
+        self.guard.reset()
         handler = partial(Handler, directory=str(resource_dir() / "web"), server_ref=self)
         try:
             self.httpd = ThreadingHTTPServer(("0.0.0.0", port), handler)

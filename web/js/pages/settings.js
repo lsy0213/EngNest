@@ -270,8 +270,8 @@ App.pages.settings = {
                 ${s.urls.length > 1 ? `<details class="small muted"><summary style="cursor:pointer">上面的打不开？试试其他地址（${s.urls.length - 1} 个）</summary>
                   ${s.urls.slice(1).map((u) => `<div class="lan-url"><code>${esc(u)}</code><button class="btn sm ghost" data-copy="${esc(u)}">复制</button></div>`).join("")}
                   <div class="faint">这台电脑装了虚拟机或代理软件，所以有多个网络地址。</div></details>` : ""}</div>
-              <div class="field mt-s"><label>访问码</label><div class="lan-code">${esc(s.code)}</div>
-                <span class="help">在其他设备上第一次打开时需要输入；扫码进入会自动带上访问码。</span></div>
+              <div class="field mt-s"><label>访问码</label><div class="lan-code">${esc(s.code.slice(0, 4))} ${esc(s.code.slice(4))}</div>
+                <span class="help">在其他设备上第一次打开时需要输入（不分大小写）；扫码进入会自动带上访问码。同一台设备输错 5 次会被锁 10 分钟。</span></div>
               <div class="row mt"><button class="btn" id="lan-newcode">🔄 换一个访问码</button><button class="btn bad" id="lan-off">关闭局域网访问</button></div>
             </div>
           </div>

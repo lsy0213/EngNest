@@ -230,8 +230,8 @@ function askLanCode(wrong) {
   return new Promise((resolve) => {
     $("#view").innerHTML = `<div class="page"><div class="card lan-login">
       <div style="font-size:44px">🪺</div><h2>EngNest · 局域网访问</h2>
-      <p class="muted">${wrong ? "访问码不对，请再试一次。" : "请输入电脑上「设置 → 局域网访问」里显示的 6 位访问码。"}</p>
-      <input class="input" id="lan-code" inputmode="numeric" maxlength="6" placeholder="6 位访问码" autocomplete="off">
+      <p class="muted">${wrong ? esc(wrong === true ? "访问码不对，请再试一次。" : wrong) : "请输入电脑上「设置 → 局域网访问」里显示的 8 位访问码。"}</p>
+      <input class="input" id="lan-code" maxlength="12" placeholder="8 位访问码（不分大小写）" autocomplete="off" autocapitalize="characters" spellcheck="false">
       <button class="btn primary lg" id="lan-go" style="width:100%;margin-top:12px">进入</button></div></div>`;
     const inp = $("#lan-code"), go = () => { if (inp.value.trim()) resolve(inp.value.trim()); };
     $("#lan-go").onclick = go;
@@ -265,6 +265,7 @@ async function tryHttpBridge() {
       await call("ping");
       break;
     } catch (e) {
+      if (e.status === 429) { key = await askLanCode(e.message); continue; } // 输错太多次被锁住了
       if (e.status !== 401) return false; // 不是 EngNest 的局域网服务（比如开发用的静态服务器）
       key = await askLanCode(wrong || !!key);
       wrong = true;

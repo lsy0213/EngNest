@@ -39,6 +39,9 @@ class Api:
         """启动时如果上次开着局域网访问，就自动打开。"""
         cfg = load_json(self._settings_file, {}).get("lan", {})
         if cfg.get("enabled") and cfg.get("code"):
+            if lan.is_weak(cfg["code"]):  # 旧版本的 6 位数字码换成 8 位的
+                cfg = {**self._lan_cfg(), "code": lan.new_code()}
+                self._save_lan_cfg(cfg)
             self._lan.start(int(cfg.get("port") or lan.DEFAULT_PORT), cfg["code"])
 
     def _on_closing(self):
@@ -200,7 +203,7 @@ class Api:
     # ---------- 局域网访问（只能在电脑上操作） ----------
     def _lan_cfg(self) -> dict:
         cfg = {"enabled": False, "port": lan.DEFAULT_PORT, "code": "", **load_json(self._settings_file, {}).get("lan", {})}
-        if not cfg["code"]:
+        if not cfg["code"] or lan.is_weak(cfg["code"]):
             cfg["code"] = lan.new_code()
         return cfg
 
@@ -238,6 +241,7 @@ class Api:
         cfg["code"] = lan.new_code()
         self._save_lan_cfg(cfg)
         self._lan.code = cfg["code"]  # 运行中也立即生效，旧访问码失效
+        self._lan.guard.reset()
         return self.lan_status()
 
     # ---------- 英汉词典（ECDICT） ----------
