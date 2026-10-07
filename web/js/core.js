@@ -457,6 +457,17 @@ function addXP(n, kind, evt) {
     setTimeout(() => el.remove(), 1000);
   }
 }
+// 撤回经验值（撤销评分时用）
+function takeXP(n, kind) {
+  const d = dayRec();
+  d.xp = Math.max(0, d.xp - n);
+  if (kind) d[kind] = Math.max(0, (d[kind] || 0) - 1);
+  Store.data.xp = Math.max(0, Store.data.xp - n);
+  Store.save();
+  renderSidebarFoot();
+}
+// 卡片滑动方向：默认 ← 记住了；设置里可以改成 → 记住了。返回「记住了」的方向（-1 左 / 1 右）
+const knownDir = () => (Store.prefs.swipe_right_known ? 1 : -1);
 function streak() {
   const days = Store.data.days;
   let d = today(), n = 0;
@@ -465,25 +476,119 @@ function streak() {
   return n;
 }
 
-// ---------- 记忆曲线（简化版艾宾浩斯 / Leitner 盒子） ----------
-// box 越大表示记得越牢，下次复习间隔越长（单位：天）
+// ---------- 记忆曲线：FSRS（开源的现代间隔重复算法，ts-fsrs，比固定间隔准得多） ----------
+// 每条记录：{box, due: 下次复习日期, seen, wrong, first, t, f: {s 记忆稳定度(天), d 难度(1–10), st 状态, r 复习次数, l 遗忘次数, lr 上次复习, sd 这次排的间隔}}
+// box 是旧版 Leitner 的盒子号：现在由间隔换算出来，只用于「已掌握」等显示（间隔 ≥ 7 天算掌握）
 const SRS_INTERVALS = [0, 1, 2, 4, 7, 15, 30, 60];
 const MASTERED_BOX = 4;
 
-// grade: 0 不认识, 1 模糊, 2 认识
+const Fsrs = {
+  _f: null,
+  _key: "",
+  f() {
+    if (!window.FSRS) return null;
+    const retention = Store.prefs.retention || 0.9;
+    const key = String(retention);
+    if (!this._f || this._key !== key) {
+      // 这个软件按「天」安排复习，不用 FSRS 的分钟级短期学习步骤
+      this._f = FSRS.fsrs(FSRS.generatorParameters({ request_retention: retention, enable_fuzz: true, enable_short_term: false, maximum_interval: 3650 }));
+      this._key = key;
+    }
+    return this._f;
+  },
+  // 记录 → ts-fsrs 的卡片。旧版的 Leitner 记录按当时的间隔换算成记忆稳定度
+  toCard(rec, now) {
+    const F = window.FSRS, f = rec.f;
+    const day = (d, h = 12) => new Date(`${d}T${String(h).padStart(2, "0")}:00:00`);
+    if (f) {
+      return { due: day(rec.due, 4), stability: f.s, difficulty: f.d, elapsed_days: 0, scheduled_days: f.sd || 0, learning_steps: 0,
+        reps: f.r || 0, lapses: f.l || 0, state: f.st, last_review: f.lr ? day(f.lr) : undefined };
+    }
+    if (!rec.seen) return F.createEmptyCard(now);
+    const ivl = Math.max(1, SRS_INTERVALS[rec.box] || 1);
+    return { due: day(rec.due, 4), stability: ivl, difficulty: rec.wrong > rec.seen / 2 ? 7 : 5, elapsed_days: 0, scheduled_days: ivl,
+      learning_steps: 0, reps: rec.seen, lapses: rec.wrong || 0, state: rec.box > 0 ? F.State.Review : F.State.Relearning,
+      last_review: day(addDays(rec.due, -ivl)) };
+  },
+  // grade: 0 不认识 / 1 模糊 / 2 认识 / 3 太简单。更新 rec.due、rec.f、rec.box，返回间隔天数
+  schedule(rec, grade) {
+    const f = this.f();
+    if (!f) { // 万一 ts-fsrs 没加载：退回旧的固定间隔
+      rec.box = grade === 0 ? 0 : grade === 1 ? Math.max(1, rec.box - 1) : Math.min(rec.box + 1, SRS_INTERVALS.length - 1);
+      const d = grade === 1 ? 1 : SRS_INTERVALS[rec.box];
+      rec.due = addDays(today(), d);
+      return d;
+    }
+    const F = window.FSRS, now = new Date();
+    const rating = [F.Rating.Again, F.Rating.Hard, F.Rating.Good, F.Rating.Easy][grade] ?? F.Rating.Good;
+    const { card } = f.next(this.toCard(rec, now), now, rating);
+    const days = grade === 0 ? 0 : Math.max(1, Math.round(card.scheduled_days));
+    rec.due = addDays(today(), days);
+    rec.f = { s: Math.round(card.stability * 1000) / 1000, d: Math.round(card.difficulty * 1000) / 1000, st: card.state,
+      r: card.reps, l: card.lapses, lr: today(), sd: days };
+    let box = 0;
+    if (grade !== 0) { box = 1; SRS_INTERVALS.forEach((x, i) => { if (x <= days) box = Math.max(box, i); }); }
+    rec.box = box;
+    return days;
+  },
+  // 照现在的状态，过 n 天还记得的概率（统计页用）
+  retrievability(rec, daysLater = 0) {
+    const s = rec.f?.s || Math.max(1, SRS_INTERVALS[rec.box] || 1);
+    const last = rec.f?.lr || addDays(rec.due, -(rec.f?.sd || SRS_INTERVALS[rec.box] || 1));
+    const elapsed = (new Date(today()) - new Date(last)) / 864e5 + daysLater;
+    return window.FSRS ? FSRS.forgetting_curve(FSRS.FSRS6_DEFAULT_DECAY, Math.max(0, elapsed), s) : Math.pow(0.9, elapsed / s);
+  },
+};
+
+// 复习记录（以后可以用自己的数据优化 FSRS 参数，也用于统计页）：[id, 时间戳, 评分, 间隔天数]
+function logReview(id, grade, days) {
+  const log = (Store.data.revlog ||= []);
+  log.push([id, Date.now(), grade, days]);
+  if (log.length > 30000) log.splice(0, log.length - 30000);
+}
+
+// grade: 0 不认识, 1 模糊, 2 认识, 3 太简单
 function gradeWord(w, grade) {
   const isNew = !Store.data.words[w];
   const s = Store.data.words[w] || { box: 0, due: today(), seen: 0, wrong: 0, first: today() };
+  const prev = JSON.stringify(s); // 撤销用
+  const days = Fsrs.schedule(s, grade);
   s.seen++;
   s.t = Date.now();
-  if (grade === 0) { s.box = 0; s.wrong++; }
-  else if (grade === 1) s.box = Math.max(1, s.box - 1);
-  else s.box = Math.min(s.box + 1, SRS_INTERVALS.length - 1);
-  s.due = addDays(today(), grade === 1 ? 1 : SRS_INTERVALS[s.box]);
+  if (grade === 0) s.wrong++;
   Store.data.words[w] = s;
+  logReview(w, grade, days);
+  Undo.push(`「${w}」的评分`, () => {
+    if (isNew) delete Store.data.words[w];
+    else Store.data.words[w] = JSON.parse(prev);
+    const log = Store.data.revlog || [];
+    const i = log.findLastIndex((x) => x[0] === w);
+    if (i >= 0) log.splice(i, 1);
+    if (isNew) { const d = dayRec(); d.new = Math.max(0, (d.new || 0) - 1); }
+  });
   Store.save();
   return isNew;
 }
+
+// ---------- 撤销：评错了可以撤回最近一次评分（Ctrl+Z 或卡片上的「撤销」） ----------
+const Undo = {
+  stack: [],
+  push(label, fn) {
+    this.stack.push({ label, fn, at: Date.now() });
+    if (this.stack.length > 20) this.stack.shift();
+  },
+  // 撤销最近一次；返回描述，没有可撤销的返回空
+  pop() {
+    const it = this.stack.pop();
+    if (!it) return "";
+    it.fn();
+    Store.save();
+    renderNav();
+    renderSidebarFoot();
+    return it.label;
+  },
+  clear() { this.stack = []; },
+};
 function wordStatus(w) {
   const s = Store.data.words[w];
   if (!s) return "new";

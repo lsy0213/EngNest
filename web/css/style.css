@@ -1640,3 +1640,6 @@ details.mm-card[open] > summary { margin-bottom: 12px; }
 @keyframes caret-blink { 50% { opacity: 0; } }
 .ai-box.streaming > :last-child::after { content: ""; display: inline-block; width: 7px; height: 1em; margin-left: 2px; vertical-align: -2px; background: currentColor; opacity: .5; animation: caret-blink 1s steps(2) infinite; }
 .pp-voices { display: flex; flex-direction: column; gap: 6px; }
+/* 卡片方向反过来（→ 记住了）时，印章也换边 */
+.swap-dir .fc-stamp.ok { left: auto; right: 24px; transform: rotate(14deg); }
+.swap-dir .fc-stamp.no { right: auto; left: 24px; transform: rotate(-14deg); }

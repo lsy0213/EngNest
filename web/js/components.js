@@ -613,6 +613,8 @@ function runFlashcards(container, queue, mode, signal, onFinish) {
   const retry = {};            // 答错的词回到队尾再来一次（最多 2 次）
   const stats = { known: 0, fuzzy: 0, unknown: 0 };
   let cur = null, revealed = false, done = 0;
+  const history = []; // 每次评分前的状态，撤销时恢复
+  const K = knownDir(), L = K < 0 ? "←" : "→", R = K < 0 ? "→" : "←";
 
   const next = () => {
     cur = q.shift();
@@ -620,6 +622,22 @@ function runFlashcards(container, queue, mode, signal, onFinish) {
     if (!cur) return finish();
     draw();
     TTS.speak(cur.w);
+  };
+  // 撤销上一次评分：恢复单词的记忆记录、经验值和这一组的进度，回到那张卡
+  const undo = () => {
+    const h = history.pop();
+    if (!h || busy) return;
+    if (h.graded) Undo.pop();
+    if (h.xp) takeXP(h.xp, h.kind);
+    q.splice(0, q.length, ...h.q);
+    Object.assign(stats, h.stats);
+    Object.keys(retry).forEach((k) => delete retry[k]);
+    Object.assign(retry, h.retry);
+    done = h.done;
+    cur = h.cur;
+    revealed = true;
+    draw();
+    toast(`已撤销「${cur.w}」的评分`);
   };
   // Ctrl+M 跟读：翻开前只读单词（不显示中文，免得提前看到释义），翻开后还可以读例句
   App.shadowTarget = () => {
@@ -636,8 +654,9 @@ function runFlashcards(container, queue, mode, signal, onFinish) {
     const tag = { new: "新词", review: "复习", notebook: "生词本" }[mode];
     container.innerHTML = `
       <div class="flash-wrap">
-        <div class="flash-progress"><span>${done} / ${total}</span><div class="bar"><i style="width:${pct}%"></i></div><span>${tag}</span></div>
-        <div class="fc-stack ${enter ? "enter" : ""} ${q.length ? "" : "last"}">
+        <div class="flash-progress"><span>${done} / ${total}</span><div class="bar"><i style="width:${pct}%"></i></div><span>${tag}</span>
+          ${history.length ? `<button class="btn sm ghost" data-undo title="撤销上一次评分（Ctrl+Z）">↶ 撤销</button>` : ""}</div>
+        <div class="fc-stack ${enter ? "enter" : ""} ${q.length ? "" : "last"} ${K > 0 ? "swap-dir" : ""}">
         <div class="card flashcard" id="fc">
           <div class="fc-stamp ok">记住了 ✓</div><div class="fc-stamp no">没记住 ✗</div>
           <div class="fc-top"><span class="fc-tag">${esc(unitLabel(cur))}</span>
@@ -647,15 +666,17 @@ function runFlashcards(container, queue, mode, signal, onFinish) {
           ${revealed ? `
             <div class="fc-back ${enter ? "" : "reveal"}">${wordDetailHtml(cur)}</div>
             <div class="fc-actions">
-              <button class="btn good lg" data-g="2">← 认识 <span class="kbd">3</span></button>
+              <button class="btn good lg" data-g="2">${L} 认识 <span class="kbd">3</span></button>
               <button class="btn warn lg" data-g="1">有点模糊 <span class="kbd">↓</span></button>
-              <button class="btn bad lg" data-g="0">不认识 → <span class="kbd">1</span></button>
+              <button class="btn bad lg" data-g="0">不认识 ${R} <span class="kbd">1</span></button>
             </div>` : `
             <div class="fc-actions"><button class="btn primary lg" data-reveal>${mode === "new" ? "看释义" : "想好了，看答案"} <span class="kbd">空格</span></button></div>
-            <div class="small faint center fc-swipe-hint">认识的话不用翻开：← 记住了 · → 没记住</div>`}
+            <div class="small faint center fc-swipe-hint">认识的话不用翻开：${L} 记住了 · ${R} 没记住</div>`}
         </div></div>
-        <div class="kbd-hint">${revealed ? "← 记住了 · → 没记住 · ↓ 有点模糊（1 / 2 / 3 也可以）" : "先试着回忆词义，再按空格翻开"} · 也可以拖动卡片 · R 重听 · Ctrl+M 跟读评测</div>
+        <div class="kbd-hint">${revealed ? `${L} 记住了 · ${R} 没记住 · ↓ 有点模糊（1 / 2 / 3 也可以）` : "先试着回忆词义，再按空格翻开"} · 也可以拖动卡片 · R 重听 · Ctrl+Z 撤销 · Ctrl+M 跟读评测</div>
       </div>`;
+    const ub = $("[data-undo]", container);
+    if (ub) ub.onclick = undo;
     $(".star", container).onclick = (e) => e.currentTarget.classList.toggle("on", toggleNotebook(cur));
     const rv = $("[data-reveal]", container);
     if (rv) rv.onclick = reveal;
@@ -670,10 +691,10 @@ function runFlashcards(container, queue, mode, signal, onFinish) {
     const card = $("#fc", container);
     if (busy || !card) return;
     busy = true;
-    const dir = g === 2 ? -1 : g === 0 ? 1 : 0;
+    const dir = g === 2 ? K : g === 0 ? -K : 0;
     card.classList.remove("dragging");
     card.classList.add("fly");
-    if (dir) $(`.fc-stamp.${dir < 0 ? "ok" : "no"}`, card).style.opacity = 1;
+    if (dir) $(`.fc-stamp.${dir === K ? "ok" : "no"}`, card).style.opacity = 1;
     card.style.transform = dir ? `translateX(${dir * 130}%) rotate(${dir * 24}deg)` : "translateY(40%) scale(.85)";
     card.style.opacity = 0;
     if (typeof Sfx !== "undefined") {
@@ -702,14 +723,14 @@ function runFlashcards(container, queue, mode, signal, onFinish) {
       if (Math.abs(dx) > 6) moved = true;
       card.style.transform = `translateX(${dx}px) rotate(${dx / 18}deg)`;
       const [ok, no] = stamps();
-      ok.style.opacity = Math.min(1, Math.max(0, -dx / 110));
-      no.style.opacity = Math.min(1, Math.max(0, dx / 110));
+      ok.style.opacity = Math.min(1, Math.max(0, (dx * K) / 110));
+      no.style.opacity = Math.min(1, Math.max(0, (-dx * K) / 110));
     });
     const end = (e) => {
       if (x0 === null) return;
       x0 = null;
-      if (dx < -110) return swipe(2, e);
-      if (dx > 110) return swipe(0, e);
+      if (dx * K > 110) return swipe(2, e);
+      if (dx * K < -110) return swipe(0, e);
       card.classList.remove("dragging");
       card.style.transform = "";
       stamps().forEach((s) => (s.style.opacity = 0));
@@ -720,9 +741,12 @@ function runFlashcards(container, queue, mode, signal, onFinish) {
   };
 
   const grade = (g, evt) => {
+    const h = { cur, q: [...q], stats: { ...stats }, retry: { ...retry }, done, graded: false, xp: 0, kind: null };
+    history.push(h);
     if (WORD_MAP[cur.w.toLowerCase()]) {
       const isNew = gradeWord(cur.w, g);
-      if (!retry[cur.w]) addXP(isNew ? 2 : 1, isNew ? "new" : "review", evt);
+      h.graded = true;
+      if (!retry[cur.w]) { h.xp = isNew ? 2 : 1; h.kind = isNew ? "new" : "review"; addXP(h.xp, h.kind, evt); }
     }
     if (!retry[cur.w]) stats[["unknown", "fuzzy", "known"][g]]++;
     if (g === 0 && (retry[cur.w] || 0) < 2) {
@@ -748,10 +772,11 @@ function runFlashcards(container, queue, mode, signal, onFinish) {
   };
 
   onKey(signal, (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === "z" || e.key === "Z")) { e.preventDefault(); undo(); return; }
     if (!cur || busy) return;
     if (e.key === "r" || e.key === "R") TTS.speak(cur.w);
-    else if (e.key === "ArrowLeft") { e.preventDefault(); swipe(2); }
-    else if (e.key === "ArrowRight") { e.preventDefault(); swipe(0); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); swipe(K < 0 ? 2 : 0); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); swipe(K < 0 ? 0 : 2); }
     else if (e.key === "ArrowDown") { e.preventDefault(); swipe(1); }
     else if (!revealed && (e.key === " " || e.key === "Enter")) { e.preventDefault(); reveal(); }
     else if (revealed && ["1", "2", "3"].includes(e.key)) swipe(+e.key - 1);

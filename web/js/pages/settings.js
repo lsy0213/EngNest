@@ -102,6 +102,11 @@ App.pages.settings = {
             <span class="help">刚开始建议 10–15 个，复习比学新词更重要。</span></div>
           <div class="field"><label>每日目标经验值</label>
             <select class="select" id="daily-goal">${[[30, "轻松（约 10 分钟）"], [50, "标准（约 20 分钟）"], [100, "认真（约 40 分钟）"], [150, "冲刺（1 小时以上）"]].map(([n, t]) => `<option value="${n}" ${n === p.daily_goal ? "selected" : ""}>${n} XP · ${t}</option>`).join("")}</select></div>
+          <div class="field"><label>复习时希望记得多少</label>
+            <select class="select" id="retention">${[[0.85, "85%（复习少一些）"], [0.9, "90%（推荐）"], [0.95, "95%（记得更牢，复习更多）"]].map(([n, t]) => `<option value="${n}" ${n === (p.retention || 0.9) ? "selected" : ""}>${t}</option>`).join("")}</select>
+            <span class="help">复习安排用 FSRS 记忆算法：按每个词你记得牢不牢，算出它快要忘掉的那天再让你复习。</span></div>
+          <div class="field"><label>卡片滑动方向</label>
+            <select class="select" id="swipe-dir"><option value="left" ${p.swipe_right_known ? "" : "selected"}>← 往左是「记住了」</option><option value="right" ${p.swipe_right_known ? "selected" : ""}>→ 往右是「记住了」（和多数 App 一样）</option></select></div>
         </div>
       </div>
 
@@ -185,6 +190,8 @@ App.pages.settings = {
     // 学习计划
     $("#daily-new", root).onchange = (e) => { p.daily_new = +e.target.value; Store.save(); toast("已保存", "good"); };
     $("#daily-goal", root).onchange = (e) => { p.daily_goal = +e.target.value; Store.save(); toast("已保存", "good"); };
+    $("#retention", root).onchange = (e) => { p.retention = +e.target.value; Store.save(); toast("已保存，之后的复习按新的目标安排", "good"); };
+    $("#swipe-dir", root).onchange = (e) => { p.swipe_right_known = e.target.value === "right"; Store.save(); toast("已保存", "good"); };
 
     // 发音
     const vs = $("#voice", root);
