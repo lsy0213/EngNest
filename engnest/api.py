@@ -8,7 +8,7 @@ import os
 import threading
 import time
 
-from . import VERSION, ai_client, ai_usage, dictionary, ext, films, kvcache, lan, library, net, paths, progress, settings, stt, tts, wiki
+from . import VERSION, ai_client, ai_usage, dictionary, ext, films, kvcache, lan, library, net, offline_tts, paths, progress, settings, stt, tts, wiki
 from .log import log_file
 from .paths import data_dir
 
@@ -29,6 +29,7 @@ class Api:
         self._dict = dictionary.Dictionary()
         self._lib = library.Library()
         self._stt = stt.Stt()
+        self._piper = offline_tts.OfflineTTS()
         self._films = films.Films()
         self._ext = ext.Ext()
         self._window = None  # main.py 创建窗口后设置，用来弹出选择文件的对话框
@@ -53,6 +54,7 @@ class Api:
             t = threading.Thread(target=lambda: self._window.evaluate_js("Store.flush().then(() => true)"), daemon=True)
             t.start()
             t.join(3)
+        self._piper.stop()
         try:
             self._progress.backup()
         except Exception:  # noqa: BLE001 — 关闭时出错不能拦着用户关窗口
@@ -262,6 +264,22 @@ class Api:
             return {"ok": True, "audio": tts.synthesize(text, voice, rate)}
         except Exception as e:  # 断网等情况，前端会退回系统语音
             return {"ok": False, "error": str(e)}
+
+    # 离线神经语音（Piper）
+    def tts_offline(self, text, voice="", rate=1.0):
+        try:
+            return {"ok": True, "audio": self._piper.synthesize(text, voice, rate)}
+        except Exception as e:  # noqa: BLE001
+            return {"ok": False, "error": str(e)}
+
+    def offline_tts_status(self):
+        return self._piper.status()
+
+    def offline_tts_install(self, voice=offline_tts.DEFAULT_VOICE):
+        return self._piper.install(voice)
+
+    def offline_tts_remove(self):
+        return self._piper.remove()
 
     def tts_cache_info(self):
         return tts.cache_size_mb()

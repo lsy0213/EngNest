@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 # 局域网设备可以调用的方法
 ALLOWED = {
     "progress_load", "progress_rev", "progress_save", "get_presets", "get_ai_settings",
-    "ai_chat", "ai_stream_start", "ai_stream_poll", "test_ai", "tts", "tts_voices", "tts_cache_info",
+    "ai_chat", "ai_stream_start", "ai_stream_poll", "test_ai", "tts", "tts_offline", "offline_tts_status", "tts_voices", "tts_cache_info",
     "dict_lookup", "dict_search", "dict_status",
     "library_list", "library_load", "wiki_search", "wiki_article",  # 局域网设备只能看，不能导入和删除
     "kv_get", "kv_all", "kv_set", "kv_set_many",

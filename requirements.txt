@@ -4,5 +4,6 @@ anthropic==1.8.0
 edge-tts==7.2.8          # 非官方的微软语音接口，微软改了验证方式时要升级这个包
 faster-whisper==1.2.1
 ctranslate2==4.8.2
+onnxruntime==1.30.0     # faster-whisper 的静音检测（VAD）用
 numpy==2.4.6
 qrcode==8.2

@@ -532,11 +532,17 @@ const TTS = {
   _resolve: null,
   seq: 0,
   neuralFailedAt: 0,
+  offline: false, // 离线神经语音（Piper）下载好了没有
   init() {
+    this.refreshOffline();
     if (!("speechSynthesis" in window)) return;
     const load = () => { this.voices = speechSynthesis.getVoices().filter((v) => /^en[-_]/i.test(v.lang)); };
     load();
     speechSynthesis.onvoiceschanged = load;
+  },
+  async refreshOffline() {
+    if (!Store.bridge) return;
+    try { const s = await pywebview.api.offline_tts_status(); this.offline = !!(s.engine && s.voices.length); } catch { this.offline = false; }
   },
   voice() {
     const pref = Store.prefs.tts_voice;
@@ -546,7 +552,7 @@ const TTS = {
   },
   useNeural() {
     // 在线语音失败后 1 分钟内不再尝试，避免断网时每次都要等超时
-    return Store.bridge && Store.prefs.tts_engine === "neural" && Date.now() - this.neuralFailedAt > 60000;
+    return Store.bridge && (Store.prefs.tts_engine || "neural") === "neural" && Date.now() - this.neuralFailedAt > 60000;
   },
   paused: false,
   stop() {
@@ -572,6 +578,8 @@ const TTS = {
     this.stop();
     const my = this.seq;
     rate = rate ?? Store.prefs.tts_rate;
+    // 顺序：微软在线神经语音 → 离线神经语音（下载了的话）→ Windows 系统语音
+    let fellBack = false;
     if (this.useNeural()) {
       let r;
       try { r = await pywebview.api.tts(text, voice || Store.prefs.neural_voice, rate); }
@@ -580,8 +588,20 @@ const TTS = {
       if (r.ok) return this.play(r.audio);
       console.warn("在线语音失败：", r.error);
       this.neuralFailedAt = Date.now();
-      toast("在线语音暂时不可用（可能没联网），已临时改用系统语音", "", 3500);
+      fellBack = true;
     }
+    if (Store.bridge && this.offline && Store.prefs.tts_engine !== "system") {
+      let r;
+      try { r = await pywebview.api.tts_offline(text, Store.prefs.offline_voice || "", rate); }
+      catch (e) { r = { ok: false, error: String(e) }; }
+      if (my !== this.seq) return;
+      if (r.ok) {
+        if (fellBack) toast("在线语音暂时连不上，已临时改用离线神经语音", "", 3500);
+        return this.play(r.audio);
+      }
+      console.warn("离线语音失败：", r.error);
+    }
+    if (fellBack) toast("在线语音暂时不可用（可能没联网），已临时改用系统语音。可以在设置里下载离线神经语音，断网也自然。", "", 5000);
     return this.speakSystem(text, rate);
   },
   play(src) {

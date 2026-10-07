@@ -92,7 +92,7 @@ def trim_cache(limit_mb: float = CACHE_LIMIT_MB) -> int:
         return 0
     try:
         files = []
-        for f in _cache_dir().glob("*.mp3"):
+        for f in [*_cache_dir().glob("*.mp3"), *_cache_dir().glob("*.wav")]:
             try:
                 st = f.stat()
                 files.append((st.st_mtime, st.st_size, f))
@@ -118,7 +118,7 @@ def trim_cache(limit_mb: float = CACHE_LIMIT_MB) -> int:
 
 
 def cache_size_mb() -> float:
-    return round(sum(f.stat().st_size for f in _cache_dir().glob("*.mp3")) / 1024 / 1024, 1)
+    return round(sum(f.stat().st_size for pat in ("*.mp3", "*.wav") for f in _cache_dir().glob(pat)) / 1024 / 1024, 1)
 
 
 def clear_cache() -> None:

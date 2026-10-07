@@ -23,6 +23,37 @@ App.pages.settings = {
     if (s.running) setTimeout(() => { if (box.isConnected) { Dict.cache.clear(); this.dictCard(box); } }, 1000);
   },
 
+  // 离线神经语音（Piper）：在线语音连不上时的备用
+  async piperCard(box) {
+    const s = await pywebview.api.offline_tts_status();
+    const pct = Math.round(s.progress * 100);
+    const ready = s.engine && s.voices.length;
+    box.innerHTML = `<div class="card-title">🔈 离线神经语音 <span class="badge ${ready ? "good" : ""}">${ready ? "已就绪" : "未下载"}</span></div>
+      <p class="small muted" style="margin-top:-4px">开源的 Piper 语音（MIT 协议），只在你的电脑上运行。在线语音连不上（断网、在国内被限速）时自动用它，比 Windows 系统语音自然得多。</p>
+      ${!s.available ? `<div class="small faint">这个系统不支持。</div>`
+        : s.running ? `<div class="small">下载中 ${pct}%</div><div class="bar mt-s"><i style="width:${pct}%"></i></div>`
+        : `<div class="pp-voices">${Object.entries(s.all_voices).map(([id, name]) => `<div class="row"><span>${esc(name)}</span><span class="spacer"></span>
+            ${s.voices.includes(id) ? `<span class="badge good">已下载</span> <button class="btn sm ghost" data-try="${id}">▶ 试听</button>`
+              : `<button class="btn sm soft" data-dl="${id}">⬇ 下载${s.engine ? "（约 63 MB）" : "（含引擎约 85 MB）"}</button>`}</div>`).join("")}</div>
+          ${s.engine ? `<div class="row mt-s"><span class="spacer"></span><button class="btn sm ghost" id="pp-rm">全部删除</button></div>` : ""}`}
+      ${s.stage === "error" ? `<div class="explain bad">下载失败：${esc(s.error)}</div>` : ""}`;
+    box.onclick = async (e) => {
+      const dl = e.target.closest("[data-dl]"), tr = e.target.closest("[data-try]"), rm = e.target.closest("#pp-rm");
+      if (dl) { await pywebview.api.offline_tts_install(dl.dataset.dl); this.piperCard(box); }
+      if (tr) {
+        const r = await pywebview.api.tts_offline("Hello! This voice works offline. Let's practise English together.", tr.dataset.try, Store.prefs.tts_rate);
+        if (r.ok) TTS.play(r.audio); else toast(r.error, "bad", 4000);
+      }
+      if (rm && (await confirmBox("删除离线神经语音", "删除下载的 Piper 引擎和声音？以后可以再下载。"))) {
+        await pywebview.api.offline_tts_remove();
+        await TTS.refreshOffline();
+        this.piperCard(box);
+      }
+    };
+    if (s.running) setTimeout(() => { if (box.isConnected) this.piperCard(box); }, 1000);
+    else if (s.stage === "done") TTS.refreshOffline();
+  },
+
   // 离线语音识别：AI 语伴「点击说话」用的 Whisper 模型
   async sttCard(box) {
     const s = await pywebview.api.stt_status();
@@ -80,6 +111,7 @@ App.pages.settings = {
           <div class="field"><label>发音引擎</label>
             <select class="select" id="engine" ${Store.bridge ? "" : "disabled"}>
               <option value="neural" ${p.tts_engine === "neural" && Store.bridge ? "selected" : ""}>神经网络语音（推荐，更自然，需联网）</option>
+              <option value="offline" ${p.tts_engine === "offline" && Store.bridge ? "selected" : ""}>离线神经语音（Piper，需先在下面下载）</option>
               <option value="system" ${p.tts_engine === "system" || !Store.bridge ? "selected" : ""}>Windows 系统语音（离线可用）</option>
             </select>
             <span class="help" id="engine-help"></span></div>
@@ -91,10 +123,11 @@ App.pages.settings = {
         <div class="row mt"><button class="btn soft" id="try">▶ 试听</button></div>
         <details class="mt small muted"><summary style="cursor:pointer">关于两种发音引擎</summary>
           <p><b>神经网络语音</b>：和 Edge 浏览器「大声朗读」是同一套微软语音，非常接近真人。每句话第一次播放时需要联网生成（约 1 秒），之后会缓存在本地，再播放就不用联网了。断网时会自动改用系统语音。</p>
+          <p><b>离线神经语音</b>：开源的 Piper 语音，下载一次（约 85 MB）以后完全不联网，比系统语音自然得多。在线语音连不上时也会自动用它。</p>
           <p><b>系统语音</b>：使用 Windows 自带的语音，完全离线，但音色比较机械。如果列表里没有英文发音人：打开 Windows「设置 → 时间和语言 → 语音」，在「管理语音」里添加「English (United States)」，然后重启 EngNest。</p></details>
       </div>
 
-      ${Store.bridge && !Store.remote ? `<div class="card" id="dict-card"></div><div class="card" id="stt-card"></div><div class="card" id="net-card"></div>` : ""}
+      ${Store.bridge && !Store.remote ? `<div class="card" id="piper-card"></div><div class="card" id="dict-card"></div><div class="card" id="stt-card"></div><div class="card" id="net-card"></div>` : ""}
 
       <div class="card" id="data-card">
         <div class="card-title">💾 数据与备份</div>
@@ -114,6 +147,7 @@ App.pages.settings = {
     if ($("#dict-card", root)) this.dictCard($("#dict-card", root));
     if ($("#stt-card", root)) this.sttCard($("#stt-card", root));
     if ($("#net-card", root)) this.netCard($("#net-card", root));
+    if ($("#piper-card", root)) this.piperCard($("#piper-card", root));
     if (Store.bridge) pywebview.api.app_info().then((i) => { $("#app-ver", root).textContent = "v" + i.version; }).catch(() => {});
     const upd = $("#upd", root);
     if (upd) upd.onclick = async () => {
@@ -155,8 +189,16 @@ App.pages.settings = {
     // 发音
     const vs = $("#voice", root);
     const neuralVoices = Store.bridge ? await pywebview.api.tts_voices() : {};
-    const neural = () => Store.bridge && p.tts_engine === "neural";
+    const neural = () => Store.bridge && (p.tts_engine || "neural") === "neural";
     const fillVoices = async () => {
+      if (Store.bridge && p.tts_engine === "offline") {
+        const st = await pywebview.api.offline_tts_status();
+        vs.innerHTML = st.voices.length ? st.voices.map((v) => `<option value="${v}" ${v === p.offline_voice ? "selected" : ""}>${esc(st.all_voices[v])}</option>`).join("")
+          : `<option>还没有下载离线声音</option>`;
+        $("#voice-help", root).textContent = st.voices.length ? "" : "请先在下面「离线神经语音」里下载。";
+        $("#engine-help", root).textContent = "";
+        return;
+      }
       if (neural()) {
         vs.innerHTML = Object.entries(neuralVoices).map(([k, v]) => `<option value="${k}" ${k === p.neural_voice ? "selected" : ""}>${esc(v)}</option>`).join("");
         const mb = await pywebview.api.tts_cache_info();
@@ -177,7 +219,8 @@ App.pages.settings = {
     setTimeout(() => { if (!neural()) fillVoices(); }, 800); // 系统语音列表有时是异步加载的
     $("#engine", root).onchange = (e) => { p.tts_engine = e.target.value; TTS.neuralFailedAt = 0; Store.save(); fillVoices(); };
     vs.onchange = () => {
-      if (neural()) p.neural_voice = vs.value;
+      if (p.tts_engine === "offline") p.offline_voice = vs.value;
+      else if (neural()) p.neural_voice = vs.value;
       else p.tts_voice = vs.value;
       Store.save();
       TTS.speak("Hello! Welcome to EngNest.");
