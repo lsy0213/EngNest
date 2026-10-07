@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 64" fill="none" ><defs>
+<filter id="lift" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="2.4" stdDeviation="2.2" flood-color="#262A40" flood-opacity=".24"/></filter>
+<filter id="liftS" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="1.2" stdDeviation="1" flood-color="#262A40" flood-opacity=".26"/></filter>
+<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4"/></filter>
+<radialGradient id="pearl" cx=".34" cy=".3" r=".78"><stop stop-color="#FFFFFF"/><stop offset=".42" stop-color="#F3F1F6"/><stop offset=".82" stop-color="#CFCADB"/><stop offset="1" stop-color="#B2ABC2"/></radialGradient>
+<linearGradient id="paperW" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFFFFF"/><stop offset=".6" stop-color="#F1ECF4"/><stop offset="1" stop-color="#D9CDE0"/></linearGradient>
+<linearGradient id="satin" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#FFFFFF"/><stop offset=".45" stop-color="#F4F1F6"/><stop offset=".55" stop-color="#E7E1EC"/><stop offset="1" stop-color="#F9F7FB"/></linearGradient>
+<linearGradient id="satinLilac" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F1E8F1"/><stop offset=".45" stop-color="#A88D9F"/><stop offset="1" stop-color="#7C648A"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFFBE6"/><stop offset=".5" stop-color="#F6EDC8"/><stop offset="1" stop-color="#D8C68C"/></linearGradient>
+<linearGradient id="moon" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFFCEB"/><stop offset=".6" stop-color="#F6EDC8"/><stop offset="1" stop-color="#D8C68C"/></linearGradient>
+<linearGradient id="night" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3A3956"/><stop offset=".55" stop-color="#2C3350"/><stop offset="1" stop-color="#294C4C"/></linearGradient>
+<pattern id="starsNavy" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="5" cy="6" r=".9" fill="#F8F5D0"/><circle cx="17" cy="15" r=".7" fill="#BCDCC9"/><path d="M14 3l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6Z" fill="#F8F5D0"/><circle cx="7" cy="19" r=".6" fill="#E6DCE6"/></pattern>
+<pattern id="ginghamLilac" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#FAF7FB"/><rect width="6" height="12" fill="#A88D9F" fill-opacity=".34"/><rect width="12" height="6" fill="#A88D9F" fill-opacity=".34"/></pattern>
+<pattern id="ginghamMint" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#F6FAF7"/><rect width="6" height="12" fill="#9CC0A8" fill-opacity=".4"/><rect width="12" height="6" fill="#9CC0A8" fill-opacity=".4"/></pattern>
+<pattern id="tapeStripe" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="9" fill="#FFFFFF" fill-opacity=".3"/></pattern>
+</defs>
+<g transform="translate(40.0 26.0) rotate(12.0) scale(0.950)" filter="url(#lift)"><g transform="scale(-.72 1)"><path d="M0 0C4-18 30-32 36-16 40-4 20 4 0 2Z" fill="url(#paperW)" stroke="#D3C9BC" stroke-width=".9"/><path d="M0 2C14 6 28 14 22 26 16 34 4 22 0 4Z" fill="url(#paperW)" stroke="#D3C9BC" stroke-width=".9"/></g><path d="M0 0C4-18 30-32 36-16 40-4 20 4 0 2Z" fill="url(#paperW)" stroke="#D3C9BC" stroke-width=".9"/><path d="M0 2C14 6 28 14 22 26 16 34 4 22 0 4Z" fill="url(#paperW)" stroke="#D3C9BC" stroke-width=".9"/><path d="M3-1C12-10 24-18 32-16M3 4C10 9 16 14 19 22" stroke="#A99BB8" stroke-opacity=".12" stroke-width="1"/><ellipse cx="0" cy="4" rx="1.6" ry="10" fill="#EAE4DC"/><path d="M0-5C-2-12-5-15-8-16M0-5C2-12 5-15 8-16" stroke="#D9D1C6" stroke-width=".8"/></g>
+</svg>

@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+build/
+dist/
+tools/raw/
+.idea/
+.vscode/
+assets/ecdict.db
+
+# 整理自 hefengxian/my-ielts 的雅思资料：原仓库没有声明开源协议，不放进公开仓库，
+# 软件里在「雅思 → 资料包」下载到本机（engnest/packs.py）
+web/data/ielts_extra.js
+web/data/vocab_ielts_zj.js
+web/data/vocab_ielts_l179.js
+web/data/vocab_ielts_r538.js
+web/ext/my-ielts/

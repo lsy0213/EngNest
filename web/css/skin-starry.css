@@ -1,0 +1,152 @@
+/* ========== 星河晚歌 · 极繁蕾丝夜曲 ==========
+   在 skin-character.css 的星河晚歌之上加一层：配色不变（藏蓝 #4D4B63、丁香紫 #A88D9F、薄荷绿 #7DA094、
+   深蓝绿 #294C4C、浅叶绿 #9CC0A8），材质换成带丁香灰的白蕾丝、珍珠、纸蝴蝶和夜晚小物——
+   卡片是一方细蕾丝边的亚麻手帕，页标题是带珍珠的蕾丝标签，卡片标题下横贯蕾丝花边；
+   背景是丁香格纹，横幅是深蓝丝绒，下摆挖星星的白蕾丝，右侧细链吊着方形蕾丝框，框里一弯新月；
+   原来的叶星藤蔓角花和花线不再显示。素材由 tools/gen_starry_lace.py 生成。 */
+:root[data-skin="starry"] {
+  --font-title: "Bodoni MT", Didot, Georgia, "Palatino Linotype", "Noto Serif CJK SC", "Source Han Serif SC", "SimSun", serif;
+  --font-script: "Segoe Script", "Edwardian Script ITC", "Brush Script MT", cursive;
+  --st-hanky: url("skin/starry-hanky.svg"); --st-tag: url("skin/starry-lace-tag.svg"); --st-trim: url("skin/starry-lace-trim.svg");
+  --st-linen: #F8F5F8; --st-weave: rgba(90,80,120,.045); --st-stitch: rgba(124,100,138,.42);
+  --st-check: rgba(168,141,159,.085); --st-kicker: #7C648A;
+  --st-pearl: radial-gradient(circle at 34% 30%, #FFFFFF, #F3F1F6 42%, #CFCADB 82%, #B2ABC2);
+  --st-deco: 1; --st-sticker: 1;
+}
+:root[data-skin="starry"] body {
+  background-color: var(--bg);
+  background-image:
+    url("skin/starry-ephemera.svg"),
+    linear-gradient(90deg, var(--st-check) 50%, transparent 0),
+    linear-gradient(var(--st-check) 50%, transparent 0),
+    radial-gradient(circle at 83% 8%, rgba(148,118,156,.22), transparent 34%),
+    radial-gradient(circle at 41% 90%, rgba(92,151,130,.17), transparent 37%),
+    linear-gradient(120deg, #E9E7EA, #F2EEF2 58%, #E2E9E4);
+  background-size: 600px 600px, 36px 36px, 36px 36px, 100% 100%, 100% 100%, 100% 100%;
+}
+
+/* ---------- 背景拼贴：左下格纹心与新月，右下新月、蕾丝心和星星挂坠；原来的藤蔓角花与花线不再显示 ---------- */
+:root[data-skin="starry"] .skin-deco { opacity: var(--st-deco); }
+:root[data-skin="starry"] .deco-lace { left: 226px; bottom: 0; width: 400px; height: 300px; border: 0; border-radius: 0; box-shadow: none; opacity: 1; background: url("skin/starry-collage-bl.svg") no-repeat left bottom / contain; }
+:root[data-skin="starry"] body.nav-collapsed .deco-lace { left: 78px; }
+:root[data-skin="starry"] .deco-lace2 { right: 0; bottom: 0; width: 420px; height: 340px; border: 0; border-radius: 0; box-shadow: none; opacity: 1; background: url("skin/starry-collage-br.svg") no-repeat right bottom / contain; }
+:root[data-skin="starry"] .skin-deco .deco-festoon, :root[data-skin="starry"] .skin-deco .deco-corner,
+:root[data-skin="starry"] .skin-deco .deco-vine, :root[data-skin="starry"] .skin-deco .deco-sprig { display: none; }
+:root[data-skin="starry"] #view { padding-top: 44px; }
+
+/* ---------- 侧栏：深蓝丝绒保留，右缘换成白蕾丝扇贝，选中项是一截丁香缎带 ---------- */
+:root[data-skin="starry"] .sidebar > .brand { background: url("skin/starry-lace-trim.svg") repeat-x left bottom / 20px 14px; }
+:root[data-skin="starry"] .sidebar::after { right: -12px; width: 14px; border: 0; background: url("skin/starry-lace-edge-v.svg") repeat-y left top / 14px 28px; filter: drop-shadow(2px 1px 1px rgba(38,42,64,.18)); }
+:root[data-skin="starry"] .sidebar .nav-item.active {
+  color: #FFFFFF; padding-right: 22px; border-radius: 999px 0 0 999px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 0) 0 4px / 8px 1px repeat-x,
+    linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 0) 0 calc(100% - 4px) / 8px 1px repeat-x,
+    linear-gradient(95deg, #9C7FA6, #7C648A 55%, #3F6E64);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.3);
+}
+:root[data-skin="starry"] .sidebar .nav-item.active::after { content: ""; width: 24px; height: 19px; flex: none; background: url("skin/starry-navstar.svg") no-repeat center / contain; }
+:root[data-skin="starry"] body.nav-collapsed .sidebar .nav-item.active { padding-right: 0; clip-path: none; border-radius: 999px; }
+
+/* ---------- 页标题：带珍珠的蕾丝标签，角上停一只纸蝴蝶；旁边一行手写批注 ---------- */
+:root[data-skin="starry"] .page-head { position: relative; padding-bottom: 12px; background: none; }
+:root[data-skin="starry"] .page-head::after { content: "✧ under the same stars"; display: block; position: absolute; left: 6px; bottom: -14px; font: 13px var(--font-script); color: var(--st-kicker); opacity: .85; pointer-events: none; }
+:root[data-skin="starry"] .page-title {
+  position: relative; display: inline-block; padding: 3px 26px 4px 40px; font-family: var(--font-title); font-size: 26px; letter-spacing: .06em; color: #3F4A63;
+  border: 9px solid transparent; border-image: var(--st-tag) 10 fill round; border-radius: 0; background: none;
+  filter: drop-shadow(0 4px 6px rgba(38,42,64,.12));
+}
+:root[data-skin="starry"] .page-title::before { content: ""; position: absolute; left: 6px; top: 50%; width: 20px; height: 20px; transform: translateY(-50%); border-radius: 50%; background: var(--st-pearl); box-shadow: 1px 2px 2px rgba(38,42,64,.2); }
+:root[data-skin="starry"] .page-title::after { content: ""; display: block; position: absolute; right: -30px; top: -26px; width: 46px; height: 37px; margin: 0; background: url("skin/starry-butterfly.svg") no-repeat center / contain; transform: rotate(14deg); }
+:root[data-skin="starry"] .page-sub { margin-top: 10px; color: var(--st-kicker); font-size: 12px; letter-spacing: .16em; }
+
+/* ---------- 卡片：一方亚麻手帕，四周细蕾丝；顶端格纹纸胶带，角落背后探出蕾丝蝴蝶结、新月和星星挂坠 ---------- */
+:root[data-skin="starry"] .card {
+  position: relative; padding: 16px 18px;
+  border: 14px solid transparent; border-image: var(--st-hanky) 20 round; border-radius: 0;
+  background-color: var(--st-linen); background-clip: padding-box;
+  background-image: repeating-linear-gradient(0deg, var(--st-weave) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, var(--st-weave) 0 1px, transparent 1px 3px);
+  background-size: auto; background-position: 0 0;
+  outline: 1.5px dashed var(--st-stitch); outline-offset: -20px;
+  box-shadow: none;
+}
+:root[data-skin="starry"] .card::before { content: ""; position: absolute; top: -24px; left: calc(50% - 46px); width: 92px; height: 24px; background: url("skin/starry-tape-lilac.svg") no-repeat center / 100% 100%; transform: rotate(-2.5deg); opacity: var(--st-sticker); pointer-events: none; }
+:root[data-skin="starry"] .card:nth-child(3n+2)::before { left: 22%; background-image: url("skin/starry-tape-navy.svg"); transform: rotate(2deg); }
+:root[data-skin="starry"] .card:nth-child(3n)::before { left: auto; right: 18%; background-image: url("skin/starry-tape-mint.svg"); transform: rotate(-1.5deg); }
+:root[data-skin="starry"] .card::after { content: ""; position: absolute; z-index: -1; left: -58px; top: -58px; width: 112px; height: 112px; background: url("skin/starry-lace-ornament.svg") no-repeat left top / contain; opacity: var(--st-sticker); pointer-events: none; }
+:root[data-skin="starry"] .card:nth-child(even)::after { left: auto; top: auto; right: -58px; bottom: -58px; transform: scale(-1, 1) rotate(180deg); }
+:root[data-skin="starry"] .card-title { color: #43645D; padding-bottom: 20px; margin-bottom: 13px; letter-spacing: .04em; background: var(--st-trim) repeat-x left bottom / 20px 14px; }
+:root[data-skin="starry"] .card-title::before { content: ""; flex: none; width: 13px; height: 13px; border-radius: 50%; background: var(--st-pearl); box-shadow: 1px 2px 2px rgba(38,42,64,.2); }
+
+/* ---------- 首页横幅：深蓝丝绒 + 极淡丁香格纹，花体字水印，下摆白蕾丝挖星星；右侧细链吊着蕾丝框和新月 ---------- */
+:root[data-skin="starry"] .hero {
+  overflow: visible; min-height: 262px; padding: 30px 350px 96px 34px; border: 1.5px solid #66877E; border-radius: 0;
+  background-color: #2A2F49;
+  background-image:
+    url("skin/starry-lace-star.svg"),
+    url("skin/starry-script.svg"),
+    linear-gradient(90deg, rgba(200,180,210,.06) 50%, transparent 0),
+    linear-gradient(rgba(200,180,210,.06) 50%, transparent 0),
+    radial-gradient(circle, rgba(248,245,208,.55) 1px, transparent 1.6px),
+    radial-gradient(circle at 76% 50%, rgba(145,193,154,.24), transparent 34%),
+    linear-gradient(110deg, #282B46, #3B3A57 47%, #274A48 82%, #183C44);
+  background-repeat: repeat-x, no-repeat, repeat, repeat, repeat, no-repeat, no-repeat;
+  background-position: left bottom, 40px calc(100% - 18px), 0 0, 0 0, 9px 13px, center, center;
+  background-size: 32px 18px, 360px 83px, 22px 22px, 22px 22px, 97px 83px, 100% 100%, 100% 100%;
+  outline: 1.5px dashed rgba(214,204,226,.4); outline-offset: -9px;
+  box-shadow: 0 18px 30px -12px rgba(38,42,64,.4);
+}
+:root[data-skin="starry"] .hero::before { inset: 50% 14px auto auto; width: 320px; height: 230px; transform: translateY(-50%); background: url("skin/starry-hero.svg") no-repeat center / contain; opacity: 1; }
+:root[data-skin="starry"] .hero::after { inset: auto; top: -20px; left: 18px; width: 80px; height: 66px; border: 0; border-radius: 0; background: url("skin/starry-bow-lace.svg") no-repeat center / contain; transform: rotate(-12deg); }
+/* 小标题像一张贴纸：左边一道丁香竖条 */
+:root[data-skin="starry"] .hero-kicker { display: inline-block; margin-bottom: 9px; padding: 3px 12px 3px 10px; color: #E9DDF0; letter-spacing: .22em; background: rgba(255,255,255,.1); border-left: 4px solid #B59FB8; }
+:root[data-skin="starry"] .hero .ring { box-shadow: 0 0 0 4px rgba(255,255,255,.75), 0 0 0 5.5px #B59FB8, 0 0 0 9px rgba(188,220,201,.18); }
+
+/* ---------- 统计：右上角一颗珍珠，缝一圈针脚 ---------- */
+:root[data-skin="starry"] .stat { position: relative; outline: 1.5px dashed var(--st-stitch); outline-offset: -6px; }
+:root[data-skin="starry"] .stat::before { content: ""; position: absolute; top: 10px; right: 12px; width: 11px; height: 11px; border-radius: 50%; background: var(--st-pearl); box-shadow: 1px 2px 2px rgba(38,42,64,.2); }
+:root[data-skin="starry"] .btn.primary { outline: 1px dashed rgba(255,255,255,.45); outline-offset: -4px; }
+
+@media (max-width: 1100px) {
+  :root[data-skin="starry"] .hero { padding-right: 240px; }
+  :root[data-skin="starry"] .hero::before { width: 220px; height: 158px; }
+}
+@media (min-width: 1101px) and (max-width: 1540px) {
+  :root[data-skin="starry"] .page-head { padding-left: 0; }
+}
+@media (max-width: 720px) {
+  :root[data-skin="starry"] .hero { padding: 26px 20px 32px; flex-wrap: wrap; gap: 14px; }
+  :root[data-skin="starry"] .hero-copy { flex-basis: 100%; }
+  :root[data-skin="starry"] .hero::before { display: none; }
+  :root[data-skin="starry"] .page-head::after, :root[data-skin="starry"] .page-title::after { display: none; }
+  :root[data-skin="starry"] .card { border-width: 10px; }
+  :root[data-skin="starry"] .sidebar .nav-item.active { padding-right: 0; clip-path: none; border-radius: 999px; }
+}
+
+/* ---------- 夜间：蕾丝换成深灰紫，手帕变深蓝亚麻，拼贴退到背景 ---------- */
+:root[data-skin="starry"][data-theme="dark"] {
+  --st-hanky: url("skin/starry-hanky-dark.svg"); --st-tag: url("skin/starry-lace-tag-dark.svg"); --st-trim: url("skin/starry-lace-trim-dark.svg");
+  --st-linen: #252C3D; --st-weave: rgba(220,210,240,.035); --st-stitch: rgba(196,180,214,.32);
+  --st-check: rgba(168,141,159,.05); --st-kicker: #CBB7CB; --st-deco: .4; --st-sticker: .8;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="starry"]:not([data-theme="light"]) {
+    --st-hanky: url("skin/starry-hanky-dark.svg"); --st-tag: url("skin/starry-lace-tag-dark.svg"); --st-trim: url("skin/starry-lace-trim-dark.svg");
+    --st-linen: #252C3D; --st-weave: rgba(220,210,240,.035); --st-stitch: rgba(196,180,214,.32);
+    --st-check: rgba(168,141,159,.05); --st-kicker: #CBB7CB; --st-deco: .4; --st-sticker: .8;
+  }
+}
+/* skin-character.css 里夜间的卡片和底色规则更具体，这里用同样的写法再盖一次 */
+:root[data-skin="starry"][data-theme="dark"] body { background-color: #171D2C; background-image: url("skin/starry-ephemera.svg"), linear-gradient(90deg, var(--st-check) 50%, transparent 0), linear-gradient(var(--st-check) 50%, transparent 0), radial-gradient(circle at 78% 8%, rgba(133,107,145,.18), transparent 36%), radial-gradient(circle at 50% 100%, rgba(72,130,125,.17), transparent 40%); background-size: 600px 600px, 36px 36px, 36px 36px, 100% 100%, 100% 100%; }
+:root[data-skin="starry"][data-theme="dark"] .card { background-color: var(--st-linen); background-image: repeating-linear-gradient(0deg, var(--st-weave) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, var(--st-weave) 0 1px, transparent 1px 3px); background-size: auto; background-position: 0 0; border-color: transparent; box-shadow: none; }
+:root[data-skin="starry"][data-theme="dark"] .card-title { color: #C8E9DA; }
+:root[data-skin="starry"][data-theme="dark"] .page-title { color: #E4DCEC; }
+:root[data-skin="starry"][data-theme="dark"] .deco-lace, :root[data-skin="starry"][data-theme="dark"] .deco-lace2 { opacity: 1; }
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="starry"]:not([data-theme="light"]) body { background-color: #171D2C; background-image: url("skin/starry-ephemera.svg"), linear-gradient(90deg, var(--st-check) 50%, transparent 0), linear-gradient(var(--st-check) 50%, transparent 0), radial-gradient(circle at 78% 8%, rgba(133,107,145,.18), transparent 36%), radial-gradient(circle at 50% 100%, rgba(72,130,125,.17), transparent 40%); background-size: 600px 600px, 36px 36px, 36px 36px, 100% 100%, 100% 100%; }
+  :root[data-skin="starry"]:not([data-theme="light"]) .card { background-color: var(--st-linen); background-image: repeating-linear-gradient(0deg, var(--st-weave) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, var(--st-weave) 0 1px, transparent 1px 3px); background-size: auto; background-position: 0 0; border-color: transparent; box-shadow: none; }
+  :root[data-skin="starry"]:not([data-theme="light"]) .card-title { color: #C8E9DA; }
+  :root[data-skin="starry"]:not([data-theme="light"]) .page-title { color: #E4DCEC; }
+  :root[data-skin="starry"]:not([data-theme="light"]) .deco-lace, :root[data-skin="starry"]:not([data-theme="light"]) .deco-lace2 { opacity: 1; }
+}

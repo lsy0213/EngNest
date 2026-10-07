@@ -1,0 +1,654 @@
+/* 三幅角色主题。色样取自用户提供的三张原图；正文和按钮使用较深的同色系以保证可读性。 */
+.skin-opt-copy { display: flex; flex-direction: column; min-width: 0; gap: 3px; }
+.skin-opt-copy .skin-dots { margin-bottom: 3px; }
+.skin-opt-copy .small { line-height: 1.35; }
+.skin-opt.has-portrait { min-height: 112px; padding: 9px 11px; overflow: hidden; }
+.skin-portrait { display: block; flex: none; width: 78px; height: 94px; border-radius: 11px; overflow: hidden; border: 1px solid var(--line); }
+.skin-portrait img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
+.skin-opt[data-sk="garden"] .skin-portrait { background: linear-gradient(150deg, #FAF6EA, #C9D5C2); }
+.skin-opt[data-sk="glass"] .skin-portrait { background: linear-gradient(160deg, #D3DCE2, #DFE4E8 60%, #EBDDDF); }
+.skin-opt[data-sk="glass"] .skin-portrait img { object-fit: cover; object-position: 50% 12%; }
+.skin-opt[data-sk="starry"] .skin-portrait { background: radial-gradient(circle at 64% 35%, #819C98, #45425D 66%, #252B43); }
+.skin-opt[data-sk="starry"] .skin-portrait img { object-position: 28% center; }
+
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) {
+  --radius: 20px; --radius-sm: 13px;
+  --font-title: "Palatino Linotype", "Noto Serif CJK SC", "Source Han Serif SC", "SimSun", serif;
+}
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .hero { position: relative; overflow: hidden; min-height: 224px; box-shadow: var(--shadow); }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .hero-copy { position: relative; z-index: 2; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .hero-kicker { display: block; font: 12px var(--font-title); letter-spacing: .18em; margin-bottom: 7px; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .hero h1,
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .page-title,
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .card-title { font-family: var(--font-title); }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .hero h1 { font-size: 28px; }
+@keyframes characterBreathe { 0%, 100% { transform: translateY(2px); } 50% { transform: translateY(-5px); } }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .btn.primary { border-radius: 999px; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .btn.soft,
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .tab,
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .nav-item { border-radius: 999px; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .task-ico { border-radius: 50%; }
+
+
+/* 星河晚歌：原图的藏蓝 #4D4B63、丁香紫 #A88D9F、薄荷绿 #7DA094。 */
+:root[data-skin="starry"] {
+  --bg: #F1EFF2; --surface: #FFFBFC; --surface-2: #EEEAF1; --surface-3: #DED9E3;
+  --ink: #393B50; --ink-2: #626276; --ink-3: #7B798D; --line: #D9D4E0;
+  --brand: #536D70; --brand-ink: #FFFFFF; --brand-soft: #E1ECE9; --brand-deep: #38585C;
+  --good: #5B8A79; --good-soft: #E1EFE9; --bad: #BD6B77; --bad-soft: #F6E5E8;
+  --warn: #9B8852; --warn-soft: #F5EFD9; --info: #756C96; --info-soft: #EBE7F4;
+  --shadow: 0 3px 5px rgba(60,58,90,.04), 0 12px 28px rgba(58,58,91,.1);
+}
+[data-skin="starry"] body { background: radial-gradient(circle at 82% 9%, rgba(168,141,159,.31), transparent 36%), radial-gradient(circle at 43% 85%, rgba(125,160,148,.19), transparent 35%), var(--bg); }
+[data-skin="starry"] .sidebar { background: linear-gradient(170deg, #34364E, #222B42 65%, #213B47); border-right: 1px solid #4B5065; color: #F1EAF0; }
+[data-skin="starry"] .sidebar .brand-name, [data-skin="starry"] .sidebar .brand-sub { color: #F4EAF2; }
+[data-skin="starry"] .brand-logo { background: linear-gradient(145deg, #A891B2, #59658B 64%, #3B635E); color: #fff; box-shadow: 0 5px 16px rgba(14,18,35,.32); }
+[data-skin="starry"] .sidebar .nav-item { color: #DDDCE8; }
+[data-skin="starry"] .sidebar .nav-item:hover { color: #fff; background: rgba(255,255,255,.1); }
+[data-skin="starry"] .sidebar .nav-item.active { color: #E9FFF3; background: linear-gradient(90deg, rgba(127,174,162,.33), rgba(172,144,176,.21)); box-shadow: inset 3px 0 #B7DCC4; }
+[data-skin="starry"] .sidebar .nav-search { background: rgba(255,255,255,.08); border-color: rgba(221,224,238,.18); color: #DDDCE8; }
+[data-skin="starry"] .sidebar-foot { border-top-color: rgba(221,224,238,.18); }
+[data-skin="starry"] .page-title { color: #57516F; }
+[data-skin="starry"] .page-title::after { content: "✦　·　✦"; display: inline-block; margin-left: 12px; color: #8AAE9E; font-size: 15px; vertical-align: 3px; }
+[data-skin="starry"] .card { background: linear-gradient(135deg, rgba(255,252,255,.96), rgba(249,247,252,.96)); border-color: #D9D4E0; box-shadow: var(--shadow); }
+[data-skin="starry"] .card-title { color: #5F5A79; }
+[data-skin="starry"] .hero { background: radial-gradient(circle at 78% 48%, rgba(132,168,153,.34), transparent 30%), radial-gradient(circle at 50% -45%, rgba(181,151,178,.37), transparent 50%), linear-gradient(120deg, #2A2F49, #34354F 58%, #2B4A52); border: 1px solid #595D77; color: #F9F4F5; }
+[data-skin="starry"] .hero::before { content: ""; position: absolute; inset: 0; opacity: .62; background-image: radial-gradient(circle, #F8F5D0 1px, transparent 1.7px), radial-gradient(circle, #BCDCC9 1px, transparent 1.7px); background-size: 118px 98px, 167px 137px; background-position: 18px 14px, 66px 51px; pointer-events: none; }
+[data-skin="starry"] .hero::after { content: ""; position: absolute; inset: 7px; border: 1px solid rgba(209,226,219,.27); border-radius: 12px; pointer-events: none; }
+[data-skin="starry"] .hero .ring { --brand: #B9E4C7; --surface-3: rgba(255,255,255,.2); background: rgba(26,32,52,.42); border-radius: 50%; box-shadow: 0 0 0 5px rgba(188,220,201,.09); }
+[data-skin="starry"] .hero .ring-label span, [data-skin="starry"] .hero .muted { color: #E6E3ED; }
+[data-skin="starry"] .hero-kicker { color: #C5E5CF; }
+[data-skin="starry"] .stat { background: linear-gradient(140deg, #F0ECF4, #E6EFEB); border: 1px solid #DAD8E2; }
+[data-skin="starry"] .btn.primary { background: linear-gradient(135deg, #72998D, #466D70); border-color: #466D70; box-shadow: 0 5px 15px rgba(62,101,100,.2); }
+[data-skin="starry"] .badge.brand { background: #536D70; color: #fff; }
+[data-skin="starry"] .bar > i { background: linear-gradient(90deg, #B59FB8, #78AA9B); }
+
+/* 深色模式继续保持每个角色的材质与色相。 */
+:root[data-skin="starry"][data-theme="dark"] { --bg:#171D2C; --surface:#252C3D; --surface-2:#30384A; --surface-3:#3D4758; --ink:#F4F0F5; --ink-2:#D0C9DB; --ink-3:#A7A3B6; --line:#434B5D; --brand:#A8D7C5; --brand-ink:#1C2A30; --brand-soft:#29454A; --brand-deep:#C8E9DA; --info-soft:#3A3650; --warn-soft:#4A4431; --shadow:0 8px 30px rgba(0,0,0,.26); color-scheme:dark; }
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="starry"]:not([data-theme="light"]) { --bg:#171D2C; --surface:#252C3D; --surface-2:#30384A; --surface-3:#3D4758; --ink:#F4F0F5; --ink-2:#D0C9DB; --ink-3:#A7A3B6; --line:#434B5D; --brand:#A8D7C5; --brand-ink:#1C2A30; --brand-soft:#29454A; --brand-deep:#C8E9DA; --info-soft:#3A3650; --warn-soft:#4A4431; --shadow:0 8px 30px rgba(0,0,0,.26); color-scheme:dark; }
+}
+:root[data-skin="starry"][data-theme="dark"] .card { background:linear-gradient(135deg,#262C3D,#222B3B); border-color:#434B5D; }
+:root[data-skin="starry"][data-theme="dark"] .page-title, :root[data-skin="starry"][data-theme="dark"] .card-title { color:#E4DCEC; }
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="starry"]:not([data-theme="light"]) .card { background:linear-gradient(135deg,#262C3D,#222B3B); border-color:#434B5D; }
+  :root[data-skin="starry"]:not([data-theme="light"]) .page-title, :root[data-skin="starry"]:not([data-theme="light"]) .card-title { color:#E4DCEC; }
+}
+/* 不透明的浅色子卡片会让深色主题失去对比度；夜间单独覆写它们。 */
+:root[data-skin="starry"][data-theme="dark"] body { background:radial-gradient(circle at 78% 8%,rgba(133,107,145,.18),transparent 36%),radial-gradient(circle at 50% 100%,rgba(72,130,125,.17),transparent 40%),#171D2C; }
+:root[data-skin="starry"][data-theme="dark"] .stat { background:#303B4A; border-color:#48576A; }
+:root[data-skin="starry"][data-theme="dark"] .sidebar-foot { color:#D2D1DD; }
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="starry"]:not([data-theme="light"]) body { background:radial-gradient(circle at 78% 8%,rgba(133,107,145,.18),transparent 36%),radial-gradient(circle at 50% 100%,rgba(72,130,125,.17),transparent 40%),#171D2C; }
+  :root[data-skin="starry"]:not([data-theme="light"]) .stat { background:#303B4A; border-color:#48576A; }
+  :root[data-skin="starry"]:not([data-theme="light"]) .sidebar-foot { color:#D2D1DD; }
+}
+@media (max-width: 700px) { :root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .hero { min-height: 0; } }
+
+/* 三套角色主题的花线系统。线条由原画的花、晶羽和星光重新绘制。 */
+:root[data-skin="starry"] { --ornament-corner: url("skin/starry-ornament.svg"); --ornament-rule: url("skin/starry-rule.svg"); --ornament-edge: rgba(151, 129, 168, .55); --ornament-faint: rgba(155, 187, 176, .16); --ornament-accent: #A48BAD; }
+
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) #app { position: relative; z-index: 1; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) #view { padding-top: 72px; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .skin-deco { display: block; position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; opacity: .82; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .skin-deco i { display: block; position: absolute; background-repeat: no-repeat; background-position: center; background-size: contain; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-festoon { top: 0; left: 212px; right: 0; height: 56px; background-image: var(--ornament-rule); background-repeat: repeat-x; background-size: 360px 56px; opacity: .75; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) body.nav-collapsed .deco-festoon { left: 64px; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-corner { width: 170px; height: 170px; background-image: var(--ornament-corner); }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .c-tl { top: 2px; left: 216px; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .c-tr { top: 2px; right: 3px; transform: scaleX(-1); }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .c-bl { bottom: 2px; left: 216px; transform: scaleY(-1); }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .c-br { bottom: 2px; right: 3px; transform: scale(-1); }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-vine { top: 22%; left: 216px; width: 100px; height: 290px; background-image: var(--ornament-corner); background-size: 190px 190px; background-repeat: repeat-y; opacity: .55; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-sprig { top: 36%; right: -8px; width: 100px; height: 290px; background-image: var(--ornament-corner); background-size: 190px 190px; background-repeat: repeat-y; transform: scaleX(-1); opacity: .55; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-lace,
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-lace2 { width: 280px; height: 280px; border-radius: 50%; border: 2px dotted var(--ornament-edge); box-shadow: 0 0 0 9px var(--ornament-faint), 0 0 0 17px var(--ornament-faint), inset 0 0 0 12px var(--ornament-faint); opacity: .46; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-lace { left: 125px; bottom: -135px; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-lace2 { right: -140px; bottom: -95px; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-yarn,
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-flower { display: none; }
+
+/* 把图案放在卡片外缘；内容区保持整洁且有对比度。 */
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .sidebar { position: relative; z-index: 3; border-right: 3px double var(--ornament-edge); }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .sidebar::after { content: ""; position: absolute; top: 0; right: -9px; bottom: 0; width: 7px; border-right: 1px dotted var(--ornament-edge); pointer-events: none; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .sidebar > .brand { position: relative; margin-bottom: 25px; padding-bottom: 14px; background: var(--ornament-rule) no-repeat center bottom / 174px 28px; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .nav-item.active::after { content: "✦"; margin-left: auto; color: var(--ornament-accent); font-size: 14px; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .nav-item.active:has(.badge)::after { display: none; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .page-head { padding-bottom: 12px; background: var(--ornament-rule) no-repeat left bottom / 292px 46px; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .page-head::after { display: none; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .page-title { letter-spacing: .04em; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .card {
+  position: relative; border: 3px double var(--ornament-edge);
+  background-image: var(--ornament-rule), var(--ornament-corner), var(--ornament-corner), linear-gradient(145deg, var(--ornament-faint), transparent 45%);
+  background-repeat: no-repeat;
+  background-position: center 1px, 7px 7px, calc(100% - 7px) calc(100% - 7px), center;
+  background-size: 210px 31px, 53px 53px, 53px 53px, 100% 100%;
+  box-shadow: var(--shadow), inset 0 0 0 5px var(--surface), inset 0 0 0 6px var(--ornament-edge);
+  padding: 26px;
+}
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .card-title { padding-bottom: 13px; margin-bottom: 13px; background: var(--ornament-rule) no-repeat center bottom / 150px 24px; letter-spacing: .02em; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .hero { min-height: 224px; border: 3px double var(--ornament-edge); padding: 28px 33px; box-shadow: var(--shadow), inset 0 0 0 5px var(--surface), inset 0 0 0 6px var(--ornament-edge); }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .hero::before { content: ""; position: absolute; inset: 12px 17px auto auto; width: 150px; height: 150px; border: 0; border-radius: 0; box-shadow: none; filter: none; background: var(--ornament-corner) no-repeat center / contain; transform: scaleX(-1); opacity: .7; pointer-events: none; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .hero::after { content: ""; position: absolute; inset: 9px; border: 1px solid var(--ornament-edge); border-radius: 11px; background: var(--ornament-rule) no-repeat center top / 260px 40px; pointer-events: none; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .hero-copy { flex: 1; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .hero h1 { letter-spacing: .02em; }
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .stat,
+:root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .task { box-shadow: inset 0 0 0 2px var(--ornament-faint); }
+
+
+
+/* 星夜：深蓝丝绒、丁香发卷与薄荷星簇，保持原画色相。 */
+[data-skin="starry"] body { background-image: radial-gradient(circle at 78% 8%,rgba(168,141,159,.31),transparent 36%), radial-gradient(circle at 43% 85%,rgba(125,160,148,.19),transparent 35%), radial-gradient(circle,rgba(135,177,159,.16) 1px,transparent 1.5px); background-size: 100% 100%,100% 100%,90px 90px; }
+[data-skin="starry"] .sidebar { background-image: radial-gradient(circle,rgba(202,224,204,.12) 1px,transparent 1.5px),linear-gradient(170deg,#34364E,#222B42 65%,#213B47); background-size: 47px 53px,100% 100%; }
+[data-skin="starry"] .hero { background: radial-gradient(circle at 78% 48%,rgba(132,168,153,.34),transparent 30%),radial-gradient(circle at 50% -45%,rgba(181,151,178,.37),transparent 50%),linear-gradient(120deg,#2A2F49,#34354F 58%,#2B4A52); }
+[data-skin="starry"] .hero::before { opacity: .82; }
+
+/* 陪伴立绘固定于浏览器视口，不属于首页横幅；拖动位置每套主题单独保存。 */
+#theme-character-float { position: fixed; z-index: 44; width: 205px; height: 294px; pointer-events: none; }
+.theme-character-figure { display: block; width: 100%; height: 100%; padding: 0; margin: 0; border: 0; background: none; cursor: grab; touch-action: none; pointer-events: auto; user-select: none; -webkit-user-select: none; }
+.theme-character-figure:active { cursor: grabbing; }
+.theme-character-figure:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 14px; }
+.theme-character-figure img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center top; filter: drop-shadow(0 12px 10px rgba(55,60,63,.16)); animation: characterBreathe 6s ease-in-out infinite; pointer-events: none; }
+#theme-character-float[data-figure="starry"] { width: 252px; }
+#theme-character-float[data-figure="starry"] img { object-position: 43% top; -webkit-mask-image: linear-gradient(90deg,#000 0%,#000 89%,transparent 100%); mask-image: linear-gradient(90deg,#000 0%,#000 89%,transparent 100%); }
+@media (prefers-reduced-motion: reduce) { .theme-character-figure img { animation: none; } }
+@media (max-width: 1380px) { :root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-vine, :root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .deco-sprig { display: none; } }
+@media (min-width: 901px) and (max-width: 1100px) { :root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) #view { padding-right: 150px; } }
+@media (max-width: 900px) { #theme-character-float { width: 155px; height: 225px; } #theme-character-float[data-figure="starry"] { width: 190px; } }
+@media (max-width: 720px) { :root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) #view { padding-top: 28px; } :root:is([data-skin="garden"], [data-skin="glass"], [data-skin="starry"]) .skin-deco { display: none; } #theme-character-float { width: 104px; height: 154px; } #theme-character-float[data-figure="starry"] { width: 126px; } }
+
+
+/* 星河晚歌：深蓝绿裙摆、薄荷叶星和灰紫发卷三色并行，线条更密但避开正文。 */
+:root[data-skin="starry"] {
+  --bg: #E9E9E6; --surface: #F6F3F5; --surface-2: #EBE9EC; --surface-3: #DADDE0;
+  --ink: #343C4A; --ink-2: #606474; --ink-3: #777786; --line: #BBB9C8;
+  --brand: #315F58; --brand-deep: #27574F; --brand-soft: #DCEAE1;
+  --ornament-edge: rgba(97, 117, 111, .58); --ornament-faint: rgba(122, 162, 142, .17); --ornament-accent: #7C648A;
+}
+:root[data-skin="starry"] body {
+  background-color: var(--bg);
+  background-image: radial-gradient(circle at 83% 8%,rgba(148,118,156,.23),transparent 34%),radial-gradient(circle at 41% 90%,rgba(92,151,130,.19),transparent 37%),radial-gradient(circle,rgba(66,104,96,.13) 1px,transparent 1.5px),linear-gradient(120deg,#E7E7E6,#F2EEF1 58%,#DFE8E2);
+  background-size: 100% 100%,100% 100%,78px 78px,100% 100%;
+}
+:root[data-skin="starry"] .sidebar {
+  background-color: #273C48;
+  background-image: radial-gradient(circle,rgba(202,229,200,.13) 1px,transparent 1.5px),linear-gradient(154deg,#46405B,#27394B 56%,#22483F);
+  background-size: 47px 53px,100% 100%;
+  border-right-color: #6D837F;
+}
+:root[data-skin="starry"] .brand-logo { background: linear-gradient(140deg,#AF8DAE,#526978 56%,#2E6558); }
+:root[data-skin="starry"] .sidebar .nav-item.active { background: linear-gradient(95deg,rgba(69,132,109,.54),rgba(145,105,153,.28)); box-shadow: inset 3px 0 #B8E2B5,0 5px 16px rgba(14,33,36,.19); }
+:root[data-skin="starry"] .sidebar .nav-item.active::after { color: #C0E3B4; }
+:root[data-skin="starry"] .page-title { color: #355A54; font-size: 28px; }
+:root[data-skin="starry"] .page-title::after { color: #8D6899; }
+:root[data-skin="starry"] .page-head { background-size: 340px 53px; }
+:root[data-skin="starry"] .card {
+  background-color: #F3F0F4;
+  background-image: var(--ornament-rule),var(--ornament-corner),radial-gradient(circle at 8% 10%,rgba(151,191,159,.24),transparent 35%),linear-gradient(132deg,rgba(246,242,249,.95),rgba(224,237,226,.7) 73%,rgba(221,211,229,.7));
+  background-position: center 1px,calc(100% - 7px) calc(100% - 7px),center,center;
+  background-size: 210px 31px,70px 70px,100% 100%,100% 100%;
+  background-repeat: no-repeat;
+  box-shadow: var(--shadow),inset 0 0 0 5px rgba(248,245,248,.63),inset 0 0 0 6px rgba(70,117,99,.36);
+}
+:root[data-skin="starry"] .card-title { color: #43645D; }
+:root[data-skin="starry"] .hero {
+  background: radial-gradient(circle at 76% 50%,rgba(145,193,154,.28),transparent 31%),radial-gradient(circle at 51% -30%,rgba(174,122,176,.31),transparent 51%),linear-gradient(110deg,#282B46,#41405A 47%,#274A48 82%,#183C44);
+  border-color: #66877E;
+}
+:root[data-skin="starry"] .hero::before { width: 174px; height: 174px; background-image: url("skin/starry-ornament.svg"); opacity: .87; }
+:root[data-skin="starry"] .stat { background: linear-gradient(142deg,#E9E4EE,#DCEBDD 70%); border-color: #BEC7BF; }
+:root[data-skin="starry"] .btn.primary { background: linear-gradient(130deg,#796084,#397664 68%,#244F53); border-color: #395E59; }
+:root[data-skin="starry"] .badge.brand { background: #315F58; }
+:root[data-skin="starry"] .bar > i { background: linear-gradient(90deg,#A37FA9,#A9D4A7 52%,#315F58); }
+:root[data-skin="starry"] .deco-lace,
+:root[data-skin="starry"] .deco-lace2 { border: 0; border-radius: 0; box-shadow: none; background: url("skin/starry-ornament.svg") no-repeat center / contain; width: 290px; height: 290px; opacity: .46; }
+
+/* 夜间保留可读性，同时让新增的纸与花纹仍属于原角色。 */
+:root[data-skin="starry"][data-theme="dark"] .deco-lace,
+:root[data-skin="starry"][data-theme="dark"] .deco-lace2 { opacity: .23; }
+/* 深色卡片也保留叶星花线，避免背景简写盖掉装饰图层。 */
+:root[data-skin="starry"][data-theme="dark"] .card {
+  background-color: #252C3D;
+  background-image: var(--ornament-rule),var(--ornament-corner),radial-gradient(circle at 8% 10%,rgba(137,179,151,.1),transparent 35%),linear-gradient(135deg,#282D42,#243B3D);
+  background-position: center 1px,calc(100% - 7px) calc(100% - 7px),center,center;
+  background-size: 210px 31px,70px 70px,100% 100%,100% 100%;
+  background-repeat: no-repeat;
+  border-color: rgba(154,190,169,.58);
+  box-shadow: 0 8px 30px rgba(0,0,0,.26),inset 0 0 0 5px rgba(28,35,48,.7),inset 0 0 0 6px rgba(157,119,166,.43);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="starry"]:not([data-theme="light"]) .deco-lace,
+  :root[data-skin="starry"]:not([data-theme="light"]) .deco-lace2 { opacity: .23; }
+  :root[data-skin="starry"]:not([data-theme="light"]) .card {
+    background-color: #252C3D;
+    background-image: var(--ornament-rule),var(--ornament-corner),radial-gradient(circle at 8% 10%,rgba(137,179,151,.1),transparent 35%),linear-gradient(135deg,#282D42,#243B3D);
+    background-position: center 1px,calc(100% - 7px) calc(100% - 7px),center,center;
+    background-size: 210px 31px,70px 70px,100% 100%,100% 100%;
+    background-repeat: no-repeat;
+    border-color: rgba(154,190,169,.58);
+    box-shadow: 0 8px 30px rgba(0,0,0,.26),inset 0 0 0 5px rgba(28,35,48,.7),inset 0 0 0 6px rgba(157,119,166,.43);
+  }
+}
+@media (min-width: 1101px) and (max-width: 1540px) {
+  :root[data-skin="starry"] .page-head { padding-left: 145px; background-image: none; }
+}
+
+/* ========== 月桂蔷薇 · 缎带剪贴簿 ==========
+   取色自缎带少女立绘：蓝绿缎带 #86C9BF、蜂蜜金发 #C5B896、皮带棕 #413D2B、象牙裙 #EFEBE2，
+   以及原界面的板岩蓝绿 #526A6A、铁锈红 #865C4F。旧纸、撕边、蕾丝、珍珠、邮票、压花和蓝蝴蝶层层叠放，
+   但都压在卡片外缘或背后；正文区保持干净的纸面与足够对比度。素材由 tools/gen_garden_scrapbook.py 生成。 */
+:root[data-skin="garden"] {
+  --bg: #E3DCCF; --surface: #FAF6EC; --surface-2: #F1EBDF; --surface-3: #E4DBCB;
+  --ink: #37352F; --ink-2: #5E5A50; --ink-3: #736E62; --line: #D2C6B0;
+  --brand: #2C716B; --brand-ink: #FFFDF6; --brand-soft: #DDEEEA; --brand-deep: #215C57;
+  --good: #4F7F62; --good-soft: #E3EEE3; --bad: #A6574A; --bad-soft: #F5E2DB;
+  --warn: #93743A; --warn-soft: #F5EBD2; --info: #4E6C6D; --info-soft: #E2ECEA;
+  --shadow: 0 1px 2px rgba(74,59,42,.08), 0 10px 24px rgba(74,59,42,.13);
+  --radius: 6px; --radius-sm: 4px;
+  --font-title: "Palatino Linotype", "Book Antiqua", Georgia, "Noto Serif CJK SC", "Source Han Serif SC", "SimSun", serif;
+  --font-type: "Courier New", Courier, "Noto Serif CJK SC", monospace;
+  --ornament-corner: url("skin/garden-ornament.svg"); --ornament-rule: url("skin/garden-rule.svg");
+  --ornament-edge: rgba(110,86,61,.42); --ornament-faint: rgba(116,191,180,.13); --ornament-accent: #4FA39A;
+  /* 主题内部的材质色；夜间只改这些变量 */
+  --g-paper: #FAF6EC; --g-paper-2: #FCFAF4; --g-heading: #2E2B25; --g-title: #2B625D; --g-kicker: #865C4F;
+  --g-sidebar: linear-gradient(170deg,#F3EDE1,#E6DCCB); --g-veil: rgba(240,233,220,.9);
+  --g-hero: linear-gradient(112deg,#FBF8F0,#F1EADC 60%,#E2E9DD);
+  --g-inline: rgba(110,86,61,.2); --g-dash: #CDBFA6; --g-ruled: rgba(82,106,106,.13); --g-margin: rgba(134,92,79,.34);
+  --g-nav-ink: #48443A; --g-deco: 1;
+  --g-sheen: linear-gradient(160deg, rgba(255,255,255,.55), rgba(225,214,195,.22));
+}
+:root[data-skin="garden"] body {
+  background-color: var(--bg);
+  background-image: url("skin/paper.svg"), url("skin/garden-ephemera.svg"),
+    radial-gradient(circle at 80% 4%, rgba(134,201,191,.24), transparent 34%),
+    radial-gradient(circle at 20% 96%, rgba(197,184,150,.34), transparent 38%),
+    linear-gradient(105deg, #DED6C8, #ECE5D9 48%, #E1DACD);
+  background-size: 220px 220px, 560px 560px, 100% 100%, 100% 100%, 100% 100%;
+}
+
+/* 背景拼贴：右上大拼贴、左下信纸与标签、右下信封与火漆；顶部是一串珍珠缎带。 */
+:root[data-skin="garden"] .skin-deco { opacity: var(--g-deco); }
+:root[data-skin="garden"] .skin-deco::before { content: ""; position: absolute; top: 0; right: 0; width: 720px; height: 330px; background: url("skin/garden-collage-tr.svg") no-repeat right top / contain; }
+:root[data-skin="garden"] .skin-deco::after { content: ""; position: absolute; left: 212px; bottom: 0; width: 440px; height: 330px; background: url("skin/garden-collage-bl.svg") no-repeat left bottom / contain; }
+:root[data-skin="garden"] body.nav-collapsed .skin-deco::after { left: 64px; }
+:root[data-skin="garden"] .deco-lace2 { right: 0; bottom: 0; width: 400px; height: 300px; border: 0; border-radius: 0; box-shadow: none; opacity: 1; background: url("skin/garden-collage-br.svg") no-repeat right bottom / contain; }
+:root[data-skin="garden"] .deco-festoon { top: -4px; height: 46px; background-size: 300px 46px; opacity: .95; }
+:root[data-skin="garden"] .c-tl { width: 140px; height: 140px; top: 0; }
+:root[data-skin="garden"] .deco-lace,
+:root[data-skin="garden"] .deco-vine,
+:root[data-skin="garden"] .deco-sprig,
+:root[data-skin="garden"] .c-tr,
+:root[data-skin="garden"] .c-bl,
+:root[data-skin="garden"] .c-br { display: none; }
+
+/* 侧栏：旧剪贴簿的书脊——皮带棕包边加金线缝线，顶端垂下一条蓝绿缎带书签。 */
+:root[data-skin="garden"] .sidebar {
+  color: var(--g-nav-ink);
+  background-color: #EFE8DA;
+  background-image: linear-gradient(#C5B896 55%, transparent 0), url("skin/paper.svg"), linear-gradient(var(--g-veil), var(--g-veil)), url("skin/garden-newsprint.svg"), var(--g-sidebar);
+  background-repeat: repeat-y, repeat, no-repeat, repeat, no-repeat;
+  background-position: 5px 0, 0 0, 0 0, 0 0, 0 0;
+  background-size: 1.5px 8px, 220px 220px, 100% 100%, 220px 300px, 100% 100%;
+  box-shadow: inset 11px 0 #4A3B2A, inset 13px 0 #8E7A55, 4px 0 14px rgba(74,59,42,.08);
+  border-right-color: var(--ornament-edge);
+}
+:root[data-skin="garden"] .sidebar::before { content: ""; position: absolute; top: 0; right: 16px; width: 15px; height: 62px; z-index: 2; background: linear-gradient(90deg,#3F918A,#9AD5CB 42%,#5DAFA5 70%,#3F918A); clip-path: polygon(0 0,100% 0,100% 100%,50% 82%,0 100%); pointer-events: none; }
+:root[data-skin="garden"] body.nav-collapsed .sidebar::before { right: 5px; width: 11px; height: 40px; }
+:root[data-skin="garden"] .brand-logo { color: #F6E6D8; font-family: var(--font-title); background: radial-gradient(circle at 35% 30%,#AE7B6B,#865C4F 55%,#674236); border-radius: 50%; box-shadow: 0 0 0 3px rgba(134,92,79,.18), 0 3px 8px rgba(74,59,42,.3), inset 0 0 0 3px rgba(103,66,54,.6), inset 0 0 0 4px rgba(214,170,150,.4); }
+:root[data-skin="garden"] .brand-name { color: var(--g-heading); font-family: var(--font-title); font-style: italic; letter-spacing: .03em; }
+:root[data-skin="garden"] .brand-sub { font-family: var(--font-type); letter-spacing: .14em; color: var(--g-kicker); }
+:root[data-skin="garden"] .nav-search { background: var(--g-paper-2); border: 1px dashed var(--g-dash); border-radius: 3px; }
+:root[data-skin="garden"] .nav-item { color: var(--g-nav-ink); border-radius: 3px; }
+:root[data-skin="garden"] .nav-item:hover { background: rgba(134,201,191,.16); }
+/* 选中项是一截剪了燕尾的缎带 */
+:root[data-skin="garden"] .nav-item.active { color: #FFFDF6; background: linear-gradient(180deg,#5DAFA5,#33807A 52%,#2A6D67); border-radius: 3px 0 0 3px; padding-right: 20px; clip-path: polygon(0 0,100% 0,calc(100% - 11px) 50%,100% 100%,0 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.38), inset 0 -1px 0 rgba(0,0,0,.14); }
+:root[data-skin="garden"] .nav-item.active::after { color: #F2E3BE; }
+:root[data-skin="garden"] .nav-item.active .badge { background: #FFFDF6; color: #215C57; }
+:root[data-skin="garden"] body.nav-collapsed .nav-item.active { padding-right: 0; clip-path: none; border-radius: 999px; }
+:root[data-skin="garden"] .sidebar-foot { border-top: 1px dashed var(--g-dash); font-family: var(--font-type); }
+
+/* 页标题贴在一条撕边纸签上，左角压一段蓝绿和纸胶带 */
+:root[data-skin="garden"] .page-head { padding-bottom: 4px; background: none; }
+:root[data-skin="garden"] .page-title { position: relative; display: inline-block; padding: 8px 28px 10px; color: #2E2B25; font-size: 27px; letter-spacing: .08em; background: url("skin/garden-label.svg") no-repeat center / 100% 100%; transform: rotate(-1deg); }
+:root[data-skin="garden"] .page-title::before { content: ""; position: absolute; left: -16px; top: -9px; width: 62px; height: 18px; background: url("skin/garden-tape-teal.svg") no-repeat center / 100% 100%; transform: rotate(-26deg); }
+:root[data-skin="garden"] .page-sub { margin-top: 10px; font-family: var(--font-type); font-size: 13px; color: var(--g-kicker); }
+
+/* 卡片：钉在剪贴簿上的厚纸——顶端一段和纸胶带，角落背后探出蕾丝垫纸与压花。 */
+:root[data-skin="garden"] .card {
+  position: relative; padding: 26px 26px 24px;
+  border: 1px solid var(--line); border-radius: 4px;
+  background-color: var(--g-paper);
+  background-image: url("skin/paper.svg"), var(--g-sheen);
+  background-repeat: repeat, no-repeat; background-position: 0 0, center; background-size: 220px 220px, 100% 100%;
+  box-shadow: 0 1px 1px rgba(74,59,42,.08), 0 12px 22px -8px rgba(74,59,42,.24), inset 0 0 0 6px var(--g-paper), inset 0 0 0 7px var(--g-inline);
+}
+:root[data-skin="garden"] .card::before { content: ""; position: absolute; top: -11px; left: calc(50% - 46px); width: 92px; height: 24px; background: url("skin/garden-tape-teal.svg") no-repeat center / 100% 100%; transform: rotate(-2.5deg); pointer-events: none; }
+:root[data-skin="garden"] .card:nth-child(3n+2)::before { left: 24%; background-image: url("skin/garden-tape-kraft.svg"); transform: rotate(2deg); }
+:root[data-skin="garden"] .card:nth-child(3n)::before { left: auto; right: 18%; background-image: url("skin/garden-tape-rose.svg"); transform: rotate(-1.5deg); }
+:root[data-skin="garden"] .card::after { content: ""; position: absolute; z-index: -1; left: -20px; top: -20px; width: 92px; height: 92px; background: var(--ornament-corner) no-repeat left top / contain; pointer-events: none; }
+:root[data-skin="garden"] .card:nth-child(even)::after { left: auto; top: auto; right: -20px; bottom: -20px; transform: scale(-1); }
+:root[data-skin="garden"] .card-title { color: var(--g-title); padding-bottom: 14px; background: var(--ornament-rule) no-repeat left bottom / 176px 27px; letter-spacing: .03em; }
+
+/* 首页横幅：象牙衬纸 + 蕾丝下摆 + 右侧手账拼贴 */
+:root[data-skin="garden"] .hero {
+  overflow: visible; border: 1px solid var(--g-dash); border-radius: 4px; padding: 32px 330px 38px 36px;
+  background-color: var(--g-paper);
+  background-image: url("skin/garden-lace-edge.svg"), url("skin/paper.svg"), radial-gradient(circle at 80% 50%, rgba(134,201,191,.3), transparent 42%), var(--g-hero);
+  background-repeat: repeat-x, repeat, no-repeat, no-repeat;
+  background-position: left bottom, 0 0, center, center;
+  background-size: 36px 18px, 220px 220px, 100% 100%, 100% 100%;
+  box-shadow: 0 2px 2px rgba(74,59,42,.08), 0 18px 30px -10px rgba(74,59,42,.26);
+  outline: 1px dashed var(--ornament-edge); outline-offset: -11px;
+}
+:root[data-skin="garden"] .hero::before { inset: 50% 10px auto auto; width: 304px; height: 223px; transform: translateY(-50%); background: url("skin/garden-hero.svg") no-repeat center / contain; opacity: 1; }
+:root[data-skin="garden"] .hero::after { inset: -12px auto auto 30px; width: 104px; height: 26px; border: 0; border-radius: 0; background: url("skin/garden-tape-kraft.svg") no-repeat center / 100% 100%; transform: rotate(-4deg); }
+:root[data-skin="garden"] .hero-kicker { color: var(--g-kicker); font: 600 12px var(--font-type); letter-spacing: .22em; }
+:root[data-skin="garden"] .hero h1 { color: var(--g-heading); font-size: 29px; }
+:root[data-skin="garden"] .hero .ring { background: var(--g-paper-2); border-radius: 50%; box-shadow: 0 0 0 5px rgba(134,201,191,.2), 0 0 0 6px var(--ornament-edge), 0 4px 12px rgba(74,59,42,.14); }
+
+/* 统计是一张张横格索引卡，任务是虚线剪下的票根 */
+:root[data-skin="garden"] .stat {
+  border: 1px solid var(--line); border-radius: 3px; padding-left: 26px;
+  background-color: var(--g-paper-2);
+  background-image: linear-gradient(90deg, transparent 15px, var(--g-margin) 15px 16px, transparent 16px), repeating-linear-gradient(180deg, transparent 0 21px, var(--g-ruled) 21px 22px);
+  box-shadow: 1px 2px 0 rgba(74,59,42,.06);
+}
+:root[data-skin="garden"] .stat b { color: var(--g-title); font-family: var(--font-title); }
+:root[data-skin="garden"] .task { background: var(--g-paper-2); border: 1px dashed var(--g-dash); border-radius: 3px; box-shadow: 1px 2px 0 rgba(74,59,42,.05); }
+:root[data-skin="garden"] .task:hover { border-style: solid; border-color: #4FA39A; background: var(--brand-soft); }
+:root[data-skin="garden"] .task-ico { background: radial-gradient(circle at 35% 30%, #EEF8F5, #C6E5DE); border: 1px solid #A9D4CB; }
+
+:root[data-skin="garden"] .btn.primary { color: #FFFDF6; background: linear-gradient(180deg,#5DAFA5,#33807A 52%,#2A6D67); border: 1px solid #245E59; box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 3px 8px rgba(42,109,103,.25); }
+:root[data-skin="garden"] .btn.primary:hover { filter: brightness(1.06); }
+:root[data-skin="garden"] .btn.soft { background: var(--g-paper-2); border: 1px solid var(--g-dash); color: var(--ink); }
+:root[data-skin="garden"] .tabs { background: var(--surface-2); border: 1px dashed var(--g-dash); border-radius: 999px; }
+:root[data-skin="garden"] .badge.brand { background: #2C716B; color: #FFFDF6; }
+:root[data-skin="garden"] .bar > i { background: linear-gradient(90deg, #C5B896, #74BFB4 55%, #2C716B); }
+:root[data-skin="garden"] .heat i.l1 { background: #CFE8E2; }
+:root[data-skin="garden"] .heat i.l2 { background: #86C9BF; }
+:root[data-skin="garden"] .heat i.l3 { background: #2C716B; }
+:root[data-skin="garden"] .input,
+:root[data-skin="garden"] .select,
+:root[data-skin="garden"] .textarea { background-color: var(--g-paper-2); border-color: var(--line); }
+
+/* 立绘：一张贴在剪贴簿上的相片，带胶带、缎带、邮票与签名，轻轻摇晃。 */
+.skin-opt[data-sk="garden"] .skin-portrait { background: #F8F4EA; }
+.skin-opt[data-sk="garden"] .skin-portrait img { object-fit: cover; object-position: 50% 14%; }
+#theme-character-float[data-figure="garden"] { width: 232px; height: 290px; }
+#theme-character-float[data-figure="garden"] .theme-character-figure { position: relative; background: url("skin/garden-photo-mat.svg") no-repeat center / 100% 100%; transform-origin: 50% 2%; animation: gardenSway 7s ease-in-out infinite; filter: drop-shadow(0 10px 12px rgba(74,59,42,.18)); }
+#theme-character-float[data-figure="garden"] .theme-character-figure::after { content: ""; position: absolute; inset: 0; background: url("skin/garden-photo-overlay.svg") no-repeat center / 100% 100%; pointer-events: none; }
+#theme-character-float[data-figure="garden"] img { position: absolute; left: 6.67%; top: 5.33%; width: 86.67%; height: 73.33%; object-fit: cover; object-position: 50% 16%; filter: sepia(.1) saturate(.96); animation: none; }
+@keyframes gardenSway { 0%, 100% { transform: rotate(-2.8deg); } 50% { transform: rotate(-1.2deg); } }
+@media (prefers-reduced-motion: reduce) { #theme-character-float[data-figure="garden"] .theme-character-figure { animation: none; transform: rotate(-2deg); } }
+
+@media (max-width: 1100px) {
+  :root[data-skin="garden"] .hero { padding-right: 230px; }
+  :root[data-skin="garden"] .hero::before { width: 214px; height: 157px; }
+  :root[data-skin="garden"] .skin-deco::before { width: 560px; height: 257px; }
+}
+@media (max-width: 900px) { #theme-character-float[data-figure="garden"] { width: 168px; height: 210px; } }
+@media (max-width: 720px) {
+  :root[data-skin="garden"] .hero { padding: 26px 22px 30px; }
+  :root[data-skin="garden"] .hero::before { display: none; }
+  #theme-character-float[data-figure="garden"] { width: 108px; height: 135px; }
+  :root[data-skin="garden"] .sidebar::before { display: none; }
+  :root[data-skin="garden"] .nav-item.active { padding-right: 0; clip-path: none; border-radius: 999px; }
+}
+
+/* 夜间：烛光下的旧档案，纸面转深、拼贴退到背景 */
+:root[data-skin="garden"][data-theme="dark"] {
+  --bg: #25221E; --surface: #312D27; --surface-2: #3A352E; --surface-3: #4A443B;
+  --ink: #F1EBDE; --ink-2: #D3CAB8; --ink-3: #ADA392; --line: #5B5347;
+  --brand: #8ED3C7; --brand-ink: #1D2A28; --brand-soft: #2D4643; --brand-deep: #B7E6DD;
+  --good-soft: #2F4535; --bad-soft: #4A302B; --warn-soft: #4A4130; --info-soft: #2F4242;
+  --shadow: 0 8px 26px rgba(0,0,0,.3); color-scheme: dark;
+  --g-paper: #312D27; --g-paper-2: #37322B; --g-heading: #F1EBDE; --g-title: #A9DCD3; --g-kicker: #DDAE9C;
+  --g-sidebar: linear-gradient(170deg,#2E2A24,#25221E); --g-veil: rgba(41,37,32,.93);
+  --g-hero: linear-gradient(112deg,#35302A,#2F2B25 58%,#273633);
+  --g-inline: rgba(197,184,150,.2); --g-dash: #615749; --g-ruled: rgba(169,220,211,.08); --g-margin: rgba(221,174,156,.3);
+  --g-nav-ink: #DCD3C2; --g-deco: .32; --g-sheen: linear-gradient(160deg, rgba(255,255,255,.04), rgba(0,0,0,.08));
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="garden"]:not([data-theme="light"]) {
+    --bg: #25221E; --surface: #312D27; --surface-2: #3A352E; --surface-3: #4A443B;
+    --ink: #F1EBDE; --ink-2: #D3CAB8; --ink-3: #ADA392; --line: #5B5347;
+    --brand: #8ED3C7; --brand-ink: #1D2A28; --brand-soft: #2D4643; --brand-deep: #B7E6DD;
+    --good-soft: #2F4535; --bad-soft: #4A302B; --warn-soft: #4A4130; --info-soft: #2F4242;
+    --shadow: 0 8px 26px rgba(0,0,0,.3); color-scheme: dark;
+    --g-paper: #312D27; --g-paper-2: #37322B; --g-heading: #F1EBDE; --g-title: #A9DCD3; --g-kicker: #DDAE9C;
+    --g-sidebar: linear-gradient(170deg,#2E2A24,#25221E); --g-veil: rgba(41,37,32,.93);
+    --g-hero: linear-gradient(112deg,#35302A,#2F2B25 58%,#273633);
+    --g-inline: rgba(197,184,150,.2); --g-dash: #615749; --g-ruled: rgba(169,220,211,.08); --g-margin: rgba(221,174,156,.3);
+    --g-nav-ink: #DCD3C2; --g-deco: .32; --g-sheen: linear-gradient(160deg, rgba(255,255,255,.04), rgba(0,0,0,.08));
+  }
+}
+:root[data-skin="garden"][data-theme="dark"] body { background-image: url("skin/paper.svg"), radial-gradient(circle at 80% 4%, rgba(95,175,166,.16), transparent 36%), radial-gradient(circle at 20% 96%, rgba(197,184,150,.1), transparent 38%); background-size: 220px 220px, 100% 100%, 100% 100%; }
+:root[data-skin="garden"][data-theme="dark"] .sidebar { background-color: #2A2621; }
+:root[data-skin="garden"][data-theme="dark"] .task-ico { background: #2D4643; border-color: #4C7570; }
+:root[data-skin="garden"][data-theme="dark"] .card::after { opacity: .4; }
+:root[data-skin="garden"][data-theme="dark"] .heat i.l1 { background: #2D4643; }
+:root[data-skin="garden"][data-theme="dark"] .heat i.l2 { background: #4FA39A; }
+:root[data-skin="garden"][data-theme="dark"] .heat i.l3 { background: #A9DCD3; }
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="garden"]:not([data-theme="light"]) body { background-image: url("skin/paper.svg"), radial-gradient(circle at 80% 4%, rgba(95,175,166,.16), transparent 36%), radial-gradient(circle at 20% 96%, rgba(197,184,150,.1), transparent 38%); background-size: 220px 220px, 100% 100%, 100% 100%; }
+  :root[data-skin="garden"]:not([data-theme="light"]) .sidebar { background-color: #2A2621; }
+  :root[data-skin="garden"]:not([data-theme="light"]) .task-ico { background: #2D4643; border-color: #4C7570; }
+  :root[data-skin="garden"]:not([data-theme="light"]) .card::after { opacity: .4; }
+  :root[data-skin="garden"]:not([data-theme="light"]) .heat i.l1 { background: #2D4643; }
+  :root[data-skin="garden"]:not([data-theme="light"]) .heat i.l2 { background: #4FA39A; }
+  :root[data-skin="garden"]:not([data-theme="light"]) .heat i.l3 { background: #A9DCD3; }
+}
+
+/* ========== 银雾流光 · 白纸流光手账 ==========
+   取色自白发角色：珍珠白 #EDEDEF、冷银 #D0D0D2、脸颊粉雾 #EEE4E3；点缀色取自参考手账里的
+   尤加利灰绿 #A9BEB6、小黄花 #E8CE57、浅蓝蝴蝶 #B6DCE2。每一页是一张撕边白纸，铺在揉皱的纸底上；
+   旧报剪片、邮票、索引卡和花草压在白纸边缘，正文区只留干净的纸面。“流光”落在一张虹彩光碟上：
+   首页进度环、品牌徽标和进度条都带着它的反光。素材由 tools/gen_glass_scrapbook.py 生成。 */
+:root[data-skin="glass"] {
+  --bg: #EEF0EF; --surface: #FFFFFF; --surface-2: #F3F4F2; --surface-3: #E3E7E8;
+  --ink: #343A41; --ink-2: #5B636B; --ink-3: #6B737B; --line: #D9DDDE;
+  --brand: #4C6A76; --brand-ink: #FFFFFF; --brand-soft: #E1ECEF; --brand-deep: #3B5560;
+  --good: #4E7F6A; --good-soft: #E2EEE8; --bad: #A8606A; --bad-soft: #F5E5E7;
+  --warn: #8E7638; --warn-soft: #F6EED2; --info: #5A7894; --info-soft: #E3EBF2;
+  --shadow: 0 1px 2px rgba(62,74,85,.06), 0 10px 24px rgba(62,74,85,.1);
+  --radius: 6px; --radius-sm: 4px;
+  --font-title: Georgia, "Palatino Linotype", "Noto Serif CJK SC", "Source Han Serif SC", "SimSun", serif;
+  --font-type: "Courier New", Courier, "Noto Serif CJK SC", monospace;
+  --ornament-corner: url("skin/glass-ornament.svg"); --ornament-rule: url("skin/glass-rule.svg");
+  --ornament-edge: rgba(120,134,145,.4); --ornament-faint: rgba(182,220,226,.14); --ornament-accent: #7FB2BC;
+  /* 主题内部的材质色；夜间只改这些变量 */
+  --s-sheet-img: url("skin/glass-sheet.svg"); --s-crumple: url("skin/glass-crumple.svg");
+  --s-paper: #FFFFFF; --s-paper-2: #F8F9F7; --s-heading: #2F353B; --s-title: #3F5B66; --s-kicker: #93777C;
+  --s-sidebar: #FAFAF7; --s-ruled: rgba(120,160,180,.2); --s-margin: rgba(196,150,157,.5);
+  --s-hero: linear-gradient(112deg, #FFFFFF, #F8F9F8 58%, #EEF2F3);
+  --s-ico: radial-gradient(circle at 35% 30%, #FFFFFF, #E2EAED);
+  --s-heat1: #DDEDEF; --s-heat2: #9FCBD2; --s-heat3: #4C6A76;
+  --s-nav-ink: #444B52; --s-deco: 1; --s-sticker: 1;
+}
+:root[data-skin="glass"] body {
+  background-color: var(--bg);
+  background-image: url("skin/glass-ephemera.svg"), var(--s-crumple);
+  background-size: 620px 620px, 420px 420px;
+}
+
+/* 纸底上的固定拼贴：页顶一串尤加利与旧报撕条，右下角是索引卡、票根和小黄花。 */
+:root[data-skin="glass"] .skin-deco { opacity: var(--s-deco); }
+:root[data-skin="glass"] .skin-deco::before { content: ""; position: absolute; top: 0; right: 0; width: 1000px; height: 120px; background: url("skin/glass-collage-top.svg") no-repeat right top / contain; }
+:root[data-skin="glass"] .deco-lace2 { right: 0; bottom: 0; width: 420px; height: 340px; border: 0; border-radius: 0; box-shadow: none; opacity: 1; background: url("skin/glass-collage-br.svg") no-repeat right bottom / contain; }
+:root[data-skin="glass"] .deco-festoon,
+:root[data-skin="glass"] .deco-corner,
+:root[data-skin="glass"] .deco-vine,
+:root[data-skin="glass"] .deco-sprig,
+:root[data-skin="glass"] .deco-lace { display: none; }
+
+/* 每一页是一张撕边白纸：九宫格平铺撕口，左下角插一束花，右上角压一角旧报。 */
+:root[data-skin="glass"] .page {
+  position: relative; isolation: isolate;
+  border: 26px solid transparent;
+  border-image-source: var(--s-sheet-img); border-image-slice: 26 fill; border-image-repeat: round;
+  padding: 18px 20px 172px;
+}
+:root[data-skin="glass"] .page::before { content: ""; position: absolute; z-index: 2; top: -50px; right: -26px; width: 150px; height: 105px; background: url("skin/glass-page-corner.svg") no-repeat right top / contain; opacity: var(--s-sticker); pointer-events: none; }
+:root[data-skin="glass"] .page::after { content: ""; position: absolute; z-index: 2; left: -18px; bottom: -22px; width: 380px; height: 211px; background: url("skin/glass-page-foot.svg") no-repeat left bottom / contain; opacity: var(--s-sticker); pointer-events: none; }
+
+/* 侧栏：一条同样撕边的白纸，右缘露出撕口与阴影。 */
+:root[data-skin="glass"] .sidebar { color: var(--s-nav-ink); background: var(--s-sidebar); border-right: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+:root[data-skin="glass"] .sidebar::after { right: -26px; width: 26px; border-style: solid; border-color: transparent; border-width: 0 26px 0 0; border-image: var(--s-sheet-img) 26 round; }
+:root[data-skin="glass"] .brand-logo {
+  color: #3F5B66; font-family: var(--font-title); font-style: italic; border-radius: 50%;
+  background: radial-gradient(circle, #FFFFFF 0 27%, rgba(255,255,255,0) 29%), conic-gradient(from 200deg, #E9EEF1, #F6D9E0 7%, #F3EBC4 13%, #D3EEEC 19%, #DCD8F2 25%, #E9EEF1 33%, #E9EEF1 50%, #F6D9E0 57%, #F3EBC4 63%, #D3EEEC 69%, #DCD8F2 75%, #E9EEF1 83%);
+  box-shadow: 0 0 0 1px #C3CAD0, inset 0 0 0 1px rgba(255,255,255,.9), 0 3px 8px rgba(62,74,85,.18);
+}
+:root[data-skin="glass"] .brand-name { color: var(--s-heading); font-family: var(--font-title); font-style: italic; letter-spacing: .03em; }
+:root[data-skin="glass"] .brand-sub { font-family: var(--font-type); letter-spacing: .14em; color: var(--s-kicker); }
+:root[data-skin="glass"] .nav-search { background: var(--s-paper); border: 1px dashed #C3CAD0; border-radius: 3px; }
+:root[data-skin="glass"] .nav-item { color: var(--s-nav-ink); border-radius: 3px; }
+:root[data-skin="glass"] .nav-item:hover { background: rgba(182,220,226,.22); }
+/* 选中项是一段撕开的浅蓝纸胶带 */
+:root[data-skin="glass"] .nav-item.active {
+  color: #2E4952; border: 0; border-radius: 0;
+  background: repeating-linear-gradient(45deg, rgba(255,255,255,.34) 0 4px, transparent 4px 9px), rgba(182,220,226,.78);
+  clip-path: polygon(0 10%, 3px 0, 100% 0, calc(100% - 3px) 22%, 100% 42%, calc(100% - 2px) 62%, 100% 82%, calc(100% - 4px) 100%, 0 100%, 3px 78%, 0 56%, 2px 34%);
+  box-shadow: none;
+}
+:root[data-skin="glass"] .nav-item.active::after { content: ""; width: 20px; height: 16px; background: url("skin/glass-butterfly.svg") no-repeat center / contain; }
+:root[data-skin="glass"] .nav-item.active .badge { background: #FFFFFF; color: #3B5560; }
+:root[data-skin="glass"] .sidebar-foot { border-top: 1px dashed #C9D0D4; font-family: var(--font-type); }
+
+/* 页标题：别一枚银色回形针，末尾停一只浅蓝蝴蝶。 */
+:root[data-skin="glass"] .page-head { padding-bottom: 16px; background: var(--ornament-rule) no-repeat left bottom / 250px 39px; }
+:root[data-skin="glass"] .page-title { position: relative; padding-left: 24px; color: var(--s-heading); font-size: 27px; letter-spacing: .05em; }
+:root[data-skin="glass"] .page-title::before { content: ""; position: absolute; left: 0; top: -14px; width: 17px; height: 40px; background: url("skin/glass-clip.svg") no-repeat center / contain; transform: rotate(7deg); }
+:root[data-skin="glass"] .page-title::after { content: ""; display: inline-block; width: 28px; height: 22px; margin-left: 8px; vertical-align: 4px; background: url("skin/glass-butterfly.svg") no-repeat center / contain; }
+:root[data-skin="glass"] .page-sub { margin-top: 8px; font-family: var(--font-type); font-size: 13px; color: var(--s-kicker); }
+
+/* 卡片：白纸上再叠一张厚卡纸，顶端贴纸胶带，角落背后探出尤加利与洋甘菊。 */
+:root[data-skin="glass"] .card {
+  position: relative; padding: 26px 26px 24px;
+  border: 1px solid var(--line); border-radius: 3px;
+  background: var(--s-paper);
+  box-shadow: 0 1px 1px rgba(62,74,85,.06), 0 12px 22px -10px rgba(62,74,85,.22);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+:root[data-skin="glass"] .card::before { content: ""; position: absolute; top: -11px; left: calc(50% - 45px); width: 90px; height: 24px; background: url("skin/glass-tape-aqua.svg") no-repeat center / 100% 100%; transform: rotate(-2deg); pointer-events: none; }
+:root[data-skin="glass"] .card:nth-child(4n+2)::before { left: 22%; background-image: url("skin/glass-tape-dot.svg"); transform: rotate(2.5deg); }
+:root[data-skin="glass"] .card:nth-child(4n+3)::before { left: auto; right: 16%; background-image: url("skin/glass-tape-butter.svg"); transform: rotate(-1.5deg); }
+:root[data-skin="glass"] .card:nth-child(4n)::before { left: 30%; background-image: url("skin/glass-tape-blush.svg"); transform: rotate(1.5deg); }
+:root[data-skin="glass"] .card::after { content: ""; position: absolute; z-index: -1; left: -30px; top: -30px; width: 104px; height: 104px; background: var(--ornament-corner) no-repeat left top / contain; opacity: var(--s-sticker); pointer-events: none; }
+:root[data-skin="glass"] .card:nth-child(even)::after { left: auto; top: auto; right: -30px; bottom: -30px; transform: scale(-1); }
+:root[data-skin="glass"] .card-title { color: var(--s-title); padding-bottom: 14px; background: var(--ornament-rule) no-repeat left bottom / 200px 31px; letter-spacing: .03em; }
+
+/* 首页横幅：白卡纸 + 点点纸胶带 + 右侧压花拼贴；进度环是一张会反光的光碟。 */
+:root[data-skin="glass"] .hero {
+  overflow: visible; border: 1px solid var(--line); border-radius: 3px; padding: 30px 330px 34px 34px;
+  background: radial-gradient(circle at 74% 42%, rgba(182,220,226,.26), transparent 40%), radial-gradient(circle at 96% 92%, rgba(238,223,224,.5), transparent 34%), var(--s-hero);
+  box-shadow: 0 2px 2px rgba(62,74,85,.06), 0 16px 28px -12px rgba(62,74,85,.24);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+:root[data-skin="glass"] .hero::before { inset: 50% 12px auto auto; width: 304px; height: 223px; transform: translateY(-50%); background: url("skin/glass-hero.svg") no-repeat center / contain; opacity: var(--s-sticker); }
+:root[data-skin="glass"] .hero::after { inset: -12px auto auto 30px; width: 104px; height: 26px; border: 0; border-radius: 0; background: url("skin/glass-tape-dot.svg") no-repeat center / 100% 100%; transform: rotate(-4deg); }
+:root[data-skin="glass"] .hero-kicker { color: var(--s-kicker); font: 600 12px var(--font-type); letter-spacing: .22em; }
+:root[data-skin="glass"] .hero h1 { color: var(--s-heading); font-size: 29px; }
+:root[data-skin="glass"] .hero .ring {
+  --brand: #4C6A76; --surface-3: rgba(255,255,255,.55);
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFFFFF 0 33%, rgba(255,255,255,0) 34.5%), conic-gradient(from 210deg, #E8EDF0, #F5D6DE 8%, #F2E9BE 14%, #CFEDEA 20%, #D6D3F1 26%, #E8EDF0 34%, #E8EDF0 50%, #F5D6DE 58%, #F2E9BE 64%, #CFEDEA 70%, #D6D3F1 76%, #E8EDF0 84%);
+  box-shadow: 0 0 0 1px #C3CAD0, inset 0 0 0 1px rgba(255,255,255,.85), 0 6px 14px rgba(62,74,85,.16);
+}
+:root[data-skin="glass"] .hero .ring-label, :root[data-skin="glass"] .hero .ring-label span { color: #3B4249; }
+
+/* 统计是横线索引卡，任务是左侧虚线撕口的票根 */
+:root[data-skin="glass"] .stat {
+  border: 1px solid var(--line); border-radius: 2px;
+  background-color: var(--s-paper);
+  background-image: linear-gradient(var(--s-margin), var(--s-margin)), linear-gradient(var(--s-margin), var(--s-margin)), repeating-linear-gradient(180deg, transparent 0 21px, var(--s-ruled) 21px 22px);
+  background-size: 100% 1px, 100% 1px, 100% 100%; background-position: 0 6px, 0 9px, 0 14px; background-repeat: no-repeat, no-repeat, repeat;
+  box-shadow: 1px 2px 0 rgba(62,74,85,.05);
+}
+:root[data-skin="glass"] .stat b { color: var(--s-title); font-family: var(--font-title); }
+:root[data-skin="glass"] .task { background: var(--s-paper-2); border: 1px solid var(--line); border-left: 2px dashed #B9C1C7; border-radius: 3px; box-shadow: 1px 2px 0 rgba(62,74,85,.04); }
+:root[data-skin="glass"] .task:hover { border-color: #8FB9C2; background: var(--brand-soft); }
+:root[data-skin="glass"] .task-ico { background: var(--s-ico); border: 1px solid #CBD3D8; }
+
+/* 主按钮划过时有一道光带掠过，就是“流光” */
+:root[data-skin="glass"] .btn.primary {
+  color: #FFFFFF; border: 1px solid #3E5761;
+  background: linear-gradient(110deg, transparent 32%, rgba(255,255,255,.38) 46%, rgba(246,214,222,.2) 52%, transparent 62%) no-repeat, linear-gradient(180deg, #5E7D89, #4C6A76 55%, #425E69);
+  background-size: 260% 100%, 100% 100%; background-position: 140% 0, 0 0;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 3px 9px rgba(62,90,100,.22);
+  transition: background-position .8s ease;
+}
+:root[data-skin="glass"] .btn.primary:hover { filter: none; background-position: -40% 0, 0 0; }
+:root[data-skin="glass"] .btn.soft { background: var(--s-paper); border: 1px solid var(--line); color: var(--brand-deep); }
+:root[data-skin="glass"] .tabs { background: var(--s-paper-2); border: 1px dashed #C3CAD0; border-radius: 999px; }
+:root[data-skin="glass"] .badge.brand { background: #4C6A76; color: #FFFFFF; }
+:root[data-skin="glass"] .bar > i { background: linear-gradient(90deg, #E7C3CC, #CDE7E5 28%, #EFE1A8 52%, #9CC6CF 74%, #4C6A76); }
+:root[data-skin="glass"] .heat i.l1 { background: var(--s-heat1); }
+:root[data-skin="glass"] .heat i.l2 { background: var(--s-heat2); }
+:root[data-skin="glass"] .heat i.l3 { background: var(--s-heat3); }
+:root[data-skin="glass"] .input,
+:root[data-skin="glass"] .select,
+:root[data-skin="glass"] .textarea { background-color: var(--s-paper); border-color: var(--line); }
+
+/* 立绘：白色蕾丝相框，长尾夹夹住顶端，周围是珍珠、缎带、尤加利与满天星；
+   每隔几秒一道光从照片上掠过。 */
+#theme-character-float[data-figure="glass"] { width: 232px; height: 290px; }
+#theme-character-float[data-figure="glass"] .theme-character-figure { position: relative; background: url("skin/glass-photo-mat.svg") no-repeat center / 100% 100%; animation: glassFloat 7s ease-in-out infinite; filter: drop-shadow(0 10px 12px rgba(62,74,85,.18)); }
+#theme-character-float[data-figure="glass"] .theme-character-figure::before { content: ""; position: absolute; z-index: 1; left: 6.67%; top: 5.33%; width: 86.67%; height: 73.33%; background: linear-gradient(115deg, transparent 36%, rgba(255,255,255,.55) 47%, rgba(246,214,222,.28) 52%, transparent 62%) no-repeat; background-size: 260% 100%; background-position: 150% 0; animation: glassSheen 9s ease-in-out infinite; pointer-events: none; }
+#theme-character-float[data-figure="glass"] .theme-character-figure::after { content: ""; position: absolute; inset: 0; background: url("skin/glass-photo-overlay.svg") no-repeat center / 100% 100%; pointer-events: none; }
+#theme-character-float[data-figure="glass"] img { position: absolute; left: 6.67%; top: 5.33%; width: 86.67%; height: 73.33%; object-fit: cover; object-position: 50% 14%; filter: none; animation: none; }
+@keyframes glassFloat { 0%, 100% { transform: translateY(0) rotate(1.6deg); } 50% { transform: translateY(-5px) rotate(.6deg); } }
+@keyframes glassSheen { 0%, 58% { background-position: 150% 0; } 86%, 100% { background-position: -60% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  #theme-character-float[data-figure="glass"] .theme-character-figure { animation: none; transform: rotate(1.2deg); }
+  #theme-character-float[data-figure="glass"] .theme-character-figure::before { animation: none; opacity: 0; }
+  :root[data-skin="glass"] .btn.primary { transition: none; }
+}
+
+@media (max-width: 1100px) {
+  :root[data-skin="glass"] .hero { padding-right: 230px; }
+  :root[data-skin="glass"] .hero::before { width: 214px; height: 157px; }
+  :root[data-skin="glass"] .skin-deco::before { width: 760px; height: 91px; }
+}
+@media (max-width: 900px) { #theme-character-float[data-figure="glass"] { width: 168px; height: 210px; } }
+@media (max-width: 720px) {
+  :root[data-skin="glass"] .page { border-width: 12px; padding: 8px 2px 120px; }
+  :root[data-skin="glass"] .page::before { display: none; }
+  :root[data-skin="glass"] .page::after { left: -8px; bottom: -12px; width: 260px; height: 144px; }
+  :root[data-skin="glass"] .hero { flex-wrap: wrap; gap: 14px; padding: 24px 18px 26px; }
+  :root[data-skin="glass"] .hero-copy { flex-basis: 100%; }
+  :root[data-skin="glass"] .hero::before { display: none; }
+  #theme-character-float[data-figure="glass"] { width: 108px; height: 135px; }
+}
+
+/* 夜间：月光下的白纸——纸面转成石墨灰，拼贴退到背景，光碟与纸胶带保留原色。 */
+:root[data-skin="glass"][data-theme="dark"] {
+  --bg: #1C2024; --surface: #30373E; --surface-2: #343C44; --surface-3: #414A54;
+  --ink: #EEF1F3; --ink-2: #C7CED4; --ink-3: #A5AEB6; --line: #4A545D;
+  --brand: #9FCBD3; --brand-ink: #1B2A30; --brand-soft: #2E434A; --brand-deep: #C6E4E9;
+  --good-soft: #2C4239; --bad-soft: #4A3034; --warn-soft: #47402C; --info-soft: #2F3D4A;
+  --shadow: 0 8px 26px rgba(0,0,0,.32); color-scheme: dark;
+  --s-sheet-img: url("skin/glass-sheet-dark.svg"); --s-crumple: url("skin/glass-crumple-dark.svg");
+  --s-paper: #30373E; --s-paper-2: #2D343B; --s-heading: #EEF1F3; --s-title: #B9DCE2; --s-kicker: #D9B5BA;
+  --s-sidebar: #2A3036; --s-ruled: rgba(159,203,211,.1); --s-margin: rgba(217,181,186,.35);
+  --s-hero: linear-gradient(112deg, #343B42, #30373E 58%, #2C3A40);
+  --s-ico: radial-gradient(circle at 35% 30%, #46525B, #2E434A);
+  --s-heat1: #2E434A; --s-heat2: #5F9AA5; --s-heat3: #B9DCE2;
+  --s-nav-ink: #D5DBE0; --s-deco: .3; --s-sticker: .8;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="glass"]:not([data-theme="light"]) {
+    --bg: #1C2024; --surface: #30373E; --surface-2: #343C44; --surface-3: #414A54;
+    --ink: #EEF1F3; --ink-2: #C7CED4; --ink-3: #A5AEB6; --line: #4A545D;
+    --brand: #9FCBD3; --brand-ink: #1B2A30; --brand-soft: #2E434A; --brand-deep: #C6E4E9;
+    --good-soft: #2C4239; --bad-soft: #4A3034; --warn-soft: #47402C; --info-soft: #2F3D4A;
+    --shadow: 0 8px 26px rgba(0,0,0,.32); color-scheme: dark;
+    --s-sheet-img: url("skin/glass-sheet-dark.svg"); --s-crumple: url("skin/glass-crumple-dark.svg");
+    --s-paper: #30373E; --s-paper-2: #2D343B; --s-heading: #EEF1F3; --s-title: #B9DCE2; --s-kicker: #D9B5BA;
+    --s-sidebar: #2A3036; --s-ruled: rgba(159,203,211,.1); --s-margin: rgba(217,181,186,.35);
+    --s-hero: linear-gradient(112deg, #343B42, #30373E 58%, #2C3A40);
+    --s-ico: radial-gradient(circle at 35% 30%, #46525B, #2E434A);
+    --s-heat1: #2E434A; --s-heat2: #5F9AA5; --s-heat3: #B9DCE2;
+    --s-nav-ink: #D5DBE0; --s-deco: .3; --s-sticker: .8;
+  }
+}

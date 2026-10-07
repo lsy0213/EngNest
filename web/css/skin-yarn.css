@@ -1,0 +1,332 @@
+/* ========== 皮肤：复古花线手札 ==========
+   图中三个色块实测：奶油白 #EDE6DC、雾蓝 #D6DAE3、豆沙粉 #B27F7C。
+   文字与操作色使用同色相的深色阶，以保证阅读和按钮的对比度。
+   装饰：耳边花饰、毛线球、飘带、蕾丝、格纹裙底纹、小猫。
+   只在 <html data-skin="yarn"> 时生效，切回「暖橙经典」就是原来的样子。 */
+:root[data-skin="yarn"] {
+  --bg: #F5F0EB;
+  --surface: #FFFCF8;
+  --surface-2: #F5EFE9;
+  --surface-3: #EDE6DC;
+  --ink: #493B3B;
+  --ink-2: #716061;
+  --ink-3: #827173;
+  --line: #DDD0C9;
+  --brand: #96585F;
+  --brand-ink: #FFFFFF;
+  --brand-soft: #F1E3E1;
+  --brand-deep: #7D4249;
+  --good: #6C9670;
+  --good-soft: #E4EEE1;
+  --bad: #C0574B;
+  --bad-soft: #F8E0DB;
+  --warn: #B4873C;
+  --warn-soft: #F8ECD5;
+  --info: #617B98;
+  --info-soft: #EAEDF2;
+  --blue: #D6DAE3;
+  --blue-deep: #526D88;
+  --blush: #E7CAC5;
+  --gold: #B69B76;
+  --swatch-cream: #EDE6DC;
+  --swatch-blue: #D6DAE3;
+  --swatch-rose: #B27F7C;
+  --check-a: rgba(159, 99, 101, .04);
+  --check-b: rgba(104, 128, 150, .04);
+  --lace-op: .95;
+  --bow: url("skin/bow.svg");
+  --thread: url("skin/thread.svg");
+  --shadow: 0 1px 2px rgba(91, 65, 60, .04), 0 8px 26px rgba(112, 84, 76, .075);
+  --radius: 16px;
+  --radius-sm: 12px;
+  --font-title: "Palatino Linotype", "Noto Serif CJK SC", "Source Han Serif SC", "SimSun", serif;
+}
+/* 夜晚的毛线团 */
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="yarn"]:not([data-theme="light"]) {
+    --bg: #221D1F; --surface: #2C2628; --surface-2: #352E30; --surface-3: #403739;
+    --ink: #F3E9E4; --ink-2: #C7B6B1; --ink-3: #918380; --line: #463C3E;
+    --brand: #D98C81; --brand-ink: #221D1F; --brand-soft: #4A302E; --brand-deep: #EEAA9F;
+    --good: #8EBE91; --good-soft: #283829; --bad: #E8877B; --bad-soft: #4A2B28;
+    --warn: #E2C07F; --warn-soft: #433823; --info: #9DB8D4; --info-soft: #273546;
+    --blue: #3A4A5C; --blue-deep: #A9C0D6; --blush: #6A4440; --gold: #C9A66B;
+    --check-a: rgba(217, 140, 129, .05); --check-b: rgba(157, 184, 212, .05);
+    --lace-op: .03;
+    --bow: url("skin/bow-dark.svg"); --thread: url("skin/thread-dark.svg");
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 22px rgba(0, 0, 0, .25);
+    color-scheme: dark;
+  }
+}
+:root[data-skin="yarn"][data-theme="dark"] {
+  --bg: #221D1F; --surface: #2C2628; --surface-2: #352E30; --surface-3: #403739;
+  --ink: #F3E9E4; --ink-2: #C7B6B1; --ink-3: #918380; --line: #463C3E;
+  --brand: #D98C81; --brand-ink: #221D1F; --brand-soft: #4A302E; --brand-deep: #EEAA9F;
+  --good: #8EBE91; --good-soft: #283829; --bad: #E8877B; --bad-soft: #4A2B28;
+  --warn: #E2C07F; --warn-soft: #433823; --info: #9DB8D4; --info-soft: #273546;
+  --blue: #3A4A5C; --blue-deep: #A9C0D6; --blush: #6A4440; --gold: #C9A66B;
+  --check-a: rgba(217, 140, 129, .05); --check-b: rgba(157, 184, 212, .05);
+  --lace-op: .03;
+  --bow: url("skin/bow-dark.svg"); --thread: url("skin/thread-dark.svg");
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 22px rgba(0, 0, 0, .25);
+  color-scheme: dark;
+}
+
+/* ---------- 背景：旧纸张颗粒 + 裙摆碎花墙纸，装饰分散在页面四周 ---------- */
+:root[data-skin="yarn"] { --sb: 212px; --wall: url("skin/wallpaper.svg"); --deco-op: .9; }
+:root[data-skin="yarn"] body.nav-collapsed { --sb: 64px; }
+@media (prefers-color-scheme: dark) { :root[data-skin="yarn"]:not([data-theme="light"]) { --wall: url("skin/wallpaper-dark.svg"); --deco-op: .28; } }
+:root[data-skin="yarn"][data-theme="dark"] { --wall: url("skin/wallpaper-dark.svg"); --deco-op: .28; }
+[data-skin="yarn"] body {
+  background-color: var(--bg);
+  background-image: url("skin/paper.svg"), var(--wall),
+    radial-gradient(ellipse at 50% -10%, rgba(214, 218, 227, .35), transparent 55%),
+    radial-gradient(ellipse at 50% 120%, rgba(231, 202, 197, .3), transparent 55%);
+  background-size: 220px 220px, 120px 120px, 100% 100%, 100% 100%;
+}
+[data-skin="yarn"] #app { position: relative; z-index: 1; }
+[data-skin="yarn"] ::selection { background: var(--blush); color: var(--ink); }
+.skin-deco { display: none; }
+[data-skin="yarn"] .skin-deco { display: block; position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; opacity: var(--deco-op); }
+[data-skin="yarn"] .skin-deco i { position: absolute; display: block; background-repeat: no-repeat; background-size: contain; background-position: center; }
+/* 顶部：蕾丝边 + 一段段下垂的花彩（festoon），接头处系蝴蝶结、挂珍珠 */
+[data-skin="yarn"] .deco-festoon { left: var(--sb); right: 0; top: 0; height: 86px; background-image: url("skin/festoon.svg"); background-repeat: repeat-x; background-size: 240px 86px; background-position: center top; }
+/* 内容区四个角：维多利亚式卷草大角花 */
+[data-skin="yarn"] .deco-corner { width: 190px; height: 190px; }
+[data-skin="yarn"] .c-tl { left: calc(var(--sb) + 4px); top: 4px; background-image: url("skin/bigcorner-tl.svg"); }
+[data-skin="yarn"] .c-tr { right: 4px; top: 4px; background-image: url("skin/bigcorner-tr.svg"); }
+[data-skin="yarn"] .c-bl { left: calc(var(--sb) + 4px); bottom: 4px; background-image: url("skin/bigcorner-bl.svg"); }
+[data-skin="yarn"] .c-br { right: 4px; bottom: 4px; background-image: url("skin/bigcorner-br.svg"); }
+/* 左侧：一根垂下来的细藤蔓，缀小玫瑰、勿忘我和珍珠坠 */
+[data-skin="yarn"] .deco-vine { left: calc(var(--sb) + 60px); top: 150px; width: 64px; height: 304px; background-image: url("skin/vine.svg"); }
+/* 左下：毛线团 */
+[data-skin="yarn"] .deco-yarn { left: calc(var(--sb) + 34px); bottom: 70px; width: 160px; height: 140px; background-image: url("../img/skin/yarn-ornament.png"); filter: saturate(.7) sepia(.12); transform: rotate(-6deg); }
+/* 右中：压花枝（避开右上角的花猫伙伴） */
+[data-skin="yarn"] .deco-sprig { right: 26px; top: 34%; width: 104px; height: 264px; background-image: url("skin/sprig.svg"); transform: rotate(6deg); }
+/* 左中、右下：两片露出一半的蕾丝杯垫 */
+[data-skin="yarn"] .deco-lace { left: calc(var(--sb) - 150px); top: 48%; width: 300px; height: 300px; background-image: url("skin/lace.svg"); opacity: .75; }
+[data-skin="yarn"] .deco-lace2 { right: -190px; bottom: -210px; width: 520px; height: 520px; background-image: url("skin/lace.svg"); opacity: .9; }
+/* 右下：花饰 */
+[data-skin="yarn"] .deco-flower { right: 46px; bottom: 76px; width: 120px; height: 140px; background-image: url("../img/skin/flower-ornament.png"); filter: saturate(.65) sepia(.1); transform: rotate(-10deg); }
+/* 窗口窄时内容会盖住两边的空白，只留墙纸和蕾丝 */
+[data-skin="yarn"] #view { padding-top: 72px; }
+@media (max-width: 1380px) { [data-skin="yarn"] .deco-vine, [data-skin="yarn"] .deco-sprig, [data-skin="yarn"] .deco-yarn, [data-skin="yarn"] .deco-flower { display: none; } }
+@media (max-width: 720px) { [data-skin="yarn"] .skin-deco { display: none; } }
+
+/* ---------- 侧边栏：格纹裙底纹 + 右侧蕾丝花边 ---------- */
+[data-skin="yarn"] .sidebar {
+  position: relative; z-index: 3; border-right: none;
+  background-color: var(--surface);
+  background-image: repeating-linear-gradient(0deg, transparent 0 27px, var(--check-a) 27px 29px),
+    repeating-linear-gradient(90deg, transparent 0 27px, var(--check-b) 27px 29px);
+}
+[data-skin="yarn"] .sidebar::after {
+  content: ""; position: absolute; top: 0; bottom: 0; right: -9px; width: 9px; pointer-events: none;
+  background: radial-gradient(circle at 0 50%, var(--surface) 6.5px, var(--line) 7px, transparent 7.6px) 0 0 / 9px 15px repeat-y;
+}
+/* 猫耳 logo */
+[data-skin="yarn"] .brand-logo {
+  position: relative; overflow: visible; border-radius: 14px;
+  background: linear-gradient(140deg, #C9B7AB, #B58382 60%, #86585B);
+  font-family: var(--font-title); font-style: italic;
+  box-shadow: 0 3px 10px rgba(126, 79, 82, .22);
+}
+[data-skin="yarn"] .brand-logo::before, [data-skin="yarn"] .brand-logo::after {
+  content: ""; position: absolute; top: -8px; width: 15px; height: 15px; z-index: -1;
+  background: #C7A9A0; clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+[data-skin="yarn"] .brand-logo::before { left: 3px; transform: rotate(-16deg); }
+[data-skin="yarn"] .brand-logo::after { right: 3px; transform: rotate(16deg); background: #A97779; }
+[data-skin="yarn"] .sidebar > .brand { position: relative; margin: 2px 2px 14px; padding: 10px 12px 12px; background: url("skin/frame-oval.svg") no-repeat center / 100% 100%; }
+[data-skin="yarn"] .sidebar > .brand::after { content: ""; position: absolute; left: 50%; bottom: -9px; width: 80px; height: 16px; transform: translateX(-50%); background: url("skin/fleuron.svg") no-repeat center / contain; }
+[data-skin="yarn"] body.nav-collapsed .sidebar > .brand { background: none; padding: 4px 0 18px; }
+[data-skin="yarn"] body.nav-collapsed .sidebar > .brand::after { display: none; }
+[data-skin="yarn"] .brand-name { font-family: var(--font-title); font-style: italic; color: var(--brand-deep); }
+[data-skin="yarn"] .brand-sub::after { content: ""; display: inline-block; width: 12px; height: 12px; margin-left: 4px; vertical-align: -1px; background: url("skin/paw.svg") no-repeat center / contain; opacity: .9; }
+[data-skin="yarn"] .nav-search { border-radius: 999px; background: var(--surface); }
+/* 当前页：豆沙粉底 + 左边一个小蝴蝶结 */
+[data-skin="yarn"] .nav-item { position: relative; border-radius: 999px; }
+[data-skin="yarn"] .nav-item .ico { filter: saturate(.58) sepia(.08); }
+[data-skin="yarn"] .nav-item:hover { background: var(--info-soft); }
+[data-skin="yarn"] .nav-item.active { background: linear-gradient(90deg, var(--brand-soft), var(--info-soft)); color: var(--brand-deep); box-shadow: inset 0 0 0 1px rgba(150, 88, 95, .15); }
+[data-skin="yarn"] .nav-item.active::after {
+  content: ""; position: absolute; right: 12px; top: 50%; width: 20px; height: 15px; transform: translateY(-50%) rotate(-10deg);
+  background: var(--bow) no-repeat center / contain;
+}
+[data-skin="yarn"] .nav-item.active .badge { margin-right: 26px; }
+[data-skin="yarn"] .nav-item .label { white-space: nowrap; }
+[data-skin="yarn"] .nav-item.active:has(.badge)::after { display: none; }
+[data-skin="yarn"] .nav-item.active:has(.badge) .badge { margin-right: 0; }
+[data-skin="yarn"] body.nav-collapsed .nav-item.active::after { right: 0; top: 2px; transform: rotate(-10deg) scale(.75); }
+@media (max-width: 720px) { [data-skin="yarn"] .sidebar .nav-item.active::after { display: none; } }
+[data-skin="yarn"] .sidebar-foot { position: relative; border-top: 1px dashed var(--blush); }
+[data-skin="yarn"] .sidebar-foot::before { content: ""; position: absolute; left: 50%; top: -12px; width: 104px; height: 23px; transform: translateX(-50%); background: var(--surface) url("skin/medallion.svg") no-repeat center / contain; }
+[data-skin="yarn"] body.nav-collapsed .sidebar-foot::before { width: 48px; }
+[data-skin="yarn"] .nav-sep { background: none; border-top: 1px dashed var(--line); height: 0; }
+
+/* ---------- 页头：衬线标题 + 毛线分隔线 ---------- */
+[data-skin="yarn"] .page-title, [data-skin="yarn"] .hero h1 { font-family: var(--font-title); letter-spacing: .3px; }
+[data-skin="yarn"] .page-title::before {
+  content: ""; display: inline-block; width: 30px; height: 34px; margin-right: 7px; vertical-align: -8px;
+  background: url("../img/skin/flower-ornament.png") no-repeat center / contain;
+  filter: saturate(.67);
+}
+[data-skin="yarn"] .page-head .page-title::after {
+  content: ""; display: block; width: 240px; height: 30px; margin-top: 2px;
+  background: url("skin/ornate-rule.svg") no-repeat left center / contain;
+}
+[data-skin="yarn"] .page-sub { font-style: italic; }
+
+/* ---------- 卡片 ---------- */
+[data-skin="yarn"] .card {
+  position: relative; border-color: var(--line);
+  background-image: url("skin/corner-tl.svg"), url("skin/corner-tr.svg"), url("skin/corner-bl.svg"), url("skin/corner-br.svg"),
+    url("skin/medallion.svg"), url("skin/drop.svg"), linear-gradient(145deg, rgba(255, 255, 255, .36), transparent 60%);
+  background-position: 4px 4px, calc(100% - 4px) 4px, 4px calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), center 1px, center calc(100% - 1px), 0 0;
+  background-size: 36px 36px, 36px 36px, 36px 36px, 36px 36px, 104px 23px, 56px 19px, 100% 100%;
+  padding: 24px 26px;
+  background-repeat: no-repeat;
+  box-shadow: var(--shadow), inset 0 0 0 5px var(--surface), inset 0 0 0 6px rgba(178, 127, 124, .2);
+}
+:root[data-skin="yarn"][data-theme="dark"] .card { box-shadow: var(--shadow), inset 0 0 0 5px var(--surface), inset 0 0 0 6px rgba(217, 140, 129, .14); }
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="yarn"]:not([data-theme="light"]) .card { box-shadow: var(--shadow), inset 0 0 0 5px var(--surface), inset 0 0 0 6px rgba(217, 140, 129, .14); }
+}
+[data-skin="yarn"] .card-title { color: var(--ink); font-family: var(--font-title); letter-spacing: .3px; }
+[data-skin="yarn"] .card > .card-title {
+  padding-bottom: 14px; margin-bottom: 14px;
+  background: url("skin/fleuron.svg") no-repeat center bottom / 64px 13px,
+    linear-gradient(90deg, transparent, var(--line) 8%, var(--line) calc(50% - 40px), transparent calc(50% - 40px), transparent calc(50% + 40px), var(--line) calc(50% + 40px), var(--line) 92%, transparent) no-repeat left bottom 6px / 100% 1px;
+}
+.hero-copy { flex: 1; min-width: 0; }
+.hero-kicker, .hero-art { display: none; }
+/* 首页横幅：复古手札的纸面、花饰、毛线与飘带 */
+[data-skin="yarn"] .hero {
+  position: relative; min-height: 224px; overflow: hidden; border: 1px solid var(--line);
+  background: linear-gradient(115deg, #F4E7E2, var(--surface) 49%, #E8ECF1);
+  box-shadow: var(--shadow);
+}
+[data-skin="yarn"] .hero::after {
+  content: ""; position: absolute; inset: 7px; border-radius: 10px; pointer-events: none;
+  border: 3px double rgba(155, 100, 100, .35);
+  background: url("skin/corner-tl.svg") no-repeat 3px 3px / 46px, url("skin/corner-tr.svg") no-repeat calc(100% - 3px) 3px / 46px,
+    url("skin/corner-bl.svg") no-repeat 3px calc(100% - 3px) / 46px, url("skin/corner-br.svg") no-repeat calc(100% - 3px) calc(100% - 3px) / 46px;
+}
+[data-skin="yarn"] .hero::before {
+  content: ""; position: absolute; top: -9px; left: 27px; width: 38px; height: 28px; transform: rotate(-8deg); z-index: 2;
+  background: var(--bow) no-repeat center / contain;
+}
+[data-skin="yarn"] .hero-kicker {
+  display: block; margin-bottom: 5px; color: var(--brand-deep); font-size: 12px;
+  letter-spacing: .18em; font-family: var(--font-title);
+}
+[data-skin="yarn"] .hero h1 { color: var(--ink); font-size: 28px; }
+[data-skin="yarn"] .hero .ring {
+  width: 126px; height: 126px; padding: 8px; border: 1px solid #D6C3BD; border-radius: 50%;
+  background: rgba(255, 252, 248, .67); box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .5);
+}
+:root[data-skin="yarn"][data-theme="dark"] .hero {
+  background: linear-gradient(115deg, #463139, var(--surface) 49%, #313C4B);
+}
+:root[data-skin="yarn"][data-theme="dark"] .hero .ring { background: rgba(44, 38, 40, .84); border-color: var(--line); box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .025); }
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="yarn"]:not([data-theme="light"]) .hero { background: linear-gradient(115deg, #463139, var(--surface) 49%, #313C4B); }
+  :root[data-skin="yarn"]:not([data-theme="light"]) .hero .ring { background: rgba(44, 38, 40, .84); border-color: var(--line); box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .025); }
+}
+[data-skin="yarn"] .hero-art { display: block; position: relative; flex: none; width: 255px; height: 195px; pointer-events: none; }
+[data-skin="yarn"] .hero-art::before {
+  content: ""; position: absolute; inset: 12px -8px 0 -25px; opacity: .7;
+  background: url("skin/ribbon-trail.svg") no-repeat center / contain;
+}
+[data-skin="yarn"] .hero-art::after {
+  content: ""; position: absolute; inset: -24px 0 -18px 4px; opacity: .4;
+  background: url("skin/lace.svg") no-repeat center / contain;
+}
+:root[data-skin="yarn"][data-theme="dark"] .hero-art::after { opacity: .1; }
+@media (prefers-color-scheme: dark) { :root[data-skin="yarn"]:not([data-theme="light"]) .hero-art::after { opacity: .1; } }
+[data-skin="yarn"] .hero-art img { position: absolute; z-index: 1; display: block; object-fit: contain; filter: saturate(.72); }
+[data-skin="yarn"] .hero-flower { right: -12px; top: -24px; width: 130px; height: 160px; transform: rotate(7deg); }
+[data-skin="yarn"] .hero-yarn { left: -5px; bottom: 0; width: 112px; height: 104px; transform: rotate(-7deg); }
+[data-skin="yarn"] .hero-cat {
+  right: 42px; bottom: -12px; width: 142px; height: 99px;
+  filter: drop-shadow(0 5px 7px rgba(89, 63, 61, .13));
+  animation: yarnCatFloat 4s ease-in-out infinite;
+}
+@keyframes yarnCatFloat { 0%, 100% { transform: translateY(2px) rotate(-3deg); } 50% { transform: translateY(-4px) rotate(1deg); } }
+@media (max-width: 900px) {
+  [data-skin="yarn"] .hero-art { width: 180px; height: 172px; }
+  [data-skin="yarn"] .hero-flower { width: 106px; height: 132px; }
+  [data-skin="yarn"] .hero-yarn { width: 86px; height: 80px; }
+  [data-skin="yarn"] .hero-cat { width: 109px; height: 76px; right: 28px; }
+}
+@media (max-width: 680px) {
+  [data-skin="yarn"] .hero-art { display: none; }
+  [data-skin="yarn"] .hero { min-height: 0; }
+}
+@media (prefers-reduced-motion: reduce) { [data-skin="yarn"] .hero-cat { animation: none; } }
+[data-skin="yarn"] .stat { background: linear-gradient(150deg, var(--surface-2), var(--info-soft)); border: 1px solid var(--line); }
+[data-skin="yarn"] .task { border-radius: 14px; border-style: solid; box-shadow: inset 0 0 0 3px var(--surface), inset 0 0 0 4px rgba(178, 127, 124, .1); }
+[data-skin="yarn"] .stat { box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .35); }
+[data-skin="yarn"] .btn.primary { letter-spacing: .5px; }
+[data-skin="yarn"] .modal { background-image: url("skin/corner-tl.svg"), url("skin/corner-tr.svg"), url("skin/corner-bl.svg"), url("skin/corner-br.svg");
+  background-position: 6px 6px, calc(100% - 6px) 6px, 6px calc(100% - 6px), calc(100% - 6px) calc(100% - 6px); background-size: 40px 40px; background-repeat: no-repeat; }
+[data-skin="yarn"] .task-ico { border-radius: 50%; background: var(--info-soft); }
+[data-skin="yarn"] .task-ico { filter: saturate(.68); }
+[data-skin="yarn"] .task:nth-child(2n) .task-ico { background: var(--brand-soft); }
+[data-skin="yarn"] .task:nth-child(3n) .task-ico { background: var(--warn-soft); }
+[data-skin="yarn"] .heat i { border-radius: 50%; }
+[data-skin="yarn"] .heat i.l1 { background: #E7C9C6; }
+[data-skin="yarn"] .heat i.l2 { background: #C99C9C; }
+[data-skin="yarn"] .heat i.l3 { background: var(--swatch-rose); }
+[data-skin="yarn"] .daily-sentence { font-family: Georgia, var(--font-en); font-style: italic; }
+
+/* ---------- 按钮、标签、进度条 ---------- */
+[data-skin="yarn"] .btn { border-radius: 999px; }
+[data-skin="yarn"] .btn.primary {
+  background: var(--brand); border-color: var(--brand-deep);
+  box-shadow: 0 2px 8px rgba(125, 66, 73, .18), inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+[data-skin="yarn"][data-theme="dark"] .btn.primary { background: linear-gradient(180deg, #E09B90, #CB7F74); border-color: #CB7F74; }
+@media (prefers-color-scheme: dark) { [data-skin="yarn"]:not([data-theme="light"]) .btn.primary { background: linear-gradient(180deg, #E09B90, #CB7F74); border-color: #CB7F74; } }
+[data-skin="yarn"] .btn.soft { background: var(--info-soft); color: var(--blue-deep); }
+[data-skin="yarn"] .btn.lg { border-radius: 999px; }
+[data-skin="yarn"] .btn.sm { border-radius: 999px; }
+[data-skin="yarn"] .speak { background: var(--info-soft); color: var(--blue-deep); }
+[data-skin="yarn"] .play-big { box-shadow: 0 6px 20px rgba(180, 100, 91, .32); }
+[data-skin="yarn"] .star.on, [data-skin="yarn"] .ds-star { color: var(--gold); }
+[data-skin="yarn"] .tabs { border-radius: 999px; background: var(--surface-2); }
+[data-skin="yarn"] .tab { border-radius: 999px; }
+[data-skin="yarn"] .tab.active { color: var(--brand-deep); }
+[data-skin="yarn"] .chip:hover { border-color: var(--blue-deep); }
+[data-skin="yarn"] .badge { background: var(--info-soft); color: var(--blue-deep); }
+[data-skin="yarn"] .badge.brand { background: var(--brand); color: var(--brand-ink); }
+[data-skin="yarn"] .bar { background: var(--surface-3); }
+[data-skin="yarn"] .bar > i {
+  background-color: var(--brand);
+  background-image: repeating-linear-gradient(-45deg, rgba(255, 255, 255, .2) 0 4px, transparent 4px 9px), linear-gradient(90deg, var(--blush), var(--brand));
+}
+[data-skin="yarn"] .input, [data-skin="yarn"] .select, [data-skin="yarn"] .textarea { border-radius: 12px; }
+[data-skin="yarn"] .input:focus, [data-skin="yarn"] .select:focus, [data-skin="yarn"] .textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+[data-skin="yarn"] .result-big, [data-skin="yarn"] .ib-big { font-family: var(--font-title); }
+
+/* ---------- 弹窗、提示、空状态 ---------- */
+[data-skin="yarn"] .modal-mask { background: rgba(74, 50, 46, .38); }
+[data-skin="yarn"] .modal { border-radius: 22px; box-shadow: 0 20px 60px rgba(90, 50, 45, .25); }
+[data-skin="yarn"] .toast { background: var(--brand-deep); color: #fff; }
+[data-skin="yarn"] .toast.good { background: var(--good); }
+[data-skin="yarn"] .toast.bad { background: var(--bad); }
+[data-skin="yarn"] .empty .big::after { content: ""; display: block; width: 46px; height: 10px; margin: 6px auto 0; background: var(--thread) no-repeat center / 120px 10px; opacity: .8; }
+[data-skin="yarn"] ::-webkit-scrollbar-thumb { background: #E5D2CA; border-color: var(--bg); }
+[data-skin="yarn"][data-theme="dark"] ::-webkit-scrollbar-thumb { background: #4A3C3E; }
+
+/* 设置页的皮肤选择 */
+.skin-opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.skin-opt { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); cursor: pointer; text-align: left; font: inherit; color: var(--ink); }
+.skin-opt:hover { border-color: var(--ink-3); }
+.skin-opt.active { border-color: var(--brand); background: var(--brand-soft); }
+.skin-dots { display: flex; }
+.skin-dots i { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--surface); margin-left: -6px; box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
+.skin-dots i:first-child { margin-left: 0; }
+
+/* 深色时蕾丝只留一点影子 */
+:root[data-skin="yarn"][data-theme="dark"] .deco-lace, :root[data-skin="yarn"][data-theme="dark"] .deco-lace2 { opacity: .22; }
+@media (prefers-color-scheme: dark) { :root[data-skin="yarn"]:not([data-theme="light"]) .deco-lace, :root[data-skin="yarn"]:not([data-theme="light"]) .deco-lace2 { opacity: .22; } }

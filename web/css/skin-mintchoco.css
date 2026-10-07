@@ -1,0 +1,315 @@
+/* ========== 薄荷可可 · 极繁下午茶 ==========
+   取色：薄荷 #B6D5C0 / #9FCDB6、可可 #8E7F72、黑可可 #56473A 来自用户提供的一张薄荷巧克力配色截图（只取颜色）；
+   天空蓝 #A9CEDA、焦糖 #9E7354、黑巧 #463020、金色 #CAA67F 来自猫耳少女原画（裙摆、外摆、发色、刺绣）。
+   材质是奶油 / 薄荷 / 可可三色的波点布：缝着虚线针脚，边上包蕾丝扇贝；选中项是一截剪了燕尾的可可波点缎带。
+   再叠上波点蝴蝶结、马卡龙、纸杯蛋糕、巧克力、蕾丝圆垫和天蓝条纹（原画的长袜）。
+   第二批参考图带来：亚麻手帕 + 细蕾丝边的卡片、带珍珠的蕾丝标签（页标题、卡片标题前的珍珠）、
+   横贯标题的蕾丝花边、薄荷 / 天蓝格纹、心形镂空的可可花边、花体字水印与手写批注、白色纸蝴蝶，
+   以及挂在细链上、穿着白缎带的方形蕾丝相框（角色立绘）。
+   甜点都压在卡片外缘或背后，正文区保持干净的奶油纸面。素材由 tools/gen_mintchoco_skin.py 生成。 */
+:root[data-skin="mintchoco"] {
+  --bg: #F3EBDF; --surface: #FFFCF6; --surface-2: #F5EFE5; --surface-3: #E7DDCF;
+  --ink: #3E2F27; --ink-2: #66544A; --ink-3: #7B695E; --line: #DCCDBB;
+  --brand: #3F7A67; --brand-ink: #FFFFFF; --brand-soft: #DDF0E5; --brand-deep: #2F6453;
+  --good: #4C8468; --good-soft: #E0F0E6; --bad: #AE5F58; --bad-soft: #F6E3DF;
+  --warn: #97723A; --warn-soft: #F5EBD4; --info: #4F7E90; --info-soft: #E1EEF2;
+  --shadow: 0 2px 3px rgba(62,42,32,.06), 0 12px 26px rgba(62,42,32,.12);
+  --radius: 22px; --radius-sm: 14px;
+  --font-title: "Bodoni MT", Didot, Georgia, "Palatino Linotype", "Noto Serif CJK SC", "Source Han Serif SC", "SimSun", serif;
+  --font-script: "Segoe Script", "Edwardian Script ITC", "Brush Script MT", cursive;
+  /* 蕾丝与亚麻；夜间换深色版本 */
+  --mc-hanky: url("skin/mintchoco-hanky.svg"); --mc-tag: url("skin/mintchoco-lace-tag.svg"); --mc-trim: url("skin/mintchoco-lace-trim.svg");
+  --mc-linen: #FBF6EE; --mc-weave: rgba(142,118,96,.05);
+  --mc-check: rgba(159,205,182,.085); --mc-check-sky: rgba(169,206,218,.42); --mc-check-mint: rgba(159,205,182,.34);
+  --mc-pearl: radial-gradient(circle at 34% 30%, #FFFFFF, #F6F2EC 42%, #D8D0C5 82%, #BFB5A8);
+  /* 三色波点布；夜间只改这些变量 */
+  --f-cream: #FFFCF6; --f-cream-edge: #DCCDBB; --f-cream-ink: #5A4235;
+  --f-mint: #CFE8DA; --f-mint-edge: #8DBFA9; --f-mint-ink: #2A5A4A;
+  --f-choco: #7A5F4E; --f-choco-edge: #5A4235; --f-choco-ink: #FFF6EA;
+  --f-dots: radial-gradient(circle, rgba(62,42,32,.36) 1.1px, transparent 1.6px);
+  --f-dots-light: radial-gradient(circle, rgba(255,246,234,.5) 1.1px, transparent 1.6px);
+  --f-dots-mint: radial-gradient(circle, rgba(111,168,148,.32) 1.1px, transparent 1.6px);
+  --f-stitch-dark: rgba(62,42,32,.35); --f-stitch-light: rgba(255,246,234,.6);
+  --mc-paper: #FFFCF6; --mc-paper-2: #FBF6EC; --mc-dot: rgba(111,168,148,.22); --mc-dot-2: rgba(142,127,114,.14);
+  --mc-title: #5A4235; --mc-heading: #3E2A20; --mc-kicker: #9E7354; --mc-stitch: rgba(142,127,114,.5);
+  --mc-sky: #A9CEDA; --mc-deco: 1; --mc-sticker: 1;
+  --mc-sidebar: #F7F1E7; --mc-nav-ink: #4E3D33;
+  --mc-hero: linear-gradient(115deg, #F6FBF7, #E1F1E7 55%, #D2EADC); --mc-hero-dot: rgba(111,168,148,.3); --mc-hero-dot2: rgba(255,255,255,.8); --mc-hero-edge: #B9D6C6;
+  --mc-heat1: #D6EDE0; --mc-heat2: #9FCDB6; --mc-heat3: #6B4F3F;
+}
+:root[data-skin="mintchoco"] body {
+  background-color: var(--bg);
+  background-image:
+    url("skin/mintchoco-ephemera.svg"),
+    linear-gradient(90deg, var(--mc-check) 50%, transparent 0),
+    linear-gradient(var(--mc-check) 50%, transparent 0),
+    radial-gradient(circle at 92% 4%, rgba(169,206,218,.3), transparent 32%),
+    radial-gradient(circle at 18% 98%, rgba(159,205,182,.3), transparent 36%);
+  background-size: 600px 600px, 36px 36px, 36px 36px, 100% 100%, 100% 100%;
+  background-position: 0 0, 0 0, 0 0, center, center;
+}
+
+/* ---------- 背景拼贴：左下马卡龙塔与信封，右下巧克力和蕾丝心 ---------- */
+:root[data-skin="mintchoco"] #app { position: relative; z-index: 1; }
+:root[data-skin="mintchoco"] #view { padding-top: 44px; }
+:root[data-skin="mintchoco"] .skin-deco { display: block; position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; opacity: var(--mc-deco); }
+:root[data-skin="mintchoco"] .skin-deco i { display: none; position: absolute; background-repeat: no-repeat; background-position: center; background-size: contain; }
+:root[data-skin="mintchoco"] .skin-deco::after { content: ""; position: absolute; left: 226px; bottom: 0; width: 400px; height: 300px; background: url("skin/mintchoco-collage-bl.svg") no-repeat left bottom / contain; }
+:root[data-skin="mintchoco"] body.nav-collapsed .skin-deco::after { left: 78px; }
+:root[data-skin="mintchoco"] .skin-deco .deco-lace2 { display: block; right: 0; bottom: 0; width: 420px; height: 340px; background-image: url("skin/mintchoco-collage-br.svg"); background-position: right bottom; }
+:root[data-skin="mintchoco"] .skin-deco .deco-sprig { display: block; top: 34%; right: 8px; width: 120px; height: 120px; background-image: url("skin/mintchoco-ornament.svg"); opacity: .75; transform: rotate(8deg); }
+
+/* ---------- 侧栏：奶油波点纸，左缘一条天蓝条纹（原画长袜），右缘蕾丝扇贝 ---------- */
+:root[data-skin="mintchoco"] .sidebar {
+  position: relative; z-index: 3; color: var(--mc-nav-ink); border-right: 0;
+  background-color: var(--mc-sidebar);
+  background-image: radial-gradient(circle, var(--mc-dot) 1.8px, transparent 2.3px), radial-gradient(circle, var(--mc-dot-2) 1.5px, transparent 2px);
+  background-size: 22px 22px, 22px 22px; background-position: 0 0, 11px 11px;
+  box-shadow: inset 12px 0 0 #FFFFFF, 4px 0 16px rgba(62,42,32,.08);
+}
+:root[data-skin="mintchoco"] .sidebar::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 10px; background: repeating-linear-gradient(180deg, var(--mc-sky) 0 7px, #FFFFFF 7px 14px); box-shadow: 1px 0 0 rgba(111,149,163,.35); pointer-events: none; }
+:root[data-skin="mintchoco"] .sidebar::after { content: ""; position: absolute; top: 0; bottom: 0; right: -12px; width: 14px; background: url("skin/mintchoco-lace-edge-v.svg") repeat-y left top / 14px 28px; filter: drop-shadow(2px 1px 1px rgba(62,42,32,.1)); pointer-events: none; }
+:root[data-skin="mintchoco"] .sidebar > .brand { position: relative; margin-bottom: 22px; padding-bottom: 16px; background: url("skin/mintchoco-rule.svg") no-repeat center bottom / 178px 28px; }
+/* 徽标是一枚马卡龙：两片薄荷饼壳夹一层黑巧 */
+:root[data-skin="mintchoco"] .brand-logo {
+  color: #FFF6EA; font-family: var(--font-title); font-style: italic; border-radius: 46% 46% 44% 44% / 52% 52% 48% 48%;
+  background: radial-gradient(ellipse 60% 26% at 38% 18%, rgba(255,255,255,.75), transparent 70%), linear-gradient(180deg, #C4E2D0 0 38%, #5A4235 38% 62%, #9FCDB6 62%);
+  box-shadow: 0 0 0 1.5px #6FA894, 0 4px 9px rgba(62,42,32,.22); text-shadow: 0 1px 1px rgba(62,42,32,.5);
+}
+:root[data-skin="mintchoco"] .brand-name { color: var(--mc-heading); font-family: var(--font-title); font-style: italic; letter-spacing: .03em; }
+:root[data-skin="mintchoco"] .brand-sub { color: var(--mc-kicker); letter-spacing: .16em; }
+:root[data-skin="mintchoco"] .nav-search { background: var(--f-cream); border: 1.5px dashed var(--mc-stitch); border-radius: 999px; color: var(--ink-3); }
+:root[data-skin="mintchoco"] #nav { gap: 4px; padding: 2px 0 6px; }
+:root[data-skin="mintchoco"] .nav-item { color: var(--mc-nav-ink); border-radius: 999px; }
+:root[data-skin="mintchoco"] .nav-item:hover { color: var(--f-mint-ink); background: var(--f-dots-mint) 0 0 / 9px 9px, var(--f-mint); }
+/* 选中项是一截剪了燕尾的可可波点缎带，上下两道奶油针脚 */
+:root[data-skin="mintchoco"] .nav-item.active {
+  color: var(--f-choco-ink); font-weight: 600; padding-right: 22px; border-radius: 999px 0 0 999px;
+  background:
+    linear-gradient(90deg, var(--f-stitch-light) 50%, transparent 0) 0 4px / 8px 1px repeat-x,
+    linear-gradient(90deg, var(--f-stitch-light) 50%, transparent 0) 0 calc(100% - 4px) / 8px 1px repeat-x,
+    var(--f-dots-light) 0 0 / 9px 9px, var(--f-choco);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%);
+  box-shadow: inset 0 0 0 1px var(--f-choco-edge);
+}
+:root[data-skin="mintchoco"] .nav-item.active::after { content: ""; margin-left: auto; width: 26px; height: 20px; flex: none; background: url("skin/mintchoco-navbow-mint.svg") no-repeat center / contain; }
+:root[data-skin="mintchoco"] .nav-item.active:has(.badge)::after { display: none; }
+:root[data-skin="mintchoco"] .nav-item.active .badge { background: #FFF6EA; color: #5A4235; }
+:root[data-skin="mintchoco"] body.nav-collapsed .nav-item.active { padding-right: 0; clip-path: none; border-radius: 999px; }
+:root[data-skin="mintchoco"] body.nav-collapsed .nav-item.active::after { display: none; }
+:root[data-skin="mintchoco"] .sidebar-foot { border-top: 2px dotted var(--mc-stitch); }
+:root[data-skin="mintchoco"] .nav-toggle:hover { background: var(--brand-soft); }
+
+/* ---------- 页标题：一张带珍珠的蕾丝标签，角上停一只纸蝴蝶；旁边一行手写批注 ---------- */
+:root[data-skin="mintchoco"] .page-head { position: relative; padding-bottom: 18px; background: url("skin/mintchoco-rule.svg") no-repeat left bottom / 300px 47px; }
+:root[data-skin="mintchoco"] .page-head::after { content: "↖ little by little"; position: absolute; left: 312px; bottom: 6px; font: 13px var(--font-script); color: var(--mc-kicker); opacity: .85; pointer-events: none; }
+:root[data-skin="mintchoco"] .page-title {
+  position: relative; display: inline-block; padding: 3px 26px 4px 40px; font-family: var(--font-title); font-size: 26px; letter-spacing: .06em; color: var(--mc-heading);
+  border: 9px solid transparent; border-image: var(--mc-tag) 10 fill round; border-radius: 0; background: none;
+  filter: drop-shadow(0 4px 6px rgba(62,42,32,.1));
+}
+:root[data-skin="mintchoco"] .page-title::before { content: ""; position: absolute; left: 6px; top: 50%; width: 20px; height: 20px; transform: translateY(-50%); border-radius: 50%; background: var(--mc-pearl); box-shadow: 1px 2px 2px rgba(62,42,32,.18); }
+:root[data-skin="mintchoco"] .page-title::after { content: ""; position: absolute; right: -30px; top: -26px; width: 46px; height: 37px; background: url("skin/mintchoco-butterfly.svg") no-repeat center / contain; transform: rotate(14deg); }
+:root[data-skin="mintchoco"] .page-sub { margin-top: 10px; color: var(--mc-kicker); font-size: 12px; letter-spacing: .16em; }
+
+/* ---------- 卡片：一方亚麻手帕，四周细蕾丝；顶端纸胶带，角落背后探出蕾丝蝴蝶结、纸蝴蝶和珍珠 ---------- */
+:root[data-skin="mintchoco"] .card {
+  position: relative; padding: 16px 18px;
+  border: 14px solid transparent; border-image: var(--mc-hanky) 20 round; border-radius: 0;
+  background-color: var(--mc-linen); background-clip: padding-box;
+  background-image: repeating-linear-gradient(0deg, var(--mc-weave) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, var(--mc-weave) 0 1px, transparent 1px 3px);
+  outline: 1.5px dashed var(--mc-stitch); outline-offset: -20px;
+  box-shadow: none;
+}
+:root[data-skin="mintchoco"] .card::before { content: ""; position: absolute; top: -24px; left: calc(50% - 46px); width: 92px; height: 24px; background: url("skin/mintchoco-tape-mint.svg") no-repeat center / 100% 100%; transform: rotate(-2.5deg); opacity: var(--mc-sticker); pointer-events: none; }
+:root[data-skin="mintchoco"] .card:nth-child(4n+2)::before { left: 22%; background-image: url("skin/mintchoco-tape-gingham.svg"); transform: rotate(2deg); }
+:root[data-skin="mintchoco"] .card:nth-child(4n+3)::before { left: auto; right: 18%; background-image: url("skin/mintchoco-tape-choco.svg"); transform: rotate(-1.5deg); }
+:root[data-skin="mintchoco"] .card:nth-child(4n)::before { left: 30%; background-image: url("skin/mintchoco-tape-sky.svg"); transform: rotate(1.5deg); }
+:root[data-skin="mintchoco"] .card::after { content: ""; position: absolute; z-index: -1; left: -58px; top: -58px; width: 112px; height: 112px; background: url("skin/mintchoco-ornament.svg") no-repeat left top / contain; opacity: var(--mc-sticker); pointer-events: none; }
+:root[data-skin="mintchoco"] .card:nth-child(even)::after { left: auto; top: auto; right: -58px; bottom: -58px; transform: scale(-1, 1) rotate(180deg); }
+/* 卡片标题前一颗珍珠，下面横贯一条蕾丝花边 */
+:root[data-skin="mintchoco"] .card-title { color: var(--mc-title); font-family: var(--font-title); padding-bottom: 20px; letter-spacing: .04em; background: var(--mc-trim) repeat-x left bottom / 20px 14px; }
+:root[data-skin="mintchoco"] .card-title::before { content: ""; flex: none; width: 13px; height: 13px; border-radius: 50%; background: var(--mc-pearl); box-shadow: 1px 2px 2px rgba(62,42,32,.18); }
+
+/* ---------- 首页横幅：薄荷格纹桌布，花体字水印，下摆是心形镂空的可可花边；右侧挂着蕾丝方框 ---------- */
+:root[data-skin="mintchoco"] .hero {
+  position: relative; overflow: visible; min-height: 262px; padding: 30px 350px 96px 34px;
+  border: 1.5px solid var(--mc-hero-edge); border-radius: 0;
+  background-color: #EAF5EE;
+  background-image:
+    url("skin/mintchoco-lace-heart.svg"),
+    url("skin/mintchoco-script.svg"),
+    linear-gradient(90deg, var(--mc-check-mint) 50%, transparent 0),
+    linear-gradient(var(--mc-check-mint) 50%, transparent 0),
+    var(--mc-hero);
+  background-repeat: repeat-x, no-repeat, repeat, repeat, no-repeat;
+  background-position: left bottom, 40px calc(100% - 18px), 0 0, 0 0, center;
+  background-size: 32px 18px, 360px 83px, 22px 22px, 22px 22px, 100% 100%;
+  outline: 1.5px dashed var(--mc-stitch); outline-offset: -9px;
+  box-shadow: 0 18px 30px -12px rgba(62,42,32,.26);
+}
+:root[data-skin="mintchoco"] .hero::before { content: ""; position: absolute; inset: 50% 14px auto auto; width: 320px; height: 230px; transform: translateY(-50%); background: url("skin/mintchoco-hero.svg") no-repeat center / contain; opacity: var(--mc-sticker); pointer-events: none; }
+:root[data-skin="mintchoco"] .hero::after { content: ""; position: absolute; top: -20px; left: 18px; width: 80px; height: 66px; background: url("skin/mintchoco-bow-lace.svg") no-repeat center / contain; transform: rotate(-12deg); pointer-events: none; }
+:root[data-skin="mintchoco"] .hero-copy { position: relative; z-index: 2; flex: 1; }
+/* 小标题像一张贴纸：左边一道薄荷竖条 */
+:root[data-skin="mintchoco"] .hero-kicker { display: inline-block; margin-bottom: 9px; padding: 3px 12px 3px 10px; color: var(--mc-kicker); font: 600 12px var(--font-title); letter-spacing: .22em; background: var(--mc-linen); border-left: 4px solid #9FCDB6; box-shadow: 0 2px 5px rgba(62,42,32,.1); }
+:root[data-skin="mintchoco"] .hero h1 { color: var(--mc-heading); font-family: var(--font-title); font-size: 29px; letter-spacing: .02em; }
+:root[data-skin="mintchoco"] .hero .muted { color: var(--ink-2); }
+/* 进度环是一枚俯视的马卡龙：薄荷饼壳一圈裙边，中间奶油 */
+:root[data-skin="mintchoco"] .hero .ring {
+  --surface-3: rgba(255,255,255,.7); position: relative; z-index: 2; border-radius: 50%;
+  background: radial-gradient(circle, #FFFCF6 0 52%, #C4E2D0 53% 70%, #9FCDB6 71%);
+  box-shadow: 0 0 0 4px #FFFFFF, 0 0 0 5.5px #6FA894, 0 0 0 9px rgba(169,206,218,.45), 0 6px 14px rgba(62,42,32,.18);
+}
+:root[data-skin="mintchoco"] .hero .ring svg circle:last-child { stroke: #5A4235; }
+:root[data-skin="mintchoco"] .hero .ring-label b { color: var(--mc-heading); }
+:root[data-skin="mintchoco"] .hero .ring-label span { color: var(--ink-2); }
+
+/* ---------- 统计与任务：奶油 / 薄荷 / 可可三色波点布轮流，缝一圈针脚；任务图标是马卡龙 ---------- */
+:root[data-skin="mintchoco"] .stat {
+  border: 1.5px solid var(--f-cream-edge); border-radius: 18px;
+  background: var(--f-dots-mint) 0 0 / 10px 10px, var(--f-cream);
+  outline: 1.5px dashed var(--f-stitch-dark); outline-offset: -6px;
+  box-shadow: 0 6px 12px rgba(62,42,32,.07);
+}
+:root[data-skin="mintchoco"] .stat { position: relative; }
+:root[data-skin="mintchoco"] .stat::before { content: ""; position: absolute; top: 10px; right: 12px; width: 11px; height: 11px; border-radius: 50%; background: var(--mc-pearl); box-shadow: 1px 2px 2px rgba(62,42,32,.2); }
+:root[data-skin="mintchoco"] .stat b { color: var(--f-cream-ink); font-family: var(--font-title); }
+:root[data-skin="mintchoco"] .stat:nth-child(3n+2) { border-color: var(--f-mint-edge); background: var(--f-dots) 0 0 / 10px 10px, var(--f-mint); }
+:root[data-skin="mintchoco"] .stat:nth-child(3n+2) b, :root[data-skin="mintchoco"] .stat:nth-child(3n+2) span { color: var(--f-mint-ink); }
+:root[data-skin="mintchoco"] .stat:nth-child(3n) { border-color: var(--f-choco-edge); background: var(--f-dots-light) 0 0 / 10px 10px, var(--f-choco); outline-color: var(--f-stitch-light); }
+:root[data-skin="mintchoco"] .stat:nth-child(3n) b, :root[data-skin="mintchoco"] .stat:nth-child(3n) span, :root[data-skin="mintchoco"] .stat:nth-child(3n) .faint { color: var(--f-choco-ink); }
+:root[data-skin="mintchoco"] .task { border: 1.5px dashed var(--mc-stitch); border-radius: 18px; background: var(--f-cream); }
+:root[data-skin="mintchoco"] .task:hover { border-style: solid; border-color: var(--f-mint-edge); background: var(--f-dots-mint) 0 0 / 9px 9px, var(--f-mint); }
+:root[data-skin="mintchoco"] .task-ico {
+  border-radius: 50%; border: 1.5px solid #6FA894;
+  background: radial-gradient(ellipse 60% 30% at 40% 22%, rgba(255,255,255,.8), transparent 70%), linear-gradient(180deg, #C4E2D0 0 40%, #FBF6EC 40% 58%, #9FCDB6 58%);
+}
+:root[data-skin="mintchoco"] .task:nth-child(even) .task-ico { border-color: #5A4235; background: radial-gradient(ellipse 60% 30% at 40% 22%, rgba(255,255,255,.55), transparent 70%), linear-gradient(180deg, #A08676 0 40%, #DDF0E5 40% 58%, #7A5F4E 58%); }
+:root[data-skin="mintchoco"] .task.done .task-ico { border-color: var(--good); }
+
+/* ---------- 按钮与控件：主按钮是可可波点缎带，柔和按钮是薄荷波点布 ---------- */
+:root[data-skin="mintchoco"] .btn.primary {
+  color: var(--f-choco-ink); border: 1px solid var(--f-choco-edge); border-radius: 999px;
+  background: var(--f-dots-light) 0 0 / 9px 9px, var(--f-choco);
+  outline: 1px dashed var(--f-stitch-light); outline-offset: -4px;
+  box-shadow: 0 4px 10px rgba(62,42,32,.18);
+}
+:root[data-skin="mintchoco"] .btn.primary:hover { filter: brightness(1.08); }
+:root[data-skin="mintchoco"] .btn.soft { color: var(--f-mint-ink); border: 1px solid var(--f-mint-edge); border-radius: 999px; background: var(--f-dots-mint) 0 0 / 9px 9px, var(--f-mint); }
+:root[data-skin="mintchoco"] .tabs { background: var(--mc-paper-2); border: 1.5px dotted var(--mc-stitch); border-radius: 999px; }
+:root[data-skin="mintchoco"] .tab { border-radius: 999px; }
+:root[data-skin="mintchoco"] .tab.active { color: var(--f-mint-ink); background: var(--f-dots-mint) 0 0 / 9px 9px, var(--f-mint); box-shadow: inset 0 0 0 1px var(--f-mint-edge); }
+:root[data-skin="mintchoco"] .badge.brand { background: #5A4235; color: #FFF6EA; }
+/* 进度条像一根薄荷条纹的缎带，末端是可可色 */
+:root[data-skin="mintchoco"] .bar { background: repeating-linear-gradient(90deg, var(--surface-3) 0 8px, var(--mc-paper-2) 8px 16px); box-shadow: inset 0 0 0 1px var(--line); }
+:root[data-skin="mintchoco"] .bar > i { background: repeating-linear-gradient(-45deg, #9FCDB6 0 6px, #C4E2D0 6px 12px); box-shadow: inset -6px 0 0 #7A5F4E; }
+:root[data-skin="mintchoco"] .heat i { border-radius: 50%; }
+:root[data-skin="mintchoco"] .heat i.l1 { background: var(--mc-heat1); }
+:root[data-skin="mintchoco"] .heat i.l2 { background: var(--mc-heat2); }
+:root[data-skin="mintchoco"] .heat i.l3 { background: var(--mc-heat3); }
+:root[data-skin="mintchoco"] .input,
+:root[data-skin="mintchoco"] .select,
+:root[data-skin="mintchoco"] .textarea { background-color: var(--mc-paper); border-color: var(--line); border-radius: 14px; }
+
+/* ---------- 设置里的主题卡片 ---------- */
+.skin-opt[data-sk="mintchoco"] .skin-portrait { background: #C19B71; border-color: #9FCDB6; box-shadow: inset 0 0 0 2px #FFF6EA; }
+.skin-opt[data-sk="mintchoco"] .skin-portrait img { object-fit: cover; object-position: 50% 6%; }
+
+/* ---------- 立绘：可可波点相框，扇贝蕾丝包边，顶端一只薄荷蝴蝶结，两侧垂着天蓝飘带和绒球 ---------- */
+#theme-character-float[data-figure="mintchoco"] { width: 200px; height: 358px; }
+/* 相框用一条细珠链从窗口顶端垂下来，系在顶上的白缎带蝴蝶结 */
+#theme-character-float[data-figure="mintchoco"]::before { content: ""; position: absolute; left: calc(50% - 1.5px); bottom: calc(100% - 10px); width: 3px; height: 100vh; background: radial-gradient(circle, #D9D1C6 1.2px, transparent 1.5px) center top / 3px 4px repeat-y, linear-gradient(90deg, transparent 1px, #BDB3A6 1px 2px, transparent 2px); pointer-events: none; }
+#theme-character-float[data-figure="mintchoco"] .theme-character-figure { position: relative; background: url("skin/mintchoco-photo-mat.svg") no-repeat center / 100% 100%; transform-origin: 50% 3%; animation: mintchocoSway 6.5s ease-in-out infinite; filter: drop-shadow(0 12px 12px rgba(62,42,32,.2)); }
+#theme-character-float[data-figure="mintchoco"] .theme-character-figure::after { content: ""; position: absolute; inset: 0; background: url("skin/mintchoco-photo-overlay.svg") no-repeat center / 100% 100%; pointer-events: none; }
+#theme-character-float[data-figure="mintchoco"] img { position: absolute; left: 8.333%; top: 6.512%; width: 83.333%; height: 85.581%; object-fit: cover; object-position: 50% 0; border-radius: 7px; filter: none; animation: none; }
+@keyframes mintchocoSway { 0%, 100% { transform: rotate(-2deg) translateY(0); } 50% { transform: rotate(1.2deg) translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { #theme-character-float[data-figure="mintchoco"] .theme-character-figure { animation: none; transform: rotate(-1.5deg); } }
+
+@media (max-width: 1380px) { :root[data-skin="mintchoco"] .skin-deco .deco-sprig { display: none; } }
+@media (max-width: 1100px) {
+  :root[data-skin="mintchoco"] .hero { padding-right: 240px; }
+  :root[data-skin="mintchoco"] .hero::before { width: 220px; height: 158px; }
+}
+@media (min-width: 901px) and (max-width: 1100px) { :root[data-skin="mintchoco"] #view { padding-right: 160px; } }
+@media (max-width: 900px) { #theme-character-float[data-figure="mintchoco"] { width: 150px; height: 269px; } }
+@media (max-width: 720px) {
+  :root[data-skin="mintchoco"] #view { padding-top: 28px; }
+  :root[data-skin="mintchoco"] .skin-deco { display: none; }
+  :root[data-skin="mintchoco"] .hero { padding: 26px 20px 32px; flex-wrap: wrap; gap: 14px; }
+  :root[data-skin="mintchoco"] .hero-copy { flex-basis: 100%; }
+  :root[data-skin="mintchoco"] .hero::before { display: none; }
+  :root[data-skin="mintchoco"] .sidebar::after { display: none; }
+  :root[data-skin="mintchoco"] .nav-item.active { padding-right: 0; clip-path: none; border-radius: 999px; }
+  :root[data-skin="mintchoco"] .page-title { font-size: 22px; }
+  :root[data-skin="mintchoco"] .page-head::after, :root[data-skin="mintchoco"] .page-title::after { display: none; }
+  :root[data-skin="mintchoco"] .card { border-width: 10px; }
+  #theme-character-float[data-figure="mintchoco"] { width: 96px; height: 172px; }
+}
+
+/* ---------- 夜间「深夜可可」：黑巧色纸面，波点布换成深可可与深薄荷，甜点贴纸退到背景 ---------- */
+:root[data-skin="mintchoco"][data-theme="dark"] {
+  --bg: #221A16; --surface: #33281F; --surface-2: #3B2F26; --surface-3: #4B3D32;
+  --ink: #F6ECE0; --ink-2: #D9CABA; --ink-3: #B4A493; --line: #56473B;
+  --brand: #9FD3BE; --brand-ink: #1D2B25; --brand-soft: #2C4339; --brand-deep: #C4E8D8;
+  --good-soft: #2C4235; --bad-soft: #4A2E2A; --warn-soft: #4A3F2C; --info-soft: #2C3E45;
+  --shadow: 0 8px 26px rgba(0,0,0,.34); color-scheme: dark;
+  --f-cream: #3A2E26; --f-cream-edge: #56473B; --f-cream-ink: #F6ECE0;
+  --f-mint: #355E50; --f-mint-edge: #4F8572; --f-mint-ink: #EAF8F0;
+  --f-choco: #5A4235; --f-choco-edge: #3E2A20; --f-choco-ink: #FFF3E4;
+  --f-dots: radial-gradient(circle, rgba(234,248,240,.22) 1.1px, transparent 1.6px);
+  --f-dots-light: radial-gradient(circle, rgba(255,243,228,.3) 1.1px, transparent 1.6px);
+  --f-dots-mint: radial-gradient(circle, rgba(159,211,190,.2) 1.1px, transparent 1.6px);
+  --f-stitch-dark: rgba(234,248,240,.26); --f-stitch-light: rgba(255,243,228,.45);
+  --mc-paper: #33281F; --mc-paper-2: #2E241C; --mc-dot: rgba(159,211,190,.12); --mc-dot-2: rgba(214,190,170,.07);
+  --mc-title: #C4E8D8; --mc-heading: #F6ECE0; --mc-kicker: #DDB89A; --mc-stitch: rgba(196,232,216,.32);
+  --mc-sky: #6F9AAA; --mc-deco: .34; --mc-sticker: .78;
+  --mc-sidebar: #2A211B; --mc-nav-ink: #E2D4C4;
+  --mc-hero: linear-gradient(115deg, #2E4038, #263830 55%, #1F3029); --mc-hero-dot: rgba(159,211,190,.14); --mc-hero-dot2: rgba(255,255,255,.04); --mc-hero-edge: #3E6A5B;
+  --mc-hanky: url("skin/mintchoco-hanky-dark.svg"); --mc-tag: url("skin/mintchoco-lace-tag-dark.svg"); --mc-trim: url("skin/mintchoco-lace-trim-dark.svg");
+  --mc-linen: #33281F; --mc-weave: rgba(255,240,220,.035);
+  --mc-check: rgba(159,211,190,.035); --mc-check-sky: rgba(111,154,170,.25); --mc-check-mint: rgba(159,211,190,.09);
+  --mc-heat1: #2C4339; --mc-heat2: #5F9D86; --mc-heat3: #C4E8D8;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="mintchoco"]:not([data-theme="light"]) {
+    --bg: #221A16; --surface: #33281F; --surface-2: #3B2F26; --surface-3: #4B3D32;
+    --ink: #F6ECE0; --ink-2: #D9CABA; --ink-3: #B4A493; --line: #56473B;
+    --brand: #9FD3BE; --brand-ink: #1D2B25; --brand-soft: #2C4339; --brand-deep: #C4E8D8;
+    --good-soft: #2C4235; --bad-soft: #4A2E2A; --warn-soft: #4A3F2C; --info-soft: #2C3E45;
+    --shadow: 0 8px 26px rgba(0,0,0,.34); color-scheme: dark;
+    --f-cream: #3A2E26; --f-cream-edge: #56473B; --f-cream-ink: #F6ECE0;
+    --f-mint: #355E50; --f-mint-edge: #4F8572; --f-mint-ink: #EAF8F0;
+    --f-choco: #5A4235; --f-choco-edge: #3E2A20; --f-choco-ink: #FFF3E4;
+    --f-dots: radial-gradient(circle, rgba(234,248,240,.22) 1.1px, transparent 1.6px);
+    --f-dots-light: radial-gradient(circle, rgba(255,243,228,.3) 1.1px, transparent 1.6px);
+    --f-dots-mint: radial-gradient(circle, rgba(159,211,190,.2) 1.1px, transparent 1.6px);
+    --f-stitch-dark: rgba(234,248,240,.26); --f-stitch-light: rgba(255,243,228,.45);
+    --mc-paper: #33281F; --mc-paper-2: #2E241C; --mc-dot: rgba(159,211,190,.12); --mc-dot-2: rgba(214,190,170,.07);
+    --mc-title: #C4E8D8; --mc-heading: #F6ECE0; --mc-kicker: #DDB89A; --mc-stitch: rgba(196,232,216,.32);
+    --mc-sky: #6F9AAA; --mc-deco: .34; --mc-sticker: .78;
+    --mc-sidebar: #2A211B; --mc-nav-ink: #E2D4C4;
+    --mc-hero: linear-gradient(115deg, #2E4038, #263830 55%, #1F3029); --mc-hero-dot: rgba(159,211,190,.14); --mc-hero-dot2: rgba(255,255,255,.04); --mc-hero-edge: #3E6A5B;
+    --mc-hanky: url("skin/mintchoco-hanky-dark.svg"); --mc-tag: url("skin/mintchoco-lace-tag-dark.svg"); --mc-trim: url("skin/mintchoco-lace-trim-dark.svg");
+    --mc-linen: #33281F; --mc-weave: rgba(255,240,220,.035);
+    --mc-check: rgba(159,211,190,.035); --mc-check-sky: rgba(111,154,170,.25); --mc-check-mint: rgba(159,211,190,.09);
+    --mc-heat1: #2C4339; --mc-heat2: #5F9D86; --mc-heat3: #C4E8D8;
+  }
+}
+/* 夜间不随变量走的几处：侧栏白边、蕾丝边、横幅底色、进度环 */
+:root[data-skin="mintchoco"][data-theme="dark"] .sidebar { box-shadow: inset 12px 0 0 #3B2F26, 4px 0 16px rgba(0,0,0,.25); }
+:root[data-skin="mintchoco"][data-theme="dark"] .sidebar::after { opacity: .3; }
+:root[data-skin="mintchoco"][data-theme="dark"] .page-head::after { opacity: .6; }
+:root[data-skin="mintchoco"][data-theme="dark"] .hero { background-color: #26372F; box-shadow: 0 18px 30px -12px rgba(0,0,0,.5); }
+:root[data-skin="mintchoco"][data-theme="dark"] .hero .ring { --surface-3: rgba(255,255,255,.18); background: radial-gradient(circle, #33281F 0 52%, #3E6A5B 53% 70%, #30574A 71%); box-shadow: 0 0 0 4px #2A211B, 0 0 0 5.5px #5F9D86, 0 0 0 9px rgba(111,154,170,.3), 0 6px 14px rgba(0,0,0,.3); }
+:root[data-skin="mintchoco"][data-theme="dark"] .hero .ring svg circle:last-child { stroke: #C4E8D8; }
+:root[data-skin="mintchoco"][data-theme="dark"] .task-ico { filter: brightness(.82); }
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="mintchoco"]:not([data-theme="light"]) .sidebar { box-shadow: inset 12px 0 0 #3B2F26, 4px 0 16px rgba(0,0,0,.25); }
+  :root[data-skin="mintchoco"]:not([data-theme="light"]) .sidebar::after { opacity: .3; }
+  :root[data-skin="mintchoco"]:not([data-theme="light"]) .page-head::after { opacity: .6; }
+  :root[data-skin="mintchoco"]:not([data-theme="light"]) .hero { background-color: #26372F; box-shadow: 0 18px 30px -12px rgba(0,0,0,.5); }
+  :root[data-skin="mintchoco"]:not([data-theme="light"]) .hero .ring { --surface-3: rgba(255,255,255,.18); background: radial-gradient(circle, #33281F 0 52%, #3E6A5B 53% 70%, #30574A 71%); box-shadow: 0 0 0 4px #2A211B, 0 0 0 5.5px #5F9D86, 0 0 0 9px rgba(111,154,170,.3), 0 6px 14px rgba(0,0,0,.3); }
+  :root[data-skin="mintchoco"]:not([data-theme="light"]) .hero .ring svg circle:last-child { stroke: #C4E8D8; }
+  :root[data-skin="mintchoco"]:not([data-theme="light"]) .task-ico { filter: brightness(.82); }
+}

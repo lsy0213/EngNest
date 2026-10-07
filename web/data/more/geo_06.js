@@ -1,0 +1,203 @@
+// 地理 · 南美洲 / 大洋洲（原创文章）
+(window.READING_EXTRA = window.READING_EXTRA || []).push(
+  {
+    id: "g_andes", category: "geography", title: "The Andes: The Longest Mountain Range", level: "中级", topic: "地理 · 南美洲", imgQuery: "Andes mountains Aconcagua",
+    paragraphs: [
+      ["The Andes run about 7,000 kilometers down the western side of South America, through seven countries from Venezuela to Chile. It is the longest mountain range above water in the world. Its highest peak, Aconcagua in Argentina, is 6,961 meters high.",
+        "安第斯山脉沿南美洲西侧延伸约 7000 公里，从委内瑞拉到智利，穿过七个国家，是世界上最长的陆上山脉。最高峰是阿根廷的阿空加瓜山，海拔 6961 米。"],
+      ["The Andes are still rising, because the Nazca plate under the Pacific is sliding beneath South America. This also creates many volcanoes and strong earthquakes.",
+        "安第斯山脉至今仍在升高，因为太平洋下的纳斯卡板块正俯冲到南美洲板块之下。这也造成了大量火山和强烈地震。"],
+      ["People have farmed the Andes for thousands of years. The Inca built terraces on steep slopes and grew thousands of kinds of potatoes. The potato, now eaten all over the world, first came from this region.",
+        "人们在安第斯山区耕作已有几千年历史。印加人在陡坡上修建梯田，种植了几千个品种的土豆。如今全世界都在吃的土豆，最早就来自这里。"],
+      ["Llamas and alpacas, relatives of the camel, carry goods and provide wool. The famous Inca city of Machu Picchu sits on a mountain ridge about 2,430 meters high in Peru.",
+        "骆驼的近亲美洲驼和羊驼在这里驮运货物、提供羊毛。著名的印加古城马丘比丘坐落在秘鲁海拔约 2430 米的山脊上。"],
+    ],
+    questions: [
+      { q: "Why are the Andes still rising?", o: ["The Nazca plate is sliding beneath South America.", "Snow is piling up.", "People are building on them.", "The sea level is falling."], a: 0, e: "第二段。" },
+      { q: "Which food first came from the Andes?", o: ["Rice.", "Wheat.", "The potato.", "The banana."], a: 2, e: "第三段。" },
+      { q: "What are llamas related to?", o: ["Horses.", "Camels.", "Sheep.", "Deer."], a: 1, e: "第四段。" },
+    ],
+  },
+  {
+    id: "g_atacama", category: "geography", title: "The Atacama: The Driest Desert", level: "中级", topic: "地理 · 南美洲", imgQuery: "Atacama Desert ALMA telescope",
+    paragraphs: [
+      ["The Atacama Desert in northern Chile is the driest non-polar desert on Earth. Some weather stations there have never recorded any rain at all. Parts of it are so dry and lifeless that NASA tests its Mars equipment there.",
+        "智利北部的阿塔卡马沙漠是地球上除两极以外最干旱的沙漠，那里有些气象站从来没有记录到降雨。部分地区干燥荒芜到美国宇航局（NASA）会在那里测试火星探测设备。"],
+      ["It is dry for two reasons. The Andes block rain from the east, and the cold Humboldt Current along the coast cools the air, so clouds rarely form rain.",
+        "它干旱有两个原因：安第斯山脉挡住了东边来的雨，沿岸寒冷的洪堡寒流又让空气变冷，云很少能形成降雨。"],
+      ["The dry, clear air and high altitude make the Atacama one of the best places in the world for astronomy. Some of the largest telescopes on Earth, such as ALMA, are built there.",
+        "干燥清澈的空气和高海拔，使阿塔卡马成为世界上最适合天文观测的地方之一。ALMA 等地球上最大的一批望远镜就建在这里。"],
+      ["Even here, life finds a way. In rare years with rain, the desert floor suddenly fills with pink and purple flowers, an event Chileans call the desierto florido, or \"flowering desert\".",
+        "即便在这里，生命也会找到出路。在难得下雨的年份，沙漠会突然开满粉色和紫色的花，智利人称之为「开花的沙漠」。"],
+    ],
+    questions: [
+      { q: "Why does NASA test equipment there?", o: ["It is very cold.", "It is so dry and lifeless, like Mars.", "It is close to space.", "It has many rockets."], a: 1, e: "第一段。" },
+      { q: "Which is a reason for the dryness?", o: ["A warm ocean current.", "The cold Humboldt Current.", "Strong winds from the west.", "Too many trees."], a: 1, e: "第二段。" },
+      { q: "Why is the Atacama good for astronomy?", o: ["It is dark all day.", "The air is dry and clear, and it is high.", "It has no people.", "It is near the equator."], a: 1, e: "第三段。" },
+    ],
+  },
+  {
+    id: "g_patagonia", category: "geography", title: "Patagonia: The End of the World", level: "中级", topic: "地理 · 南美洲", imgQuery: "Torres del Paine Patagonia",
+    paragraphs: [
+      ["Patagonia is the region at the southern tip of South America, shared by Argentina and Chile. It is a land of strong winds, glaciers, wide grassy plains and sharp granite peaks like Torres del Paine.",
+        "巴塔哥尼亚是南美洲最南端的地区，由阿根廷和智利共有。这里狂风呼啸，有冰川、辽阔的草原，以及百内国家公园那样尖锐的花岗岩山峰。"],
+      ["The Southern Patagonian Ice Field is one of the largest areas of ice outside the poles. One of its glaciers, Perito Moreno, is famous because, unlike most glaciers in the world, it is not shrinking. Visitors watch huge pieces fall off its 60-meter-high front.",
+        "南巴塔哥尼亚冰原是两极以外最大的冰原之一。其中的佩里托莫雷诺冰川非常有名，因为它和世界上大多数冰川不同，并没有在缩小。游客们观看巨大的冰块从它 60 米高的冰墙上崩落。"],
+      ["At the very end of the continent is Tierra del Fuego, \"Land of Fire\". It was named by sailors who saw the fires of native people on the shore. The town of Ushuaia calls itself \"the end of the world\".",
+        "大陆的最南端是火地岛，意为「火之地」，得名于航海者看到岸上原住民燃起的篝火。乌斯怀亚镇自称「世界的尽头」。"],
+    ],
+    questions: [
+      { q: "Which two countries share Patagonia?", o: ["Brazil and Peru.", "Argentina and Chile.", "Chile and Bolivia.", "Argentina and Uruguay."], a: 1, e: "第一段。" },
+      { q: "What is special about the Perito Moreno Glacier?", o: ["It is the longest glacier.", "It is not shrinking.", "It is made of salt.", "It is in the desert."], a: 1, e: "第二段。" },
+      { q: "Why is it called Tierra del Fuego?", o: ["Because of volcanoes.", "Sailors saw native people's fires on the shore.", "Because it is very hot.", "Because of red rocks."], a: 1, e: "第三段。" },
+    ],
+  },
+  {
+    id: "g_angelfalls", category: "geography", title: "Angel Falls: The Highest Waterfall", level: "初级", topic: "地理 · 南美洲", imgQuery: "Angel Falls Venezuela",
+    paragraphs: [
+      ["Angel Falls in Venezuela is the highest uninterrupted waterfall in the world. The water drops 979 meters from the top of a flat-topped mountain, Auyán-tepui, so far that much of it turns into mist before reaching the bottom.",
+        "委内瑞拉的安赫尔瀑布是世界上落差最大的不间断瀑布。水从平顶山奥扬特普伊的山顶倾泻 979 米，由于落差太大，很多水还没到底就化作了水雾。"],
+      ["The falls are named after Jimmie Angel, an American pilot who flew over them in 1933 while searching for gold. In 1937, he landed his plane on top of the mountain, where it got stuck in the mud. He and his companions had to walk for 11 days to get back.",
+        "瀑布以美国飞行员吉米·安赫尔的名字命名。他 1933 年寻找金矿时飞越了这座瀑布。1937 年，他把飞机降落在山顶，结果陷进泥里，他和同伴们只好步行 11 天才回来。"],
+      ["The local Pemón people call it Kerepakupai Merú, meaning \"waterfall of the deepest place\". Reaching it still requires a flight and a long boat trip up the river through the jungle.",
+        "当地的佩蒙人称它为「最深之地的瀑布」。直到今天，要去那里仍然需要先坐飞机，再乘船沿河穿过丛林很长一段路。"],
+    ],
+    questions: [
+      { q: "Why does much of the water turn into mist?", o: ["It is very cold.", "It falls so far.", "There is a fire below.", "It is mixed with sand."], a: 1, e: "第一段。" },
+      { q: "Who was Jimmie Angel?", o: ["A local chief.", "An American pilot searching for gold.", "A scientist.", "A painter."], a: 1, e: "第二段。" },
+      { q: "How did Angel return after landing on the mountain?", o: ["He flew back.", "He walked for 11 days.", "A helicopter rescued him.", "He took a boat."], a: 1, e: "第二段。" },
+    ],
+  },
+  {
+    id: "g_titicaca", category: "geography", title: "Lake Titicaca: Floating Islands in the Sky", level: "初级", topic: "地理 · 南美洲", imgQuery: "Uros floating islands Titicaca",
+    paragraphs: [
+      ["Lake Titicaca lies on the border between Peru and Bolivia, about 3,810 meters above sea level. It is often called the highest lake in the world that big ships can sail on.",
+        "的的喀喀湖位于秘鲁和玻利维亚边境，海拔约 3810 米，常被称为世界上能通航大型船只的最高湖泊。"],
+      ["The Uros people live on floating islands made of totora reeds that grow in the lake. They tie the reeds into thick layers and keep adding fresh reeds on top as the bottom ones rot. Their houses and boats are made of reeds too.",
+        "乌鲁斯人住在用湖里生长的香蒲芦苇编成的浮岛上。他们把芦苇捆成厚厚的一层层，底下的烂了，就在上面不断铺上新的。他们的房子和船也是芦苇做的。"],
+      ["In Inca legend, the first Inca king rose from the waters of Lake Titicaca, sent by the sun god. The Island of the Sun in the lake still has Inca ruins.",
+        "在印加传说中，第一位印加国王是太阳神派来的，从的的喀喀湖中升起。湖中的太阳岛上至今还有印加遗迹。"],
+    ],
+    questions: [
+      { q: "What are the floating islands made of?", o: ["Wood.", "Reeds.", "Plastic.", "Stone."], a: 1, e: "第二段。" },
+      { q: "What do the Uros do when the bottom reeds rot?", o: ["They move to land.", "They add fresh reeds on top.", "They build new boats.", "They burn the island."], a: 1, e: "第二段。" },
+      { q: "According to legend, who rose from the lake?", o: ["A giant fish.", "The first Inca king.", "A Spanish sailor.", "A god of rain."], a: 1, e: "第三段。" },
+    ],
+  },
+  {
+    id: "g_uyuni", category: "geography", title: "Salar de Uyuni: The World's Largest Mirror", level: "初级", topic: "地理 · 南美洲", imgQuery: "Salar de Uyuni mirror",
+    paragraphs: [
+      ["Salar de Uyuni in Bolivia is the largest salt flat in the world, covering more than 10,000 square kilometers. It was once part of a huge prehistoric lake. When the lake dried up, it left behind a crust of salt several meters thick.",
+        "玻利维亚的乌尤尼盐沼是世界上最大的盐滩，面积一万多平方公里。它曾是一个巨大的史前湖泊的一部分，湖水干涸后留下了几米厚的盐壳。"],
+      ["The surface is incredibly flat; the height changes by less than one meter across the whole area. In the rainy season, a thin layer of water covers it and turns it into a giant mirror reflecting the sky.",
+        "盐沼表面平坦得不可思议，整片区域的高度差不到一米。雨季时，表面覆盖着一层薄薄的水，变成一面倒映天空的巨大镜子。"],
+      ["Under the salt lies one of the world's largest supplies of lithium, a metal used in batteries for phones and electric cars. This makes the salt flat important for the future, but mining could also damage it.",
+        "盐层下面埋藏着世界上最大的锂储量之一。锂是手机和电动汽车电池使用的金属，这让盐沼对未来很重要，但开采也可能破坏它。"],
+    ],
+    questions: [
+      { q: "How was the salt flat formed?", o: ["From a dried-up prehistoric lake.", "From the sea flooding the land.", "By people making salt.", "From a volcano."], a: 0, e: "第一段。" },
+      { q: "When does it become a giant mirror?", o: ["In the dry season.", "In the rainy season.", "At night.", "In winter only."], a: 1, e: "第二段。" },
+      { q: "What is lithium used for?", o: ["Cooking.", "Batteries.", "Building houses.", "Medicine only."], a: 1, e: "第三段。" },
+    ],
+  },
+  {
+    id: "g_iguazu", category: "geography", title: "Iguazu Falls", level: "初级", topic: "地理 · 南美洲", imgQuery: "Iguazu Falls Devil's Throat",
+    paragraphs: [
+      ["Iguazu Falls, on the border between Argentina and Brazil, is not one waterfall but about 275 of them, stretching for nearly three kilometers. The name comes from the Guaraní language and means \"big water\".",
+        "伊瓜苏瀑布位于阿根廷和巴西边境，它不是一道瀑布，而是由约 275 道瀑布组成，绵延近三公里。名字来自瓜拉尼语，意思是「大水」。"],
+      ["The most powerful section is the Devil's Throat, a U-shaped cliff where half of the river's water plunges about 80 meters. Visitors can stand on walkways right at the edge and get soaked by the spray.",
+        "最壮观的部分是「魔鬼咽喉」，那是一道 U 形悬崖，河水有一半从这里坠下约 80 米。游客可以站在紧贴边缘的栈道上，被水雾浇个透。"],
+      ["When the American First Lady Eleanor Roosevelt saw Iguazu, she is said to have exclaimed, \"Poor Niagara!\" The falls are surrounded by subtropical rainforest full of toucans, butterflies and coatis.",
+        "据说美国第一夫人埃莉诺·罗斯福看到伊瓜苏瀑布时惊叹：「可怜的尼亚加拉！」瀑布周围是亚热带雨林，到处是巨嘴鸟、蝴蝶和长鼻浣熊。"],
+    ],
+    questions: [
+      { q: "What does \"Iguazu\" mean?", o: ["Big water.", "Devil's throat.", "Blue river.", "Loud noise."], a: 0, e: "第一段。" },
+      { q: "About how many waterfalls make up Iguazu?", o: ["One.", "About 27.", "About 275.", "About 2,750."], a: 2, e: "第一段。" },
+      { q: "What did Eleanor Roosevelt mean by \"Poor Niagara!\"?", o: ["Niagara was dirty.", "Iguazu was much more impressive than Niagara.", "Niagara was poor.", "She felt sorry for Niagara's people."], a: 1, e: "第三段：意思是伊瓜苏让尼亚加拉相形见绌。" },
+    ],
+  },
+  {
+    id: "g_uluru", category: "geography", title: "Uluru: The Red Heart of Australia", level: "初级", topic: "地理 · 大洋洲", imgQuery: "Uluru sunset",
+    paragraphs: [
+      ["Uluru is a giant block of sandstone that rises about 348 meters above the flat desert in the middle of Australia. It is about 3.6 kilometers long, and much more of the rock lies hidden underground, like an iceberg.",
+        "乌鲁鲁是一块巨大的砂岩，在澳大利亚中部平坦的沙漠上高出地面约 348 米，长约 3.6 公里。和冰山一样，岩石的更大部分埋藏在地下。"],
+      ["Its color changes during the day. At sunrise and sunset it glows bright orange and red, because iron in the rock has rusted.",
+        "它的颜色在一天中不断变化。日出和日落时，它闪耀着鲜艳的橙红色，因为岩石中的铁生锈了。"],
+      ["Uluru is sacred to the Anangu, the Aboriginal people of the area, who have lived there for tens of thousands of years. Their caves around the rock contain ancient paintings.",
+        "乌鲁鲁对当地原住民阿南古人来说是圣地。他们在这里生活了数万年，岩石周围的洞穴里留有古老的壁画。"],
+      ["For many years, tourists climbed to the top. But in 2019, climbing was banned out of respect for the Anangu, who had long asked visitors not to climb. Today people walk around its base instead.",
+        "多年来，游客们都会攀登到岩顶。但阿南古人长期以来一直请求游客不要攀爬，出于对他们的尊重，2019 年起禁止攀登。如今人们改为绕着岩石底部步行。"],
+    ],
+    questions: [
+      { q: "Why does Uluru glow red?", o: ["It is painted.", "Iron in the rock has rusted.", "It is a volcano.", "The sand is red."], a: 1, e: "第二段。" },
+      { q: "Who are the Anangu?", o: ["European settlers.", "The Aboriginal people of the area.", "Park rangers.", "A tourist company."], a: 1, e: "第三段。" },
+      { q: "What changed in 2019?", o: ["Uluru was closed completely.", "Climbing was banned.", "A road was built to the top.", "It became a World Heritage Site."], a: 1, e: "第四段。" },
+    ],
+  },
+  {
+    id: "g_rotorua", category: "geography", title: "Rotorua: New Zealand's Steaming City", level: "初级", topic: "地理 · 大洋洲", imgQuery: "Rotorua geyser Pohutu",
+    paragraphs: [
+      ["In the city of Rotorua on New Zealand's North Island, steam rises from parks, gardens and even drains in the street. The city sits on top of a very active geothermal area.",
+        "在新西兰北岛的罗托鲁瓦市，公园、花园甚至街边的下水道里都冒着蒸汽。这座城市坐落在一个非常活跃的地热区上。"],
+      ["Here you can see bubbling mud pools, hot springs and geysers. The Pōhutu Geyser erupts up to 20 times a day, shooting water as high as 30 meters.",
+        "在这里，你可以看到咕嘟冒泡的泥浆池、温泉和间歇泉。波胡图间歇泉每天喷发多达二十次，水柱高达 30 米。"],
+      ["The air often smells of rotten eggs, because of sulfur gas from underground. Locals joke that they stop noticing it after a while.",
+        "空气里常常有一股臭鸡蛋味，那是地下冒出的硫化气体。当地人开玩笑说，住久了就闻不到了。"],
+      ["Rotorua is also a center of Māori culture. Māori people have used the natural heat for centuries, cooking food in hot pools and steam vents. A traditional meal cooked underground with hot stones is called a hāngī.",
+        "罗托鲁瓦也是毛利文化的中心。几百年来，毛利人一直利用这里的天然地热，在热水池和蒸汽口里烹饪食物。用热石头在地下焖熟的传统餐食叫作 hāngī（石头焖烤）。"],
+    ],
+    questions: [
+      { q: "Why does the air smell of rotten eggs?", o: ["Bad food.", "Sulfur gas from underground.", "Factories.", "Animals."], a: 1, e: "第三段。" },
+      { q: "How often does the Pōhutu Geyser erupt?", o: ["Once a year.", "Up to 20 times a day.", "Every minute.", "Never."], a: 1, e: "第二段。" },
+      { q: "What is a hāngī?", o: ["A dance.", "A meal cooked underground with hot stones.", "A hot spring.", "A kind of house."], a: 1, e: "第四段。" },
+    ],
+  },
+  {
+    id: "g_milford", category: "geography", title: "Milford Sound", level: "初级", topic: "地理 · 大洋洲", imgQuery: "Milford Sound Mitre Peak",
+    paragraphs: [
+      ["Milford Sound, on the southwest coast of New Zealand's South Island, is surrounded by cliffs that rise straight out of the dark water. Mitre Peak, its most famous mountain, stands about 1,690 meters high.",
+        "米尔福德峡湾位于新西兰南岛西南海岸，四周的悬崖从幽深的海水中笔直升起。最著名的山峰麦特峰高约 1690 米。"],
+      ["Although it is called a \"sound\", it is really a fjord, carved by glaciers during the Ice Ages. The writer Rudyard Kipling called it the eighth wonder of the world.",
+        "它虽然叫「湾」（sound），其实是冰期冰川切割出来的峡湾。作家吉卜林称它为世界第八大奇迹。"],
+      ["It is one of the wettest places on Earth, with almost seven meters of rain a year. When it rains, hundreds of temporary waterfalls pour down the cliffs. Dolphins, seals and penguins can often be seen from the boats.",
+        "这里是地球上最潮湿的地方之一，年降雨量将近七米。一下雨，悬崖上就会出现数百道临时瀑布。在游船上常常能看到海豚、海豹和企鹅。"],
+    ],
+    questions: [
+      { q: "What is Milford Sound really?", o: ["A river.", "A fjord carved by glaciers.", "A volcano crater.", "A lake."], a: 1, e: "第二段。" },
+      { q: "What happens when it rains?", o: ["Boats cannot sail.", "Hundreds of temporary waterfalls appear.", "The water turns red.", "Snow falls."], a: 1, e: "第三段。" },
+      { q: "Who called it the eighth wonder of the world?", o: ["Captain Cook.", "Rudyard Kipling.", "A Māori chief.", "A modern tourist."], a: 1, e: "第二段。" },
+    ],
+  },
+  {
+    id: "g_tuvalu", category: "geography", title: "Tuvalu: A Nation Facing the Rising Sea", level: "中级", topic: "地理 · 大洋洲", imgQuery: "Tuvalu Funafuti atoll",
+    paragraphs: [
+      ["Tuvalu is a small country in the Pacific Ocean, made up of nine coral islands with a total land area of only about 26 square kilometers. Around 11,000 people live there. Its highest point is only about 4.5 meters above sea level.",
+        "图瓦卢是太平洋上的一个小国，由九座珊瑚岛组成，陆地总面积只有约 26 平方公里，人口约一万一千。最高点海拔只有约 4.5 米。"],
+      ["As the climate warms, the sea is rising, and high tides already flood parts of the islands. Salt water gets into the soil and ruins the crops people grow.",
+        "随着气候变暖，海平面不断上升，涨潮时海水已经会淹没岛上的部分地区。咸水渗进土壤，毁坏了人们种的庄稼。"],
+      ["In 2021, Tuvalu's foreign minister gave a speech to a world climate conference while standing knee-deep in the sea, to show what his country faces. Tuvalu has also started to create a \"digital nation\", so that its culture and records will survive even if the land disappears.",
+        "2021 年，图瓦卢外交部长站在齐膝深的海水中，向世界气候大会发表演讲，以展示这个国家面临的处境。图瓦卢还开始打造「数字国家」，即使国土消失，它的文化和档案也能保存下来。"],
+    ],
+    questions: [
+      { q: "What is Tuvalu made of?", o: ["Nine coral islands.", "One large volcanic island.", "Part of Australia.", "Floating reeds."], a: 0, e: "第一段。" },
+      { q: "How does salt water harm the islands?", o: ["It ruins crops by getting into the soil.", "It makes the water sweeter.", "It kills tourists.", "It builds new land."], a: 0, e: "第二段。" },
+      { q: "Why is Tuvalu creating a \"digital nation\"?", o: ["To sell games.", "To save its culture and records if the land disappears.", "To replace its government.", "To attract tourists."], a: 1, e: "第三段。" },
+    ],
+  },
+  {
+    id: "g_tasmania", category: "geography", title: "Tasmania: Australia's Island State", level: "初级", topic: "地理 · 大洋洲", imgQuery: "Cradle Mountain Tasmania",
+    paragraphs: [
+      ["Tasmania is an island about 240 kilometers south of mainland Australia. Almost half of it is protected as national parks and reserves, with ancient rainforests, wild rivers and rugged mountains such as Cradle Mountain.",
+        "塔斯马尼亚是澳大利亚大陆以南约 240 公里的一座岛屿。将近一半的土地被划为国家公园和保护区，有古老的雨林、奔腾的河流以及摇篮山等险峻的山峰。"],
+      ["The island is famous for the Tasmanian devil, a small, black, fierce animal with a very loud scream. It lives in the wild only in Tasmania. Since the 1990s, a contagious face cancer has killed many devils, and scientists are working to save them.",
+        "这座岛以袋獾闻名。袋獾是一种黑色、凶猛的小动物，叫声非常响亮，野外只生活在塔斯马尼亚。从 20 世纪 90 年代起，一种传染性面部癌症害死了大量袋獾，科学家正在努力拯救它们。"],
+      ["Tasmania once had another unique animal, the thylacine, or Tasmanian tiger. It looked like a striped dog, but it carried its young in a pouch. The last known thylacine died in a zoo in 1936.",
+        "塔斯马尼亚曾经还有一种独特的动物——袋狼，也叫塔斯马尼亚虎。它长得像一只带条纹的狗，却用育儿袋带孩子。已知的最后一只袋狼于 1936 年死在动物园里。"],
+    ],
+    questions: [
+      { q: "Where does the Tasmanian devil live in the wild?", o: ["All over Australia.", "Only in Tasmania.", "In New Zealand.", "In zoos only."], a: 1, e: "第二段。" },
+      { q: "What threatens Tasmanian devils?", o: ["A contagious face cancer.", "Cold winters.", "Tourists.", "Lack of food."], a: 0, e: "第二段。" },
+      { q: "What happened to the thylacine?", o: ["It is common today.", "The last known one died in 1936.", "It moved to the mainland.", "It became a pet."], a: 1, e: "第三段。" },
+    ],
+  },
+);

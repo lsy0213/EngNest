@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 280" fill="none">
+  <defs>
+    <linearGradient id="pine" x1="190" y1="15" x2="630" y2="250" gradientUnits="userSpaceOnUse"><stop stop-color="#617269"/><stop offset=".52" stop-color="#40584D"/><stop offset="1" stop-color="#30473F"/></linearGradient>
+    <filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="3" seed="8" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope=".13"/></feComponentTransfer></filter>
+    <path id="tear" d="M145 0H660V245c-33-5-48-7-73-15l-9 4-15-8-9 1c-18-9-35-8-51-19l-12 3-16-10c-27-7-50-17-75-29l-14 2-11-8c-29-11-51-21-75-36l-12 3-14-11c-26-13-48-27-65-41l-9 2-10-10c-18-13-28-23-41-39l-5 2-9-10c-14-14-20-22-26-36Z"/>
+  </defs>
+  <use href="#tear" fill="#C9C0AF" opacity=".5" transform="translate(0 8)"/>
+  <use href="#tear" fill="url(#pine)"/>
+  <use href="#tear" filter="url(#grain)" opacity=".54"/>
+  <g stroke="#B4B8A2" stroke-opacity=".48" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M493 2c-15 49 11 57 2 98-5 23-26 29-32 18-7-14 15-19 24-7 14 18 5 37-8 47M506 18c26 18 33 44 25 69-7 23-25 39-24 66M493 99c-30-20-35-48-24-75" stroke-width="1.8"/>
+    <path d="M482 58c-18-3-23-18-18-29 15 4 21 13 18 29Zm27 48c16-7 24-1 26 10-14 7-22 5-26-10Zm-6-68c14-13 26-10 31-1-9 11-19 14-31 1Zm-25 103c-14 5-22-1-22-11 11-6 20-5 22 11Z" fill="#C1CAB5" fill-opacity=".17" stroke-width="1"/>
+    <path d="m577 45 3-7 3 7 7 3-7 3-3 7-3-7-7-3 7-3Zm-14 72 2-5 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#D8CAA5" fill-opacity=".54" stroke="none"/>
+  </g>
+  <g stroke="#D9CFBF" stroke-opacity=".73" stroke-linecap="round"><path d="m188 63-7 6m70 44-10 4m96 48-7 5m105 37-12 4m113 22-10 5" stroke-width="1"/></g>
+</svg>

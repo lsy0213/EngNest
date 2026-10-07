@@ -1,0 +1,8 @@
+pywebview>=5.0
+anthropic>=1.0
+edge-tts>=7.0
+pyinstaller>=6.0
+pillow>=10.0
+qrcode>=7.0
+wordfreq>=3.0
+faster-whisper>=1.0

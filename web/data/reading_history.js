@@ -1,0 +1,111 @@
+// 历史（原创文章）
+(window.READING_EXTRA = window.READING_EXTRA || []).push(
+  {
+    id: "greatwall", category: "history", title: "The Great Wall of China", level: "中级", topic: "历史 · 中国", imgQuery: "Great Wall Mutianyu",
+    paragraphs: [
+      ["The Great Wall is not really one wall. It is a series of walls, towers and forts built over about two thousand years to protect northern China from invaders. When all its parts are added together, a survey in 2012 measured a total length of more than 21,000 kilometers.",
+        "长城其实并不是一道墙，而是历经约两千年修建的一系列城墙、烽火台和关隘，用来保护中国北方免受外敌入侵。2012 年的一项调查显示，把它的各个部分加在一起，总长度超过两万一千公里。"],
+      ["Early states in China built walls as early as the 7th century BC. After Qin Shi Huang united China in 221 BC, he ordered many of these walls to be joined together. Hundreds of thousands of workers, including soldiers and prisoners, worked in terrible conditions, and many died.",
+        "早在公元前 7 世纪，中国的一些诸侯国就开始修筑城墙了。公元前 221 年秦始皇统一中国后，下令把许多城墙连接起来。数十万劳工——包括士兵和囚犯——在极其艰苦的条件下劳作，很多人因此丧命。"],
+      ["Most of the wall that tourists visit today, such as the famous sections near Beijing, was built during the Ming Dynasty, between the 14th and 17th centuries. These parts are made of brick and stone, while older walls were often made of pressed earth.",
+        "如今游客参观的大部分长城，比如北京附近那些著名的段落，是明朝在 14 到 17 世纪之间修建的。这些部分用砖石砌成，而更早的城墙往往是夯土筑成的。"],
+      ["There is a popular myth that the Great Wall can be seen from the Moon with the naked eye. It cannot: the wall is long, but it is too narrow. Still, it is one of the most impressive structures humans have ever built.",
+        "有个流传很广的说法，说在月球上用肉眼就能看到长城。其实看不到：长城虽然很长，但太窄了。不过，它依然是人类建造过的最令人惊叹的建筑之一。"],
+    ],
+    questions: [
+      { q: "Why was the Great Wall built?", o: ["To mark a trade route.", "To protect northern China from invaders.", "To hold back floods.", "To connect cities for trade."], a: 1, e: "第一段：to protect northern China from invaders." },
+      { q: "When was most of the wall that tourists visit today built?", o: ["During the Qin Dynasty.", "During the Tang Dynasty.", "During the Ming Dynasty.", "In the 20th century."], a: 2, e: "第三段：was built during the Ming Dynasty…" },
+      { q: "Can the Great Wall be seen from the Moon with the naked eye?", o: ["Yes, easily.", "Only at night.", "No, it is too narrow.", "Only the Ming sections."], a: 2, e: "第四段：It cannot: the wall is long, but it is too narrow." },
+    ],
+  },
+  {
+    id: "paper", category: "history", title: "The Invention of Paper", level: "初级", topic: "历史 · 中国", imgQuery: "Tiangong Kaiwu papermaking",
+    paragraphs: [
+      ["Before paper, people wrote on many different materials. In ancient China, books were written on strips of bamboo or on silk. Bamboo was heavy, and silk was very expensive, so writing was not easy to share.",
+        "在纸发明之前，人们在各种各样的材料上书写。在古代中国，书写在竹简或丝帛上。竹简很重，丝帛又非常昂贵，所以文字不容易传播。"],
+      ["Around the year 105 AD, an official of the Eastern Han court named Cai Lun improved the way paper was made. He mixed tree bark, old cloth, hemp and even fishing nets with water, beat them into a pulp, spread it thin and let it dry. The result was cheap, light and easy to write on.",
+        "大约在公元 105 年，东汉朝廷的一位官员蔡伦改进了造纸的方法。他把树皮、破布、麻头甚至旧渔网和水混在一起，捣成纸浆，摊薄晾干。造出来的纸便宜、轻便，而且好写。"],
+      ["Paper spread slowly to other parts of the world. In the 8th century, papermaking reached the Arab world, and the city of Samarkand became a center of paper production. From there it traveled to Europe, where the first paper mills appeared around the 12th century.",
+        "纸慢慢传播到世界其他地方。8 世纪时，造纸术传到阿拉伯世界，撒马尔罕城成了造纸中心。之后又从那里传到欧洲，大约在 12 世纪，欧洲出现了第一批造纸作坊。"],
+      ["Paper is one of the Four Great Inventions of ancient China, together with printing, the compass and gunpowder. It made books, letters and records common, and it helped knowledge travel farther than ever before.",
+        "纸和印刷术、指南针、火药一起，被称为中国古代的四大发明。它让书籍、信件和档案变得普遍，也让知识传播得比以往任何时候都更远。"],
+    ],
+    questions: [
+      { q: "What did people in ancient China write on before paper?", o: ["Stone and glass.", "Bamboo strips and silk.", "Leather and wood only.", "Clay tablets."], a: 1, e: "第一段：books were written on strips of bamboo or on silk." },
+      { q: "What did Cai Lun use to make paper?", o: ["Only silk.", "Tree bark, old cloth, hemp and fishing nets.", "Bamboo and gold.", "Sand and water."], a: 1, e: "第二段：He mixed tree bark, old cloth, hemp and even fishing nets with water…" },
+      { q: "Which of these is NOT one of the Four Great Inventions?", o: ["The compass.", "Gunpowder.", "Printing.", "The telescope."], a: 3, e: "第四段：paper… printing, the compass and gunpowder." },
+    ],
+  },
+  {
+    id: "silkroad", category: "history", title: "The Silk Road", level: "中级", topic: "历史 · 亚欧", imgQuery: "Catalan Atlas caravan",
+    paragraphs: [
+      ["The Silk Road was not a single road. It was a huge network of trade routes that connected China with Central Asia, the Middle East and Europe for more than a thousand years. The name was only created in 1877 by a German geographer, Ferdinand von Richthofen.",
+        "丝绸之路并不是一条路，而是一个巨大的贸易路线网络，一千多年来把中国与中亚、中东和欧洲连接在一起。「丝绸之路」这个名字直到 1877 年才由德国地理学家李希霍芬提出。"],
+      ["The routes became important during the Han Dynasty, after the diplomat Zhang Qian traveled west in the 2nd century BC and brought back information about distant kingdoms. Soon, merchants began to travel with camels across deserts and mountains.",
+        "这些路线在汉朝变得重要起来。公元前 2 世纪，外交家张骞出使西域，带回了远方各国的消息。不久之后，商人们便开始赶着骆驼穿越沙漠和高山。"],
+      ["Chinese silk was so valuable in Rome that it was worth more than its weight in gold. Tea, porcelain and paper also traveled west, while horses, glass, grapes and spices came east. Few merchants traveled the whole way; goods usually passed from trader to trader along the routes.",
+        "中国丝绸在罗马极为珍贵，价值甚至超过同等重量的黄金。茶叶、瓷器和纸张也向西传去，而马匹、玻璃、葡萄和香料则向东而来。很少有商人走完全程，货物通常是沿途一站一站地在商人之间转手。"],
+      ["Perhaps the most important things carried on the Silk Road were ideas. Religions such as Buddhism, as well as art, music, technology and even new foods, spread along these routes and changed cultures on both ends.",
+        "丝绸之路上运送的最重要的东西，也许是思想。佛教等宗教，以及艺术、音乐、技术，甚至新的食物，都沿着这些路线传播，改变了东西两端的文化。"],
+    ],
+    questions: [
+      { q: "Who created the name \"Silk Road\"?", o: ["Zhang Qian.", "A Roman emperor.", "A German geographer in 1877.", "Marco Polo."], a: 2, e: "第一段：The name was only created in 1877 by a German geographer…" },
+      { q: "How did goods usually travel along the Silk Road?", o: ["One merchant carried them the whole way.", "They passed from trader to trader.", "By ship only.", "By train."], a: 1, e: "第三段：goods usually passed from trader to trader along the routes." },
+      { q: "According to the article, what was perhaps the most important thing carried on the Silk Road?", o: ["Gold.", "Silk.", "Ideas.", "Horses."], a: 2, e: "第四段：Perhaps the most important things carried on the Silk Road were ideas." },
+    ],
+  },
+  {
+    id: "printing", category: "history", title: "How Printing Changed the World", level: "中级", topic: "历史 · 世界", imgQuery: "movable type printing press",
+    paragraphs: [
+      ["For most of history, every book had to be copied by hand. A single book could take months to produce, so books were rare and expensive, and only a small number of people could read.",
+        "在历史上的大部分时间里，每一本书都得靠手抄。抄一本书可能要花好几个月，所以书籍稀少又昂贵，只有很少的人识字。"],
+      ["In China, people printed with carved wooden blocks from around the 7th century. Then, in the 1040s, a craftsman named Bi Sheng invented movable type made of clay. Each character was a separate piece that could be arranged, printed and used again.",
+        "在中国，人们大约从 7 世纪起就用雕刻的木板印刷。到了 11 世纪 40 年代，一位叫毕昇的工匠发明了泥活字。每个字都是单独的一块，可以排版、印刷，还能反复使用。"],
+      ["In Europe, around 1450, Johannes Gutenberg in Germany built a printing press with metal movable type. Because European languages use a small alphabet, his system was fast and efficient. His famous printed Bible was finished around 1455.",
+        "在欧洲，大约 1450 年，德国的约翰内斯·古腾堡制造了一台使用金属活字的印刷机。由于欧洲语言的字母数量少，他的系统又快又高效。他印刷的著名《圣经》大约在 1455 年完成。"],
+      ["Within fifty years, millions of books had been printed across Europe. Books became cheaper, more people learned to read, and new ideas in science and religion spread faster than ever. Many historians see printing as one of the most important inventions in human history.",
+        "短短五十年间，欧洲各地印刷了数百万册书。书变得更便宜，越来越多的人学会了识字，科学和宗教方面的新思想以前所未有的速度传播开来。许多历史学家认为，印刷术是人类历史上最重要的发明之一。"],
+    ],
+    questions: [
+      { q: "Why were books rare before printing?", o: ["People did not like reading.", "Every book had to be copied by hand.", "Paper did not exist.", "Books were not allowed."], a: 1, e: "第一段：every book had to be copied by hand…" },
+      { q: "What did Bi Sheng invent?", o: ["Paper.", "Wooden block printing.", "Movable type made of clay.", "The metal printing press."], a: 2, e: "第二段：invented movable type made of clay." },
+      { q: "Why was Gutenberg's system efficient in Europe?", o: ["European languages use a small alphabet.", "It used clay.", "Books were written in Chinese.", "It needed no ink."], a: 0, e: "第三段：Because European languages use a small alphabet, his system was fast and efficient." },
+    ],
+  },
+  {
+    id: "titanic", category: "history", title: "The Sinking of the Titanic", level: "中级", topic: "历史 · 1912", imgQuery: "RMS Titanic 1912",
+    paragraphs: [
+      ["In April 1912, the RMS Titanic set out on its first voyage, from Southampton in England to New York. It was the largest ship in the world at the time, and many people believed it was almost unsinkable. About 2,200 passengers and crew were on board.",
+        "1912 年 4 月，泰坦尼克号开始了它的首航，从英国南安普敦驶往纽约。它是当时世界上最大的船，很多人认为它几乎不会沉没。船上约有 2200 名乘客和船员。"],
+      ["Late at night on April 14, in the cold North Atlantic, the ship hit an iceberg. The ice cut open several of its watertight compartments. Water poured in, and in less than three hours, early on the morning of April 15, the Titanic sank.",
+        "4 月 14 日深夜，在寒冷的北大西洋上，船撞上了一座冰山。冰山划开了它的好几个水密舱，海水涌了进来。不到三个小时后，也就是 4 月 15 日凌晨，泰坦尼克号沉没了。"],
+      ["The biggest tragedy was that there were not enough lifeboats. The ship carried only 20 lifeboats, with room for less than 1,200 people, because the rules of the time did not require more. More than 1,500 people died in the freezing water.",
+        "最大的悲剧在于救生艇不够。船上只有 20 艘救生艇，只能容纳不到 1200 人，因为当时的规定并没有要求更多。超过 1500 人在冰冷的海水中丧生。"],
+      ["The disaster shocked the world and led to new international safety rules, including enough lifeboats for everyone on board and radios that work 24 hours a day. The wreck was finally found in 1985, almost four kilometers below the surface.",
+        "这场灾难震惊了世界，并促成了新的国际安全规则，包括救生艇必须足够容纳船上所有人、无线电必须 24 小时值守。1985 年，人们终于在海面下近四千米处找到了它的残骸。"],
+    ],
+    questions: [
+      { q: "Where was the Titanic going on its first voyage?", o: ["From New York to London.", "From Southampton to New York.", "From Paris to Boston.", "Around the world."], a: 1, e: "第一段：from Southampton in England to New York." },
+      { q: "What was the biggest tragedy, according to the article?", o: ["The ship was too slow.", "There were not enough lifeboats.", "The radio did not work.", "The captain was not on board."], a: 1, e: "第三段：there were not enough lifeboats." },
+      { q: "When was the wreck of the Titanic found?", o: ["1912.", "1945.", "1985.", "2012."], a: 2, e: "第四段：The wreck was finally found in 1985…" },
+    ],
+  },
+  {
+    id: "moonlanding", category: "history", title: "Apollo 11: The First Moon Landing", level: "中级", topic: "历史 · 1969", imgQuery: "Apollo 11 Buzz Aldrin Moon",
+    paragraphs: [
+      ["On July 16, 1969, a huge Saturn V rocket launched from Florida carrying three American astronauts: Neil Armstrong, Buzz Aldrin and Michael Collins. Their mission, Apollo 11, was to land humans on the Moon for the first time.",
+        "1969 年 7 月 16 日，一枚巨大的土星五号火箭从佛罗里达州发射升空，载着三名美国宇航员：尼尔·阿姆斯特朗、巴兹·奥尔德林和迈克尔·柯林斯。他们的任务「阿波罗 11 号」，是让人类第一次登上月球。"],
+      ["Four days later, on July 20, Armstrong and Aldrin landed on the Moon in a small spacecraft called the Eagle, while Collins stayed in orbit above. When Armstrong stepped onto the surface, he said the famous words: \"That's one small step for man, one giant leap for mankind.\"",
+        "四天后的 7 月 20 日，阿姆斯特朗和奥尔德林乘坐名为「鹰号」的小型登月舱降落在月球上，柯林斯则留在上方的轨道上。阿姆斯特朗踏上月面时，说出了那句名言：「这是个人的一小步，却是人类的一大步。」"],
+      ["About 600 million people around the world watched the landing live on television. The two astronauts spent about two and a half hours walking outside. They collected rocks, took photographs and set up scientific experiments.",
+        "全世界大约有六亿人通过电视直播观看了登月。两名宇航员在舱外行走了大约两个半小时，他们采集岩石、拍摄照片，还布置了科学实验。"],
+      ["The crew returned safely to Earth on July 24, bringing back about 21.5 kilograms of Moon rock. Between 1969 and 1972, twelve astronauts walked on the Moon. Today, several countries, including China, are planning to send people there again.",
+        "7 月 24 日，三名宇航员安全返回地球，带回了约 21.5 公斤月球岩石。1969 到 1972 年间，共有十二名宇航员在月球上行走过。如今，包括中国在内的好几个国家都在计划再次把人送上月球。"],
+    ],
+    questions: [
+      { q: "Which astronaut stayed in orbit above the Moon?", o: ["Neil Armstrong.", "Buzz Aldrin.", "Michael Collins.", "None of them."], a: 2, e: "第二段：while Collins stayed in orbit above." },
+      { q: "About how many people watched the landing on TV?", o: ["6 million.", "60 million.", "600 million.", "6 billion."], a: 2, e: "第三段：About 600 million people around the world watched…" },
+      { q: "How many astronauts walked on the Moon between 1969 and 1972?", o: ["Two.", "Six.", "Twelve.", "Twenty."], a: 2, e: "第四段：twelve astronauts walked on the Moon." },
+    ],
+  },
+);

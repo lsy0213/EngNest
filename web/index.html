@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN" data-skin="cabinet">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EngNest · 英语小窝</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/skin-yarn.css">
+  <link rel="stylesheet" href="css/skin-character.css">
+  <link rel="stylesheet" href="css/skin-starry.css">
+  <link rel="stylesheet" href="css/skin-cabinet.css">
+  <link rel="stylesheet" href="css/skin-mintchoco.css">
+</head>
+<body>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">E</div>
+        <div>
+          <div class="brand-name">EngNest</div>
+          <div class="brand-sub">英语小窝</div>
+        </div>
+      </div>
+      <button class="nav-search" id="dict-open" title="查单词（Ctrl+K）"><span>🔍<span class="label"> 查单词</span></span><span class="kbd">Ctrl K</span></button>
+      <nav id="nav"></nav>
+      <div class="sidebar-foot">
+        <div id="nav-foot"></div>
+        <button class="nav-toggle" id="nav-toggle" title="收起侧边栏" aria-label="收起侧边栏"><span class="ico">«</span></button>
+      </div>
+    </aside>
+    <main id="view"><div class="loading">正在打开小窝…</div></main>
+  </div>
+  <div class="skin-deco" aria-hidden="true">
+    <i class="deco-festoon"></i><i class="deco-corner c-tl"></i><i class="deco-corner c-tr"></i><i class="deco-corner c-bl"></i><i class="deco-corner c-br"></i><i class="deco-vine"></i><i class="deco-yarn"></i><i class="deco-sprig"></i><i class="deco-lace"></i><i class="deco-lace2"></i><i class="deco-flower"></i>
+  </div>
+  <div id="toast-root"></div>
+
+  <script src="data/words.js"></script>
+  <script src="data/vocab_cet4.js"></script>
+  <script src="data/vocab_cet6.js"></script>
+  <script src="data/vocab_ielts.js"></script>
+  <script src="data/vocab_toefl.js"></script>
+  <script src="data/vocab_ielts_topic.js"></script>
+  <script src="data/vocab_ielts_zj.js"></script>
+  <script src="data/vocab_ielts_l179.js"></script>
+  <script src="data/vocab_ielts_r538.js"></script>
+  <script src="data/ielts_extra.js"></script>
+  <script src="data/ielts_tasks.js"></script>
+  <script src="data/vocab_med.js"></script>
+  <script src="data/vocab_tech.js"></script>
+  <script src="data/vocab_law.js"></script>
+  <script src="data/vocab_fin.js"></script>
+  <script src="data/topics_1.js"></script>
+  <script src="data/topics_2.js"></script>
+  <script src="data/topics_3.js"></script>
+  <script src="data/topics_book.js"></script>
+  <script src="data/sentences.js"></script>
+  <script src="data/scenes.js"></script>
+  <script src="data/partners.js"></script>
+  <script src="data/scene_images.js"></script>
+  <script src="data/phrases.js"></script>
+  <script src="data/builder.js"></script>
+  <script src="data/builder_notes.js"></script>
+  <script src="data/grammar.js"></script>
+  <script src="data/grammar_more.js"></script>
+  <script src="data/grammar_more2.js"></script>
+  <script src="data/grammar_more3.js"></script>
+  <script src="data/grammar_mindmap.js"></script>
+  <script src="data/reading.js"></script>
+  <script src="data/reading_classics.js"></script>
+  <script src="data/reading_stories.js"></script>
+  <script src="data/reading_knowledge.js"></script>
+  <script src="data/reading_world.js"></script>
+  <script src="data/reading_more_world.js"></script>
+  <script src="data/more/an_01.js"></script>
+  <script src="data/more/an_02.js"></script>
+  <script src="data/more/an_03.js"></script>
+  <script src="data/more/an_04.js"></script>
+  <script src="data/more/an_05.js"></script>
+  <script src="data/more/an_06.js"></script>
+  <script src="data/more/an_07.js"></script>
+  <script src="data/more/an_08.js"></script>
+  <script src="data/more/an_09.js"></script>
+  <script src="data/more/cul_01.js"></script>
+  <script src="data/more/cul_02.js"></script>
+  <script src="data/more/cul_03.js"></script>
+  <script src="data/more/cul_04.js"></script>
+  <script src="data/more/cul_05.js"></script>
+  <script src="data/more/cul_06.js"></script>
+  <script src="data/more/cul_07.js"></script>
+  <script src="data/more/cul_08.js"></script>
+  <script src="data/more/cul_09.js"></script>
+  <script src="data/more/geo_01.js"></script>
+  <script src="data/more/geo_02.js"></script>
+  <script src="data/more/geo_03.js"></script>
+  <script src="data/more/geo_04.js"></script>
+  <script src="data/more/geo_05.js"></script>
+  <script src="data/more/geo_06.js"></script>
+  <script src="data/more/geo_07.js"></script>
+  <script src="data/more/geo_08.js"></script>
+  <script src="data/more/geo_09.js"></script>
+  <script src="data/more/his_01.js"></script>
+  <script src="data/more/his_02.js"></script>
+  <script src="data/more/his_03.js"></script>
+  <script src="data/more/his_04.js"></script>
+  <script src="data/more/his_05.js"></script>
+  <script src="data/more/his_06.js"></script>
+  <script src="data/more/his_07.js"></script>
+  <script src="data/more/his_08.js"></script>
+  <script src="data/more/his_09.js"></script>
+  <script src="data/more/kn_01.js"></script>
+  <script src="data/more/kn_02.js"></script>
+  <script src="data/more/kn_03.js"></script>
+  <script src="data/more/kn_04.js"></script>
+  <script src="data/more/kn_05.js"></script>
+  <script src="data/more/kn_06.js"></script>
+  <script src="data/more/kn_07.js"></script>
+  <script src="data/more/kn_08.js"></script>
+  <script src="data/more/kn_09.js"></script>
+  <script src="data/more/life_01.js"></script>
+  <script src="data/more/life_02.js"></script>
+  <script src="data/more/life_03.js"></script>
+  <script src="data/more/life_04.js"></script>
+  <script src="data/more/life_05.js"></script>
+  <script src="data/more/life_06.js"></script>
+  <script src="data/more/life_07.js"></script>
+  <script src="data/more/life_08.js"></script>
+  <script src="data/more/life_09.js"></script>
+  <script src="data/more/pro_01.js"></script>
+  <script src="data/more/pro_02.js"></script>
+  <script src="data/more/pro_03.js"></script>
+  <script src="data/more/pro_04.js"></script>
+  <script src="data/more/pro_05.js"></script>
+  <script src="data/more/pro_06.js"></script>
+  <script src="data/more/pro_07.js"></script>
+  <script src="data/more/pro_08.js"></script>
+  <script src="data/more/pro_09.js"></script>
+  <script src="data/reading_more_knowledge.js"></script>
+  <script src="data/reading_history.js"></script>
+  <script src="data/reading_images.js"></script>
+  <script src="data/books_index.js"></script>
+  <script src="data/book_list.js"></script>
+  <script src="data/voa_index.js"></script>
+  <script src="data/wiki_index.js"></script>
+  <script src="data/doc_images.js"></script>
+  <script src="data/films_index.js"></script>
+  <script src="data/watch_guide.js"></script>
+  <script src="data/sitcom.js"></script>
+  <script src="data/phonics.js"></script>
+  <script src="data/ipa_audio.js"></script>
+  <script src="data/linking.js"></script>
+  <script src="data/linking2.js"></script>
+  <script src="data/morphology.js"></script>
+  <script src="data/speak_topics.js"></script>
+  <script src="data/sitcom_chats.js"></script>
+  <script src="data/life.js"></script>
+  <script src="data/life_campus.js"></script>
+
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/shadow.js"></script>
+  <script src="js/sentsrs.js"></script>
+  <script src="js/howtosay.js"></script>
+  <script src="js/breakdown.js"></script>
+  <script src="js/tatoeba.js"></script>
+  <script src="js/mindmap.js"></script>
+  <script src="js/pages/home.js"></script>
+  <script src="js/pages/words.js"></script>
+  <script src="js/pages/roots.js"></script>
+  <script src="js/pages/fillin.js"></script>
+  <script src="js/pages/typing.js"></script>
+  <script src="js/pages/topics.js"></script>
+  <script src="js/pages/course.js"></script>
+  <script src="js/pages/builder.js"></script>
+  <script src="js/pages/grammar.js"></script>
+  <script src="js/pages/listening.js"></script>
+  <script src="js/pages/speaking.js"></script>
+  <script src="js/pages/reading.js"></script>
+  <script src="js/pages/book.js"></script>
+  <script src="js/pages/video.js"></script>
+  <script src="js/pages/writing.js"></script>
+  <script src="js/pages/ielts.js"></script>
+  <script src="js/pages/ireading.js"></script>
+  <script src="js/pages/ilistening.js"></script>
+  <script src="js/pages/ispeaking.js"></script>
+  <script src="js/pages/iwriting.js"></script>
+  <script src="js/pages/tutor.js"></script>
+  <script src="js/story_engine.js"></script>
+  <script src="js/pages/sitcom.js"></script>
+  <script src="js/pages/life.js"></script>
+  <script src="js/pages/notebook.js"></script>
+  <script src="js/pages/settings.js"></script>
+  <script src="js/companion.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
