@@ -206,6 +206,31 @@ App.pages.settings = {
     if (lc) this.lanCard(lc);
   },
 
+  // ---------- AI 用量和每月上限 ----------
+  async usageCard(box) {
+    const u = await pywebview.api.ai_usage();
+    const L = u.limit || {}, cur = u.months[0];
+    const fmt = (n) => (n >= 1e6 ? (n / 1e6).toFixed(2) + " M" : n >= 1e3 ? (n / 1e3).toFixed(1) + " K" : String(n));
+    box.innerHTML = `<details ${L.monthly_tokens ? "open" : ""}><summary class="card-title" style="cursor:pointer;margin:0">📊 AI 用量
+        <span class="small muted" style="font-weight:normal">本月 ${fmt(u.this_month)} token${L.monthly_tokens ? ` / 上限 ${fmt(L.monthly_tokens)}` : ""}${cur?.cost != null ? ` · 约 ¥${cur.cost}` : ""}</span></summary>
+      ${u.months.length ? `<table class="word-table mt-s"><tr><th>月份</th><th>模型</th><th>次数</th><th>输入</th><th>输出</th><th>缓存命中</th></tr>
+        ${u.months.flatMap((m) => m.models.map((x, i) => `<tr><td>${i ? "" : esc(m.month)}</td><td>${esc(x.model)}</td><td>${x.calls}</td>
+          <td>${fmt(x.input)}</td><td>${fmt(x.output)}</td><td>${fmt(x.cache_read || 0)}</td></tr>`)).join("")}</table>` : `<p class="small faint">还没有用过 AI。</p>`}
+      <div class="form-grid mt-s">
+        <div class="field"><label>每月上限（token，0 表示不限）</label><input class="input" id="lim" type="number" min="0" step="100000" value="${L.monthly_tokens || 0}">
+          <span class="help">到了上限就不再调用 AI，下个月自动恢复。聊天一轮大约几百到两千 token。</span></div>
+        <div class="field"><label>单价（元 / 百万 token，用来估算费用）</label>
+          <div class="row" style="gap:6px"><input class="input" id="pin" type="number" min="0" step="0.1" value="${L.price_in || 0}" placeholder="输入"><input class="input" id="pout" type="number" min="0" step="0.1" value="${L.price_out || 0}" placeholder="输出"></div>
+          <span class="help">左边输入、右边输出，按服务商的价目表填。</span></div>
+      </div>
+      <div class="row"><button class="btn sm" id="lim-save">保存</button></div></details>`;
+    $("#lim-save", box).onclick = async () => {
+      await pywebview.api.ai_set_limit({ monthly_tokens: $("#lim", box).value, price_in: $("#pin", box).value, price_out: $("#pout", box).value });
+      toast("已保存", "good");
+      this.usageCard(box);
+    };
+  },
+
   // ---------- 网络：代理和连通性检查 ----------
   async netCard(box) {
     const n = await pywebview.api.net_get();
@@ -375,7 +400,10 @@ App.pages.settings = {
       <div class="form-grid">
         <div class="field"><label>AI 服务商</label>
           <select class="select" id="provider">${Object.entries(presets).map(([k, v]) => `<option value="${k}" ${k === cfg.provider ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select></div>
-        <div class="field"><label>模型名称</label><input class="input" id="model" value="${esc(cfg.model)}" placeholder="如 deepseek-chat"></div>
+        <div class="field"><label>模型名称</label>
+          <div class="row" style="gap:6px"><input class="input" id="model" list="model-list" value="${esc(cfg.model)}" placeholder="如 deepseek-flash" style="flex:1">
+            <button class="btn sm ghost" id="models" title="保存设置后，从服务商那里获取可用的模型名">获取列表</button></div>
+          <datalist id="model-list"></datalist></div>
         <div class="field" style="grid-column:1/-1"><label>接口地址（Base URL）</label><input class="input" id="base" value="${esc(cfg.base_url)}" placeholder="https://…">
           <span class="help" id="base-help"></span></div>
         <div class="field" style="grid-column:1/-1"><label>API Key</label>
@@ -389,11 +417,12 @@ App.pages.settings = {
           <li><b>DeepSeek</b>：platform.deepseek.com → API Keys（便宜、中文好，推荐）</li>
           <li><b>通义千问</b>：阿里云百炼控制台 bailian.console.aliyun.com → API-KEY</li>
           <li><b>Kimi</b>：platform.moonshot.cn → API Key 管理</li>
-          <li><b>智谱 GLM</b>：open.bigmodel.cn → API Keys（glm-4-flash 有免费额度）</li>
+          <li><b>智谱 GLM</b>：open.bigmodel.cn → API Keys（glm-4.7-flash 免费调用）</li>
           <li><b>Claude</b>：console.anthropic.com → API Keys（需海外网络；接口地址留空即可，用中转服务时填中转地址）</li>
           <li>其他兼容 OpenAI 接口的服务选「自定义」，填接口地址和模型名。</li>
         </ul>
-        <p>模型名称可以改成服务商提供的其他模型；各家模型名会更新，以服务商文档为准。</p></details>`;
+        <p>模型名称可以改成服务商提供的其他模型；各家模型名会更新，填好 Key 后点「获取列表」可以看到服务商现在提供的模型。</p></details>
+      <div class="ai-usage mt" id="ai-usage"></div>`;
 
     const prov = $("#provider", box), base = $("#base", box), model = $("#model", box);
     const syncHelp = () => {
@@ -437,6 +466,18 @@ App.pages.settings = {
         ? `<div class="ai-box" style="background:var(--good-soft)">✅ 连接成功！AI 回复：${esc(r.text.slice(0, 100))}</div>`
         : aiError(r.error);
     };
+    $("#models", box).onclick = async (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      await save();
+      const r = await pywebview.api.ai_models();
+      btn.disabled = false;
+      if (!r.ok) return toast(r.error, "bad", 5000);
+      $("#model-list", box).innerHTML = r.models.map((m) => `<option value="${esc(m)}">`).join("");
+      toast(`获取到 ${r.models.length} 个模型，点模型名称输入框就能选`, "good", 4000);
+      model.focus();
+    };
+    this.usageCard($("#ai-usage", box));
     const clr = $("#clear", box);
     if (clr) clr.onclick = async () => {
       await pywebview.api.save_ai_settings({ clear_key: true });

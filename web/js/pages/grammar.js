@@ -162,12 +162,9 @@ App.pages.grammar = {
       <div id="ans" class="mt"></div>`;
     const go = async (question) => {
       if (!question.trim()) return;
-      const ans = $("#ans", root);
-      ans.innerHTML = aiLoading();
-      const r = await AI.ask(
+      await aiAnswer($("#ans", root),
         `You are a patient English grammar teacher. ${LEARNER_PROFILE} Answer in Chinese, with English examples. Keep it clear and concise (under 250 Chinese characters plus examples). Use simple markdown (bold, lists).`,
         `当前在学习的语法课：「${l.title}」—— ${l.summary}\n\n我的问题：${question}`);
-      ans.innerHTML = r.ok ? `<div class="ai-box">${mdLite(r.text)}</div>` : aiError(r.error);
     };
     $("#go", root).onclick = () => go($("#q", root).value);
     $("#q", root).addEventListener("keydown", (e) => { if (e.key === "Enter") go(e.target.value); });

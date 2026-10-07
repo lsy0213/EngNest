@@ -479,11 +479,9 @@ Return JSON exactly in this shape:
         const sel = window.getSelection().toString().trim();
         const box = $("#explain-box", root);
         if (!sel) { toast("请先用鼠标选中一句英文"); return; }
-        box.innerHTML = aiLoading();
-        const r = await AI.ask(
+        await aiAnswer(box,
           `You are an English reading tutor. ${LEARNER_PROFILE} Explain in Chinese: give a natural Chinese translation, then break down the sentence structure and any difficult words or phrases. Be concise. Use simple markdown.`,
           `Article: "${p.title}"\nSentence: ${sel}`);
-        box.innerHTML = r.ok ? `<div class="ai-box">${mdLite(r.text)}</div>` : aiError(r.error);
       };
     }
 

@@ -1635,3 +1635,7 @@ details.mm-card[open] > summary { margin-bottom: 12px; }
 .bk-item:hover { background: var(--surface-2); }
 .net-res { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
 .net-row { display: grid; grid-template-columns: 24px 1fr auto; gap: 8px; align-items: center; }
+/* AI 流式输出：正在生成时的光标 */
+.stream-caret { display: inline-block; width: 7px; height: 1em; margin-left: 2px; vertical-align: -2px; background: currentColor; opacity: .55; animation: caret-blink 1s steps(2) infinite; }
+@keyframes caret-blink { 50% { opacity: 0; } }
+.ai-box.streaming > :last-child::after { content: ""; display: inline-block; width: 7px; height: 1em; margin-left: 2px; vertical-align: -2px; background: currentColor; opacity: .5; animation: caret-blink 1s steps(2) infinite; }

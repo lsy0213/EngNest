@@ -70,7 +70,20 @@ App.pages.tutor = {
       traveler: "Hello, my friend! I just got back from a trip. Have you been anywhere interesting lately?",
       examiner: "Good afternoon. Let's do some speaking practice. First, could you tell me a little about your hometown?",
     }[persona.id];
-    return (this.sessions[this.key(sc)] ||= { history: [{ role: "assistant", content: opener }], view: [{ role: "ai", text: opener }], done: [], busy: false, fresh: true });
+    const key = this.key(sc);
+    if (!this.sessions[key]) {
+      // 上次没聊完的对话（存在 AI 缓存里），重启软件也接着聊
+      const saved = KV.peek("tutor", key);
+      this.sessions[key] = saved?.view?.length
+        ? { history: saved.history || [], view: saved.view, done: saved.done || [], busy: false, fresh: false }
+        : { history: [{ role: "assistant", content: opener }], view: [{ role: "ai", text: opener }], done: [], busy: false, fresh: true };
+    }
+    return this.sessions[key];
+  },
+
+  // 保存对话：只留最近的（发给 AI 的上下文后端还会再截短）
+  saveSession(sc, s) {
+    KV.set("tutor", this.key(sc), { history: s.history.slice(-60), view: s.view.filter((m) => !m.streaming).slice(-200), done: s.done });
   },
 
   systemPrompt(sc) {
@@ -138,10 +151,12 @@ Then output another line containing only "###", then "done:" followed by the num
     };
     const draw = () => {
       const box = $b("#body");
+      const typing = s.busy && !s.view.some((m) => m.streaming && m.text);
       box.innerHTML = s.view.map((m, i) => m.role === "ai"
-        ? `<div class="msg ai"><div class="bubble">${esc(m.text)}</div><div class="meta"><button class="btn sm ghost" data-say-i="${i}">🔊</button><button class="btn sm ghost" data-tr="${i}">译</button></div>${m.zh ? `<div class="feedback">${esc(m.zh)}</div>` : ""}</div>`
+        ? m.streaming ? (m.text ? `<div class="msg ai"><div class="bubble">${esc(m.text)}<span class="stream-caret"></span></div></div>` : "")
+        : `<div class="msg ai"><div class="bubble">${esc(m.text)}</div><div class="meta"><button class="btn sm ghost" data-say-i="${i}">🔊</button><button class="btn sm ghost" data-tr="${i}">译</button></div>${m.zh ? `<div class="feedback">${esc(m.zh)}</div>` : ""}</div>`
         : `<div class="msg me"><div class="bubble">${esc(m.text)}${m.voice ? ` <span class="small faint" title="语音输入">🎙️</span>` : ""}</div>${m.fb ? `<div class="feedback ${/^👍/.test(m.fb) ? "good" : ""}">${mdLite(m.fb)}</div>` : ""}${m.err ? `<div class="feedback" style="background:var(--bad-soft)">😥 ${esc(m.err)}</div>` : ""}</div>`
-      ).join("") + (s.busy ? `<div class="typing"><i></i><i></i><i></i></div>` : "");
+      ).join("") + (typing ? `<div class="typing"><i></i><i></i><i></i></div>` : "");
       box.scrollTop = box.scrollHeight;
       drawTasks();
     };
@@ -175,7 +190,18 @@ Then output another line containing only "###", then "done:" followed by the num
       s.fresh = false;
       draw();
       status("AI 正在想…");
-      const r = await AI.chat(this.systemPrompt(sc), s.history);
+      // 边生成边显示：「###」后面是给学习者的点评和任务进度，生成时先不显示
+      const live = { role: "ai", text: "", streaming: true };
+      s.view.push(live);
+      const r = await AI.chat(this.systemPrompt(sc), s.history, {
+        onDelta: (t) => {
+          const head = t.split(/\n?\s*###/)[0].trim();
+          if (head === live.text || !body.isConnected) return;
+          live.text = head;
+          draw();
+        },
+      });
+      s.view.splice(s.view.indexOf(live), 1);
       s.busy = false;
       if (!body.isConnected) return;
       if (!r.ok) {
@@ -198,6 +224,7 @@ Then output another line containing only "###", then "done:" followed by the num
       s.view.push({ role: "ai", text: clean });
       Store.data.stats.chat = (Store.data.stats.chat || 0) + 1;
       addXP(2);
+      this.saveSession(sc, s);
       draw();
       await say(clean);
       if (body.isConnected && P.talk_mode === "auto" && !signal.aborted) listen();
@@ -248,7 +275,7 @@ Then output another line containing only "###", then "done:" followed by the num
       $$("[data-mode]", body).forEach((x) => x.classList.toggle("active", x === b));
       status(P.talk_mode === "auto" ? "自动模式：AI 说完会自动开始听" : "手动模式：点一下开始说，再点一下发送");
     }));
-    $b("#reset").onclick = () => { Mic.cancel(); delete this.sessions[this.key(sc)]; this.talk(body, signal, sc); };
+    $b("#reset").onclick = () => { Mic.cancel(); delete this.sessions[this.key(sc)]; KV.set("tutor", this.key(sc), null); this.talk(body, signal, sc); };
     $b("#help").onclick = () => this.suggest(body, s, sc);
     $b("#howto").onclick = () => askHow(input.value.trim());
     const fin = $b("#finish");
@@ -261,7 +288,7 @@ Then output another line containing only "###", then "done:" followed by the num
         if (m.zh) { m.zh = ""; draw(); return; }
         tr.disabled = true;
         const r = await AI.ask("Translate the English into natural Chinese. Output only the translation.", m.text);
-        if (r.ok) m.zh = r.text.trim(); else toast(r.error, "bad", 4000);
+        if (r.ok) { m.zh = r.text.trim(); this.saveSession(sc, s); } else toast(r.error, "bad", 4000);
         if (body.isConnected) draw();
       }
     });

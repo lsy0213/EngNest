@@ -8,7 +8,7 @@ import os
 import threading
 import time
 
-from . import VERSION, ai_client, dictionary, ext, films, kvcache, lan, library, net, paths, progress, settings, stt, tts, wiki
+from . import VERSION, ai_client, ai_usage, dictionary, ext, films, kvcache, lan, library, net, paths, progress, settings, stt, tts, wiki
 from .log import log_file
 from .paths import data_dir
 
@@ -32,6 +32,8 @@ class Api:
         self._films = films.Films()
         self._ext = ext.Ext()
         self._window = None  # main.py 创建窗口后设置，用来弹出选择文件的对话框
+        self._streams = {}  # 正在流式生成的 AI 回复
+        self._streams_lock = threading.Lock()
         # 查询网卡要调用 PowerShell，比较慢，启动时在后台先查好
         threading.Thread(target=lan.local_ips, daemon=True).start()
 
@@ -171,14 +173,85 @@ class Api:
             [{"role": "user", "content": "Reply with exactly: Hello from EngNest!"}],
         )
 
-    def ai_chat(self, system, messages):
+    def _ai_run(self, system, messages, json_mode=False, on_delta=None):
+        """调用 AI 并记用量。返回 {ok, text, data?, error?}"""
+        limit = self._settings.section("ai_limit")
+        msg = ai_usage.check_limit(limit)
+        if msg:
+            return {"ok": False, "error": msg}
+        cfg = self._ai_cfg()
         try:
-            text = ai_client.chat(self._ai_cfg(), system, messages)
-            return {"ok": True, "text": text}
+            text, usage = ai_client.chat(cfg, system, messages, json_mode=json_mode, on_delta=on_delta)
+            ai_usage.record(cfg.get("model"), usage)
         except ai_client.AIError as e:
             return {"ok": False, "error": str(e)}
-        except Exception as e:  # 兜底，避免异常直接抛到前端变成看不懂的报错
+        except Exception as e:  # noqa: BLE001 — 兜底，避免异常直接抛到前端变成看不懂的报错
+            log.exception("AI 调用出错")
             return {"ok": False, "error": f"未知错误：{e}"}
+        out = {"ok": True, "text": text}
+        if json_mode:
+            try:
+                out["data"] = ai_client.extract_json(text)
+            except ValueError:
+                return {"ok": False, "error": "AI 返回的格式有误", "text": text, "bad_json": True}
+        return out
+
+    def ai_chat(self, system, messages, opts=None):
+        """opts: {"json": true} 让 AI 返回 JSON，结果在 data 里"""
+        return self._ai_run(system, messages, json_mode=bool((opts or {}).get("json")))
+
+    # 流式输出：前端先 ai_stream_start 拿到 id，再每隔一会儿 ai_stream_poll 取新生成的文字。
+    # 用轮询而不是从 Python 往页面推，桌面版和局域网里的手机都能用同一套。
+    def ai_stream_start(self, system, messages):
+        sid = f"s{time.time_ns()}"
+        st = {"parts": [], "done": False, "result": None, "t": time.time()}
+        with self._streams_lock:
+            # 清掉一分钟前就结束、但前端没来取的
+            for k in [k for k, v in self._streams.items() if v["done"] and time.time() - v["t"] > 60]:
+                self._streams.pop(k, None)
+            self._streams[sid] = st
+
+        def run():
+            st["result"] = self._ai_run(system, messages, on_delta=st["parts"].append)
+            st["done"], st["t"] = True, time.time()
+
+        threading.Thread(target=run, daemon=True, name="ai-stream").start()
+        return sid
+
+    def ai_stream_poll(self, sid, since=0):
+        """{text: since 之后新生成的部分, n: 已取到第几段, done, result（结束时）}"""
+        st = self._streams.get(sid)
+        if not st:
+            return {"text": "", "n": since, "done": True, "result": {"ok": False, "error": "这次对话已经过期了，请重试"}}
+        parts = st["parts"][since:]
+        out = {"text": "".join(parts), "n": since + len(parts), "done": st["done"] and since + len(parts) >= len(st["parts"])}
+        if out["done"]:
+            out["result"] = st["result"]
+            with self._streams_lock:
+                self._streams.pop(sid, None)
+        return out
+
+    def ai_models(self):
+        try:
+            return {"ok": True, "models": ai_client.list_models(self._ai_cfg())}
+        except ai_client.AIError as e:
+            return {"ok": False, "error": str(e)}
+        except Exception as e:  # noqa: BLE001
+            return {"ok": False, "error": f"获取失败：{e}"}
+
+    def ai_usage(self):
+        return ai_usage.summary(self._settings.section("ai_limit"))
+
+    def ai_set_limit(self, cfg):
+        clean = {}
+        for k in ("monthly_tokens", "price_in", "price_out"):
+            try:
+                clean[k] = max(0.0, float((cfg or {}).get(k) or 0))
+            except (TypeError, ValueError):
+                clean[k] = 0.0
+        clean["monthly_tokens"] = int(clean["monthly_tokens"])
+        self._settings.update("ai_limit", clean)
+        return self.ai_usage()
 
     # ---------- 神经语音 ----------
     def tts_voices(self):

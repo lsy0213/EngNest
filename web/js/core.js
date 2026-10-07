@@ -627,26 +627,54 @@ const AI = {
     } catch { this.enabled = false; }
     renderNav();
   },
-  async chat(system, messages) {
+  // opts.onDelta(到目前为止的全文, 新的一段)：边生成边显示（流式输出）；opts.json：让后端按 JSON 解析
+  async chat(system, messages, opts = {}) {
     if (!Store.bridge) return { ok: false, error: "AI 功能需要在桌面版中使用。" };
-    try { return await pywebview.api.ai_chat(system, messages); }
-    catch (e) { return { ok: false, error: String(e) }; }
-  },
-  ask(system, prompt) {
-    return this.chat(system, [{ role: "user", content: prompt }]);
-  },
-  // 让 AI 返回 JSON，并尽量从回复里抠出 JSON 对象
-  async json(system, prompt) {
-    const r = await this.ask(system + "\nRespond with a single valid JSON object only. No markdown code fences, no extra text.", prompt);
-    if (!r.ok) return r;
     try {
-      const t = r.text;
-      return { ok: true, data: JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1)) };
-    } catch {
-      return { ok: false, error: "AI 返回的格式有误，请重试一次。" };
+      if (opts.onDelta) return await this._stream(system, messages, opts.onDelta);
+      return await pywebview.api.ai_chat(system, messages, opts.json ? { json: true } : null);
+    } catch (e) { return { ok: false, error: String(e) }; }
+  },
+  async _stream(system, messages, onDelta) {
+    const sid = await pywebview.api.ai_stream_start(system, messages);
+    let n = 0, text = "";
+    for (;;) {
+      const r = await pywebview.api.ai_stream_poll(sid, n);
+      n = r.n;
+      if (r.text) {
+        text += r.text;
+        try { onDelta(text, r.text); } catch (e) { console.warn(e); }
+      }
+      if (r.done) return r.result || { ok: false, error: "AI 没有返回结果，请重试" };
+      await new Promise((res) => setTimeout(res, 120));
     }
   },
+  ask(system, prompt, opts) {
+    return this.chat(system, [{ role: "user", content: prompt }], opts);
+  },
+  // 让 AI 返回 JSON：后端从回复里稳妥地抠出 JSON；格式不对时把原回复给它看，再要一次
+  async json(system, prompt) {
+    const sys = system + "\nRespond with a single valid JSON object only. No markdown code fences, no extra text.";
+    const msgs = [{ role: "user", content: prompt }];
+    let r = await this.chat(sys, msgs, { json: true });
+    if (!r.ok && r.bad_json) {
+      r = await this.chat(sys, [...msgs, { role: "assistant", content: r.text || "" },
+        { role: "user", content: "That was not a valid JSON object. Reply again with ONLY the JSON object, nothing else." }], { json: true });
+    }
+    if (!r.ok) return r.bad_json ? { ok: false, error: "AI 返回的格式有误，请重试一次。" } : r;
+    return { ok: true, data: r.data };
+  },
 };
+// AI 的回答边生成边显示在 box 里（简单 markdown 排版），返回最终结果
+async function aiAnswer(box, system, prompt, loadingText) {
+  box.innerHTML = aiLoading(loadingText);
+  const r = await AI.ask(system, prompt, {
+    onDelta: (t) => { if (box.isConnected) box.innerHTML = `<div class="ai-box streaming">${mdLite(t)}</div>`; },
+  });
+  if (box.isConnected) box.innerHTML = r.ok ? `<div class="ai-box">${mdLite(r.text)}</div>` : aiError(r.error);
+  return r;
+}
+
 // ---------- AI 结果缓存（翻译、精讲）：存在电脑上的 ai_cache.db；浏览器预览时退回 localStorage ----------
 const KV = {
   mem: {}, // ns → Map，读过的都留在内存里
@@ -689,7 +717,7 @@ const KV = {
       if (!old || typeof old !== "object") continue;
       try { await pywebview.api.kv_set_many(ns, old); Store.drop(ns); } catch (e) { console.warn("搬迁缓存失败", e); }
     }
-    await Promise.all([this.preload("line_notes"), this.preload("film_zh")]);
+    await Promise.all([this.preload("line_notes"), this.preload("film_zh"), this.preload("tutor")]);
   },
 };
 

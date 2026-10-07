@@ -60,15 +60,13 @@ App.pages.writing = {
         ${item.note ? `<div class="small muted mt-s">📌 ${esc(item.note)}</div>` : ""}
         <div id="ai-res" class="mt-s">${AI.enabled ? aiLoading("AI 老师正在看你的翻译…") : `<p class="small faint">开启 AI 后，会告诉你的翻译对不对、哪里可以改进。</p>`}</div>`;
       if (!AI.enabled) return;
-      const r = await AI.ask(
+      await aiAnswer($("#ai-res", body),
         `You are an encouraging English teacher reviewing a translation exercise. ${LEARNER_PROFILE}
 Reply in Chinese, concise (under 150 Chinese characters plus English examples):
 1. First line: verdict — "✅ 正确" / "🟡 基本正确" / "❌ 有错误".
 2. Point out grammar or word-choice errors, if any, with the corrected sentence in bold.
 3. If the learner's version is correct but differs from the reference, say it's also fine.`,
-        `中文原句：${item.zh}\n参考译文：${item.en}\n学习者的翻译：${text}`);
-      if (signal.aborted) return;
-      $("#ai-res", body).innerHTML = r.ok ? `<div class="ai-box">${mdLite(r.text)}</div>` : aiError(r.error);
+        `中文原句：${item.zh}\n参考译文：${item.en}\n学习者的翻译：${text}`, "AI 老师正在看你的翻译…");
     };
     $("#submit", body).onclick = submit;
     $("#skip", body).onclick = () => this.translate(body);
