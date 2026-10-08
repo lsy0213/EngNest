@@ -12,16 +12,16 @@ cd /d "%~dp0"
 
 if not exist assets\icon.ico (
     echo [1/5] 生成图标...
-    conda run -n engnest python tools\make_icon.py || goto :error
+    call conda run -n engnest python tools\make_icon.py || goto :error
 )
 
 if not exist assets\ecdict.db (
     echo [1/5] 生成内置词典...
-    conda run -n engnest python tools\build_dict.py || goto :error
+    call conda run -n engnest python tools\build_dict.py || goto :error
 )
 
 echo [2/5] 运行测试...
-conda run --no-capture-output -n engnest python -m pytest -q tests || goto :error
+call conda run --no-capture-output -n engnest python -m pytest -q tests || goto :error
 
 echo [3/5] 生成版本信息...
 for /f %%v in ('conda run -n engnest python tools\make_version_info.py') do set VERSION=%%v
@@ -29,7 +29,7 @@ if "%VERSION%"=="" goto :error
 echo 版本 %VERSION%
 
 echo [4/5] 开始打包，大约需要 1-2 分钟...
-conda run --no-capture-output -n engnest python -m PyInstaller --noconfirm --clean EngNest.spec || goto :error
+call conda run --no-capture-output -n engnest python -m PyInstaller --noconfirm --clean EngNest.spec || goto :error
 
 if defined ENGNEST_SIGN_PFX (
     echo 代码签名...
@@ -46,6 +46,13 @@ if defined ISCC (
     if defined ENGNEST_SIGN_PFX signtool sign /f "%ENGNEST_SIGN_PFX%" /p "%ENGNEST_SIGN_PASS%" /fd sha256 /tr http://timestamp.digicert.com /td sha256 dist\EngNest-Setup-%VERSION%.exe
 ) else (
     echo 没有找到 Inno Setup 6，跳过安装包（绿色版压缩包已经生成）。
+)
+
+rem 本机自己用：项目根目录有 data_location.txt 的话，复制到打包出的文件夹里，让这个 exe 也用同一个数据目录
+rem （放在压缩包和安装包生成之后，发出去的包里不会带上这台电脑的路径）
+if exist data_location.txt (
+    copy /y data_location.txt dist\EngNest\data_location.txt >nul
+    echo 本机的数据目录设置已复制到 dist\EngNest\data_location.txt
 )
 
 echo.

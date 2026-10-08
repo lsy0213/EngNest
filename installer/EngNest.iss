@@ -1,4 +1,4 @@
-; EngNest 安装包（Inno Setup 6）。build.bat 会自动调用：
+﻿; EngNest 安装包（Inno Setup 6）。build.bat 会自动调用：
 ;     ISCC /DAppVersion=0.4.0 installer\EngNest.iss
 ; 输出 dist\EngNest-Setup-<版本>.exe。按用户安装，不需要管理员权限。
 
@@ -28,7 +28,9 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 
 [Languages]
-Name: "chs"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"; Flags: unusedmsgs
+; 简体中文界面：ChineseSimplified.isl 来自 kira-96/Inno-Setup-Chinese-Simplified-Translation（MIT 协议），
+; Inno Setup 官方安装包里没有带，所以放在这个文件夹里
+Name: "chs"; MessagesFile: "ChineseSimplified.isl"
 Name: "en"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
