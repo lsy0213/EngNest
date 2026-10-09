@@ -563,7 +563,42 @@ const Store = {
   get prefs() { return this.data.prefs; },
 };
 window.addEventListener("beforeunload", () => Store.flush());
+
+// ---------- 服务器上更新了代码：打开着的网页自动换成新版本 ----------
+// 服务器模式下脚本和样式带版本号（tools/deploy/stamp.py）。网页回到前台、或者每 10 分钟，看一眼服务器上 index.html 里的版本号；
+// 变了就在下一次切换页面时（学单词的卡片做到一半不打断）先保存进度再刷新。不然手机上一直开着的网页会一直用旧代码。
+const AppUpdate = {
+  pending: false,
+  _mine: null,
+  _last: 0,
+  _list: (refs) => refs.filter((u) => /\?v=[0-9a-f]+$/.test(u)).sort().join(" "),
+  mine() {
+    // 只看页面本来就有的脚本和样式（body 里的脚本、head 里的样式）；词书这类后来加载的脚本加在 head 里，不算
+    return (this._mine ??= this._list([...document.querySelectorAll("body script[src], head link[href]")].map((e) => e.getAttribute("src") || e.getAttribute("href"))));
+  },
+  async check() {
+    if (this.pending || !/^https?:$/.test(location.protocol) || !this.mine()) return;
+    this._last = Date.now();
+    try {
+      const html = await (await fetch(location.pathname || "/", { cache: "no-store" })).text();
+      const theirs = this._list([...html.matchAll(/(?:src|href)="([^"]+)"/g)].map((m) => m[1]));
+      if (theirs && theirs !== this.mine()) this.pending = true;
+    } catch { /* 没联网就下次再看 */ }
+  },
+  // Router 切换页面时调用：有新版本就保存后刷新，返回 true；顺便（最多一分钟一次）在后台看一眼有没有新版本
+  async apply() {
+    if (Date.now() - this._last > 60 * 1000) this.check();
+    if (!this.pending || document.body.classList.contains("study-focus")) return false;
+    await Store.flush();
+    if (Store.bridge && (Object.keys(Store._changes()).length || Store._drop.size)) return false; // 没保存上就先不刷新，下次切换页面再试
+    location.reload();
+    return true;
+  },
+};
+setInterval(() => AppUpdate.check(), 10 * 60 * 1000);
+
 document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") AppUpdate.check();
   if (!Store.data) return;
   if (document.visibilityState === "visible") Store.syncFromOther();
   else Store.flush(); // 切到后台（手机锁屏、切应用）时马上保存
@@ -1110,6 +1145,7 @@ const Router = {
   },
   go(path) { location.hash = "#/" + path; },
   async render() {
+    if (await AppUpdate.apply()) return;
     const { page, params } = this.current();
     if (App.abort) App.abort.abort();
     App.abort = new AbortController();

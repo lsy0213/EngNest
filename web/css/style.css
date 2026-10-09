@@ -1296,7 +1296,7 @@ a.lf-card:hover { border-color: var(--brand); transform: translateY(-2px); }
 @keyframes fcIn { from { opacity: 0; transform: translateY(18px) scale(.95); } to { opacity: 1; transform: none; } }
 /* 翻书效果（components.js 的 PageCurl）：pc-under 是掀起后露出的下一页，pc-flap 是翻过来的纸背面 */
 /* 翻过来就是这一页：单词已经在下一页上看到了，不动；其他内容像墨迹一样浮现 */
-.fc-stack.turned .flashcard > :not(.fc-word):not(.fc-ipa) { animation: fcInk .2s ease-out; }
+.fc-stack.turned .flashcard > :not(.fc-word):not(.fc-ipa):not(.fc-stamp) { animation: fcInk .2s ease-out; } /* 印章平时是透明的，不能跟着淡入 */
 @keyframes fcInk { from { opacity: 0; } to { opacity: 1; } }
 .flashcard.curling { transition: none; }
 .pc-under, .pc-flap-wrap { position: absolute; pointer-events: none; transition: opacity .12s; }

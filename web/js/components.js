@@ -746,12 +746,13 @@ function bindSwipeCard(card, { busy, onSwipe, onTap, peek, skip = "button, a, .w
       return;
     }
     if (axis === "x") {
+      // iPhone 偶尔会自己接管手势、发 pointercancel：这时按已经划出的距离照常判断，不要一律弹回去
       const K = knownDir();
       const v = dt > 0 ? (e.clientX - x1) / dt : 0; // 最近 0.1 秒的速度，像素 / 毫秒
       const toward = v * Math.sign(dx); // 正数：松手时还在往翻页方向走；负数：在往回拉
       const flick = Math.abs(dx) >= 10 && toward > 0.25;
       const swipe = Math.abs(dx) >= MIN && toward > -0.1;
-      if (e.type !== "pointercancel" && (swipe || flick)) return onSwipe(dx * K > 0 ? 2 : 0, e);
+      if (swipe || flick) return onSwipe(dx * K > 0 ? 2 : 0, e);
       card.classList.remove("dragging");
       card.style.transform = "";
       if (curl) PageCurl.back(card);
