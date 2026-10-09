@@ -85,6 +85,12 @@ App.pages.settings = {
       </div>
 
       ${Store.bridge && !Store.remote ? `<div class="card" id="lan-card"></div>` : ""}
+      ${Store.remote ? `<div class="card">
+        <div class="card-title">📱 局域网访问</div>
+        <p class="small muted" style="margin-top:-4px">${Store.who
+          ? `你是 <b>${esc(Store.who.name)}</b>：你的学习进度、生词本和设置单独保存在电脑上，和电脑主人的分开，互不影响。`
+          : "你用的是电脑主人的访问码：学习进度和电脑上的是同一份。"}</p>
+        <button class="btn" id="lan-logout">🔑 换一个访问码 / 退出</button></div>` : ""}
 
       <div class="card">
         <div class="card-title">🎨 界面风格</div>
@@ -205,6 +211,12 @@ App.pages.settings = {
     $("#daily-goal", root).onchange = (e) => { p.daily_goal = +e.target.value; Store.save(); toast("已保存", "good"); };
     $("#retention", root).onchange = (e) => { p.retention = +e.target.value; Store.save(); toast("已保存，之后的复习按新的目标安排", "good"); };
     $("#swipe-dir", root).onchange = (e) => { p.swipe_right_known = e.target.value === "right"; Store.save(); toast("已保存", "good"); };
+    const lo = $("#lan-logout", root);
+    if (lo) lo.onclick = async () => {
+      if (!(await confirmBox("换一个访问码", "退出后要重新输入访问码。你的学习记录都保存在电脑上，不会丢。", "退出"))) return;
+      await Store.flush();
+      lanLogout();
+    };
     $("#tech-terms", root).onchange = (e) => { p.tech_terms = e.target.value; Store.save(); toast("已保存", "good"); };
     $("#tech-browse", root).onclick = () => openDictSearch("", { tech: true });
     TechDict.load().then((ok) => { if (ok && $("#tech-count", root)) $("#tech-count", root).textContent = TechDict.items.length.toLocaleString() + " "; });
@@ -451,7 +463,7 @@ App.pages.settings = {
     const draw = (s) => {
       box.innerHTML = `
         <div class="card-title">📱 局域网访问 <span class="badge ${s.running ? "good" : ""}">${s.running ? "已开启" : "未开启"}</span></div>
-        <p class="small muted" style="margin-top:-4px">开启后，和这台电脑连着同一个 Wi-Fi 的手机、平板或其他电脑，用浏览器就能打开 EngNest，和电脑共用同一份学习进度。</p>
+        <p class="small muted" style="margin-top:-4px">开启后，和这台电脑连着同一个 Wi-Fi 的手机、平板或其他电脑，用浏览器就能打开 EngNest。用你的访问码进来和电脑共用同一份学习进度；给别人用的话在下面「给其他人用」里单独加人。</p>
         ${s.running ? `
           <div class="lan-grid">
             <div class="lan-qr">${s.qr || ""}<div class="small faint center">手机扫码直接进入</div></div>
@@ -466,6 +478,20 @@ App.pages.settings = {
               <div class="row mt" style="flex-wrap:wrap"><button class="btn" id="lan-newcode">🔄 换一个访问码</button><button class="btn bad" id="lan-off">关闭局域网访问</button>
                 ${switchHtml("lan-https", "HTTPS（手机可以录音）", s.https, "用这台电脑自己签的证书加密；手机第一次打开要点「继续访问」")}</div>
             </div>
+          </div>
+          <div class="lan-users mt">
+            <div class="card-title" style="font-size:15px">👥 给其他人用</div>
+            <p class="small muted" style="margin-top:-6px">上面的访问码是<b>你自己的</b>，进来用的是你的学习进度。给朋友、家人单独加一个人，TA 会拿到自己的访问码：学习进度、生词本、设置和 AI 语伴聊天记录都单独保存，不会影响你的。AI 用的是你的 Key，默认不给其他人用。</p>
+            ${(s.users || []).map((u) => `<div class="lan-user" data-uid="${esc(u.id)}">
+              <div class="lan-user-name"><b>${esc(u.name)}</b><span class="small faint">${esc(u.created || "")} 添加</span></div>
+              <div class="lan-code sm">${esc(u.code.slice(0, 4))} ${esc(u.code.slice(4))}</div>
+              <div class="row lan-user-ops">
+                ${switchHtml(`lan-ai-${esc(u.id)}`, "可以用 AI", u.ai, "打开后 TA 能用 AI 对话、作文批改等，费用算在你的 API Key 上")}
+                <button class="btn sm ghost" data-uqr title="显示 TA 的扫码二维码">二维码</button>
+                <button class="btn sm ghost" data-ucode title="换一个访问码，TA 要用新码重新进来">换码</button>
+                <button class="btn sm ghost bad-text" data-udel title="删除这个人和 TA 的学习记录">删除</button>
+              </div></div>`).join("") || `<div class="small faint">还没有添加其他人。</div>`}
+            <div class="row mt-s"><input class="input" id="lan-uname" maxlength="20" placeholder="名字，比如 小明" style="max-width:200px"><button class="btn soft" id="lan-uadd">＋ 添加</button></div>
           </div>
           <details class="mt small muted"><summary style="cursor:pointer">打不开？使用说明</summary>
             <ul>
@@ -490,6 +516,39 @@ App.pages.settings = {
       const hs = $("#lan-https", box);
       if (hs) hs.onchange = async (e) => { draw(await pywebview.api.lan_set(true, s.port, e.target.checked)); toast(e.target.checked ? "已改用 HTTPS，手机上要用新的地址（https://）" : "已改用 http", "good", 5000); };
       if (nc) nc.onclick = async () => { draw(await pywebview.api.lan_new_code()); toast("访问码已更换，旧的访问码立即失效"); };
+      // 给其他人用：添加、AI 开关、二维码、换码、删除
+      const ua = $("#lan-uadd", box), un = $("#lan-uname", box);
+      if (ua) {
+        const add = async () => {
+          const r = await pywebview.api.lan_user_add(un.value);
+          if (!r.ok) return toast(r.error, "bad");
+          draw(r.status);
+          toast(`已添加「${un.value.trim()}」，把 TA 的访问码或二维码发给 TA`, "good", 5000);
+        };
+        ua.onclick = add;
+        un.onkeydown = (e) => { if (e.key === "Enter") add(); };
+      }
+      $$(".lan-user", box).forEach((row) => {
+        const uid = row.dataset.uid, name = $(".lan-user-name b", row).textContent;
+        $(`#lan-ai-${uid}`, row).onchange = async (e) => {
+          draw(await pywebview.api.lan_user_update(uid, { ai: e.target.checked }));
+          toast(e.target.checked ? `「${name}」现在可以用 AI 了` : `已关闭「${name}」的 AI`, "good");
+        };
+        $("[data-uqr]", row).onclick = async () => {
+          const svg = await pywebview.api.lan_user_qr(uid);
+          modal(`<div class="center"><div class="card-title">「${esc(name)}」扫码进入</div><div class="lan-qr" style="margin:0 auto">${svg}</div>
+            <p class="small muted">用 TA 的手机扫，会自动带上 TA 的访问码。</p><button class="btn" data-close>关闭</button></div>`);
+        };
+        $("[data-ucode]", row).onclick = async () => {
+          if (!(await confirmBox("换一个访问码", `「${name}」的旧访问码会立即失效，TA 要用新码重新进来（学习记录不受影响）。`, "换码"))) return;
+          draw(await pywebview.api.lan_user_new_code(uid));
+        };
+        $("[data-udel]", row).onclick = async () => {
+          if (!(await confirmBox("删除这个人", `删除「${name}」：TA 的访问码立即失效，TA 的学习进度、生词本、设置和 AI 语伴聊天记录都会从这台电脑上删除，不能恢复。你自己的进度不受影响。`, "删除", true))) return;
+          draw(await pywebview.api.lan_user_remove(uid));
+          toast(`已删除「${name}」`);
+        };
+      });
       $$("[data-copy]", box).forEach((b) => (b.onclick = async () => {
         try { await navigator.clipboard.writeText(b.dataset.copy); toast("已复制", "good"); }
         catch { toast("复制失败，请手动选中复制"); }
@@ -501,7 +560,9 @@ App.pages.settings = {
 
   async aiForm(box, root) {
     if (Store.remote) {
-      box.innerHTML = `<p class="small muted">你正在通过局域网访问。AI ${AI.enabled ? "已在电脑上开启，这里可以直接使用" : "还没有开启"}；AI 设置只能在电脑上修改。</p>`;
+      box.innerHTML = `<p class="small muted">你正在通过局域网访问。${AI.settings?.lan_denied
+        ? "电脑主人还没有给你开启 AI，可以请 TA 在电脑的「设置 → 局域网访问」里打开。"
+        : `AI ${AI.enabled ? "已在电脑上开启，这里可以直接使用" : "还没有开启"}；AI 设置只能在电脑上修改。`}</p>`;
       return;
     }
     if (!Store.bridge) {

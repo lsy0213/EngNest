@@ -65,6 +65,11 @@ class KVCache:
             self._db.execute("DELETE FROM cache WHERE ns=? AND key=?", (ns, str(key)))
         return True
 
+    def clear_ns(self, ns: str):
+        """删掉整个命名空间（局域网里删除一个人时，清掉 TA 的 AI 语伴聊天记录）"""
+        with self._lock:
+            self._db.execute("DELETE FROM cache WHERE ns=?", (ns,))
+
     def stats(self) -> dict:
         with self._lock:
             return {ns: n for ns, n in self._db.execute("SELECT ns, count(*) FROM cache GROUP BY ns")}

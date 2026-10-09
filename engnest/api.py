@@ -5,6 +5,8 @@ pywebview 会在独立线程里执行这些方法，所以 AI 请求阻塞也不
 
 import logging
 import os
+import secrets
+import shutil
 import threading
 import time
 
@@ -15,6 +17,8 @@ from .paths import data_dir
 log = logging.getLogger(__name__)
 
 DEFAULT_AI = {"provider": "none", "base_url": "", "model": "", "api_key": ""}
+PERSONAL_KV = {"tutor"}  # 每个人自己的（AI 语伴聊天记录）；其他命名空间是翻译、精讲的缓存，大家共用
+NO_AI = "电脑主人还没有给你开启 AI 功能（AI 用的是主人的 Key）。可以请 TA 在电脑的「设置 → 局域网访问」里打开。"
 
 
 class Api:
@@ -38,6 +42,10 @@ class Api:
         self._window = None  # main.py 创建窗口后设置，用来弹出选择文件的对话框
         self._streams = {}  # 正在流式生成的 AI 回复
         self._streams_lock = threading.Lock()
+        # 局域网里其他人：当前请求是谁（每个请求在自己的线程里处理），以及每个人的进度
+        self._ctx = threading.local()
+        self._profiles = {}
+        self._profiles_lock = threading.Lock()
         # 查询网卡要调用 PowerShell，比较慢，启动时在后台先查好
         threading.Thread(target=lan.local_ips, daemon=True).start()
 
@@ -48,7 +56,48 @@ class Api:
             if lan.is_weak(cfg["code"]):  # 旧版本的 6 位数字码换成 8 位的
                 cfg = {**self._lan_cfg(), "code": lan.new_code()}
                 self._save_lan_cfg(cfg)
+            self._lan.users = cfg.get("users", [])
             self._lan.start(int(cfg.get("port") or lan.DEFAULT_PORT), cfg["code"], cfg.get("https", True))
+
+    # ---------- 局域网里的其他人 ----------
+    def lan_call(self, user, name, args):
+        """局域网接口的入口：user 是 None（主人）或 {id, name, ai}。在这个请求的线程里记下是谁，接口据此选进度、管 AI"""
+        self._ctx.user = user
+        try:
+            return getattr(self, name)(*args)
+        finally:
+            self._ctx.user = None
+
+    def _user(self):
+        return getattr(self._ctx, "user", None)
+
+    def _profile_dir(self, uid: str):
+        return data_dir() / "profiles" / uid
+
+    def _prog(self) -> progress.Progress:
+        """当前请求该读写的进度：主人（电脑上、或用主人访问码进来的）是 progress.db，其他人各自一份"""
+        user = self._user()
+        if not user:
+            return self._progress
+        with self._profiles_lock:
+            p = self._profiles.get(user["id"])
+            if p is None:
+                d = self._profile_dir(user["id"])
+                d.mkdir(parents=True, exist_ok=True)
+                p = self._profiles[user["id"]] = progress.Progress(d / "progress.db", backup_dir=d / "backups")
+                try:
+                    p.backup()  # 每天第一次用的时候备份一份
+                except Exception:  # noqa: BLE001
+                    log.exception("备份 %s 的进度失败", user["id"])
+            return p
+
+    def _ai_denied(self) -> bool:
+        user = self._user()
+        return bool(user) and not user.get("ai")
+
+    def _kv_ns(self, ns):
+        user = self._user()
+        return f"{ns}@{user['id']}" if user and ns in PERSONAL_KV else ns
 
     def _on_closing(self):
         """窗口关闭前：让前端把还没保存的改动发过来，再备份一次。
@@ -65,6 +114,9 @@ class Api:
             t.join(10)
         try:
             self._progress.backup()
+            with self._profiles_lock:
+                for p in self._profiles.values():
+                    p.backup()
         except Exception:  # noqa: BLE001 — 关闭时出错不能拦着用户关窗口
             log.exception("关闭时备份失败")
 
@@ -77,28 +129,29 @@ class Api:
     # ---------- 学习进度 ----------
     def progress_load(self):
         """{data, rev, notice}：notice 是启动时发生的事（比如从备份恢复），前端提示一次"""
-        notice, self._progress.notice = self._progress.notice, ""
-        return {"data": self._progress.load(), "rev": self._progress.rev(), "notice": notice}
+        p, user = self._prog(), self._user()
+        notice, p.notice = p.notice, ""
+        return {"data": p.load(), "rev": p.rev(), "notice": notice, "who": {"name": user["name"]} if user else None}
 
     def progress_rev(self):
-        return self._progress.rev()
+        return self._prog().rev()
 
     def progress_save(self, patch):
         """只传改动过的字段，按记录合并后写入，返回 {rev, changed}"""
-        return self._progress.save_patch(patch)
+        return self._prog().save_patch(patch)
 
     # ---------- AI 结果缓存（翻译、精讲） ----------
     def kv_get(self, ns, keys):
-        return self._kv.get_many(ns, keys)
+        return self._kv.get_many(self._kv_ns(ns), keys)
 
     def kv_all(self, ns):
-        return self._kv.get_all(ns)
+        return self._kv.get_all(self._kv_ns(ns))
 
     def kv_set(self, ns, key, value):
-        return self._kv.set(ns, key, value)
+        return self._kv.set(self._kv_ns(ns), key, value)
 
     def kv_set_many(self, ns, items):
-        return self._kv.set_many(ns, items)
+        return self._kv.set_many(self._kv_ns(ns), items)
 
     def reset_progress(self):
         self._progress.reset(keep_prefs=True)
@@ -162,6 +215,8 @@ class Api:
         cfg["has_key"] = bool(key)
         cfg["key_hint"] = f"{key[:3]}****{key[-4:]}" if len(key) > 8 else ("****" if key else "")
         cfg["enabled"] = _enabled({**cfg, "api_key": key})
+        if self._ai_denied():  # 局域网里没开 AI 的人：当作没配置，前端会显示提示
+            cfg.update(enabled=False, lan_denied=True)
         return cfg
 
     def save_ai_settings(self, new_cfg):
@@ -185,6 +240,8 @@ class Api:
 
     def _ai_run(self, system, messages, json_mode=False, on_delta=None):
         """调用 AI 并记用量。返回 {ok, text, data?, error?}"""
+        if self._ai_denied():
+            return {"ok": False, "error": NO_AI}
         limit = self._settings.section("ai_limit")
         msg = ai_usage.check_limit(limit)
         if msg:
@@ -213,8 +270,13 @@ class Api:
     # 流式输出：前端先 ai_stream_start 拿到 id，再每隔一会儿 ai_stream_poll 取新生成的文字。
     # 用轮询而不是从 Python 往页面推，桌面版和局域网里的手机都能用同一套。
     def ai_stream_start(self, system, messages):
-        sid = f"s{time.time_ns()}"
+        sid = f"s{time.time_ns()}{secrets.token_hex(4)}"
         st = {"parts": [], "done": False, "result": None, "t": time.time()}
+        if self._ai_denied():  # 后台线程里拿不到「是谁」，在这里先拦下
+            st.update(done=True, result={"ok": False, "error": NO_AI})
+            with self._streams_lock:
+                self._streams[sid] = st
+            return sid
         with self._streams_lock:
             # 清掉一分钟前就结束、但前端没来取的
             for k in [k for k, v in self._streams.items() if v["done"] and time.time() - v["t"] > 60]:
@@ -301,10 +363,80 @@ class Api:
         cfg = self._settings.section("lan", {"enabled": False, "port": lan.DEFAULT_PORT, "code": ""})
         if not cfg["code"] or lan.is_weak(cfg["code"]):
             cfg["code"] = lan.new_code()
+        cfg.setdefault("users", [])
         return cfg
 
     def _save_lan_cfg(self, cfg: dict):
         self._settings.update("lan", cfg)
+        self._lan.code, self._lan.users = cfg["code"], cfg.get("users", [])  # 运行中也立即生效
+
+    def _unique_code(self, cfg) -> str:
+        used = {lan.norm_code(cfg["code"])} | {lan.norm_code(u["code"]) for u in cfg.get("users", [])}
+        while True:
+            code = lan.new_code()
+            if code not in used:
+                return code
+
+    def lan_user_add(self, name):
+        """给其他人加一个访问码。AI 默认关闭（用的是主人的 Key）"""
+        name = (name or "").strip()[:20]
+        if not name:
+            return {"ok": False, "error": "请填一个名字"}
+        cfg = self._lan_cfg()
+        if any(u["name"] == name for u in cfg["users"]):
+            return {"ok": False, "error": f"已经有叫「{name}」的人了"}
+        cfg["users"].append({"id": secrets.token_hex(4), "name": name, "code": self._unique_code(cfg), "ai": False,
+                             "created": time.strftime("%Y-%m-%d")})
+        self._save_lan_cfg(cfg)
+        return {"ok": True, "status": self.lan_status()}
+
+    def lan_user_update(self, uid, changes):
+        """改名字或 AI 开关：changes = {name?, ai?}"""
+        cfg = self._lan_cfg()
+        for u in cfg["users"]:
+            if u["id"] == uid:
+                if "ai" in changes:
+                    u["ai"] = bool(changes["ai"])
+                if (changes.get("name") or "").strip():
+                    u["name"] = changes["name"].strip()[:20]
+        self._save_lan_cfg(cfg)
+        return self.lan_status()
+
+    def lan_user_new_code(self, uid):
+        cfg = self._lan_cfg()
+        for u in cfg["users"]:
+            if u["id"] == uid:
+                u["code"] = self._unique_code(cfg)
+        self._save_lan_cfg(cfg)
+        self._lan.guard.reset()
+        return self.lan_status()
+
+    def lan_user_remove(self, uid):
+        """删掉这个人：访问码立即失效，TA 的学习记录和 AI 语伴聊天记录一起删除"""
+        cfg = self._lan_cfg()
+        cfg["users"] = [u for u in cfg["users"] if u["id"] != uid]
+        self._save_lan_cfg(cfg)
+        with self._profiles_lock:
+            p = self._profiles.pop(uid, None)
+            if p:
+                p.close()
+        d = self._profile_dir(uid)
+        if d.is_dir() and d.parent == data_dir() / "profiles":
+            shutil.rmtree(d, ignore_errors=True)
+        for ns in PERSONAL_KV:
+            self._kv.clear_ns(f"{ns}@{uid}")
+        return self.lan_status()
+
+    def lan_user_qr(self, uid):
+        """这个人的扫码链接（带上 TA 的访问码）"""
+        cfg = self._lan_cfg()
+        u = next((u for u in cfg["users"] if u["id"] == uid), None)
+        if not u or not self._lan.running:
+            return ""
+        try:
+            return lan.qr_svg(f"{self._lan.urls()[0]}?key={u['code']}")
+        except Exception:  # noqa: BLE001
+            return ""
 
     def lan_status(self):
         cfg = self._lan_cfg()
@@ -320,6 +452,7 @@ class Api:
 
     def lan_set(self, enabled, port=None, https=None):
         cfg = self._lan_cfg()
+        self._lan.users = cfg["users"]
         cfg["enabled"] = bool(enabled)
         if port:
             cfg["port"] = int(port)
@@ -335,9 +468,8 @@ class Api:
 
     def lan_new_code(self):
         cfg = self._lan_cfg()
-        cfg["code"] = lan.new_code()
-        self._save_lan_cfg(cfg)
-        self._lan.code = cfg["code"]  # 运行中也立即生效，旧访问码失效
+        cfg["code"] = self._unique_code(cfg)
+        self._save_lan_cfg(cfg)  # 运行中也立即生效，旧访问码失效
         self._lan.guard.reset()
         return self.lan_status()
 

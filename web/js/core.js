@@ -314,6 +314,7 @@ function markAdded(kind, id, rec) {
 const Store = {
   bridge: false,
   remote: false, // 是否是局域网里的其他设备
+  who: null,     // 局域网里用别人的访问码进来的：{name}，进度是 TA 自己的一份；主人和电脑上都是 null
   data: null,
   rev: 0,        // 电脑上进度的版本号，每写一次加一
   stale: false,  // 保存时发现别的设备写过
@@ -330,6 +331,7 @@ const Store = {
         saved = r.data;
         this.rev = r.rev;
         notice = r.notice;
+        this.who = r.who || null;
       } else saved = JSON.parse(localStorage.getItem("engnest-progress") || "null");
     } catch (e) {
       console.error("读取进度失败", e);
@@ -887,7 +889,9 @@ function renderNav() {
   };
   nav.innerHTML = NAV.filter((n) => !n.foot).map(item).join("");
   const foot = $("#nav-foot");
-  if (foot) foot.innerHTML = NAV.filter((n) => n.foot).map(item).join("");
+  // 局域网里用自己访问码进来的人：侧栏底部显示是谁（点了去设置，可以换访问码）
+  const who = Store.who ? `<a class="nav-item who-item" href="#/settings" title="你的学习记录单独保存在电脑上，和电脑主人的分开"><span class="ico">👤</span><span class="label">${esc(Store.who.name)}</span></a>` : "";
+  if (foot) foot.innerHTML = who + NAV.filter((n) => n.foot).map(item).join("");
 }
 
 // 界面风格和深浅色（记在设置里）
@@ -953,6 +957,11 @@ function renderSidebarFoot() {
   const el = $("#streak-mini");
   if (!el) return;
   el.innerHTML = `<span>🔥 连续 <b>${streak()}</b> 天</span><span>今日 <b>${dayRec().xp}</b> XP</span>`;
+}
+// 局域网设备上「换一个访问码 / 退出」：忘掉记住的访问码，重新输入
+function lanLogout() {
+  try { localStorage.removeItem(LAN_KEY); } catch { /* 存不了也没关系 */ }
+  location.reload();
 }
 
 const Router = {

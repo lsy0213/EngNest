@@ -866,6 +866,12 @@ a.chip { text-decoration: none; display: inline-flex; align-items: baseline; gap
 .lan-login { max-width: 380px; margin: 60px auto; text-align: center; }
 .lan-login .input { text-align: center; font-size: 22px; letter-spacing: 6px; }
 @media (max-width: 720px) { .lan-grid { grid-template-columns: 1fr; } .lan-qr { max-width: 200px; } }
+/* 给其他人用：每人一行，名字 / 访问码 / 操作 */
+.lan-users { border-top: 1px dashed var(--line); padding-top: 14px; }
+.lan-user { display: grid; grid-template-columns: minmax(90px, 1fr) auto; gap: 4px 14px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.lan-user-name { display: flex; flex-direction: column; }
+.lan-code.sm { font-size: 18px; letter-spacing: 3px; }
+.lan-user-ops { grid-column: 1 / -1; gap: 6px; flex-wrap: wrap; }
 
 /* ========== 连词成句 · 句乐部风格 ========== */
 .bd-card { position: relative; overflow: visible; }

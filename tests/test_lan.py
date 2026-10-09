@@ -15,6 +15,10 @@ class FakeApi:
     def progress_rev(self):
         return 7
 
+    def lan_call(self, user, name, args):
+        self.last_user = user
+        return getattr(self, name)(*args)
+
 
 def free_port():
     with socket.socket() as s:
@@ -110,3 +114,16 @@ def test_https_mode(monkeypatch):
     with urllib.request.urlopen(req, timeout=10, context=ctx) as r:
         assert r.status == 200
     srv.stop()
+
+
+def test_user_codes(server):
+    """其他人用自己的访问码进来：接口收到 TA 是谁；主人的码收到 None；删掉以后码立即失效"""
+    srv, port = server
+    srv.users = [{"id": "u1", "name": "小明", "code": "WXYZ6789", "ai": False}]
+    st, d = call(port, "ping", "wxyz-6789")
+    assert st == 200 and d["name"] == "小明"
+    assert call(port, "progress_rev", "WXYZ6789")[0] == 200 and srv.api.last_user == {"id": "u1", "name": "小明", "ai": False}
+    assert call(port, "progress_rev", "ABCD2345")[0] == 200 and srv.api.last_user is None
+    assert call(port, "ping", "ABCD2345")[1]["name"] is None
+    srv.users = []
+    assert call(port, "ping", "WXYZ6789")[0] == 401

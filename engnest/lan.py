@@ -6,6 +6,9 @@
 - 访问码是 8 位字母数字（约 1 万亿种）；同一个地址 10 分钟内输错 5 次锁 10 分钟，
   所有地址加起来 10 分钟内错 30 次就全部锁 10 分钟，防止在局域网里暴力猜
 - 请求体最大 20 MB
+- 多人使用：主人的访问码打开主人的进度（和电脑共用）；给其他人（朋友、家人）各发一个自己的访问码，
+  用那个码进来的人有单独的一份进度、生词本、设置和 AI 语伴聊天记录（data_dir/profiles/<id>/），互不影响。
+  AI 能不能用由主人给每个人单独开关（AI 用的是主人的 Key，费用算主人的）
 """
 
 import hmac
@@ -208,19 +211,19 @@ class Handler(SimpleHTTPRequestHandler):
         wait = guard.blocked(ip)
         if wait > 0:
             return self._json(429, {"error": f"访问码输错太多次，请 {int(wait // 60) + 1} 分钟后再试", "wait": int(wait)})
-        key = norm_code(self.headers.get("X-EngNest-Key", ""))
-        # 按字节比较：请求头里混进非 ASCII 字符时 compare_digest(str, str) 会直接抛异常
-        if not hmac.compare_digest(key.encode("utf-8", "replace"), norm_code(self.server_ref.code).encode()):
+        user = self.server_ref.who(self.headers.get("X-EngNest-Key", ""))
+        if user is False:
             guard.fail(ip)
             return self._json(401, {"error": "访问码不正确"})
         guard.ok(ip)
         if name == "ping":
-            return self._json(200, {"ok": True})
+            return self._json(200, {"ok": True, "name": user["name"] if user else None})
         if name not in ALLOWED:
             return self._json(403, {"error": "这个操作只能在电脑上进行"})
         try:
             body = json.loads(raw or b"{}")
-            result = getattr(self.server_ref.api, name)(*body.get("args", []))
+            # user：None 是主人，否则是 {id, name, ai}；接口按它决定读写哪一份进度、能不能用 AI
+            result = self.server_ref.api.lan_call(user, name, body.get("args", []))
             if name == "get_ai_settings" and isinstance(result, dict):
                 result = {k: v for k, v in result.items() if k != "key_hint"}  # Key 的任何部分都不发给其他设备
             return self._json(200, {"result": result})
@@ -264,6 +267,19 @@ class LanServer:
         self.error = ""
         self.https = False
         self.guard = Guard()
+        self.users = []  # 其他人：[{id, name, code, ai}]，设置里改了就整个换掉
+
+    def who(self, key: str):
+        """访问码属于谁：主人返回 None，其他人返回 {id, name, ai}，都不对返回 False。
+        每个码都比一遍（按字节、恒定时间比较；请求头里混进非 ASCII 字符时 compare_digest(str, str) 会直接抛异常）"""
+        k = norm_code(key).encode("utf-8", "replace")
+        found = False
+        if self.code and hmac.compare_digest(k, norm_code(self.code).encode()):
+            found = None
+        for u in self.users:
+            if u.get("code") and hmac.compare_digest(k, norm_code(u["code"]).encode()):
+                found = {"id": u["id"], "name": u.get("name", ""), "ai": bool(u.get("ai"))}
+        return found
 
     @property
     def running(self) -> bool:

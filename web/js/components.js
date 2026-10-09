@@ -223,6 +223,11 @@ function switchHtml(id, label, on, title = "") {
 }
 
 function aiLockHtml(what = "这个功能") {
+  if (AI.settings?.lan_denied) return `<div class="card ai-lock">
+    <div class="big">🤖</div>
+    <h3 class="mt-s">${what}需要 AI</h3>
+    <p class="muted">电脑主人还没有给你开启 AI（AI 用的是主人的 Key）。可以请 TA 在电脑的「设置 → 局域网访问」里打开。<br>其他功能都能正常使用。</p>
+  </div>`;
   return `<div class="card ai-lock">
     <div class="big">🤖</div>
     <h3 class="mt-s">${what}需要接入 AI</h3>

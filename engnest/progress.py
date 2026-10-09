@@ -151,8 +151,10 @@ def prune_tombstones(data: dict) -> dict:
 
 
 class Progress:
-    def __init__(self, path: Path = None):
+    def __init__(self, path: Path = None, backup_dir: Path = None):
+        """backup_dir：备份放哪（局域网里其他人的进度放在 profiles/<id>/backups，不和主人的混在一起）"""
         self.path = path or (data_dir() / "progress.db")
+        self._backup_dir = backup_dir
         self._lock = threading.Lock()
         self.notice = ""  # 启动时发生的事（比如从备份恢复），前端显示一次
         self._db = self._open()
@@ -302,6 +304,9 @@ class Progress:
 
     # ---------- 备份 ----------
     def backup_dir(self) -> Path:
+        if self._backup_dir:
+            self._backup_dir.mkdir(parents=True, exist_ok=True)
+            return self._backup_dir
         return sub_dir("backups")
 
     def export_doc(self) -> dict:
