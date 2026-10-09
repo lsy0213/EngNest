@@ -28,7 +28,9 @@ function storyAvatar(a) { return `img/avatars/${a}.svg`; }
 //   onFx(node), onFinish({ delta, score, picks }) → { ico, button, html }, onDone(), onExit(), exitText
 //   onSave(state)                                  演到一半的进度（每次选择、每次点继续都会调）：页面把 state 存起来，
 //                                                  中途离开（换页面、关掉）下次传回 resume 就能接着演；有 onSave 又没给 exitText 时，点 ✕ 不用确认
-//   resume: { t, n }                               上次的进度：t 每个选择选了哪个，n 点过几次「继续」。
+//   onClear()                                      对话框上的「清除进度」：页面清掉存的进度，从这段的开头重新演
+//   resume: { tr, n }                              上次的进度：tr 每个选择选了哪个，n 点过几次「继续」。
+//                                                  （不能叫 t：进度数据库里记录的 t 是修改时间，合并多台设备的数据时按它比新旧）
 //                                                  剧本是确定的（同样的选择走同样的路），所以从头快速重放一遍就回到原处：
 //                                                  不朗读、不重复加经验；对不上（剧本改过）就从对不上的地方开始正常演
 // }
@@ -46,9 +48,9 @@ function storyStage(o) {
   // 中途保存：trace 是每个选择的记录（{c: 原始序号} 怎么说 / {d} 做什么 / {l} 只听，s: 1 表示是说出来的），nexts 是点过几次继续
   const trace = [];
   let nexts = 0;
-  const replay = { t: [...(o.resume?.t || [])], n: o.resume?.n || 0 };
+  const replay = { t: [...(o.resume?.tr || [])], n: o.resume?.n || 0 };
   let replaying = replay.t.length > 0 || replay.n > 0;
-  const save = () => o.onSave?.({ t: [...trace], n: nexts });
+  const save = () => o.onSave?.({ tr: [...trace], n: nexts });
   const xp = (n) => { if (!replaying) addXP(n); }; // 重放时经验已经加过了
   const addFx = (fx) => { for (const [k, v] of Object.entries(fx || {})) delta[k] = typeof v === "number" ? (delta[k] || 0) + v : v; };
   addFx(scene.bonus);
@@ -56,6 +58,8 @@ function storyStage(o) {
   root.innerHTML = `<div class="sc-stage card">
       <div class="sc-stage-head"><b>${esc(scene.zh || scene.title)}</b><span class="small faint en">${esc(scene.title)}</span><span class="spacer"></span>
         <div class="tabs sc-zh-tabs">${[["always", "中文"], ["click", "点击看中文"], ["never", "纯英文"]].map(([k, l]) => `<button class="tab ${P.sc_zh === k ? "active" : ""}" data-zh="${k}">${l}</button>`).join("")}</div>
+        ${o.onSave ? `<button class="btn sm ghost" id="sc-save" title="进度每一步都会自动保存；点这里马上存一次">💾 保存</button>
+          <button class="btn sm ghost" id="sc-clear" title="清掉这段演到一半的进度，从开头重新演">🗑 清除进度</button>` : ""}
         <button class="btn sm ghost" id="sc-exit" title="离开这段对话">✕</button></div>
       <div class="sc-scene sc-zh-${P.sc_zh}" id="sc-scene"></div>
       <div class="sc-foot" id="sc-foot"></div>
@@ -73,6 +77,20 @@ function storyStage(o) {
     if (waiting === "end" || (o.onSave && !o.exitText) || await confirmBox("离开这段对话？", o.exitText || "这段对话的进度不会保存，也不会花掉时间。", "离开")) { TTS.stop(); Mic.cancel(); o.onExit(); }
   };
   sceneBox.addEventListener("click", (e) => { const z = e.target.closest(".sc-zh"); if (z) z.classList.add("show"); });
+  if (o.onSave) {
+    $("#sc-save", root).onclick = async () => {
+      if (waiting === "end") return toast("这一段已经演完了", "good");
+      save();
+      await Store.flush();
+      toast("已保存。下次回来会接着这里演", "good");
+    };
+    $("#sc-clear", root).onclick = async () => {
+      if (!(await confirmBox("清除这段的进度？", "这一段演到一半的进度会清掉，从开头重新演（已经得到的经验不会扣）。", "清除并重新开始", true))) return;
+      TTS.stop();
+      Mic.cancel();
+      o.onClear?.();
+    };
+  }
 
   const who = (sp) => (sp === "me" ? { name: "你", avatar: "", color: "var(--brand)", voice: "" } : o.cast(sp) || { name: sp, color: "#888" });
   const scroll = () => { if (!replaying) sceneBox.scrollTo({ top: sceneBox.scrollHeight, behavior: "smooth" }); };

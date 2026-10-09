@@ -114,3 +114,23 @@ def test_read_export_rejects_other_json(tmp_path):
         pass
     else:
         raise AssertionError("应该拒绝")
+
+
+def test_bad_timestamp_does_not_break_save():
+    """记录里的 t 应该是修改时间（数字）；旧版本把选择记录（列表）存成了 t，合并时不能报错"""
+    old = {"day": 1, "cur": {"ep": "ep1", "t": [{"c": 1}], "n": 3}}
+    new = {"day": 1, "cur": {"ep": "ep1", "tr": [{"c": 1}, {"c": 0}], "n": 5, "t": 1700000000000}}
+    assert merge_value("sitcom", old, new)["cur"]["n"] == 5
+
+
+def test_null_clears_nested_progress():
+    """演到一半的进度清除时设成 null：按字段合并时不会被旧数据带回来（直接删掉字段的话会）"""
+    old = {"day": 2, "cur": {"ep": "ep1", "tr": [], "n": 3, "t": 1}}
+    assert merge_value("sitcom", old, {"day": 2, "cur": None})["cur"] is None
+    assert merge_value("life", {"campus": {"done": ["c1"]}}, {"campus": None})["campus"] is None
+
+
+def test_newer_progress_wins():
+    a = {"ch": "c2", "tr": [{"c": 0}], "n": 9, "t": 100}
+    b = {"ch": "c2", "tr": [], "n": 1, "t": 200}  # 点了「清除进度」以后重新演，n 变小但时间更新
+    assert merge_value("x", {"cur": a}, {"cur": b})["cur"] == b

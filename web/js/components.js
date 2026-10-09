@@ -285,6 +285,60 @@ const Dict = {
   },
 };
 
+// ---------- 学习者英英释义（data/simpledef.js，Simple English Wiktionary，CC BY-SA；第一次用时才加载） ----------
+// 用简单英语写的整句释义：If you abandon something, you go away from it with no plan to return.
+// 每个义项带着释义里「不太常见」的词和它的词频排名；按学习者认识多少词决定先给英文还是先给中文：
+//   释义里不认识的词 ≤ 1 个 → 先显示英文（那个词标出来，点一下能查），中文点开再看
+//   ≥ 2 个 → 先显示中文，英文放在下面作补充（读起来太累反而记不住）
+// 「认识」= 在 App 里学过，或者在学习者词汇量范围内（做过水平测试按估计词汇量，没做过按 1200 个最常用词）
+// 设置里可以改成：总是先中文 / 总是先英文 / 不显示
+const SimpleDef = {
+  words: null, easy: 1000, loading: null,
+  async load() {
+    if (this.words) return true;
+    try {
+      if (!window.SIMPLE_DEF) await (this.loading ||= loadScript("data/simpledef.js"));
+      this.words = window.SIMPLE_DEF.words;
+      this.easy = window.SIMPLE_DEF.easy || 1000;
+      return true;
+    } catch { this.loading = null; return false; }
+  },
+  get(w) { return this.words?.[String(w || "").toLowerCase()] || null; },
+  basic() { return Math.max(this.easy, Math.min(Store.data?.level?.vocab || 1200, 12000)); },
+  known(lemma, rank) {
+    if (rank <= this.basic()) return true;
+    const words = Store.data?.words || {};
+    if (words[lemma]) return true;
+    const hit = typeof lookupWord === "function" ? lookupWord(lemma) : null;
+    return !!(hit && words[hit.w]);
+  },
+  // 一个义项里学习者还不认识的词（原形）
+  unknown(sense) { return (sense[3] || []).filter(([w, r]) => !this.known(w, r)).map(([w]) => w); },
+  // 卡片上怎么显示：{ mode: "en" 先英文 / "zh" 先中文, senses, unknown } 或 null（没有释义 / 设置里关了）
+  view(word) {
+    const pref = Store.prefs?.en_def || "auto", senses = this.get(word);
+    if (pref === "off" || !senses) return null;
+    const unknown = this.unknown(senses[0]);
+    const mode = pref === "en" ? "en" : pref === "zh" ? "zh" : unknown.length <= 1 ? "en" : "zh";
+    // 先英文时，第二个义项也要看得懂才放上来（不然一张卡上全是生词）
+    const shown = mode === "en" && pref === "auto" ? senses.filter((s, i) => i === 0 || this.unknown(s).length <= 1) : senses;
+    return { mode, senses: shown, unknown: new Set(shown.slice(0, 2).flatMap((s) => this.unknown(s))) };
+  },
+  // 释义原文：每个词都能点（查词浮层），还不认识的词标出来
+  defHtml(text, unknown = new Set()) {
+    return `<span class="sd-def" data-text="${esc(text)}">${text.split(/([A-Za-z][A-Za-z'’-]*)/).map((part, i) => {
+      if (i % 2 === 0) return esc(part);
+      const isNew = unknown.size && TechDict.forms(part.toLowerCase()).some((f) => unknown.has(f));
+      return `<span class="w${isNew ? " sd-new" : ""}"${isNew ? ` title="这个词你可能还不认识，点一下看意思"` : ""}>${esc(part)}</span>`;
+    }).join("")}</span>`;
+  },
+  sensesHtml(senses, unknown, { max = 2, examples = true } = {}) {
+    return senses.slice(0, max).map(([pos, def, ex]) => `<div class="sd-sense"><span class="sd-pos">${esc(pos)}</span> ${this.defHtml(def, unknown)}
+      ${examples && ex ? `<div class="sd-ex" data-text="${esc(ex)}">${esc(ex)} ${speakBtn(ex, "sm")}</div>` : ""}</div>`).join("");
+  },
+  credit: `<a class="sd-credit" href="https://simple.wiktionary.org" target="_blank" rel="noopener" title="释义来自 Simple English Wiktionary（CC BY-SA）">Simple English Wiktionary</a>`,
+};
+
 // ---------- 计算机英语词典（data/techdict.js，由 tools/build_techdict.py 生成，第一次查词时才加载） ----------
 // 每条 { w 术语, full 英文全称, zh 中文, note 解释, alias 别名, cat 分类, common 日常也常见的词, ext 来自 computerese }
 // 查词浮层里显示「💻 计算机」释义：设置里可选 auto（默认）/ always / off。
@@ -504,9 +558,14 @@ function openDictSearch(initial = "", { tech = false } = {}) {
     </div>`);
   $(".modal", root).classList.add("ds-modal");
   const inp = $("#ds-q", root), list = $("#ds-list", root), detail = $("#ds-detail", root), modeBtn = $("#ds-tech", root);
+  detail.addEventListener("click", (e) => { // 英文释义里的词：点了直接在面板里查
+    const w = e.target.closest(".sd-box .w");
+    if (w) { inp.value = w.textContent; browseCat = null; run(); }
+  });
   // results 的每一项：英汉词典的 { word, trans, … }，计算机词典来的另带 tech: true
   let results = [], active = -1, seq = 0, techMode = tech, browseCat = null;
   const techLoaded = TechDict.load();
+  const sdLoaded = SimpleDef.load();
 
   const empty = (html) => (detail.innerHTML = `<div class="ds-empty">${html}</div>`);
   const welcome = () => techMode
@@ -550,6 +609,7 @@ function openDictSearch(initial = "", { tech = false } = {}) {
     $(".ds-row.active", list)?.scrollIntoView({ block: "nearest" });
     const my = ++seq;
     await techLoaded;
+    await sdLoaded;
     const found = await Dict.lookup(r.word);
     if (my !== seq) return;
     const techHtml = TechDict.detailHtml(r.word);
@@ -572,6 +632,7 @@ function openDictSearch(initial = "", { tech = false } = {}) {
       ${techMode ? techHtml : ""}
       <div class="ds-trans">${d.trans.split("\n").map((l) => `<div>${esc(l)}</div>`).join("")}</div>
       ${techMode ? "" : techHtml}
+      ${SimpleDef.get(d.word) && Store.prefs.en_def !== "off" ? `<div class="sd-box sd-detail"><div class="sd-label">📘 英文释义 · ${SimpleDef.credit}</div>${SimpleDef.sensesHtml(SimpleDef.get(d.word), new Set(SimpleDef.get(d.word).flatMap((s) => SimpleDef.unknown(s))), { max: 3 })}</div>` : ""}
       ${Dict.formsHtml(d) ? `<div class="ds-forms">${Dict.formsHtml(d)}</div>` : ""}
       ${local ? `<div class="small faint mt">📚 ${esc(unitLabel(local))}</div><div class="ds-local">${wordDetailHtml(local)}</div>` : ""}
       ${d.defn ? `<details class="mt-s"><summary class="small muted" style="cursor:pointer">英文释义</summary><div class="ds-defn">${esc(d.defn).replace(/\n/g, "<br>")}</div></details>` : ""}
@@ -659,8 +720,8 @@ async function showWordPopup(rawWord, anchor, context = "", extra = null) {
     pop.style.top = top + "px";
   };
 
-  // 计算机释义（第一次用时要先加载 data/techdict.js）
-  await TechDict.load();
+  // 计算机释义、英文释义（第一次用时要先加载数据）
+  await Promise.all([TechDict.load(), SimpleDef.load()]);
   let tech = TechDict.pick(word, context, Store.prefs.tech_terms || "auto");
 
   const render = (item, fromAI = false) => {
@@ -671,6 +732,7 @@ async function showWordPopup(rawWord, anchor, context = "", extra = null) {
       ${item.formNote || ""}
       ${item.tagsHtml ? `<div class="row ds-badges">${item.tagsHtml}</div>` : ""}
       ${item.m ? `<div class="pop-meaning">${esc(item.m).replace(/\s{2,}/g, "<br>")}</div>` : ""}
+      ${!fromAI && Store.prefs.en_def !== "off" && SimpleDef.get(item.w) ? `<div class="pop-sd">📘 ${esc(SimpleDef.get(item.w)[0][1])}</div>` : ""}
       ${fromAI ? "" : TechDict.popupHtml(tech)}
       ${typeof morphHtml === "function" ? morphHtml(item.w) : ""}
       ${item.ex ? `<div class="pop-ex"><div class="en">${esc(item.ex)}</div><div class="zh">${esc(item.zh || "")}</div></div>` : ""}
@@ -905,10 +967,18 @@ function renderChoice(container, q, { onAnswer, qClass = "" } = {}) {
 }
 
 // ---------- 单词详情（卡片背面 / 词库展开）----------
-function wordDetailHtml(item) {
+// opt.endef：单词卡片上按学习者水平先给英文释义或先给中文（见 SimpleDef）
+function wordDetailHtml(item, opt = {}) {
   const exs = item.exs?.length ? item.exs : item.ex ? [[item.ex, item.zh]] : [];
+  const zh = `<div class="fc-meaning">${esc(item.m).replace(/\s{2,}/g, "<br>")}</div>`;
+  const sd = opt.endef ? SimpleDef.view(item.w) : null;
+  const top = !sd ? zh
+    : sd.mode === "en"
+      ? `<div class="sd-box sd-main">${SimpleDef.sensesHtml(sd.senses, sd.unknown, { examples: false })}</div>
+         <details class="sd-zh"><summary>看中文</summary>${zh}</details>`
+      : `${zh}<div class="sd-box sd-sub"><div class="sd-label">📘 English · ${SimpleDef.credit}</div>${SimpleDef.sensesHtml(sd.senses, sd.unknown, { examples: false })}</div>`;
   return `
-    <div class="fc-meaning">${esc(item.m).replace(/\s{2,}/g, "<br>")}</div>
+    ${top}
     ${exs.slice(0, 2).map(([en, zh]) => `<div class="fc-example">${esc(en)} ${speakBtn(en, "sm")}</div><div class="fc-example-zh">${esc(zh)}</div>`).join("")}
     ${item.phrases?.length ? (item.phrases.every((x) => x[1] === "同义替换")
       ? `<div class="fc-extra"><b>同义替换（考试里常换成这些说法）</b><div class="en">${item.phrases.map(([p]) => esc(p)).join(" · ")}</div></div>`
@@ -947,6 +1017,8 @@ const STUDY_EXIT_BTN = `<button class="btn sm ghost fc-exit" data-exit title="�
 
 function runFlashcards(container, queue, mode, signal, onFinish, { exitTo } = {}) {
   enterStudyFocus(container, signal, exitTo);
+  SimpleDef.load(); // 英文释义：翻开之前一般就加载好了；没加载好就先只显示中文
+  bindWordClicks(container); // 英文释义里的词可以点着查
   const total = queue.length;
   const q = [...queue];
   const retry = {};            // 答错的词回到队尾再来一次（最多 2 次）
@@ -1003,7 +1075,7 @@ function runFlashcards(container, queue, mode, signal, onFinish, { exitTo } = {}
           <div class="fc-word">${esc(cur.w)}</div>
           <div class="fc-ipa">${esc(cur.ph || "")} ${speakBtn(cur.w)}<button class="speak" data-shadow-cur title="跟读评测（Ctrl+M）">🎙️</button></div>
           ${revealed ? `
-            <div class="fc-back ${enter ? "" : "reveal"}">${wordDetailHtml(cur)}</div>
+            <div class="fc-back ${enter ? "" : "reveal"}">${wordDetailHtml(cur, { endef: true })}</div>
             <div class="fc-actions">
               <button class="btn good lg" data-g="2">${L} 认识 <span class="kbd">3</span></button>
               <button class="btn warn lg" data-g="1">有点模糊 <span class="kbd">↓</span></button>

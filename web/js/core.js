@@ -210,7 +210,8 @@ const DEFAULT_PROGRESS = () => ({
     daily_new: 15, daily_goal: 50, auto_speak: true, book: "cet4",
     tts_engine: "neural", neural_voice: "en-US-AriaNeural", tts_voice: "", tts_rate: 0.9,
     shadow_listen: true, // 跟读评测时先听一遍原音再录
-    tech_terms: "auto",  // 查词时显示计算机释义：auto 技术文章里才显示常见词的术语义 / always / off
+    tech_terms: "auto",
+    en_def: "auto",      // 单词卡片的英文释义：auto 看得懂就先英文 / zh 总是先中文 / en 总是先英文 / off 不显示  // 查词时显示计算机释义：auto 技术文章里才显示常见词的术语义 / always / off
     companion_visible: false, companion_view: "front",
     skin: "cabinet", theme_mode: "auto", theme_character_positions: {}, // 每套角色主题独立保存悬浮位置
   },

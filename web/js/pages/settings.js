@@ -116,6 +116,9 @@ App.pages.settings = {
           <div class="field"><label>复习时希望记得多少</label>
             <select class="select" id="retention">${[[0.85, "85%（复习少一些）"], [0.9, "90%（推荐）"], [0.95, "95%（记得更牢，复习更多）"]].map(([n, t]) => `<option value="${n}" ${n === (p.retention || 0.9) ? "selected" : ""}>${t}</option>`).join("")}</select>
             <span class="help">复习安排用 FSRS 记忆算法：按每个词你记得牢不牢，算出它快要忘掉的那天再让你复习。</span></div>
+          <div class="field"><label>英文释义（英英）</label>
+            <select class="select" id="en-def">${[["auto", "自动：看得懂就先显示英文（推荐）"], ["zh", "总是先中文，英文放下面"], ["en", "总是先英文（挑战）"], ["off", "不显示"]].map(([v, t]) => `<option value="${v}" ${(p.en_def || "auto") === v ? "selected" : ""}>${t}</option>`).join("")}</select>
+            <span class="help">用简单英语写的释义（来自 Simple English Wiktionary）。自动：释义里你不认识的词不超过 1 个才先显示英文，不然先显示中文，学的词越多，英文出现得越多。</span></div>
           <div class="field"><label>卡片滑动方向</label>
             <select class="select" id="swipe-dir"><option value="left" ${p.swipe_right_known ? "" : "selected"}>← 往左是「记住了」</option><option value="right" ${p.swipe_right_known ? "selected" : ""}>→ 往右是「记住了」（和多数 App 一样）</option></select></div>
         </div>
@@ -238,6 +241,7 @@ App.pages.settings = {
       await Store.flush();
       lanLogout();
     };
+    $("#en-def", root).onchange = (e) => { p.en_def = e.target.value; Store.save(); toast("已保存", "good"); };
     $("#tech-terms", root).onchange = (e) => { p.tech_terms = e.target.value; Store.save(); toast("已保存", "good"); };
     $("#tech-browse", root).onclick = () => openDictSearch("", { tech: true });
     TechDict.load().then((ok) => { if (ok && $("#tech-count", root)) $("#tech-count", root).textContent = TechDict.items.length.toLocaleString() + " "; });

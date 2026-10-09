@@ -4,6 +4,7 @@ const ABOUT_SOURCES = [
     ["四六级、雅思、托福词库", "KyleBing/english-vocabulary", "https://github.com/KyleBing/english-vocabulary", "BSD-3-Clause；原始数据来自有道词典词书，仅供个人学习使用"],
     ["英汉词典", "skywind3000/ECDICT", "https://github.com/skywind3000/ECDICT", "MIT"],
     ["计算机词典（软件工程术语对照部分）", "EarsEyesMouth/computerese-cross-references", "https://github.com/EarsEyesMouth/computerese-cross-references", "MIT"],
+    ["英文释义（英英）", "Simple English Wiktionary", "https://simple.wiktionary.org", "CC BY-SA 3.0 / 4.0；作者见各词条的页面历史"],
     ["词频排序", "rspeer/wordfreq", "https://github.com/rspeer/wordfreq", "Apache-2.0（数据 CC BY-SA 4.0）"],
     ["Tatoeba 例句", "tatoeba.org", "https://tatoeba.org", "CC BY 2.0 FR"],
   ]],

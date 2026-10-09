@@ -52,7 +52,9 @@ def _list_id(key, item):
 
 
 def _stamp(rec) -> float:
-    return float(rec.get("t") or 0) if isinstance(rec, dict) else 0.0
+    """记录的修改时间 t（毫秒）。不是数字的（比如旧版本把别的东西存成了 t）当作没有时间，不能让整次保存失败"""
+    t = rec.get("t") if isinstance(rec, dict) else None
+    return float(t) if isinstance(t, (int, float)) and not isinstance(t, bool) else 0.0
 
 
 def _pick(old, new):

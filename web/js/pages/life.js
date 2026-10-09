@@ -1,7 +1,8 @@
 // 人生剧场：每个选择都是另一种人生。剧本架 + 分支剧情（合租日记是其中一本，有自己的页面 #/sitcom）
 // 剧本数据在 data/life*.js（LIFE.stories），对话引擎在 js/story_engine.js
 // 进度存在 Store.data.life[剧本 id]：{ vars 属性和标记, done 演过的章, hist 每章开头的快照和做过的决定, seen 所有人生里选过的选项, endings 收集到的结局,
-//   cur 演到一半的章：{ ch, t, n }（见 story_engine.js 的 resume），换页面、关掉再回来能接着演 }
+//   cur 演到一半的章：{ ch, tr, n, t 修改时间 }（见 story_engine.js 的 resume），换页面、关掉再回来能接着演；
+//   清除时设成 null 而不是删掉（进度数据库按字段合并，删掉的字段会被旧数据带回来） }
 
 // 条件："party"、"!party"、"study>=60"、"route=study"，& 并且，| 或者
 function lifeTest(cond, v) {
@@ -61,7 +62,7 @@ App.pages.life = {
       const S = LIFE.stories[id], s = this.all[id];
       if (!S) continue;
       const got = s ? Object.keys(s.endings).length : 0;
-      const where = !s ? "新剧本" : s.cur ? `第 ${s.done.length + 1} 章演到一半` : s.ending ? `结局：${S.endings.find((e) => e.id === s.ending)?.zh || ""}` : this.nextChapter(S, s) ? `进行到第 ${s.done.length + 1} 章` : "样章已读完";
+      const where = !s ? "新剧本" : s.cur?.ch ? `第 ${s.done.length + 1} 章演到一半` : s.ending ? `结局：${S.endings.find((e) => e.id === s.ending)?.zh || ""}` : this.nextChapter(S, s) ? `进行到第 ${s.done.length + 1} 章` : "样章已读完";
       cards.push(`<a class="lf-card card" href="#/life/${id}">
         <div class="lf-card-ico">${S.ico}</div><b>${esc(S.zh)}</b><div class="small faint en">${esc(S.title)}</div>
         <div class="small muted">${esc(S.place)} · ${esc(S.blurb.slice(0, 46))}…</div>
@@ -203,7 +204,7 @@ App.pages.life = {
       if (fresh) fresh.onclick = async (e) => {
         e.preventDefault();
         if (!(await confirmBox("从头演这一章？", "这一章演到一半的进度会清掉，从这一章的开头重新开始。", "从头开始"))) return;
-        delete s.cur;
+        s.cur = null;
         Store.save();
         this.play(next);
       };
@@ -212,8 +213,10 @@ App.pages.life = {
   // 这一章上次演到一半
   resumable(ch) {
     const c = this.s.cur;
-    return !!(c && c.ch === ch.id && (c.t?.length || c.n));
+    return !!(c && c.ch === ch.id && (this.trace(c).length || c.n));
   },
+  // 上次的选择记录；旧版本存在 t 里（和数据库的修改时间同名，已经改成 tr）
+  trace(c) { return c?.tr || (Array.isArray(c?.t) ? c.t : []); },
 
   // ---------- 演一章 ----------
   play(ch) {
@@ -226,10 +229,11 @@ App.pages.life = {
       knows: (w) => !!(Store.data.words[w] || Store.data.words[w.toLowerCase()]),
       seen: (id, i) => !!s.seen[id]?.includes(i),
       // 演到一半随时保存：换页面、关掉再回来，从离开的地方接着演
-      resume: this.resumable(ch) ? s.cur : null,
-      onSave: (st) => { s.cur = { ch: ch.id, ...st }; Store.save(); },
+      resume: this.resumable(ch) ? { tr: this.trace(s.cur), n: s.cur.n } : null,
+      onSave: ({ tr, n }) => { s.cur = { ch: ch.id, tr, n, t: Date.now() }; Store.save(); },
+      onClear: () => { s.cur = null; Store.save(); this.play(ch); },
       onFinish: ({ delta, score, picks }) => {
-        delete s.cur;
+        s.cur = null;
         const snap = { vars: { ...s.vars }, best: s.best, total: s.total, spoke: s.spoke, heard: s.heard, listens: s.listens };
         this.apply(s.vars, delta);
         s.done.push(ch.id);
@@ -301,7 +305,7 @@ App.pages.life = {
     s.done = s.done.slice(0, idx);
     s.hist = s.hist.slice(0, idx);
     s.ending = null;
-    delete s.cur;
+    s.cur = null;
     Store.save();
     toast("回到了这个路口，这次试试别的选择吧", "good");
     this.refresh();
@@ -357,7 +361,7 @@ App.pages.life = {
     $("#lf-reset", m.root).onclick = async () => {
       m.close();
       if (await confirmBox("清空全部记录？", "进度、人生树、结局图鉴都会清空（已经收进生词本的句子不受影响）。只想从头再玩一遍的话，用「重新过一遍这段人生」就好。", "清空", true)) {
-        delete this.all[this.sid];
+        this.all[this.sid] = null; // 不能 delete：进度按字段合并，删掉的会被旧数据带回来
         Store.save();
         this.refresh();
       }

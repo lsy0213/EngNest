@@ -174,6 +174,7 @@ EngNest/
 - **离线神经语音**：[rhasspy/piper](https://github.com/rhasspy/piper) 2023.11.14-2 Windows 版（MIT）和 [piper-voices](https://huggingface.co/rhasspy/piper-voices) 声音模型，在设置里下载（引擎里带的 espeak-ng 是 GPL，所以不打包，只从原地址下载）。
 - **复习算法**：[ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs)（MIT），放在 `web/js/vendor/`。
 - **计算机词典**：`tools/techdict/*.txt` 是 EngNest 自己编写的分类术语表（每行「术语 | 英文全称 | 中文 | 一句话解释 | 别名」，随项目 MIT 发布），另收 [EarsEyesMouth/computerese-cross-references](https://github.com/EarsEyesMouth/computerese-cross-references)（MIT）里没重复的约 800 条软件工程术语对照；用 `tools/build_techdict.py` 生成 `web/data/techdict.js`，加词改词只改 txt 再运行一次。
+- **英文释义（英英）**：[Simple English Wiktionary](https://simple.wiktionary.org)（CC BY-SA 3.0 / 4.0），专门用简单英语写的整句释义。用 `tools/build_simpledef.py` 从固定日期的数据包（核对 SHA1）提取词书里的词，每个词最多 3 个义项和例句，生成 `web/data/simpledef.js`（同样按 CC BY-SA 4.0 提供）。单词卡片按学习者认识多少词决定先显示英文还是中文：释义里不认识的词不超过 1 个先显示英文，否则先显示中文；设置里可以改。
 - **行业词书**：从 ECDICT 的专业标注（[医] [计] [电] [机] [法] [经]）筛选，例句取自内置的公有领域文本；用 `tools/build_domain_vocab.py` 生成，同一个脚本也生成「雅思主题词汇」。
 - **场景口语**：60 个场景为本项目编写；场景卡片图片来自 Wikimedia Commons。
 - **阅读配图**：[Wikimedia Commons](https://commons.wikimedia.org/)，只使用公有领域 / CC0 / CC BY / CC BY-SA 授权的图片，作者和授权写在每篇文章的图片说明里。用 `tools/fetch_images.py` 下载，改 `tools/image_choices.json` 可以换图。

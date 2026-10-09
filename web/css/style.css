@@ -1772,3 +1772,25 @@ body.study-focus .fc-done { margin: auto 0; }
   body.study-focus .flash-wrap { height: calc(100dvh - 20px); }
   body.study-focus .nav-fab, body.study-focus .flower-cat-float, body.study-focus .partner-figure-float, body.study-focus #theme-character-float { display: none; }
 }
+
+/* 学习者英英释义（SimpleDef）：卡片背面先英文时是主角，先中文时放在下面作补充 */
+.sd-box { text-align: left; }
+.sd-main { font-family: var(--font-en); font-size: 18px; line-height: 1.55; }
+.sd-main .sd-sense + .sd-sense { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); }
+.sd-sub, .sd-detail { margin-top: 12px; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); font-family: var(--font-en); font-size: 14px; line-height: 1.55; color: var(--ink-2); }
+.sd-label { font-family: var(--font); font-size: 12px; color: var(--ink-3); margin-bottom: 4px; }
+.sd-credit { color: inherit; text-decoration: underline dotted; }
+.sd-pos { font-size: 0.8em; color: var(--ink-3); font-style: italic; margin-right: 2px; }
+.sd-sense { margin-top: 4px; }
+.sd-ex { font-size: 0.85em; color: var(--ink-3); font-style: italic; margin-top: 2px; }
+.sd-def .w { cursor: pointer; }
+.sd-def .w:hover { text-decoration: underline dotted; }
+.sd-new { background: var(--warn-soft, #FFF1D6); border-radius: 4px; padding: 0 2px; text-decoration: underline dotted; }
+.sd-zh { margin-top: 10px; text-align: center; }
+.sd-zh summary { cursor: pointer; color: var(--ink-3); font-size: 13px; list-style: none; }
+.sd-zh summary::-webkit-details-marker { display: none; }
+.sd-zh summary::before { content: "👀 "; }
+.sd-zh[open] summary { display: none; }
+.pop-sd { margin-top: 6px; font-family: var(--font-en); font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+/* 先英文时：例句的中文翻译也先模糊，点「看中文」一起显示，免得先看到意思 */
+.fc-back:has(.sd-zh:not([open])) .fc-example-zh { filter: blur(5px); user-select: none; }
