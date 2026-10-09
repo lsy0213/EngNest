@@ -1794,3 +1794,11 @@ body.study-focus .fc-done { margin: auto 0; }
 .pop-sd { margin-top: 6px; font-family: var(--font-en); font-size: 13px; color: var(--ink-2); line-height: 1.5; }
 /* 先英文时：例句的中文翻译也先模糊，点「看中文」一起显示，免得先看到意思 */
 .fc-back:has(.sd-zh:not([open])) .fc-example-zh { filter: blur(5px); user-select: none; }
+
+/* 服务器模式：登录 / 注册页，账号管理 */
+.acc-login form { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.acc-login .input { text-align: left; font-size: 16px; letter-spacing: normal; }
+.acc-tabs { margin-top: 10px; }
+.acc-msg { min-height: 1.4em; text-align: left; }
+.acc-inv { gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); align-items: center; }
+body.auth-page .sidebar, body.auth-page .nav-fab, body.auth-page .nav-backdrop { display: none; }

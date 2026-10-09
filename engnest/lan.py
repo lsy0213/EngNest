@@ -207,33 +207,13 @@ class Handler(SimpleHTTPRequestHandler):
         raw = self.rfile.read(length) if length > 0 else b""
         if not self.path.startswith("/api/"):
             return self._json(404, {"error": "not found"})
-        name = self.path[5:].split("?")[0]
-        ip = self.client_address[0]
-        guard = self.server_ref.guard
-        wait = guard.blocked(ip)
-        if wait > 0:
-            return self._json(429, {"error": f"访问码输错太多次，请 {int(wait // 60) + 1} 分钟后再试", "wait": int(wait)})
-        user = self.server_ref.who(self.headers.get("X-EngNest-Key", ""))
-        if user is False:
-            guard.fail(ip)
-            return self._json(401, {"error": "访问码不正确"})
-        guard.ok(ip)
-        if name == "ping":
-            return self._json(200, {"ok": True, "name": user["name"] if user else None})
-        if name not in ALLOWED:
-            return self._json(403, {"error": "这个操作只能在电脑上进行"})
         try:
-            body = json.loads(raw or b"{}")
-            # user：None 是主人，否则是 {id, name, ai}；接口按它决定读写哪一份进度、能不能用 AI
-            result = self.server_ref.api.lan_call(user, name, body.get("args", []))
-            if name == "get_ai_settings" and isinstance(result, dict):
-                result = {k: v for k, v in result.items() if k != "key_hint"}  # Key 的任何部分都不发给其他设备
-            return self._json(200, {"result": result})
-        except PermissionError as e:  # 比如用主人的访问码从手机上改 AI 设置
-            return self._json(403, {"error": str(e)})
-        except Exception as e:  # 接口出错不影响服务继续运行
-            log.exception("局域网接口 %s 出错", name)
-            return self._json(500, {"error": str(e)})
+            args = json.loads(raw or b"{}").get("args", [])
+        except (ValueError, AttributeError):
+            return self._json(400, {"error": "请求格式不对"})
+        status, data = self.server_ref.dispatch(self.path[5:].split("?")[0], args if isinstance(args, list) else [],
+                                                self.headers, self.client_address[0])
+        return self._json(status, data)
 
     def _json(self, code, data):
         raw = json.dumps(data, ensure_ascii=False).encode("utf-8")
@@ -272,6 +252,40 @@ class LanServer:
         self.https = False
         self.guard = Guard()
         self.users = []  # 其他人：[{id, name, code, ai}]，设置里改了就整个换掉
+
+    # ---------- 一个接口请求：认证 → 白名单 → 调用（账号服务器 server.AccountServer 换掉认证和白名单） ----------
+    def dispatch(self, name: str, args: list, headers, ip: str) -> tuple:
+        """返回 (HTTP 状态码, 响应 JSON)"""
+        guard = self.guard
+        wait = guard.blocked(ip)
+        if wait > 0:
+            return 429, {"error": f"访问码输错太多次，请 {int(wait // 60) + 1} 分钟后再试", "wait": int(wait)}
+        user = self.who(headers.get("X-EngNest-Key", ""))
+        if user is False:
+            guard.fail(ip)
+            return 401, {"error": "访问码不正确"}
+        guard.ok(ip)
+        if name == "ping":
+            return 200, {"ok": True, "name": user["name"] if user else None}
+        if name not in ALLOWED:
+            return 403, {"error": "这个操作只能在电脑上进行"}
+        # user：None 是主人，否则是 {id, name, ai}；接口按它决定读写哪一份进度、能不能用 AI
+        return self.call(user, name, args)
+
+    def call(self, user, name: str, args: list, **ctx) -> tuple:
+        try:
+            result = self.api.lan_call(user, name, args, **ctx)
+            if name == "get_ai_settings" and isinstance(result, dict):
+                result = {k: v for k, v in result.items() if k != "key_hint"}  # Key 的任何部分都不发给其他设备
+            return 200, {"result": result}
+        except PermissionError as e:  # 比如用主人的访问码从手机上改 AI 设置
+            return 403, {"error": str(e)}
+        except TypeError as e:  # 参数个数不对
+            log.warning("接口 %s 参数不对：%s", name, e)
+            return 400, {"error": "参数不对"}
+        except Exception as e:  # 接口出错不影响服务继续运行
+            log.exception("接口 %s 出错", name)
+            return 500, {"error": str(e)}
 
     def who(self, key: str):
         """访问码属于谁：主人返回 None，其他人返回 {id, name, ai}，都不对返回 False。

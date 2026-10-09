@@ -87,7 +87,12 @@ App.pages.settings = {
       </div>
 
       ${Store.bridge && !Store.remote ? `<div class="card" id="lan-card"></div>` : ""}
-      ${Store.remote ? `<div class="card">
+      ${Store.server ? `<div class="card" id="acc-card">
+        <div class="card-title">👤 我的账号 ${Store.who?.admin ? `<span class="badge brand">管理员</span>` : ""}</div>
+        <p class="small muted" style="margin-top:-4px">你登录的是 <b>${esc(Store.who?.name || "")}</b>。学习进度、生词本、设置和 AI Key 都按账号保存在服务器上，换手机、换电脑登录同一个账号就能接着学。</p>
+        <div class="row" style="flex-wrap:wrap"><button class="btn" id="acc-pw">🔒 修改密码</button><button class="btn ghost" id="acc-out">退出登录</button></div></div>
+        ${Store.who?.admin ? `<div class="card" id="admin-card"></div>` : ""}` : ""}
+      ${Store.remote && !Store.server ? `<div class="card">
         <div class="card-title">📱 局域网访问</div>
         <p class="small muted" style="margin-top:-4px">${Store.who
           ? `你是 <b>${esc(Store.who.name)}</b>：你的学习进度、生词本和设置单独保存在电脑上，和电脑主人的分开，互不影响。`
@@ -157,7 +162,7 @@ App.pages.settings = {
         <div class="row mt"><button class="btn soft" id="tech-browse">📚 浏览计算机词典</button></div>
       </div>
 
-      ${Store.bridge && !Store.remote ? `<div class="card" id="piper-card"></div><div class="card" id="dict-card"></div><div class="card" id="stt-card"></div><div class="card" id="net-card"></div>` : ""}
+      ${Store.bridge && (!Store.remote || Store.who?.admin) ? `<div class="card" id="piper-card"></div><div class="card" id="dict-card"></div><div class="card" id="stt-card"></div><div class="card" id="net-card"></div>` : ""}
 
       ${Store.bridge && !Store.remote ? `<div class="card" id="dav-card"></div>` : ""}
       <div class="card" id="data-card">
@@ -235,6 +240,8 @@ App.pages.settings = {
     $("#daily-goal", root).onchange = (e) => { p.daily_goal = +e.target.value; Store.save(); toast("已保存", "good"); };
     $("#retention", root).onchange = (e) => { p.retention = +e.target.value; Store.save(); toast("已保存，之后的复习按新的目标安排", "good"); };
     $("#swipe-dir", root).onchange = (e) => { p.swipe_right_known = e.target.value === "right"; Store.save(); toast("已保存", "good"); };
+    if ($("#acc-card", root)) this.accountCard(root);
+    if ($("#admin-card", root)) this.adminCard($("#admin-card", root));
     const lo = $("#lan-logout", root);
     if (lo) lo.onclick = async () => {
       if (!(await confirmBox("换一个访问码", "退出后要重新输入访问码。你的学习记录都保存在电脑上，不会丢。", "退出"))) return;
@@ -289,7 +296,8 @@ App.pages.settings = {
     $("#try", root).onclick = () => TTS.speak("Practice makes perfect. Let's learn English together!");
 
     // 数据
-    if (Store.remote) $("#data-dir", root).textContent = "你正在通过局域网访问，学习进度保存在电脑上，和电脑共用一份进度。";
+    if (Store.server) $("#data-dir", root).textContent = "学习进度保存在服务器上，按账号分开，服务器每天自动备份。";
+    else if (Store.remote) $("#data-dir", root).textContent = "你正在通过局域网访问，学习进度保存在电脑上，和电脑共用一份进度。";
     else if (Store.bridge) this.dataCard($("#data-card", root));
     else {
       const rs = $("#reset", root);
@@ -483,6 +491,90 @@ App.pages.settings = {
     };
   },
 
+  // ---------- 服务器模式：我的账号 ----------
+  accountCard(root) {
+    $("#acc-out", root).onclick = async () => { if (await confirmBox("退出登录", "退出后要重新输入用户名和密码。学习记录都保存在服务器上，不会丢。", "退出")) accountLogout(); };
+    $("#acc-pw", root).onclick = () => {
+      const m = modal(`<h3>🔒 修改密码</h3>
+        <form id="pw-form" class="acc-login" style="margin:0;max-width:none">
+          <input class="input" name="old" type="password" placeholder="原密码" autocomplete="current-password">
+          <input class="input" name="new" type="password" placeholder="新密码（至少 8 位）" autocomplete="new-password">
+          <input class="input" name="new2" type="password" placeholder="再输一遍新密码" autocomplete="new-password">
+          <div class="small bad-text" id="pw-msg"></div>
+          <div class="modal-actions"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit">修改</button></div></form>
+        <p class="small faint">改完以后，其他手机、电脑上的登录会退出，要用新密码重新登录。</p>`);
+      $("#pw-form", m.root).onsubmit = async (e) => {
+        e.preventDefault();
+        const f = Object.fromEntries(new FormData(e.target));
+        if (f.new !== f.new2) return ($("#pw-msg", m.root).textContent = "两次输入的新密码不一样");
+        const r = await pywebview.api.account_change_password(f.old, f.new);
+        if (!r.ok) return ($("#pw-msg", m.root).textContent = r.error);
+        m.close();
+        toast("密码已修改", "good");
+      };
+    };
+  },
+
+  // ---------- 服务器模式：管理员管理账号和邀请码 ----------
+  async adminCard(box) {
+    const ago = (t) => { if (!t) return "还没用过"; const d = Math.floor((Date.now() / 1000 - t) / 86400); return d < 1 ? "今天用过" : `${d} 天前用过`; };
+    const draw = async () => {
+      const [users, invites] = await Promise.all([pywebview.api.admin_users(), pywebview.api.admin_invites()]);
+      const unused = invites.filter((i) => !i.used_by && !i.admin);
+      box.innerHTML = `<div class="card-title">👥 账号和邀请码</div>
+        <p class="small muted" style="margin-top:-4px">别人要注册，必须先有你发的邀请码（一个码只能注册一个账号）。每个账号的学习进度、设置和 AI Key 互不影响。</p>
+        <div class="row" style="flex-wrap:wrap;gap:8px"><input class="input" id="inv-note" maxlength="40" placeholder="备注，比如：给小明" style="max-width:220px"><button class="btn soft" id="inv-new">＋ 生成邀请码</button></div>
+        ${unused.length ? `<div class="small muted mt">还没用的邀请码：</div>${unused.map((i) => `<div class="row acc-inv"><span class="lan-code sm">${esc(i.code.slice(0, 4))} ${esc(i.code.slice(4))}</span>
+          <span class="small faint">${esc(i.note || "")} · ${esc(i.created)}</span><span class="spacer"></span>
+          <button class="btn sm ghost" data-copy="${esc(i.code)}">复制</button><button class="btn sm ghost bad-text" data-revoke="${esc(i.code)}">作废</button></div>`).join("")}` : ""}
+        <div class="small muted mt">账号（${users.length}）：</div>
+        ${users.map((u) => `<div class="lan-user" data-uid="${esc(u.id)}" data-name="${esc(u.username)}">
+          <div class="lan-user-name"><b>${esc(u.username)}${u.admin ? ` <span class="badge brand">管理员</span>` : ""}</b>
+            <span class="small faint">${esc(u.created)} 注册 · ${ago(u.last_seen)}${!u.admin && u.own_ai ? " · 🔑 用自己的 AI Key" : ""}</span></div>
+          ${u.admin ? "" : `<div class="row lan-user-ops">
+            ${switchHtml(`acc-ai-${esc(u.id)}`, "可以用我的 AI", u.ai, "TA 没填自己的 Key 时，用你的 Key 调 AI，费用算你的")}
+            <button class="btn sm ghost" data-reset>重置密码</button>
+            <button class="btn sm ghost bad-text" data-del>删除</button></div>`}</div>`).join("")}`;
+      $("#inv-new", box).onclick = async () => {
+        const code = await pywebview.api.admin_invite_new($("#inv-note", box).value);
+        modal(`<div class="center"><h3>新的邀请码</h3><div class="lan-code">${esc(code.slice(0, 4))} ${esc(code.slice(4))}</div>
+          <p class="small muted">发给要注册的人：打开网站 → 注册 → 填这个邀请码，自己设用户名和密码。只能用一次。</p>
+          <div class="modal-actions" style="justify-content:center"><button class="btn" data-copy="${esc(code)}">复制</button><button class="btn primary" data-close>好</button></div></div>`)
+          .root.addEventListener("click", copyHandler);
+        draw();
+      };
+      $$("[data-revoke]", box).forEach((b) => (b.onclick = async () => { await pywebview.api.admin_invite_revoke(b.dataset.revoke); draw(); }));
+      $$(".lan-user", box).forEach((row) => {
+        const uid = row.dataset.uid, name = row.dataset.name;
+        const sw = $(`#acc-ai-${uid}`, row);
+        if (sw) sw.onchange = async (e) => { await pywebview.api.admin_user_ai(uid, e.target.checked); toast(e.target.checked ? `「${name}」现在可以用你的 AI 了` : `已关闭「${name}」用你的 AI`, "good"); };
+        const rs = $("[data-reset]", row);
+        if (rs) rs.onclick = async () => {
+          const code = await pywebview.api.admin_user_reset(uid);
+          modal(`<div class="center"><h3>「${esc(name)}」的重置码</h3><div class="lan-code">${esc(code.slice(0, 4))} ${esc(code.slice(4))}</div>
+            <p class="small muted">发给 TA：在登录页点「忘记密码」，填这个重置码、用户名和新密码。24 小时内有效，用一次就失效。</p>
+            <div class="modal-actions" style="justify-content:center"><button class="btn" data-copy="${esc(code)}">复制</button><button class="btn primary" data-close>好</button></div></div>`)
+            .root.addEventListener("click", copyHandler);
+        };
+        const del = $("[data-del]", row);
+        if (del) del.onclick = async () => {
+          if (!(await confirmBox("删除账号", `删除「${name}」：TA 马上不能再登录，TA 的学习进度、生词本、设置、AI Key 和聊天记录都会从服务器上删除，不能恢复。`, "删除", true))) return;
+          await pywebview.api.admin_user_remove(uid);
+          toast(`已删除「${name}」`);
+          draw();
+        };
+      });
+    };
+    const copyHandler = async (e) => {
+      const b = e.target.closest("[data-copy]");
+      if (!b) return;
+      try { await navigator.clipboard.writeText(b.dataset.copy); toast("已复制", "good"); } catch { toast("复制失败，请手动抄下来"); }
+    };
+    box.addEventListener("click", copyHandler);
+    box.innerHTML = `<div class="card-title">👥 账号和邀请码</div><div class="small muted">正在读取…</div>`;
+    draw();
+  },
+
   // ---------- 局域网访问 ----------
   async lanCard(box) {
     const draw = (s) => {
@@ -596,7 +688,9 @@ App.pages.settings = {
     const presets = await pywebview.api.get_presets();
     const cfg = await pywebview.api.get_ai_settings();
     // 局域网里的其他人：填的是 TA 自己的 Key
-    const whoNote = () => !Store.who ? "" : `<div class="ai-box small" id="ai-who" style="margin-bottom:12px">${AI.settings?.own
+    const whoNote = () => !Store.who ? "" : Store.who.admin
+      ? `<div class="ai-box small" id="ai-who" style="margin-bottom:12px">这是你（管理员）的 AI 设置。其他账号可以填自己的 Key；也可以在下面的「账号和邀请码」里给某个人打开「可以用我的 AI」，那样 TA 用的是这里的 Key，费用算你的。</div>`
+      : `<div class="ai-box small" id="ai-who" style="margin-bottom:12px">${AI.settings?.own
       ? "✅ 正在用<b>你自己的</b> API Key。它只用于你的账号，加密保存在电脑上，电脑主人也看不到完整的 Key。"
       : AI.settings?.shared
         ? "现在用的是<b>电脑主人的</b> AI（主人给你开了）。填上你自己的 Key 以后就改用你自己的。"
@@ -684,7 +778,7 @@ App.pages.settings = {
       toast(`获取到 ${r.models.length} 个模型，点模型名称输入框就能选`, "good", 4000);
       model.focus();
     };
-    if (!Store.remote) this.usageCard($("#ai-usage", box)); // 用量和每月上限是主人的，只在电脑上显示
+    if (!Store.remote || Store.who?.admin) this.usageCard($("#ai-usage", box)); // 用量和每月上限是主人的，只在电脑上（或管理员）显示
     const clr = $("#clear", box);
     if (clr) clr.onclick = async () => {
       await pywebview.api.save_ai_settings({ clear_key: true });

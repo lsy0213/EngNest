@@ -1,0 +1,30 @@
+# EngNest 服务器模式的 systemd 服务：开机自动启动、崩溃自动重启。setup.sh 会装到 /etc/systemd/system/engnest.service
+#   systemctl status engnest      看运行状态
+#   journalctl -u engnest -f      看实时日志（详细日志在 /opt/engnest/data/logs/engnest.log）
+#   systemctl restart engnest     更新代码后重启
+[Unit]
+Description=EngNest 英语小窝（服务器模式）
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=engnest
+Group=engnest
+WorkingDirectory=/opt/engnest/app
+Environment=ENGNEST_DATA_DIR=/opt/engnest/data
+Environment=PYTHONUNBUFFERED=1
+Environment=HF_ENDPOINT=https://hf-mirror.com
+EnvironmentFile=-/opt/engnest/engnest.env
+ExecStart=/opt/engnest/venv/bin/python main.py --server --port ${ENGNEST_PORT} --public-ip ${ENGNEST_PUBLIC_IP} --domain ${ENGNEST_DOMAIN}
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+# 安全：只能写数据目录，看不到其他用户的家目录
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/engnest/data
+
+[Install]
+WantedBy=multi-user.target

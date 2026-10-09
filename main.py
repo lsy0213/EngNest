@@ -2,19 +2,49 @@
 
     python main.py          # 正常启动
     python main.py --debug  # 开启开发者工具（右键 → 检查）
+
+服务器模式（不开窗口，用账号登录，见 engnest/server.py）：
+
+    python main.py --server [--port 8766] [--http] [--public-ip 1.2.3.4] [--domain en.example.cn]
+    python main.py --invite [--admin] [--note 备注]   # 生成邀请码（服务器开着也能用）
+    python main.py --users                             # 列出账号
 """
 
 import os
 import sys
 import urllib.parse
 
-import webview
-
 from engnest import APP_TITLE, log, paths
-from engnest.api import Api
+
+
+def _arg(name, default=""):
+    return sys.argv[sys.argv.index(name) + 1] if name in sys.argv and sys.argv.index(name) + 1 < len(sys.argv) else default
+
+
+def server_main():
+    """服务器模式的几个命令"""
+    from engnest import accounts, lan, server
+
+    log.setup("--debug" in sys.argv)
+    if "--invite" in sys.argv:
+        code = accounts.Accounts().new_invite(admin="--admin" in sys.argv, note=_arg("--note"))
+        print(f"{'管理员' if '--admin' in sys.argv else ''}邀请码：{code}")
+        return
+    if "--users" in sys.argv:
+        for u in accounts.Accounts().users():
+            print(f"{u['username']:<20} {'管理员' if u['admin'] else '':<6} {'可用主人 AI' if u['ai'] else '':<10} 注册于 {u['created']}")
+        return
+    server.run(int(_arg("--port", lan.DEFAULT_PORT)), https="--http" not in sys.argv,
+               extra_hosts=[_arg("--public-ip"), _arg("--domain")])
 
 
 def main():
+    if any(f in sys.argv for f in ("--server", "--invite", "--users")):
+        return server_main()
+    import webview  # 服务器上没有图形界面，只在桌面版导入
+
+    from engnest.api import Api
+
     debug = "--debug" in sys.argv
     log.setup(debug)
     paths.migrate_legacy()  # 旧版本的数据搬到当前的数据目录，必须在打开任何数据文件之前

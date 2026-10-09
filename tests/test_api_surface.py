@@ -20,7 +20,11 @@ def frontend_calls() -> set:
 
 
 def test_every_frontend_call_exists():
-    missing = sorted(n for n in frontend_calls() if not callable(getattr(Api, n, None)))
+    from engnest import server
+
+    # 账号和管理接口由服务器模式（engnest/server.py）自己处理，不在 Api 上
+    by_server = server.PUBLIC | server.ACCOUNT | {n for n in server.ADMIN_ALLOWED if n.startswith("admin_")}
+    missing = sorted(n for n in frontend_calls() - by_server if not callable(getattr(Api, n, None)))
     assert not missing, f"前端调用了不存在的接口：{missing}"
 
 

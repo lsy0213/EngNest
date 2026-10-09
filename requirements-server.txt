@@ -1,0 +1,9 @@
+# 服务器模式（python main.py --server）的依赖：和 requirements.txt 一样，只是不要桌面窗口用的 pywebview
+anthropic==1.8.0
+edge-tts==7.2.8
+faster-whisper==1.2.1
+ctranslate2==4.8.2
+onnxruntime==1.30.0
+numpy==2.4.6
+qrcode==8.2
+cryptography==50.0.2

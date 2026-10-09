@@ -230,6 +230,7 @@ function fillDefaults(target, defaults) {
 const LAN_KEY = "engnest-lan-key";
 
 function askLanCode(wrong) {
+  document.body.classList.add("auth-page");
   return new Promise((resolve) => {
     $("#view").innerHTML = `<div class="page"><div class="card lan-login">
       <div style="font-size:44px">🪺</div><h2>EngNest · 局域网访问</h2>
@@ -243,6 +244,50 @@ function askLanCode(wrong) {
   });
 }
 
+// ---------- 服务器模式：账号登录（engnest/server.py）。注册要邀请码，忘记密码用管理员给的重置码 ----------
+const SESSION_KEY = "engnest-session";
+
+function askLogin(call, message = "") {
+  document.body.classList.add("auth-page"); // 登录前侧栏、☰ 都没用，先藏起来
+  return new Promise((resolve) => {
+    let tab = "login";
+    const draw = (msg = message, bad = !!message) => {
+      $("#view").innerHTML = `<div class="page"><div class="card lan-login acc-login">
+        <div style="font-size:44px">🪺</div><h2>EngNest 英语小窝</h2>
+        <div class="tabs acc-tabs">${[["login", "登录"], ["register", "注册"], ["reset", "忘记密码"]].map(([k, l]) => `<button class="tab ${tab === k ? "active" : ""}" data-tab="${k}">${l}</button>`).join("")}</div>
+        <form id="acc-form" autocomplete="on">
+          ${tab === "register" ? `<input class="input" name="code" placeholder="邀请码（问管理员要）" autocomplete="off" autocapitalize="characters" spellcheck="false">` : ""}
+          ${tab === "reset" ? `<input class="input" name="code" placeholder="重置码（管理员给你的）" autocomplete="off" autocapitalize="characters" spellcheck="false">` : ""}
+          <input class="input" name="username" placeholder="用户名" autocomplete="username" autocapitalize="off" spellcheck="false">
+          <input class="input" name="password" type="password" placeholder="${tab === "login" ? "密码" : "新密码（至少 8 位）"}" autocomplete="${tab === "login" ? "current-password" : "new-password"}">
+          ${tab !== "login" ? `<input class="input" name="password2" type="password" placeholder="再输一遍密码" autocomplete="new-password">` : ""}
+          <div class="small ${bad ? "bad-text" : "muted"} acc-msg">${esc(msg || (tab === "register" ? "用户名 2–20 个字，可以用中文。" : tab === "reset" ? "忘记密码时请管理员生成一个重置码，24 小时内有效。" : ""))}</div>
+          <button class="btn primary lg" type="submit" style="width:100%">${tab === "login" ? "登录" : tab === "register" ? "注册并登录" : "设置新密码并登录"}</button>
+        </form></div></div>`;
+      $$("[data-tab]").forEach((b) => (b.onclick = () => { tab = b.dataset.tab; draw(""); }));
+      const form = $("#acc-form");
+      $("input", form)?.focus();
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const f = Object.fromEntries(new FormData(form));
+        if (tab !== "login" && f.password !== f.password2) return draw("两次输入的密码不一样", true);
+        const btn = $("button[type=submit]", form);
+        btn.disabled = true;
+        try {
+          const r = tab === "login" ? await call("account_login", [f.username, f.password])
+            : tab === "register" ? await call("account_register", [f.code, f.username, f.password])
+              : await call("account_reset_password", [f.code, f.username, f.password]);
+          if (r?.ok) return resolve(r.token);
+          draw(r?.error || "没有成功，再试一次", true);
+        } catch (err) {
+          draw(err.message || "连不上服务器", true);
+        }
+      };
+    };
+    draw();
+  });
+}
+
 async function tryHttpBridge() {
   const url = new URL(location.href);
   let key = url.searchParams.get("key");
@@ -253,28 +298,45 @@ async function tryHttpBridge() {
   } else {
     try { key = localStorage.getItem(LAN_KEY) || ""; } catch { key = ""; }
   }
+  let session = "";
+  try { session = localStorage.getItem(SESSION_KEY) || ""; } catch { /* 隐私模式 */ }
+  let ready = false;
   const call = async (name, args = []) => {
     const r = await fetch("/api/" + name, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-EngNest-Key": key },
+      headers: { "Content-Type": "application/json", "X-EngNest-Key": key, "X-EngNest-Session": session },
       body: JSON.stringify({ args }),
     });
     const d = await r.json().catch(() => ({}));
-    if (!r.ok) { const err = new Error(d.error || `HTTP ${r.status}`); err.status = r.status; throw err; }
-    return d.result;
+    if (!r.ok) {
+      // 服务器模式：用着用着登录过期了（改了密码、被管理员删了、30 天没用）→ 回到登录页
+      if (ready && r.status === 401 && d.auth === "account") { try { localStorage.removeItem(SESSION_KEY); } catch { /* 无所谓 */ } location.reload(); }
+      const err = new Error(d.error || `HTTP ${r.status}`);
+      Object.assign(err, { status: r.status, auth: d.auth, server: d.server });
+      throw err;
+    }
+    return "result" in d ? d.result : d; // ping 直接返回 {ok, name, server, …}
   };
   for (let wrong = false; ;) {
     try {
-      await call("ping");
+      const p = await call("ping");
+      Store.server = !!p?.server;
       break;
     } catch (e) {
+      if (e.auth === "account") { // 服务器模式：账号登录
+        session = await askLogin(call);
+        try { localStorage.setItem(SESSION_KEY, session); } catch { /* 隐私模式下存不了，下次再登录 */ }
+        continue;
+      }
       if (e.status === 429) { key = await askLanCode(e.message); continue; } // 输错太多次被锁住了
       if (e.status !== 401) return false; // 不是 EngNest 的局域网服务（比如开发用的静态服务器）
       key = await askLanCode(wrong || !!key);
       wrong = true;
     }
   }
-  try { localStorage.setItem(LAN_KEY, key); } catch { /* 隐私模式下存不了，下次再输一次 */ }
+  ready = true;
+  document.body.classList.remove("auth-page");
+  if (!Store.server) try { localStorage.setItem(LAN_KEY, key); } catch { /* 隐私模式下存不了，下次再输一次 */ }
   window.pywebview = { api: new Proxy({}, { get: (_, name) => (...args) => call(String(name), args) }) };
   Store.remote = true;
   $("#view").innerHTML = `<div class="loading">正在打开小窝…</div>`;
@@ -314,7 +376,8 @@ function markAdded(kind, id, rec) {
 
 const Store = {
   bridge: false,
-  remote: false, // 是否是局域网里的其他设备
+  remote: false, // 是否是局域网里的其他设备（或者服务器模式）
+  server: false, // 服务器模式：用账号登录
   who: null,     // 局域网里用别人的访问码进来的：{name}，进度是 TA 自己的一份；主人和电脑上都是 null
   data: null,
   rev: 0,        // 电脑上进度的版本号，每写一次加一
@@ -958,6 +1021,13 @@ function renderSidebarFoot() {
   const el = $("#streak-mini");
   if (!el) return;
   el.innerHTML = `<span>🔥 连续 <b>${streak()}</b> 天</span><span>今日 <b>${dayRec().xp}</b> XP</span>`;
+}
+// 服务器模式：退出登录
+async function accountLogout() {
+  await Store.flush();
+  try { await pywebview.api.account_logout(); } catch { /* 已经失效也没关系 */ }
+  try { localStorage.removeItem(SESSION_KEY); } catch { /* 无所谓 */ }
+  location.reload();
 }
 // 局域网设备上「换一个访问码 / 退出」：忘掉记住的访问码，重新输入
 function lanLogout() {

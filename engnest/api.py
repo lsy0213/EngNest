@@ -61,13 +61,15 @@ class Api:
             self._lan.start(int(cfg.get("port") or lan.DEFAULT_PORT), cfg["code"], cfg.get("https", True))
 
     # ---------- 局域网里的其他人 ----------
-    def lan_call(self, user, name, args):
-        """局域网接口的入口：user 是 None（主人）或 {id, name, ai}。在这个请求的线程里记下是谁，接口据此选进度、管 AI"""
-        self._ctx.user, self._ctx.lan = user, True
+    def lan_call(self, user, name, args, admin=False, account=None):
+        """局域网 / 服务器接口的入口：user 是 None（主人）或 {id, name, ai}。在这个请求的线程里记下是谁，接口据此选进度、管 AI。
+        服务器模式：account 是登录的账号 {id, username, admin, ...}；管理员 admin=True、user=None，用的是主人的那一份，
+        而且能改主人的设置（局域网里用主人访问码的不行）"""
+        self._ctx.user, self._ctx.lan, self._ctx.admin, self._ctx.account = user, True, admin, account
         try:
             return getattr(self, name)(*args)
         finally:
-            self._ctx.user, self._ctx.lan = None, False
+            self._ctx.user, self._ctx.lan, self._ctx.admin, self._ctx.account = None, False, False, None
 
     def _user(self):
         return getattr(self._ctx, "user", None)
@@ -154,12 +156,26 @@ class Api:
         except Exception:  # noqa: BLE001
             log.exception("自动备份失败")
 
+    def backup_all(self, uids=()):
+        """主人和所有人的进度各备份一份（服务器模式每隔几小时调一次；同一天的每日备份会覆盖）"""
+        self._backup_today()
+        for uid in uids:
+            self._ctx.user = {"id": uid, "name": "", "ai": False}
+            try:
+                self._prog().backup()
+            except Exception:  # noqa: BLE001
+                log.exception("备份 %s 的进度失败", uid)
+            finally:
+                self._ctx.user = None
+
     # ---------- 学习进度 ----------
     def progress_load(self):
         """{data, rev, notice}：notice 是启动时发生的事（比如从备份恢复），前端提示一次"""
         p, user = self._prog(), self._user()
         notice, p.notice = p.notice, ""
-        return {"data": p.load(), "rev": p.rev(), "notice": notice, "who": {"name": user["name"]} if user else None}
+        acc = getattr(self._ctx, "account", None)
+        who = {"name": acc["username"], "admin": bool(acc["admin"])} if acc else {"name": user["name"]} if user else None
+        return {"data": p.load(), "rev": p.rev(), "notice": notice, "who": who}
 
     def progress_rev(self):
         return self._prog().rev()
@@ -255,7 +271,7 @@ class Api:
 
     def save_ai_settings(self, new_cfg):
         """主人只能在电脑上改；局域网里的其他人可以改 TA 自己的（存在 TA 的 profiles/<id>/settings.json）"""
-        if getattr(self._ctx, "lan", False) and not self._user():
+        if getattr(self._ctx, "lan", False) and not self._user() and not getattr(self._ctx, "admin", False):
             raise PermissionError("AI 设置只能在电脑上修改")
         store = self._my_ai_store()
         cfg = store.section("ai", DEFAULT_AI)
@@ -460,6 +476,11 @@ class Api:
         cfg = self._lan_cfg()
         cfg["users"] = [u for u in cfg["users"] if u["id"] != uid]
         self._save_lan_cfg(cfg)
+        self._delete_profile(uid)
+        return self.lan_status()
+
+    def _delete_profile(self, uid):
+        """删掉一个人的进度、设置和 AI 语伴聊天记录"""
         with self._profiles_lock:
             p = self._profiles.pop(uid, None)
             self._profile_settings.pop(uid, None)
@@ -470,7 +491,6 @@ class Api:
             shutil.rmtree(d, ignore_errors=True)
         for ns in PERSONAL_KV:
             self._kv.clear_ns(f"{ns}@{uid}")
-        return self.lan_status()
 
     def lan_user_qr(self, uid):
         """这个人的扫码链接（带上 TA 的访问码）"""
@@ -483,9 +503,12 @@ class Api:
         except Exception:  # noqa: BLE001
             return ""
 
+    def _own_ai(self, uid) -> bool:
+        return _enabled(self._user_settings(uid).section("ai", DEFAULT_AI))
+
     def lan_status(self):
         cfg = self._lan_cfg()
-        cfg["users"] = [{**u, "own_ai": _enabled(self._user_settings(u["id"]).section("ai", DEFAULT_AI))} for u in cfg["users"]]
+        cfg["users"] = [{**u, "own_ai": self._own_ai(u["id"])} for u in cfg["users"]]
         status = {**cfg, "https": cfg.get("https", True), "running": self._lan.running, "https_on": self._lan.https,
                   "error": self._lan.error, "urls": [], "qr": ""}
         if self._lan.running:
