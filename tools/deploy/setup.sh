@@ -44,6 +44,7 @@ if [ ! -f /etc/nginx/ssl/engnest.crt ]; then
   openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj "/CN=EngNest" -addext "subjectAltName=$SAN"     -keyout /etc/nginx/ssl/engnest.key -out /etc/nginx/ssl/engnest.crt 2>/dev/null
   chmod 600 /etc/nginx/ssl/engnest.key
 fi
+python3 -I $APP/tools/deploy/stamp.py $APP/web   # 脚本、样式加版本号，浏览器长期缓存
 usermod -aG engnest www-data           # Nginx 要读数据目录里的资料包
 sed "s/__PORT__/$PORT/" $APP/tools/deploy/nginx-engnest.conf > /etc/nginx/sites-available/engnest
 ln -sf /etc/nginx/sites-available/engnest /etc/nginx/sites-enabled/engnest
