@@ -503,11 +503,12 @@ input[type="range"] { accent-color: var(--brand); width: 100%; }
 .type-opts { margin-bottom: 16px; padding: 14px 18px; }
 .type-stats { display: flex; gap: 18px; align-items: center; font-size: 14px; color: var(--ink-2); flex-wrap: wrap; }
 .type-stats b { color: var(--ink); font-size: 16px; }
-.type-card { text-align: center; padding: 44px 28px 30px; transition: border-color .2s, background .2s; }
+.type-card { position: relative; text-align: center; padding: 56px 32px 14px; min-height: 300px; display: flex; flex-direction: column; justify-content: center; cursor: text; transition: border-color .2s, background .2s; }
 .type-card.ok { border-color: var(--good); background: var(--good-soft); }
 .type-card.shake { animation: shake .3s; border-color: var(--bad); }
-.type-word { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; font-size: 46px; font-weight: 600; letter-spacing: 4px; }
-.type-sentence { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; font-size: 24px; line-height: 1.9; text-align: left; word-break: break-word; }
+/* 单词越长字越小，保证一行放得下（--n 是字母数） */
+.type-word { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; font-size: clamp(26px, calc((min(100vw, 900px) - 120px) / (var(--n, 6) * 0.68)), 64px); font-weight: 600; letter-spacing: .06em; white-space: nowrap; }
+.type-sentence { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; font-size: 26px; line-height: 1.9; text-align: left; overflow-wrap: anywhere; }
 .type-word .ch, .type-sentence .ch { transition: color .1s; }
 .ch.todo { color: var(--ink-3); }
 .ch.done { color: var(--good); }
@@ -515,6 +516,33 @@ input[type="range"] { accent-color: var(--brand); width: 100%; }
 .type-meaning { margin-top: 12px; font-size: 18px; font-weight: 500; }
 .type-zh { margin-top: 12px; color: var(--ink-2); text-align: left; }
 .type-hint { margin-top: 12px; min-height: 22px; color: var(--warn); font-family: var(--font-en); }
+.type-card .fc-ipa { margin-top: 10px; }
+.type-meaning, .type-zh { font-size: 19px; }
+/* 看不见的输入框：手机靠它弹出键盘。字号 16px 防止 iPhone 聚焦时放大页面 */
+#ty-body { position: relative; }
+.ty-input { position: absolute; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; border: 0; padding: 0; font-size: 16px; pointer-events: none; }
+/* 卡片底部的操作条：上一个 / 重听 / 慢速 / 答案 / 跳过（手机没有 Tab、Esc 这些键） */
+.type-tools { display: flex; align-items: center; gap: 4px; margin: 18px -18px 0; padding-top: 10px; border-top: 1px dashed var(--line); cursor: default; }
+.type-tools .speak { width: 34px; height: 34px; }
+.type-tap { display: none; }
+@media (hover: none) and (pointer: coarse) {
+  .kbd-only { display: none; }
+  .type-stats { scroll-margin-top: 58px; } /* 左上角的 ☰🔍 不挡住进度 */
+  /* 没点开键盘时，卡片里提示「点这里开始打字」 */
+  .type-card:not(.focused):not(.ok) .type-tap { display: block; margin: 6px auto 0; padding: 8px 18px; border-radius: 999px; background: var(--brand); color: var(--brand-ink); font-size: 15px; font-weight: 600; animation: tapPulse 1.6s ease-in-out infinite; }
+  .type-card:not(.focused) .ch.cur { animation: none; }
+  .type-card.focused { border-color: var(--brand); }
+}
+@keyframes tapPulse { 50% { transform: scale(1.05); } }
+@media (max-width: 720px) {
+  .type-card { padding: 34px 16px 10px; min-height: 260px; }
+  .type-word { font-size: clamp(24px, calc((100vw - 72px) / (var(--n, 6) * 0.68)), 56px); }
+  .type-sentence { font-size: 21px; line-height: 1.8; }
+  .type-tools { margin: 14px -6px 0; }
+  .type-tools .tt-l { display: none; }
+  .type-tools .btn { min-width: 40px; min-height: 38px; font-size: 16px; }
+  .type-stats { gap: 12px; font-size: 13px; }
+}
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 @keyframes caret { 50% { border-bottom-color: transparent; } }
 
@@ -860,12 +888,18 @@ mark.hl.flash { animation: hlFlash 1.2s; }
 .bd-slot .caret { display: inline-block; width: 2px; height: 1em; background: var(--brand); vertical-align: -3px; margin-left: 1px; animation: blink 1s infinite; }
 .bd-hint { min-height: 24px; margin-top: 14px; color: var(--warn); font-size: 14px; }
 .bd-hint b { font-family: var(--font-en); }
-.bd-input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.bd-input { position: absolute; top: 0; left: 0; opacity: 0; width: 1px; height: 1px; border: 0; padding: 0; font-size: 16px; pointer-events: none; } /* 16px：iPhone 聚焦时不放大页面 */
 .bd-ladder { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
 .bd-rung { display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); animation: fadeIn .25s; }
 .bd-rung .en { font-family: var(--font-en); font-weight: 500; flex: 1; }
 .bd-rung .zh { color: var(--ink-2); font-size: 13px; }
-@media (max-width: 720px) { .bd-intro { grid-template-columns: 1fr; } .bd-slots { font-size: 20px; } }
+@media (max-width: 720px) {
+  .bd-intro { grid-template-columns: 1fr; }
+  .bd-card { min-height: 250px; padding: 18px 14px 16px; display: flex; flex-direction: column; }
+  .bd-card #stage { margin: auto 0; } /* 词槽放在卡片中间 */
+  .bd-zh { font-size: 22px; margin: 12px 0 16px; }
+  .bd-slots { font-size: 24px; gap: 12px 10px; }
+}
 /* 句型专项：分类、分组、考纲例句的单元格 */
 .bd-cats { margin-top: 18px; }
 a.chip { text-decoration: none; display: inline-flex; align-items: baseline; gap: 6px; }
@@ -1097,6 +1131,20 @@ a.listen-card:hover { border-color: var(--brand); transform: translateY(-2px); }
 .voa-ctrl { gap: 8px; flex-wrap: wrap; }
 
 /* 逐句听写 */
+.bd-keys { gap: 6px; }
+.bd-keys .btn { gap: 6px; }
+.bd-keys .btn:not(.primary) { background: transparent; border-color: transparent; color: var(--ink-2); }
+.bd-keys .btn:not(.primary):hover { background: var(--surface-2); color: var(--ink); }
+.bd-keys .btn.primary .kbd { background: transparent; color: inherit; border-color: currentColor; }
+@media (hover: none) and (pointer: coarse) {
+  .bd-card { scroll-margin-top: 54px; }
+  .bd-card:not(.focused):not(.ok) .bd-tap { display: block; width: max-content; margin: 4px auto 0; padding: 8px 18px; border-radius: 999px; background: var(--brand); color: var(--brand-ink); font-size: 15px; font-weight: 600; animation: tapPulse 1.6s ease-in-out infinite; }
+  .bd-card.focused:not(.ok) { border-color: var(--brand); }
+  .bd-keys { gap: 8px; margin-top: 12px; }
+  .bd-keys .btn { flex: 1 1 auto; justify-content: center; padding: 10px 12px; font-size: 14px; border-radius: 10px; }
+  .bd-keys .btn:not(.primary) { background: var(--surface); border-color: var(--line); }
+  .bd-keys .btn.primary { flex-basis: 100%; order: -1; font-size: 16px; padding: 12px; }
+}
 .listen-mode { margin: 4px 0 12px; width: fit-content; }
 .dict-top { gap: 12px; margin-bottom: 12px; }
 .dict-top .tabs.sm .tab { padding: 4px 12px; font-size: 13px; }
@@ -1496,7 +1544,7 @@ a.lf-card:hover { border-color: var(--brand); transform: translateY(-2px); }
 .bd-tok:hover { background: var(--surface-2); }
 .bd-ph { font-family: var(--font-ipa); font-size: 11px; color: var(--ink-3); min-height: 14px; white-space: nowrap; }
 .bd-w { font-family: var(--font-en); font-size: 20px; font-weight: 500; line-height: 1.3; }
-.bd-zh { font-size: 11px; color: var(--ink-2); min-height: 14px; white-space: nowrap; }
+.bd-tok .bd-zh { font-size: 11px; color: var(--ink-2); min-height: 14px; white-space: nowrap; } /* 只管拆句里的小字，别影响连词成句的中文题目 */
 .bd-tok.core .bd-w { color: var(--brand-deep); font-weight: 700; }
 .bd-tok.core .bd-zh { color: var(--brand-deep); }
 .bd-punct { font-size: 20px; align-self: center; margin-top: 4px; }

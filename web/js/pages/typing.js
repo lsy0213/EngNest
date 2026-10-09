@@ -137,6 +137,21 @@ App.pages.typing = {
     const st = { i: 0, pos: 0, keys: 0, right: 0, chars: 0, t0: 0, errs: 0, missed: [], done: 0, combo: 0, maxCombo: 0 };
     let target = "", cur = null, locked = false, imeWarned = false;
 
+    // 手机没有实体键盘：放一个看不见的输入框，点卡片时让它获得焦点，系统键盘才会弹出来。
+    // 输入框放在 #ty-main 外面，换题重画时不会被删掉，键盘也就不会收起
+    body.innerHTML = `<input class="ty-input" id="ty-in" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-label="打字输入"><div id="ty-main"></div>`;
+    const inp = $("#ty-in", body), main = $("#ty-main", body);
+    const setFocused = (on) => $("#tcard", main)?.classList.toggle("focused", on);
+    inp.addEventListener("focus", () => {
+      setFocused(true);
+      // 键盘弹出后把进度和卡片滚到屏幕上方，不被键盘挡住
+      if (TOUCH) setTimeout(() => { if (document.activeElement === inp) $(".type-stats", main)?.scrollIntoView({ block: "start", behavior: "smooth" }); }, 300);
+    }, { signal });
+    inp.addEventListener("blur", () => setFocused(false), { signal });
+    main.addEventListener("click", (e) => { if (!e.target.closest("button, a, select, label")) inp.focus(); }, { signal });
+    // 点卡片上的按钮不要抢走焦点，否则手机键盘会收起
+    main.addEventListener("mousedown", (e) => { if (e.target.closest("button") && document.activeElement === inp) e.preventDefault(); }, { signal });
+
     // 目标文本规范化：弯引号、破折号等换成键盘能打出来的字符
     const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[’‘`]/g, "'").replace(/[“”]/g, '"')
       .replace(/[–—]/g, "-").replace(/…/g, "...").replace(/\s+/g, " ").trim();
@@ -159,7 +174,7 @@ App.pages.typing = {
       const cls = i < st.pos ? "done" : i === st.pos ? "cur" : "todo";
       let shown = c === " " ? "&nbsp;" : esc(c);
       if (i >= st.pos && c !== " " && ((isWord && this.hide) || (dictation && /[A-Za-z0-9]/.test(c)))) shown = "_";
-      return `<span class="ch ${cls}">${shown}</span>`;
+      return `<span class="ch ${cls}">${shown}</span>${c === " " ? "<wbr>" : ""}`; // 句子只在空格处换行
     }).join("");
 
     const statsHtml = () => {
@@ -167,33 +182,47 @@ App.pages.typing = {
       const wpm = min > 0.05 ? Math.round(st.chars / 5 / min) : 0;
       const acc = st.keys ? Math.round((st.right / st.keys) * 100) : 100;
       return `<span>进度 <b>${st.i + 1}</b> / ${list.length}</span><span>速度 <b>${wpm}</b> WPM</span><span>正确率 <b>${acc}%</b></span>${st.combo >= 2 ? `<span class="combo">🔥 连击 <b>${st.combo}</b></span>` : ""}
-        <span class="spacer"></span><span class="faint">Tab 重听 · Shift+Tab 慢速 · Esc 看答案 · ←/→ 切换</span>`;
+        <span class="spacer"></span><span class="faint kbd-only">Tab 重听 · Shift+Tab 慢速 · Esc 看答案 · ←/→ 切换</span>`;
     };
 
     const draw = () => {
       const pct = (st.i / list.length) * 100;
-      body.innerHTML = `
+      const n = [...target].length;
+      main.innerHTML = `
         <div class="type-stats">${statsHtml()}</div>
         <div class="bar" style="margin:8px 0 16px"><i style="width:${pct}%"></i></div>
-        <div class="card type-card" id="tcard">
-          <div class="${isWord ? "type-word" : "type-sentence"}" id="chars">${charsHtml()}</div>
+        <div class="card type-card ${document.activeElement === inp ? "focused" : ""}" id="tcard">
+          <div class="${isWord ? "type-word" : "type-sentence"}" id="chars" style="--n:${n}">${charsHtml()}</div>
           ${isWord ? `
-            <div class="fc-ipa">${esc(cur.ph || "")} ${speakBtn(cur.w)}</div>
+            <div class="fc-ipa">${esc(cur.ph || "")}</div>
             <div class="type-meaning">${esc(cur.m || "")}</div>`
-          : `<div class="type-zh ${dictation ? "hidden" : ""}" id="zh">${esc(cur.zh || "")}</div>
-             <div class="row mt" style="justify-content:center">${speakBtn(cur.text)}<button class="btn sm ghost" data-say="${esc(cur.text)}" data-rate="0.6">🐢 慢速</button>
-             ${dictation ? `<button class="btn sm ghost" id="show-zh">看中文</button>` : ""}</div>`}
+          : `<div class="type-zh ${dictation ? "hidden" : ""}" id="zh">${esc(cur.zh || "")}</div>`}
           <div class="type-hint" id="hint"></div>
-        </div>
-        <div class="row mt"><button class="btn ghost" id="prev">← 上一个</button><span class="spacer"></span><button class="btn ghost" id="skip">跳过 →</button></div>`;
-      $("#prev", body).onclick = () => go(-1);
-      $("#skip", body).onclick = () => go(1);
-      const sz = $("#show-zh", body);
-      if (sz) sz.onclick = () => $("#zh", body).classList.remove("hidden");
+          <div class="type-tap">⌨️ 点这里开始打字</div>
+          <div class="type-tools">
+            <button class="btn ghost sm" id="prev" title="上一个（←）">←<span class="tt-l"> 上一个</span></button>
+            <span class="spacer"></span>
+            ${speakBtn(isWord ? cur.w : cur.text)}
+            <button class="btn sm ghost" data-say="${esc(isWord ? cur.w : cur.text)}" data-rate="0.6" title="慢速（Shift+Tab）">🐢<span class="tt-l"> 慢速</span></button>
+            ${dictation ? `<button class="btn sm ghost" id="show-zh">看中文</button>` : ""}
+            <button class="btn sm ghost" id="answer" title="看答案（Esc）">💡<span class="tt-l"> 答案</span></button>
+            <span class="spacer"></span>
+            <button class="btn ghost sm" id="skip" title="跳过（→）"><span class="tt-l">跳过 </span>→</button>
+          </div>
+        </div>`;
+      $("#prev", main).onclick = () => go(-1);
+      $("#skip", main).onclick = () => go(1);
+      $("#answer", main).onclick = showAnswer;
+      const sz = $("#show-zh", main);
+      if (sz) sz.onclick = () => $("#zh", main).classList.remove("hidden");
     };
     const refresh = () => {
-      $("#chars", body).innerHTML = charsHtml();
-      $(".type-stats", body).innerHTML = statsHtml();
+      $("#chars", main).innerHTML = charsHtml();
+      $(".type-stats", main).innerHTML = statsHtml();
+    };
+    const showAnswer = () => {
+      $("#hint", main).innerHTML = `答案：<b>${esc(target)}</b>`;
+      st.errs++;
     };
 
     const go = (d) => {
@@ -216,8 +245,8 @@ App.pages.typing = {
         st.combo = 0;
         if (isWord && !st.missed.includes(cur)) st.missed.push(cur);
       }
-      $("#tcard", body).classList.add("ok");
-      if (dictation) $("#zh", body).classList.remove("hidden");
+      $("#tcard", main).classList.add("ok");
+      if (dictation) $("#zh", main).classList.remove("hidden");
       if (!isWord) Store.data.stats.typing_sent = (Store.data.stats.typing_sent || 0) + 1;
       else Store.data.stats.typing_words = (Store.data.stats.typing_words || 0) + 1;
       Store.save();
@@ -225,32 +254,18 @@ App.pages.typing = {
     };
 
     const wrongFlash = () => {
-      const card = $("#tcard", body);
+      const card = $("#tcard", main);
       card.classList.remove("shake");
       void card.offsetWidth; // 重新触发动画
       card.classList.add("shake");
     };
 
-    document.addEventListener("keydown", (e) => {
-      if (e.target.closest?.("input, textarea, select") || $(".modal-mask")) return;
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key === "Process" || e.isComposing) {
-        if (!imeWarned) { imeWarned = true; toast("检测到中文输入法，请按 Shift 或 Ctrl+空格 切换到英文", "bad", 4000); }
-        return;
-      }
-      if (e.key === "Tab") { e.preventDefault(); TTS.speak(isWord ? cur.w : cur.text, e.shiftKey ? 0.6 : undefined); return; }
-      if (e.key === "ArrowLeft") { go(-1); return; }
-      if (e.key === "ArrowRight") { go(1); return; }
-      if (e.key === "Escape") {
-        $("#hint", body).innerHTML = `答案：<b>${esc(target)}</b>`;
-        st.errs++;
-        return;
-      }
-      if (e.key.length !== 1 || locked) return;
-      e.preventDefault();
+    // 打一个字符
+    const typeChar = (ch) => {
+      if (locked) return;
       if (!st.t0) st.t0 = Date.now();
       st.keys++;
-      if (same(e.key, target[st.pos])) {
+      if (same(ch, target[st.pos])) {
         st.right++;
         st.chars++;
         st.pos++;
@@ -261,10 +276,43 @@ App.pages.typing = {
         st.errs++;
         wrongFlash();
         if (isWord) { st.pos = 0; refresh(); } // 单词打错就从头再来，加深记忆
-        if (st.errs >= 3 && isWord) $("#hint", body).innerHTML = `提示：<b>${esc(target)}</b>`;
+        if (st.errs >= 3 && isWord) $("#hint", main).innerHTML = `提示：<b>${esc(target)}</b>`;
         else refresh();
       }
+    };
+
+    document.addEventListener("keydown", (e) => {
+      const mine = e.target === inp;
+      if ((!mine && e.target.closest?.("input, textarea, select")) || $(".modal-mask")) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key === "Process") {
+        if (!imeWarned) { imeWarned = true; toast("检测到中文输入法，请按 Shift 或 Ctrl+空格 切换到英文", "bad", 4000); }
+        return;
+      }
+      if (e.isComposing) return; // 安卓输入法按键是 Unidentified / 组字中，交给下面的 input 事件
+      if (e.key === "Tab") { e.preventDefault(); TTS.speak(isWord ? cur.w : cur.text, e.shiftKey ? 0.6 : undefined); return; }
+      if (e.key === "ArrowLeft") { go(-1); return; }
+      if (e.key === "ArrowRight") { go(1); return; }
+      if (e.key === "Escape") { showAnswer(); return; }
+      if (e.key === "Enter" && mine) { e.preventDefault(); return; }
+      if (e.key.length !== 1) return;
+      e.preventDefault(); // 电脑和 iPhone 的按键都在这里处理，输入框里不留字
+      lastKey = { c: e.key, t: Date.now() };
+      typeChar(e.key);
     }, { signal });
+
+    // 安卓输入法不给按键值，只能从输入框内容的变化里取出新打的字
+    let prev = "", lastKey = null;
+    inp.addEventListener("input", (e) => {
+      const v = inp.value;
+      let add = v.startsWith(prev) ? v.slice(prev.length) : v.length > prev.length ? v.slice(prev.length - v.length) : "";
+      prev = v;
+      if (/[㐀-鿿]/.test(add) && !imeWarned) { imeWarned = true; toast("检测到中文输入法，请切换到英文键盘", "bad", 4000); }
+      if (lastKey && add === lastKey.c && Date.now() - lastKey.t < 80) add = ""; // 个别输入法 keydown 拦不住，同一个字别算两次
+      for (const c of add.replace(/[’‘]/g, "'").replace(/[“”]/g, '"')) if (typeable(c)) typeChar(c);
+      if (!e.isComposing && v.length > 60) { inp.value = ""; prev = ""; }
+    }, { signal });
+    inp.addEventListener("compositionend", () => { if (inp.value.length > 60) { inp.value = ""; prev = ""; } }, { signal });
 
     const finish = () => {
       const min = st.t0 ? (Date.now() - st.t0) / 60000 : 0;

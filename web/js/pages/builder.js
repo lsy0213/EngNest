@@ -225,7 +225,8 @@ App.pages.builder = {
           <div class="bd-zh" id="bzh"></div>
           <div id="stage"></div>
           <div class="bd-hint" id="bhint"></div>
-          <input class="bd-input" id="bin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+          <div class="type-tap bd-tap">⌨️ 点这里开始打字</div>
+          <input class="bd-input" id="bin" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-label="打字输入">
         </div>
         <div class="bd-keys" id="bkeys"></div>
         <div class="bd-ladder" id="ladder"></div>
@@ -233,7 +234,17 @@ App.pages.builder = {
       </div>`;
     const inp = $("#bin", root), card = $("#card", root), stage = $("#stage", root), tip = $("#antip", root);
     const focus = () => inp.focus();
+    // 手机上只有点了卡片才弹键盘；自动聚焦会让输入框「有焦点却没键盘」，点卡片也弹不出来
+    const keepFocus = () => { if (!TOUCH) inp.focus(); };
     card.addEventListener("click", (e) => { if (!e.target.closest("button, .an-group, [data-say]")) focus(); });
+    inp.addEventListener("focus", () => {
+      card.classList.add("focused");
+      // 手机键盘弹出后把卡片滚到上方，不被键盘挡住
+      if (TOUCH) setTimeout(() => { if (document.activeElement === inp) card.scrollIntoView({ block: "start", behavior: "smooth" }); }, 300);
+    });
+    inp.addEventListener("blur", () => card.classList.remove("focused"));
+    // 点操作按钮不抢走输入框的焦点，手机键盘不会收起
+    $("#bkeys", root).addEventListener("mousedown", (e) => { if (e.target.closest("button") && document.activeElement === inp) e.preventDefault(); });
 
     const cur_ = () => steps[st.i];
     // Ctrl+M 跟读：这一步完成后跟读刚拼出的句子
@@ -242,13 +253,14 @@ App.pages.builder = {
     const editable = (k) => status[k] !== "ok" && status[k] !== "revealed";
 
     // ---------- 界面 ----------
+    // 操作按钮：电脑上同时显示快捷键，手机上（没有实体键盘）就是普通按钮
     const keysHtml = () => {
       const free = P.builder_mode === "free";
-      const k = (keys, label) => `<span class="bd-key">${keys.map((x) => `<span class="kbd">${x}</span>`).join("")}<span>${label}</span></span>`;
+      const k = (act, keys, label, cls = "") => `<button class="btn sm bd-key ${cls}" data-act="${act}"><span>${label}</span>${keys.map((x) => `<span class="kbd">${x}</span>`).join("")}</button>`;
       return phase === "done"
-        ? k(["空格"], "继续") + k(["Enter"], "继续") + k(["Ctrl", "'"], "再听一遍") + k(["Ctrl", "M"], "跟读评测")
-        : (free ? k(["空格"], "下一个词") + k(["Enter"], "提交") : k(["空格"], "确认这个词"))
-          + k(["Ctrl", "'"], "播放发音") + k(["Ctrl", ";"], "显示答案") + k(["/"], "提示字母");
+        ? k("next", ["空格"], "继续 →", "primary") + k("say", ["Ctrl", "'"], "🔊 再听一遍") + k("shadow", ["Ctrl", "M"], "🎤 跟读评测")
+        : (free ? k("space", ["空格"], "下一个词") + k("submit", ["Enter"], "✓ 提交", "primary") : k("space", ["空格"], "✓ 确认这个词", "primary"))
+          + k("say", ["Ctrl", "'"], "🔊 发音") + k("reveal", ["Ctrl", ";"], "👁 答案") + k("hint", ["/"], "💡 提示字母");
     };
     const slotsHtml = () => `<div class="bd-slots">${cur_().words.map((w, k) => {
       const width = `min-width:${Math.max(1.2, bdNorm(w).length * 0.62 + 0.4)}em`;
@@ -353,7 +365,7 @@ App.pages.builder = {
       drawSlots();
       drawLadder();
       drawStatus();
-      focus();
+      keepFocus();
     };
 
     const moveTo = (k) => {
@@ -480,10 +492,11 @@ App.pages.builder = {
       }
       drawStatus();
       stage.innerHTML = analysisHtml(s);
-      $("#bhint", root).innerHTML = s.last ? `✅ 整句完成！<span class="faint">鼠标移到彩色框上可以看句子成分说明</span>` : `<span class="faint">鼠标移到彩色框上可以看句子成分说明</span>`;
+      const tipTxt = `<span class="faint">${TOUCH ? "点彩色框" : "鼠标移到彩色框上"}可以看句子成分说明</span>`;
+      $("#bhint", root).innerHTML = s.last ? `✅ 整句完成！${tipTxt}` : tipTxt;
       $("#bkeys", root).innerHTML = keysHtml();
       inp.value = "";
-      focus();
+      keepFocus();
       const my = st.i;
       await Promise.race([TTS.speak(s.en), new Promise((r) => setTimeout(r, 5000))]);
       if (P.builder_autonext && !signal.aborted && phase === "done" && st.i === my) setTimeout(() => { if (phase === "done" && st.i === my && !Shadow.isOpen) next(); }, 1200);
@@ -497,8 +510,16 @@ App.pages.builder = {
     };
 
     // ---------- 输入 ----------
+    const space = () => {
+      if (P.builder_mode === "auto") return checkCur();
+      if (!slots[cur]) return;
+      const n = nextEditable(cur);
+      if (n < 0) submit(); else moveTo(n);
+    };
+    const enter = () => { if (P.builder_mode === "auto") checkCur(); else submit(); };
     inp.addEventListener("input", () => {
-      if (phase !== "typing") { inp.value = ""; return; }
+      // 安卓输入法的空格 / 回车不一定有按键事件，会直接出现在输入框里
+      if (phase !== "typing") { if (/\s/.test(inp.value)) next(); inp.value = ""; return; }
       let v = inp.value;
       // 手机输入法、粘贴等可能一次带空格输入多个词：按空格拆开依次填
       const parts = v.split(/\s+/);
@@ -535,14 +556,10 @@ App.pages.builder = {
       if (e.isComposing) return;
       if (e.key === " ") {
         e.preventDefault();
-        if (P.builder_mode === "auto") return checkCur();
-        if (!slots[cur]) return;
-        const n = nextEditable(cur);
-        if (n < 0) submit(); else moveTo(n);
+        space();
       } else if (e.key === "Enter") {
         e.preventDefault();
-        if (P.builder_mode === "auto") checkCur();
-        else submit();
+        enter();
       } else if (e.key === "Backspace" && !inp.value) {
         e.preventDefault();
         const p = nextEditable(cur, -1);
@@ -561,6 +578,20 @@ App.pages.builder = {
       focus();
     });
 
+    $("#bkeys", root).addEventListener("click", (e) => {
+      const b = e.target.closest("[data-act]");
+      if (!b) return;
+      const act = b.dataset.act;
+      if (act === "say") TTS.speak(cur_().en);
+      else if (act === "next") next();
+      else if (act === "shadow") Shadow.openFor();
+      else if (act === "submit") enter();
+      else if (act === "space") { if (P.builder_mode === "auto" || slots[cur]) space(); else focus(); }
+      else if (act === "reveal") reveal();
+      else if (act === "hint") hint();
+      if (phase === "typing") keepFocus();
+    });
+
     // ---------- 设置 ----------
     $$("[data-mode]", root).forEach((b) => (b.onclick = () => {
       P.builder_mode = b.dataset.mode;
@@ -568,10 +599,10 @@ App.pages.builder = {
       $$("[data-mode]", root).forEach((x) => x.classList.toggle("active", x === b));
       toast(P.builder_mode === "free" ? "空格换到下一个词，打完按 Enter 提交" : "每个词打对会自动跳到下一个");
       if (phase === "typing") { $("#bkeys", root).innerHTML = keysHtml(); }
-      focus();
+      keepFocus();
     }));
-    $("#b-sfx", root).onclick = (e) => { P.sfx = P.sfx === false; e.currentTarget.textContent = P.sfx === false ? "🔇" : "🔔"; Store.save(); focus(); };
-    $("#b-auto", root).onchange = (e) => { P.builder_autonext = e.target.checked; Store.save(); focus(); };
+    $("#b-sfx", root).onclick = (e) => { P.sfx = P.sfx === false; e.currentTarget.textContent = P.sfx === false ? "🔇" : "🔔"; Store.save(); keepFocus(); };
+    $("#b-auto", root).onchange = (e) => { P.builder_autonext = e.target.checked; Store.save(); keepFocus(); };
     signal.addEventListener("abort", () => tip.remove());
 
     // ---------- 结束 ----------
