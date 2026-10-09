@@ -15,7 +15,8 @@ Environment=ENGNEST_DATA_DIR=/opt/engnest/data
 Environment=PYTHONUNBUFFERED=1
 Environment=HF_ENDPOINT=https://hf-mirror.com
 EnvironmentFile=-/opt/engnest/engnest.env
-ExecStart=/opt/engnest/venv/bin/python main.py --server --port ${ENGNEST_PORT} --public-ip ${ENGNEST_PUBLIC_IP} --domain ${ENGNEST_DOMAIN}
+# 前面有 Nginx（对外的 HTTPS、压缩、缓存都由它做），这里只听本机的 8767
+ExecStart=/opt/engnest/venv/bin/python main.py --server --host 127.0.0.1 --port 8767 --http
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=30

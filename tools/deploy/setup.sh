@@ -23,7 +23,7 @@ fi
 echo "== 2. 系统软件"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -q
-apt-get install -y -q python3-venv python3-pip sqlite3 >/dev/null
+apt-get install -y -q python3-venv python3-pip sqlite3 nginx openssl >/dev/null
 
 echo "== 3. 专门运行 EngNest 的系统用户（不用 root 运行，更安全）"
 id engnest >/dev/null 2>&1 || useradd --system --home-dir $ROOT --shell /usr/sbin/nologin engnest
@@ -36,7 +36,22 @@ echo "== 4. Python 环境和依赖"
 $ROOT/venv/bin/pip install -q --upgrade pip -i $PIP_MIRROR
 $ROOT/venv/bin/pip install -q -r $APP/requirements-server.txt -i $PIP_MIRROR
 
-echo "== 5. 配置和开机自启"
+echo "== 5. Nginx（HTTPS、HTTP/2、压缩、缓存；/api/ 转给 EngNest）"
+mkdir -p /etc/nginx/ssl
+if [ ! -f /etc/nginx/ssl/engnest.crt ]; then
+  # 只用 IP 访问时的自签名证书（10 年）；有了备案的域名以后换成 Let's Encrypt
+  SAN="IP:$PUBLIC_IP,IP:127.0.0.1${DOMAIN:+,DNS:$DOMAIN}"
+  openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj "/CN=EngNest" -addext "subjectAltName=$SAN"     -keyout /etc/nginx/ssl/engnest.key -out /etc/nginx/ssl/engnest.crt 2>/dev/null
+  chmod 600 /etc/nginx/ssl/engnest.key
+fi
+usermod -aG engnest www-data           # Nginx 要读数据目录里的资料包
+sed "s/__PORT__/$PORT/" $APP/tools/deploy/nginx-engnest.conf > /etc/nginx/sites-available/engnest
+ln -sf /etc/nginx/sites-available/engnest /etc/nginx/sites-enabled/engnest
+rm -f /etc/nginx/sites-enabled/default
+nginx -t -q
+systemctl enable nginx >/dev/null
+
+echo "== 6. 配置和开机自启"
 cat > $ROOT/engnest.env <<EOF
 ENGNEST_PORT=$PORT
 ENGNEST_PUBLIC_IP=$PUBLIC_IP
@@ -46,8 +61,10 @@ cp $APP/tools/deploy/engnest.service /etc/systemd/system/engnest.service
 systemctl daemon-reload
 systemctl enable engnest >/dev/null
 systemctl restart engnest
+systemctl restart nginx
 sleep 3
 systemctl --no-pager --lines=0 status engnest | head -5
+systemctl is-active nginx
 
 echo
 echo "完成。还要做的："

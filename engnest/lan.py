@@ -156,6 +156,9 @@ def local_ips() -> list:
 
 
 class Handler(SimpleHTTPRequestHandler):
+    # HTTP/1.1：一条连接连续请求很多个文件（页面有一百多个脚本），不用每个文件都重新握手（HTTPS 握手很慢）
+    protocol_version = "HTTP/1.1"
+
     # Windows 注册表里 .js 有时被映射成 text/plain，这里写死常用类型
     extensions_map = {
         **SimpleHTTPRequestHandler.extensions_map,
@@ -212,8 +215,15 @@ class Handler(SimpleHTTPRequestHandler):
         except (ValueError, AttributeError):
             return self._json(400, {"error": "请求格式不对"})
         status, data = self.server_ref.dispatch(self.path[5:].split("?")[0], args if isinstance(args, list) else [],
-                                                self.headers, self.client_address[0])
+                                                self.headers, self.client_ip())
         return self._json(status, data)
+
+    def client_ip(self) -> str:
+        """服务器模式前面有 Nginx 时，请求都从本机转过来：用 Nginx 带的 X-Real-IP（只信本机来的）"""
+        ip = self.client_address[0]
+        if ip in ("127.0.0.1", "::1") and self.headers.get("X-Real-IP"):
+            return self.headers["X-Real-IP"].strip()
+        return ip
 
     def _json(self, code, data):
         raw = json.dumps(data, ensure_ascii=False).encode("utf-8")
@@ -303,6 +313,8 @@ class LanServer:
     def running(self) -> bool:
         return self.httpd is not None
 
+    host = "0.0.0.0"  # 服务器模式在 Nginx 后面时只听本机：127.0.0.1
+
     def start(self, port: int, code: str, https: bool = True) -> bool:
         """https=True：用自签名证书提供 HTTPS（手机浏览器只有 HTTPS 才允许录音）"""
         self.stop()
@@ -310,7 +322,7 @@ class LanServer:
         self.guard.reset()
         handler = partial(Handler, directory=str(resource_dir() / "web"), server_ref=self)
         try:
-            self.httpd = _Server(("0.0.0.0", port), handler)
+            self.httpd = _Server((self.host, port), handler)
         except OSError as e:
             self.httpd = None
             self.error = f"端口 {port} 无法使用（{e.strerror or e}），换一个端口试试"

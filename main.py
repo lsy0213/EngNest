@@ -5,7 +5,7 @@
 
 服务器模式（不开窗口，用账号登录，见 engnest/server.py）：
 
-    python main.py --server [--port 8766] [--http] [--public-ip 1.2.3.4] [--domain en.example.cn]
+    python main.py --server [--port 8766] [--http] [--host 127.0.0.1] [--public-ip 1.2.3.4] [--domain en.example.cn]
     python main.py --invite [--admin] [--note 备注]   # 生成邀请码（服务器开着也能用）
     python main.py --users                             # 列出账号
 """
@@ -35,7 +35,7 @@ def server_main():
             print(f"{u['username']:<20} {'管理员' if u['admin'] else '':<6} {'可用主人 AI' if u['ai'] else '':<10} 注册于 {u['created']}")
         return
     server.run(int(_arg("--port", lan.DEFAULT_PORT)), https="--http" not in sys.argv,
-               extra_hosts=[_arg("--public-ip"), _arg("--domain")])
+               extra_hosts=[_arg("--public-ip"), _arg("--domain")], host=_arg("--host", "0.0.0.0"))
 
 
 def main():

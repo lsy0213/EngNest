@@ -2,6 +2,7 @@
 
     python main.py --server                    # 默认 8766 端口，自签名 HTTPS（手机浏览器要 HTTPS 才能录音）
     python main.py --server --port 8766 --public-ip 1.2.3.4 --domain en.example.cn
+    python main.py --server --host 127.0.0.1 --port 8767 --http   # 前面有 Nginx（tools/deploy/nginx-engnest.conf）
     python main.py --invite --admin            # 生成管理员邀请码（第一次部署时用它注册自己的账号）
     python main.py --users                     # 列出账号
 
@@ -136,12 +137,13 @@ class AccountServer(lan.LanServer):
         return 404, {"error": "没有这个接口"}
 
 
-def run(port: int = lan.DEFAULT_PORT, https: bool = True, extra_hosts=()):
-    """前台运行，直到收到 SIGTERM / Ctrl+C"""
+def run(port: int = lan.DEFAULT_PORT, https: bool = True, extra_hosts=(), host: str = "0.0.0.0"):
+    """前台运行，直到收到 SIGTERM / Ctrl+C。前面有 Nginx 时用 host="127.0.0.1"、https=False（HTTPS 和压缩、缓存都由 Nginx 做）"""
     from .api import Api
 
     api = Api()
     srv = AccountServer(api)
+    srv.host = host
     srv.extra_hosts = [h for h in extra_hosts if h]
     if not srv.accounts.has_admin():
         code = srv.accounts.admin_invite()
