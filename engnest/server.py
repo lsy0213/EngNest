@@ -144,7 +144,7 @@ def run(port: int = lan.DEFAULT_PORT, https: bool = True, extra_hosts=()):
     srv = AccountServer(api)
     srv.extra_hosts = [h for h in extra_hosts if h]
     if not srv.accounts.has_admin():
-        code = srv.accounts.new_invite(admin=True, note="第一次部署")
+        code = srv.accounts.admin_invite()
         log.warning("还没有管理员账号。管理员邀请码：%s（打开网页，用它注册你自己的账号）", code)
         print(f"还没有管理员账号。管理员邀请码：{code}\n打开网页，用它注册你自己的账号（密码自己设）。", flush=True)
     if not srv.start(port, https=https):

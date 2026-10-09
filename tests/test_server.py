@@ -45,6 +45,15 @@ def test_register_needs_unused_invite(acc):
     assert acc.register(acc.new_invite(), "小明", "password123")["ok"]  # 中文用户名可以
 
 
+def test_admin_invites_do_not_pile_up(acc):
+    first = acc.admin_invite()
+    assert acc.admin_invite() == first  # 重启服务沿用同一个码
+    acc.new_invite(admin=True)
+    tok = acc.register(first, "boss", "password123")["token"]
+    assert acc.session_user(tok)["admin"]
+    assert not [i for i in acc.invites() if i["admin"] and not i["used_by"]]  # 管理员注册后，其他管理员码全部作废
+
+
 def test_login_session_logout(acc):
     tok = acc.register(acc.new_invite(admin=True), "alice", "password123")["token"]
     assert acc.session_user(tok)["admin"] is True

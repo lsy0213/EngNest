@@ -105,6 +105,8 @@ class Accounts:
             self._db.execute("INSERT INTO users (id, username, pw, admin, ai, created, last_seen) VALUES (?,?,?,?,?,?,?)",
                              (uid, username, pw, inv[1], 0, time.strftime("%Y-%m-%d"), time.time()))
             self._db.execute("UPDATE invites SET used_by=?, used_at=? WHERE code=?", (uid, time.time(), inv[0]))
+            if inv[1]:  # 管理员注册好了：其他还没用的管理员邀请码全部作废，免得被别人拿去注册管理员
+                self._db.execute("DELETE FROM invites WHERE admin=1 AND used_by IS NULL")
         return {"ok": True, "token": self._new_session(uid)}
 
     def login(self, username: str, password: str) -> dict:
@@ -218,3 +220,8 @@ class Accounts:
 
     def has_admin(self) -> bool:
         return bool(self._one("SELECT 1 FROM users WHERE admin=1"))
+
+    def admin_invite(self) -> str:
+        """还没有管理员时用的邀请码：已经有一个没用的就沿用（重启服务不会越攒越多），没有再生成"""
+        row = self._one("SELECT code FROM invites WHERE admin=1 AND used_by IS NULL ORDER BY created DESC")
+        return row[0] if row else self.new_invite(admin=True, note="第一次部署")
