@@ -76,7 +76,14 @@ App.pages.level = {
         </ol>
         <button class="btn primary lg" id="start">开始测试</button>
       </div>`;
-    $("#start", root).onclick = () => this.run(root, signal);
+    $("#start", root).onclick = async (e) => {
+      // 测试要从四六级、雅思、托福里抽词，没加载的先加载
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      btn.textContent = "正在载入词书…";
+      try { await Books.ensure(["cet4", "cet6", "ielts", "toefl"]); } catch (err) { toast(err.message || String(err), "bad", 5000); btn.disabled = false; btn.textContent = "开始测试"; return; }
+      if (!signal.aborted) this.run(root, signal);
+    };
   },
 
   run(root, signal) {

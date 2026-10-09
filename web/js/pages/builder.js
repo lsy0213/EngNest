@@ -94,7 +94,7 @@ const ExamBuilder = {
   },
   build(bookId, name) {
     const book = BOOK_MAP[bookId];
-    if (!book) return null;
+    if (!book || book.stub) return null; // 还没加载的词书先不算（要用时页面会先加载，见 books(params)）
     const seen = new Set();
     const out = { id: bookId, name, title: book.title, units: [], lessons: [], sentences: 0 };
     book.units.forEach((u, ui) => {
@@ -134,7 +134,9 @@ const ExamBuilder = {
     return out;
   },
   books() {
-    if (!this._books) {
+    const key = BD_EXAM_BOOKS.filter(([id]) => BOOK_MAP[id] && !BOOK_MAP[id].stub).join();
+    if (!this._books || this._key !== key) {
+      this._key = key;
       this._books = BD_EXAM_BOOKS.map(([id, name]) => this.build(id, name)).filter(Boolean);
       this._map = new Map(this._books.flatMap((b) => b.lessons.map((l) => [l.id, l])));
     }
@@ -175,6 +177,7 @@ const Sfx = {
 
 // 课程列表已并入「短语与句子」：场景类的课挂在各单元最后，其余在「句型专项」里
 App.pages.builder = {
+  books: (params) => [/^x-([^-]+)-/.exec(params[0] || "")?.[1]].filter(Boolean),
   render(root, params, signal) {
     const lesson = BUILDER_LESSONS.find((l) => l.id === params[0]) || ExamBuilder.get(params[0]);
     if (lesson) this.play(root, lesson, signal);

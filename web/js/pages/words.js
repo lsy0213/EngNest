@@ -337,7 +337,7 @@ App.pages.words = {
 
   list(body) {
     const book = curBook();
-    body.innerHTML = `<div class="row" style="margin-bottom:14px"><input class="input" id="search" placeholder="🔍 在全部 ${WORDS.length} 个词里搜索单词或中文…" style="max-width:380px"><span class="spacer"></span>
+    body.innerHTML = `<div class="row" style="margin-bottom:14px"><input class="input" id="search" placeholder="🔍 在${Books.stubs().length ? "已载入的" : "全部"} ${WORDS.length} 个词里搜索单词或中文…" style="max-width:380px"><span class="spacer"></span>
       <span class="small muted"><span class="dot"></span> 未学 <span class="dot learning" style="margin-left:10px"></span> 学习中 <span class="dot mastered" style="margin-left:10px"></span> 已掌握</span></div>
       <div id="list-body"></div>`;
     const lb = $("#list-body", body);
@@ -389,9 +389,21 @@ App.pages.words = {
       if (!kw) return drawUnits();
       const hits = WORDS.filter((x) => x.w.toLowerCase().includes(kw) || x.m.includes(kw))
         .sort((a, b) => (b.w.toLowerCase().startsWith(kw) - a.w.toLowerCase().startsWith(kw)) || a.w.length - b.w.length);
-      lb.innerHTML = hits.length
-        ? `<div class="card"><div class="small muted">找到 ${hits.length} 个${hits.length > 100 ? "，显示前 100 个" : ""}</div><table class="word-table">${hits.slice(0, 100).map(row).join("")}</table></div>`
-        : `<div class="card empty">没有找到「${esc(kw)}」</div>`;
+      // 还有词书没载入时可以一键全部载入再搜（第一次要下载十几 MB）
+      const more = Books.stubs().length
+        ? `<div class="small muted mt-s">还有 ${Books.stubs().map((b) => b.title).join("、")} 没载入 <button class="btn sm soft" id="load-all">全部载入后再搜</button></div>` : "";
+      lb.innerHTML = (hits.length
+        ? `<div class="card"><div class="small muted">找到 ${hits.length} 个${hits.length > 100 ? "，显示前 100 个" : ""}</div><table class="word-table">${hits.slice(0, 100).map(row).join("")}</table>${more}</div>`
+        : `<div class="card empty">没有找到「${esc(kw)}」${more}</div>`);
+      const all = $("#load-all", lb);
+      if (all) all.onclick = async () => {
+        all.replaceWith("正在载入…");
+        try { await Books.ensure(Books.stubs().map((b) => b.id)); } catch (err) { toast(err.message || String(err), "bad", 5000); }
+        const box = $("#search", body);
+        if (!box) return;
+        box.placeholder = `🔍 在全部 ${WORDS.length} 个词里搜索单词或中文…`;
+        box.dispatchEvent(new Event("input")); // 用全部词书重新搜一遍
+      };
     });
   },
 };

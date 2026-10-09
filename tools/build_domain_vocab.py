@@ -175,3 +175,5 @@ if __name__ == "__main__":
     build_domains()
     print("雅思主题词汇：")
     build_ielts_topics()
+    import build_vocab_index  # 词书内容变了，启动时加载的目录也要跟着更新
+    build_vocab_index.main()

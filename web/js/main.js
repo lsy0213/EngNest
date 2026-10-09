@@ -3,7 +3,10 @@
   await Store.init();
   await KV.migrate();
   TTS.init();
+  // 当前词书和复习要用的词书（已学的词在哪些词书里）先加载，其他词书用到时再加载
+  const books = Books.ensure(Books.forLearned([curBook().id])).catch((e) => toast(e.message || String(e), "bad", 6000));
   await AI.refresh();
+  await books;
   renderSidebarFoot();
   applySkin();
   applyNavCollapsed();

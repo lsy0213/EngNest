@@ -4,6 +4,7 @@
 // 旧路由 #/typing/<mode>[/<来源或词书>/<单元>] 仍然可用，会跳到对应的位置
 const SENT_ALL_N = 40; // 句子来源选「全部」时随机抽多少句
 App.pages.typing = {
+  books: (params) => (params[1] && BOOK_MAP[params[1]] ? [params[1]] : []),
   scope: "words",    // words 单词模块里 / sentences 短语与句子模块里
   mode: "words",     // words 打单词 / sentence 看着打句子 / dictation 听着打句子
   src: "unit",       // 打单词的范围：unit 当前词书的单元 / learned 学过的词 / notebook 生词本

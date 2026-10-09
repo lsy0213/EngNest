@@ -18,7 +18,16 @@ const app = loadApp(scripts.filter((s) => s.startsWith("data/") && fs.existsSync
 const G = (n) => app.run(`typeof ${n} === "undefined" ? undefined : ${n}`);
 
 // ---------- 词书 ----------
-const books = G("WORD_BOOKS") || [];
+// 大词书启动时只有目录（vocab_index.js），完整内容在 file 里：逐本加载来检查，并核对目录和内容一致（不一致要重新跑 build_vocab_index.py）
+const books = (G("WORD_BOOKS") || []).map((b) => {
+  if (!b.stub) return b;
+  if (!fs.existsSync(path.join(WEB, b.file))) { err(`词书目录里的 ${b.file} 不存在`); return b; }
+  const full = (loadApp([b.file]).get("window.WORD_BOOKS") || [])[0];
+  if (!full || full.id !== b.id) { err(`${b.file} 里没有词书 ${b.id}`); return b; }
+  const same = full.units.length === b.units.length && full.units.every((u, i) => u.words.map((w) => w[0]).join("|") === b.units[i].w);
+  if (!same) err(`词书目录 vocab_index.js 和 ${b.file} 对不上，重新运行 python tools/build_vocab_index.py`);
+  return full;
+});
 const ids = new Set();
 for (const b of books) {
   if (ids.has(b.id)) err(`词书 id 重复：${b.id}`);

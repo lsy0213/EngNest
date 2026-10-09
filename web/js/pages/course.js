@@ -18,6 +18,8 @@ const PATTERN_LESSONS = PATTERN_CATS.flatMap((c) => c.groups.flatMap((g) => g.le
 const COURSE_OLD_ORDER = ["hello", "me", "cafe", "restaurant", "shopping", "directions", "hotel", "airport", "health", "work", "phone", "chat"];
 
 App.pages.course = {
+  // 句型专项的「考纲例句」用四六级、雅思、托福词书里的例句
+  books: (params) => (params[0] === "patterns" && (params[1] || Store.prefs.bd_cat) === "exam" ? BD_EXAM_BOOKS.map(([id]) => id) : []),
   key: (ui, li) => `${PHRASE_UNITS[ui].id}-${li}`,
   rec(ui, li) { return (Store.data.course ||= {})[this.key(ui, li)]; },
   migrate() {

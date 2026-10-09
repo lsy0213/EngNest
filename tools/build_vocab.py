@@ -185,3 +185,5 @@ if __name__ == "__main__":
     load_word_stats(all_rows)
     for b in BOOKS:
         build(b)
+    import build_vocab_index  # 词书内容变了，启动时加载的目录也要跟着更新
+    build_vocab_index.main()

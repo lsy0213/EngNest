@@ -137,24 +137,91 @@ const WORD_MAP = {}; // 小写单词 → 词条（优先用信息最丰富的四
 const BOOK_PRIORITY = { cet4: 5, cet6: 4, ielts: 3, ielts_topic: 2.9, ielts_zj: 2.5, ielts_l179: 2.4, ielts_r538: 2.4, toefl: 2, core: 1, topic: 0.5, med: 0.2, tech: 0.2, law: 0.2, fin: 0.2 };
 
 const WORD_POS = {}; // 小写单词 → 在 WORDS 里的位置（替换成信息更全的词条时用，避免每次 indexOf 全表扫描）
-BOOKS.forEach((b) => {
-  BOOK_MAP[b.id] = b;
+const makeItem = ([w, ph, m, exs, phrases, mem, exam], book, unit) =>
+  ({ w, ph, m, exs, phrases, mem, exam, ex: exs[0]?.[0] || "", zh: exs[0]?.[1] || "", book, unit });
+function registerItem(item) {
+  const key = item.w.toLowerCase();
+  const old = WORD_MAP[key];
+  if (!old) WORD_POS[key] = WORDS.push(item) - 1;
+  if (!old || BOOK_PRIORITY[item.book] > BOOK_PRIORITY[old.book]) {
+    if (old) WORDS[WORD_POS[key]] = item;
+    WORD_MAP[key] = item;
+  }
+}
+function indexBook(b) {
   b.count = 0;
   b.units.forEach((u, ui) => {
-    u.items = u.words.map(([w, ph, m, exs, phrases, mem, exam]) => {
-      const item = { w, ph, m, exs, phrases, mem, exam, ex: exs[0]?.[0] || "", zh: exs[0]?.[1] || "", book: b.id, unit: ui };
-      const key = w.toLowerCase();
-      const old = WORD_MAP[key];
-      if (!old) WORD_POS[key] = WORDS.push(item) - 1;
-      if (!old || BOOK_PRIORITY[b.id] > BOOK_PRIORITY[old.book]) {
-        if (old) WORDS[WORD_POS[key]] = item;
-        WORD_MAP[key] = item;
-      }
-      return item;
-    });
+    // 还没加载的大词书（vocab_index.js 里的目录）：先用只有单词的占位词条，统计、进度、单元列表都能用；加载后原地填满
+    if (b.stub) u.items = (u.w ? u.w.split("|") : []).map((w) => ({ w, ph: "", m: "", exs: [], phrases: [], mem: "", exam: [], ex: "", zh: "", book: b.id, unit: ui, stub: true }));
+    else (u.items = u.words.map((w) => makeItem(w, b.id, ui))).forEach(registerItem);
     b.count += u.items.length;
   });
-});
+}
+BOOKS.forEach((b) => { BOOK_MAP[b.id] = b; indexBook(b); });
+
+// 大词书（四六级、雅思、托福、行业词书）按需加载：启动时只有目录，打开要用的那本时才下载完整内容（服务器上第一次打开快很多）
+// 页面可以声明 books(params) 要哪些词书，Router 渲染前会先等它们加载好；当前词书和复习要用的词书总是会加载
+const Books = {
+  _loading: {},
+  _wordBooks: null,
+  stubs: () => BOOKS.filter((b) => b.stub),
+  ensure(ids) {
+    return Promise.all([...new Set(ids)].filter((id) => BOOK_MAP[id]?.stub).map((id) => this.load(id)));
+  },
+  load(id) {
+    const b = BOOK_MAP[id];
+    if (!b?.stub) return Promise.resolve(b);
+    return (this._loading[id] ||= new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      // 服务器上带版本号（内容变了号就变），浏览器可以长期缓存；桌面版是本地文件，不用
+      s.src = b.file + (/^https?:$/.test(location.protocol) && b.v ? `?v=${b.v}` : "");
+      s.onload = () => { try { this.fill(b); resolve(b); } catch (e) { delete this._loading[id]; reject(e); } };
+      s.onerror = () => { delete this._loading[id]; s.remove(); reject(new Error(`词书「${b.title}」没加载成功，检查一下网络再试`)); };
+      document.head.appendChild(s);
+    }));
+  },
+  // 完整的词书脚本也会 push 到 WORD_BOOKS：把它取出来（不留重复的一项），内容填进目录里的占位词条，别处拿着的词条引用不用换
+  fill(b) {
+    const i = BOOKS.findIndex((x) => x.id === b.id && x !== b);
+    if (i < 0) throw new Error(`词书「${b.title}」的文件内容不对`);
+    const full = BOOKS.splice(i, 1)[0];
+    const same = full.units.length === b.units.length
+      && full.units.every((u, ui) => u.words.length === b.units[ui].items.length && u.words.every((w, wi) => w[0] === b.units[ui].items[wi].w));
+    delete b.stub;
+    if (same) {
+      full.units.forEach((u, ui) => {
+        b.units[ui].words = u.words;
+        u.words.forEach((w, wi) => { const it = Object.assign(b.units[ui].items[wi], makeItem(w, b.id, ui)); delete it.stub; registerItem(it); });
+      });
+    } else {
+      // 目录和词书对不上（目录没重新生成）：按词书内容重建
+      b.units = full.units;
+      indexBook(b);
+    }
+    if (typeof SEL_INDEX !== "undefined") SEL_INDEX = null;
+  },
+  // 已学的词分布在哪些没加载的词书里（复习要用它们的释义和例句）：已经要加载的词书里有就不再加，没有就挑信息最全的一本
+  forLearned(have = []) {
+    if (!this._wordBooks) {
+      this._wordBooks = new Map();
+      for (const b of this.stubs()) for (const u of b.units) for (const it of u.items) {
+        const k = it.w.toLowerCase();
+        const list = this._wordBooks.get(k);
+        if (!list) this._wordBooks.set(k, [b.id]);
+        else if (!list.includes(b.id)) list.push(b.id);
+      }
+    }
+    const need = new Set(have);
+    for (const w of Object.keys(Store.data?.words || {})) {
+      const k = w.toLowerCase();
+      if (WORD_MAP[k]) continue;
+      const list = this._wordBooks.get(k);
+      if (!list || list.some((id) => need.has(id) || !BOOK_MAP[id]?.stub)) continue;
+      need.add(list.reduce((a, id) => (BOOK_PRIORITY[id] > BOOK_PRIORITY[a] ? id : a)));
+    }
+    return [...need];
+  },
+};
 
 const curBook = () => BOOK_MAP[Store.prefs.book] || BOOKS[0];
 const bookItems = (b = curBook()) => b.units.flatMap((u) => u.items);
@@ -1057,8 +1124,24 @@ const Router = {
     const root = document.createElement("div");
     root.className = "page";
     view.appendChild(root);
+    const signal = App.abort.signal;
+    // 当前词书和这个页面要用的词书还没加载的话先加载
+    const need = [curBook().id, ...(App.pages[page].books?.(params) || [])];
+    if (need.some((id) => BOOK_MAP[id]?.stub)) {
+      root.innerHTML = `<div class="card empty">📚 正在载入词书…</div>`;
+      try {
+        await Books.ensure(need);
+      } catch (e) {
+        if (signal.aborted) return;
+        root.innerHTML = `<div class="card empty">${esc(e.message || e)}<div class="mt"><button class="btn primary" id="book-retry">再试一次</button></div></div>`;
+        $("#book-retry", root).onclick = () => Router.render();
+        return;
+      }
+      if (signal.aborted) return;
+      root.innerHTML = "";
+    }
     try {
-      await App.pages[page].render(root, params, App.abort.signal);
+      await App.pages[page].render(root, params, signal);
     } catch (e) {
       console.error(e);
       root.innerHTML = `<div class="card"><b>页面出错了</b><pre class="small muted">${esc(e.stack || e)}</pre></div>`;
