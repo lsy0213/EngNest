@@ -816,7 +816,21 @@ mark.hl.flash { animation: hlFlash 1.2s; }
 .v-line .star { font-size: 14px; padding: 0 2px; }
 .v-lines.blur .v-en, .v-lines.blur .v-zh { filter: blur(5px); transition: filter .2s; }
 .v-lines.blur .v-line:hover .v-en, .v-lines.blur .v-line:hover .v-zh { filter: none; }
-@media (max-width: 1000px) { .video-layout { grid-template-columns: 1fr; } .v-lines { height: 50vh; } .video-right { position: static; } }
+/* 全屏（电脑、iPad）：整个视频框铺满屏幕，字幕放大 */
+.video-box:fullscreen { border: 0; border-radius: 0; aspect-ratio: auto; width: 100%; height: 100%; }
+.video-box:-webkit-full-screen { border: 0; border-radius: 0; aspect-ratio: auto; width: 100%; height: 100%; }
+.video-box:fullscreen video { object-fit: contain; }
+.video-box:fullscreen .v-sub .en { font-size: clamp(18px, 2.8vw, 36px); }
+.video-box:fullscreen .v-sub .zh { font-size: clamp(15px, 2.2vw, 28px); }
+/* 窄屏：视频和播放按钮那一行钉在顶上，往下翻逐句精讲、字幕列表时一直看得到（会盖住左上角的 ☰，翻回顶部就出来了）。
+   .video-left 用 display: contents，钉住的范围就是整个页面，不只左栏 */
+@media (max-width: 1000px) {
+  .video-layout { grid-template-columns: 1fr; } .v-lines { height: 50vh; } .video-right { position: static; }
+  .video-left { display: contents; }
+  .v-stick { position: sticky; top: 0; z-index: 47; background: var(--bg); padding-bottom: 8px; box-shadow: 0 8px 14px -10px rgba(20, 15, 10, .35); }
+}
+/* 手机上 #view 顶上留了 60px 给 ☰ 按钮，钉住的位置往上挪掉这段，贴着屏幕顶 */
+@media (max-width: 720px) { .v-stick { top: -60px; } }
 
 /* ========== 连词成句 ========== */
 .bd-intro { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: center; }

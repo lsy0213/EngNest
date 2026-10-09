@@ -94,8 +94,9 @@ App.pages.video = {
        <label class="btn">🀄 中文字幕<input type="file" id="f-zh" accept=".srt,.vtt,.ass,.ssa" hidden></label></div>`) : opt.head)
       + `<div class="video-layout">
           <div class="video-left">
+            <div class="v-stick">
             <div class="video-box" id="vbox">
-              <video id="vid" preload="metadata"></video>
+              <video id="vid" preload="metadata" playsinline webkit-playsinline></video>
               <div class="v-sub" id="vsub"></div>
               <div class="v-empty" id="vempty"><div style="font-size:44px">🎬</div><div>点击右上角「打开视频」，或把视频和字幕文件拖到这里</div>
                 <div class="small faint mt-s">推荐 MP4 格式（H.264）。字幕支持 SRT / VTT / ASS，可以是中英双语字幕，也可以分别加载英文和中文字幕。</div></div>
@@ -108,6 +109,8 @@ App.pages.video = {
               <span class="v-time" id="vtime">00:00 / 00:00</span>
               <span class="spacer"></span>
               <select class="select" id="rate" style="width:auto;padding:5px 8px">${[0.5, 0.75, 0.9, 1, 1.25, 1.5].map((r) => `<option value="${r}" ${r === 1 ? "selected" : ""}>${r}x</option>`).join("")}</select>
+              <button class="btn sm" id="b-fs" title="全屏（F，或双击视频）">⛶</button>
+            </div>
             </div>
             <div class="v-controls">
               <div class="tabs" id="modes">${[["both", "双语"], ["en", "英文"], ["zh", "中文"], ["none", "沉浸（无字幕）"]].map(([m, l]) => `<button class="tab ${m === this.mode ? "active" : ""}" data-mode="${m}">${l}</button>`).join("")}</div>
@@ -316,6 +319,41 @@ App.pages.video = {
       playLine(Math.min(Math.max(base, 0), s.lines.length - 1));
     };
     $("#b-play", root).onclick = toggle;
+
+    // ---------- 全屏 ----------
+    // 平时嵌在页面里播放（playsinline：iPhone 默认一播放就自动全屏）；想全屏点 ⛶ / 按 F / 双击视频。
+    // 电脑和 iPad：整个视频框全屏，字幕、点词查词照常；iPhone 只允许视频本身全屏（系统播放器），字幕换成 <track> 交给它显示
+    const vbox = $("#vbox", root);
+    const vttTime = (t) => new Date(Math.max(0, t) * 1000).toISOString().slice(11, 23);
+    const vttText = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+    let trackUrl = "";
+    const nativeSubs = () => {
+      $$("track", vid).forEach((t) => t.remove());
+      if (trackUrl) URL.revokeObjectURL(trackUrl);
+      trackUrl = "";
+      if (this.mode === "none" || !s.lines?.length) return;
+      const text = (l) => [this.mode !== "zh" && l.en, this.mode !== "en" && l.zh].filter(Boolean).map(vttText).join("\n");
+      const cues = s.lines.map((l) => text(l) && `${vttTime(l.start)} --> ${vttTime(l.end)}\n${text(l)}`).filter(Boolean);
+      trackUrl = URL.createObjectURL(new Blob(["WEBVTT\n\n" + cues.join("\n\n")], { type: "text/vtt" }));
+      const tr = document.createElement("track");
+      Object.assign(tr, { kind: "subtitles", label: "字幕", srclang: "en", src: trackUrl, default: true });
+      vid.appendChild(tr);
+      tr.track.mode = "showing";
+    };
+    // 退出系统全屏后关掉 <track>，嵌在页面里时用我们自己画的字幕
+    vid.addEventListener("webkitendfullscreen", () => $$("track", vid).forEach((t) => (t.track.mode = "disabled")));
+    signal.addEventListener("abort", () => trackUrl && URL.revokeObjectURL(trackUrl), { once: true });
+    const fullscreen = async () => {
+      if (!s.videoUrl) return;
+      if (document.fullscreenElement || document.webkitFullscreenElement) return (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      const req = vbox.requestFullscreen || vbox.webkitRequestFullscreen;
+      if (req) {
+        try { return await req.call(vbox); } catch { /* 不让整个框全屏就退回到视频本身全屏 */ }
+      }
+      if (vid.webkitEnterFullscreen) { nativeSubs(); vid.webkitEnterFullscreen(); }
+    };
+    $("#b-fs", root).onclick = fullscreen;
+    vid.addEventListener("dblclick", fullscreen);
     $("#b-prev", root).onclick = () => step(-1);
     $("#b-next", root).onclick = () => step(1);
     $("#b-rep", root).onclick = () => playLine(Math.max(cur, 0), true);
@@ -516,6 +554,7 @@ App.pages.video = {
       else if (e.key === "ArrowLeft" || k === "a") { e.preventDefault(); step(-1); }
       else if (e.key === "ArrowRight" || k === "d") { e.preventDefault(); step(1); }
       else if (k === "r") playLine(Math.max(cur, 0), true);
+      else if (k === "f") fullscreen();
       else if (k === "l") { const c = $("#c-loop", root); c.checked = !c.checked; c.onchange({ target: c }); toast(c.checked ? "单句循环：开" : "单句循环：关"); }
       else if (k === "p") { const c = $("#c-pause", root); c.checked = !c.checked; c.onchange({ target: c }); toast(c.checked ? "逐句暂停：开" : "逐句暂停：关"); }
     });
