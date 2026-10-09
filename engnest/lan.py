@@ -8,7 +8,8 @@
 - 请求体最大 20 MB
 - 多人使用：主人的访问码打开主人的进度（和电脑共用）；给其他人（朋友、家人）各发一个自己的访问码，
   用那个码进来的人有单独的一份进度、生词本、设置和 AI 语伴聊天记录（data_dir/profiles/<id>/），互不影响。
-  AI 能不能用由主人给每个人单独开关（AI 用的是主人的 Key，费用算主人的）
+  每个人可以在自己的设置里填自己的 AI Key（加密存在 TA 的 profiles/<id>/settings.json，不算进主人的用量）；
+  没填的话，主人可以单独给 TA 开「用我的 AI」（用主人的 Key，费用算主人的）
 """
 
 import hmac
@@ -39,6 +40,7 @@ log = logging.getLogger(__name__)
 # 局域网设备可以调用的方法
 ALLOWED = {
     "progress_load", "progress_rev", "progress_save", "get_presets", "get_ai_settings",
+    "save_ai_settings", "ai_models",  # 只有其他人能改，改的是 TA 自己的 AI 设置；主人的只能在电脑上改（api 里会拒绝）
     "ai_chat", "ai_stream_start", "ai_stream_poll", "test_ai", "tts", "tts_offline", "offline_tts_status", "tts_voices", "tts_cache_info",
     "dict_lookup", "dict_search", "dict_status",
     "library_list", "library_load", "wiki_search", "wiki_article",  # 局域网设备只能看，不能导入和删除
@@ -227,6 +229,8 @@ class Handler(SimpleHTTPRequestHandler):
             if name == "get_ai_settings" and isinstance(result, dict):
                 result = {k: v for k, v in result.items() if k != "key_hint"}  # Key 的任何部分都不发给其他设备
             return self._json(200, {"result": result})
+        except PermissionError as e:  # 比如用主人的访问码从手机上改 AI 设置
+            return self._json(403, {"error": str(e)})
         except Exception as e:  # 接口出错不影响服务继续运行
             log.exception("局域网接口 %s 出错", name)
             return self._json(500, {"error": str(e)})

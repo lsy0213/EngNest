@@ -1,6 +1,7 @@
 // 人生剧场：每个选择都是另一种人生。剧本架 + 分支剧情（合租日记是其中一本，有自己的页面 #/sitcom）
 // 剧本数据在 data/life*.js（LIFE.stories），对话引擎在 js/story_engine.js
-// 进度存在 Store.data.life[剧本 id]：{ vars 属性和标记, done 演过的章, hist 每章开头的快照和做过的决定, seen 所有人生里选过的选项, endings 收集到的结局 }
+// 进度存在 Store.data.life[剧本 id]：{ vars 属性和标记, done 演过的章, hist 每章开头的快照和做过的决定, seen 所有人生里选过的选项, endings 收集到的结局,
+//   cur 演到一半的章：{ ch, t, n }（见 story_engine.js 的 resume），换页面、关掉再回来能接着演 }
 
 // 条件："party"、"!party"、"study>=60"、"route=study"，& 并且，| 或者
 function lifeTest(cond, v) {
@@ -60,7 +61,7 @@ App.pages.life = {
       const S = LIFE.stories[id], s = this.all[id];
       if (!S) continue;
       const got = s ? Object.keys(s.endings).length : 0;
-      const where = !s ? "新剧本" : s.ending ? `结局：${S.endings.find((e) => e.id === s.ending)?.zh || ""}` : this.nextChapter(S, s) ? `进行到第 ${s.done.length + 1} 章` : "样章已读完";
+      const where = !s ? "新剧本" : s.cur ? `第 ${s.done.length + 1} 章演到一半` : s.ending ? `结局：${S.endings.find((e) => e.id === s.ending)?.zh || ""}` : this.nextChapter(S, s) ? `进行到第 ${s.done.length + 1} 章` : "样章已读完";
       cards.push(`<a class="lf-card card" href="#/life/${id}">
         <div class="lf-card-ico">${S.ico}</div><b>${esc(S.zh)}</b><div class="small faint en">${esc(S.title)}</div>
         <div class="small muted">${esc(S.place)} · ${esc(S.blurb.slice(0, 46))}…</div>
@@ -164,7 +165,9 @@ App.pages.life = {
       main = `<div class="card lf-next"><div class="small muted">${s.done.length ? "接下来" : "故事开始"}</div>
           <h2>${esc(next.zh)}</h2><div class="faint en">${esc(next.title)}</div>
           ${next.learn?.length ? `<div class="small muted mt-s">这一章会学到：${next.learn.slice(0, 4).map(([en]) => `<span class="en">${esc(en)}</span>`).join(" · ")}…</div>` : ""}
-          <button class="btn primary lg mt" id="lf-go">${n === 1 ? "开始" : "继续"} <span class="kbd">Enter</span></button>${eng}</div>`;
+          ${this.resumable(next) ? `<button class="btn primary lg mt" id="lf-go">▶ 接着上次演 <span class="kbd">Enter</span></button>
+            <div class="small mt-s"><a href="#" id="lf-fresh" class="muted">从头演这一章</a></div>`
+            : `<button class="btn primary lg mt" id="lf-go">${n === 1 ? "开始" : "继续"} <span class="kbd">Enter</span></button>`}${eng}</div>`;
     } else {
       main = `<div class="card lf-next"><div style="font-size:40px">📝</div><h2>样章到这里结束</h2>
           <p class="muted">后续章节正在写。现在可以打开 <b>🌳 人生树</b>，回到任何一章换个选择，看看另一种人生会怎么走。</p>${eng}
@@ -196,7 +199,20 @@ App.pages.life = {
     if (next) {
       $("#lf-go", root).onclick = () => this.play(next);
       onKey(signal, (e) => { if (e.key === "Enter") { e.preventDefault(); this.play(next); } });
+      const fresh = $("#lf-fresh", root);
+      if (fresh) fresh.onclick = async (e) => {
+        e.preventDefault();
+        if (!(await confirmBox("从头演这一章？", "这一章演到一半的进度会清掉，从这一章的开头重新开始。", "从头开始"))) return;
+        delete s.cur;
+        Store.save();
+        this.play(next);
+      };
     }
+  },
+  // 这一章上次演到一半
+  resumable(ch) {
+    const c = this.s.cur;
+    return !!(c && c.ch === ch.id && (c.t?.length || c.n));
   },
 
   // ---------- 演一章 ----------
@@ -209,8 +225,11 @@ App.pages.life = {
       test: (cond, delta) => lifeTest(cond, this.apply({ ...s.vars }, delta, false)),
       knows: (w) => !!(Store.data.words[w] || Store.data.words[w.toLowerCase()]),
       seen: (id, i) => !!s.seen[id]?.includes(i),
-      exitText: "这一章的进度不会保存，下次从这一章的开头重新开始。",
+      // 演到一半随时保存：换页面、关掉再回来，从离开的地方接着演
+      resume: this.resumable(ch) ? s.cur : null,
+      onSave: (st) => { s.cur = { ch: ch.id, ...st }; Store.save(); },
       onFinish: ({ delta, score, picks }) => {
+        delete s.cur;
         const snap = { vars: { ...s.vars }, best: s.best, total: s.total, spoke: s.spoke, heard: s.heard, listens: s.listens };
         this.apply(s.vars, delta);
         s.done.push(ch.id);
@@ -282,6 +301,7 @@ App.pages.life = {
     s.done = s.done.slice(0, idx);
     s.hist = s.hist.slice(0, idx);
     s.ending = null;
+    delete s.cur;
     Store.save();
     toast("回到了这个路口，这次试试别的选择吧", "good");
     this.refresh();

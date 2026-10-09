@@ -15,6 +15,11 @@ class FakeApi:
     def progress_rev(self):
         return 7
 
+    def save_ai_settings(self, cfg):
+        if self.last_user is None:
+            raise PermissionError("AI 设置只能在电脑上修改")
+        return {"ok": True}
+
     def lan_call(self, user, name, args):
         self.last_user = user
         return getattr(self, name)(*args)
@@ -57,7 +62,9 @@ def test_auth_and_key_hint_hidden(server):
     assert call(port, "ping", "abcd 2345")[0] == 200  # 不分大小写、可以带空格
     st, d = call(port, "get_ai_settings", "ABCD2345")
     assert st == 200 and "key_hint" not in d["result"] and d["result"]["has_key"]
-    assert call(port, "save_ai_settings", "ABCD2345")[0] == 403  # 不在白名单里
+    assert call(port, "lan_status", "ABCD2345")[0] == 403  # 不在白名单里
+    st, d = call(port, "save_ai_settings", "ABCD2345", b'{"args": [{}]}')  # 主人的 AI 设置只能在电脑上改
+    assert st == 403 and "电脑" in d["error"]
 
 
 def test_lockout_after_failures(server):

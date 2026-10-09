@@ -226,7 +226,8 @@ function aiLockHtml(what = "这个功能") {
   if (AI.settings?.lan_denied) return `<div class="card ai-lock">
     <div class="big">🤖</div>
     <h3 class="mt-s">${what}需要 AI</h3>
-    <p class="muted">电脑主人还没有给你开启 AI（AI 用的是主人的 Key）。可以请 TA 在电脑的「设置 → 局域网访问」里打开。<br>其他功能都能正常使用。</p>
+    <p class="muted">在「设置」里填你自己的 AI API Key 就能用（只用于你自己，保存在电脑上并加密）；或者请电脑主人给你开启 TA 的 AI。<br>其他功能都能正常使用。</p>
+    <a class="btn primary" href="#/settings">去设置</a>
   </div>`;
   return `<div class="card ai-lock">
     <div class="big">🤖</div>

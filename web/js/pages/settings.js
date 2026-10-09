@@ -1,4 +1,6 @@
 // 设置：AI 接入、学习偏好、发音、数据
+const DAILY_NEW_PRESETS = [5, 10, 15, 20, 30, 50];
+
 App.pages.settings = {
   // 英汉词典：内置精简版；可以下载完整版（在本机生成，下载和生成期间每秒刷新一次进度）
   async dictCard(box) {
@@ -104,8 +106,11 @@ App.pages.settings = {
         <div class="card-title">📅 学习计划</div>
         <div class="form-grid">
           <div class="field"><label>每天学几个新词</label>
-            <select class="select" id="daily-new">${[5, 10, 15, 20, 30, 50].map((n) => `<option ${n === p.daily_new ? "selected" : ""}>${n}</option>`).join("")}</select>
-            <span class="help">刚开始建议 10–15 个，复习比学新词更重要。</span></div>
+            <div class="row" style="gap:8px">
+              <select class="select" id="daily-new" style="flex:1">${DAILY_NEW_PRESETS.map((n) => `<option ${n === p.daily_new ? "selected" : ""}>${n}</option>`).join("")}
+                <option value="custom" ${DAILY_NEW_PRESETS.includes(p.daily_new) ? "" : "selected"}>自定义…</option></select>
+              <input class="input" type="number" id="daily-new-n" min="1" max="500" step="1" value="${p.daily_new}" inputmode="numeric" style="width:90px;${DAILY_NEW_PRESETS.includes(p.daily_new) ? "display:none" : ""}" title="1–500 个"></div>
+            <span class="help">刚开始建议 10–15 个，复习比学新词更重要。想要别的数量选「自定义」，填 1–500。</span></div>
           <div class="field"><label>每日目标经验值</label>
             <select class="select" id="daily-goal">${[[30, "轻松（约 10 分钟）"], [50, "标准（约 20 分钟）"], [100, "认真（约 40 分钟）"], [150, "冲刺（1 小时以上）"]].map(([n, t]) => `<option value="${n}" ${n === p.daily_goal ? "selected" : ""}>${n} XP · ${t}</option>`).join("")}</select></div>
           <div class="field"><label>复习时希望记得多少</label>
@@ -207,7 +212,23 @@ App.pages.settings = {
     };
 
     // 学习计划
-    $("#daily-new", root).onchange = (e) => { p.daily_new = +e.target.value; Store.save(); toast("已保存", "good"); };
+    const dn = $("#daily-new", root), dnN = $("#daily-new-n", root);
+    dn.onchange = () => {
+      if (dn.value === "custom") { dnN.style.display = ""; dnN.focus(); dnN.select(); return; }
+      dnN.style.display = "none";
+      p.daily_new = dnN.value = +dn.value;
+      Store.save();
+      renderNav();
+      toast("已保存", "good");
+    };
+    dnN.onchange = () => {
+      const n = Math.round(+dnN.value);
+      if (!(n >= 1 && n <= 500)) { dnN.value = p.daily_new; return toast("请填 1 到 500 之间的数", "bad"); }
+      p.daily_new = dnN.value = n;
+      Store.save();
+      renderNav();
+      toast(`已保存：每天学 ${n} 个新词${n > 50 ? "（新词多了复习量也会跟着变大，记得每天复习）" : ""}`, "good", 4000);
+    };
     $("#daily-goal", root).onchange = (e) => { p.daily_goal = +e.target.value; Store.save(); toast("已保存", "good"); };
     $("#retention", root).onchange = (e) => { p.retention = +e.target.value; Store.save(); toast("已保存，之后的复习按新的目标安排", "good"); };
     $("#swipe-dir", root).onchange = (e) => { p.swipe_right_known = e.target.value === "right"; Store.save(); toast("已保存", "good"); };
@@ -481,12 +502,12 @@ App.pages.settings = {
           </div>
           <div class="lan-users mt">
             <div class="card-title" style="font-size:15px">👥 给其他人用</div>
-            <p class="small muted" style="margin-top:-6px">上面的访问码是<b>你自己的</b>，进来用的是你的学习进度。给朋友、家人单独加一个人，TA 会拿到自己的访问码：学习进度、生词本、设置和 AI 语伴聊天记录都单独保存，不会影响你的。AI 用的是你的 Key，默认不给其他人用。</p>
+            <p class="small muted" style="margin-top:-6px">上面的访问码是<b>你自己的</b>，进来用的是你的学习进度。给朋友、家人单独加一个人，TA 会拿到自己的访问码：学习进度、生词本、设置和 AI 语伴聊天记录都单独保存，不会影响你的。AI：TA 可以在自己的设置里填自己的 Key（不算你的用量）；没填的话，可以在这里给 TA 开「可以用我的 AI」（用你的 Key，默认关闭）。</p>
             ${(s.users || []).map((u) => `<div class="lan-user" data-uid="${esc(u.id)}">
-              <div class="lan-user-name"><b>${esc(u.name)}</b><span class="small faint">${esc(u.created || "")} 添加</span></div>
+              <div class="lan-user-name"><b>${esc(u.name)}</b><span class="small faint">${esc(u.created || "")} 添加${u.own_ai ? " · 🔑 用自己的 AI Key" : ""}</span></div>
               <div class="lan-code sm">${esc(u.code.slice(0, 4))} ${esc(u.code.slice(4))}</div>
               <div class="row lan-user-ops">
-                ${switchHtml(`lan-ai-${esc(u.id)}`, "可以用 AI", u.ai, "打开后 TA 能用 AI 对话、作文批改等，费用算在你的 API Key 上")}
+                ${switchHtml(`lan-ai-${esc(u.id)}`, "可以用我的 AI", u.ai, "TA 没填自己的 Key 时，用你的 Key 调 AI，费用算你的；TA 填了自己的 Key 就用 TA 自己的")}
                 <button class="btn sm ghost" data-uqr title="显示 TA 的扫码二维码">二维码</button>
                 <button class="btn sm ghost" data-ucode title="换一个访问码，TA 要用新码重新进来">换码</button>
                 <button class="btn sm ghost bad-text" data-udel title="删除这个人和 TA 的学习记录">删除</button>
@@ -559,10 +580,9 @@ App.pages.settings = {
   },
 
   async aiForm(box, root) {
-    if (Store.remote) {
-      box.innerHTML = `<p class="small muted">你正在通过局域网访问。${AI.settings?.lan_denied
-        ? "电脑主人还没有给你开启 AI，可以请 TA 在电脑的「设置 → 局域网访问」里打开。"
-        : `AI ${AI.enabled ? "已在电脑上开启，这里可以直接使用" : "还没有开启"}；AI 设置只能在电脑上修改。`}</p>`;
+    // 用主人的访问码进来的：AI 设置只能在电脑上改
+    if (Store.remote && !Store.who) {
+      box.innerHTML = `<p class="small muted">你正在通过局域网访问。AI ${AI.enabled ? "已在电脑上开启，这里可以直接使用" : "还没有开启"}；AI 设置只能在电脑上修改。</p>`;
       return;
     }
     if (!Store.bridge) {
@@ -571,7 +591,13 @@ App.pages.settings = {
     }
     const presets = await pywebview.api.get_presets();
     const cfg = await pywebview.api.get_ai_settings();
-    box.innerHTML = `
+    // 局域网里的其他人：填的是 TA 自己的 Key
+    const whoNote = () => !Store.who ? "" : `<div class="ai-box small" id="ai-who" style="margin-bottom:12px">${AI.settings?.own
+      ? "✅ 正在用<b>你自己的</b> API Key。它只用于你的账号，加密保存在电脑上，电脑主人也看不到完整的 Key。"
+      : AI.settings?.shared
+        ? "现在用的是<b>电脑主人的</b> AI（主人给你开了）。填上你自己的 Key 以后就改用你自己的。"
+        : "电脑主人没有给你开 AI。填上<b>你自己的</b> API Key 就能用（只用于你的账号，加密保存在电脑上）。"}</div>`;
+    box.innerHTML = whoNote() + `
       <div class="form-grid">
         <div class="field"><label>AI 服务商</label>
           <select class="select" id="provider">${Object.entries(presets).map(([k, v]) => `<option value="${k}" ${k === cfg.provider ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select></div>
@@ -620,6 +646,8 @@ App.pages.settings = {
       $("#key", box).value = "";
       $("#key", box).placeholder = r.has_key ? `已保存（${r.key_hint}），留空表示不修改` : "粘贴你的 API Key";
       await AI.refresh();
+      const wn = $("#ai-who", box);
+      if (wn) wn.outerHTML = whoNote();
       const st = $("#ai-state", root);
       st.textContent = AI.enabled ? "已开启" : "未开启";
       st.className = `badge ${AI.enabled ? "good" : ""}`;
@@ -652,7 +680,7 @@ App.pages.settings = {
       toast(`获取到 ${r.models.length} 个模型，点模型名称输入框就能选`, "good", 4000);
       model.focus();
     };
-    this.usageCard($("#ai-usage", box));
+    if (!Store.remote) this.usageCard($("#ai-usage", box)); // 用量和每月上限是主人的，只在电脑上显示
     const clr = $("#clear", box);
     if (clr) clr.onclick = async () => {
       await pywebview.api.save_ai_settings({ clear_key: true });

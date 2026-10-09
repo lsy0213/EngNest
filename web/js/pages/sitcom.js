@@ -53,6 +53,14 @@ App.pages.sitcom = {
     this.root = root;
     this.signal = signal;
     if (!this.st) return this.title();
+    // 上次换页面时演到一半的对话：接着演（点 ✕ 离开的不算，那是放弃这段对话）
+    const cur = this.st.cur;
+    if (cur) {
+      const ep = cur.ep && SITCOM.episodes.find((e) => e.id === cur.ep);
+      const scene = ep ? { ...ep, kind: "ep" } : cur.scene;
+      if (scene) return this.play(scene, cur);
+      delete this.st.cur;
+    }
     const ep = this.dueEpisode();
     if (ep) return this.play({ ...ep, kind: "ep" });
     this.hub(params[0]);
@@ -209,9 +217,13 @@ App.pages.sitcom = {
 
   // ---------- 对话（引擎在 js/story_engine.js，和人生剧场共用） ----------
   // scene: { id, title, zh, learn, script, kind: ep / chat / enc / hang / gift, stranger, bonus }
-  play(scene) {
+  // resume：上次演到一半的进度（Store.data.sitcom.cur = { ep 剧集 id 或 scene 整段对话, t, n }）
+  play(scene, resume = null) {
     const st = this.st;
     storyStage({
+      resume,
+      onSave: ({ t, n }) => { st.cur = { ...(scene.kind === "ep" ? { ep: scene.id } : { scene }), t, n }; Store.save(); },
+      exitText: "这段对话的进度不会保存，也不会花掉时间。（直接切到别的页面的话，回来会接着演。）",
       root: this.root, signal: freshSignal(this, this.signal), scene, from: "合租日记",
       cast: (sp) => (sp === "s" ? { ...scene.stranger, color: "#888" } : SITCOM.chars[sp]),
       chip: (k, v) => `${k === "money" ? "💵" : k === "energy" ? "⚡" : `${SITCOM.chars[k]?.name || k} ❤️`} ${v > 0 ? "+" : ""}${k === "money" ? "$" : ""}${v}`,
@@ -239,6 +251,7 @@ App.pages.sitcom = {
         step();
       } },
       onFinish: ({ delta, score }) => {
+        delete st.cur;
         this.commit(delta);
         if (scene.kind === "ep" || scene.kind === "chat") st.done[scene.id] = true;
         if (scene.kind === "enc" && !st.met.includes(scene.id)) st.met.push(scene.id);
@@ -253,7 +266,7 @@ App.pages.sitcom = {
         return { ico: scene.kind === "ep" ? "🎬" : "✨", button: st.season && scene.kind === "ep" && scene.id === "ep7" ? "🎉 第一季完结！继续生活" : "回到 Maple Street" };
       },
       onDone: () => this.refresh(),
-      onExit: () => this.refresh(),
+      onExit: () => { delete st.cur; Store.save(); this.refresh(); },
     });
   },
 

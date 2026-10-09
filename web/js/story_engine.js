@@ -26,6 +26,11 @@ function storyAvatar(a) { return `img/avatars/${a}.svg`; }
 //   seen(id, i) → bool                             这个决定以前选过（人生树）
 //   nodes: { rent(node, ctx) }                     页面自己的特殊节点
 //   onFx(node), onFinish({ delta, score, picks }) → { ico, button, html }, onDone(), onExit(), exitText
+//   onSave(state)                                  演到一半的进度（每次选择、每次点继续都会调）：页面把 state 存起来，
+//                                                  中途离开（换页面、关掉）下次传回 resume 就能接着演；有 onSave 又没给 exitText 时，点 ✕ 不用确认
+//   resume: { t, n }                               上次的进度：t 每个选择选了哪个，n 点过几次「继续」。
+//                                                  剧本是确定的（同样的选择走同样的路），所以从头快速重放一遍就回到原处：
+//                                                  不朗读、不重复加经验；对不上（剧本改过）就从对不上的地方开始正常演
 // }
 function storyStage(o) {
   const { root, signal, scene } = o;
@@ -38,6 +43,13 @@ function storyStage(o) {
   const marks = {}, picks = [];
   let waiting = null; // 当前在等什么："next" 点继续 / "choice" 选答案 / "end"
   let curLine = null, curChoice = null;
+  // 中途保存：trace 是每个选择的记录（{c: 原始序号} 怎么说 / {d} 做什么 / {l} 只听，s: 1 表示是说出来的），nexts 是点过几次继续
+  const trace = [];
+  let nexts = 0;
+  const replay = { t: [...(o.resume?.t || [])], n: o.resume?.n || 0 };
+  let replaying = replay.t.length > 0 || replay.n > 0;
+  const save = () => o.onSave?.({ t: [...trace], n: nexts });
+  const xp = (n) => { if (!replaying) addXP(n); }; // 重放时经验已经加过了
   const addFx = (fx) => { for (const [k, v] of Object.entries(fx || {})) delta[k] = typeof v === "number" ? (delta[k] || 0) + v : v; };
   addFx(scene.bonus);
 
@@ -58,13 +70,13 @@ function storyStage(o) {
     sceneBox.className = `sc-scene sc-zh-${P.sc_zh}`;
   }));
   $("#sc-exit", root).onclick = async () => {
-    if (waiting === "end" || await confirmBox("离开这段对话？", o.exitText || "这段对话的进度不会保存，也不会花掉时间。", "离开")) { TTS.stop(); Mic.cancel(); o.onExit(); }
+    if (waiting === "end" || (o.onSave && !o.exitText) || await confirmBox("离开这段对话？", o.exitText || "这段对话的进度不会保存，也不会花掉时间。", "离开")) { TTS.stop(); Mic.cancel(); o.onExit(); }
   };
   sceneBox.addEventListener("click", (e) => { const z = e.target.closest(".sc-zh"); if (z) z.classList.add("show"); });
 
   const who = (sp) => (sp === "me" ? { name: "你", avatar: "", color: "var(--brand)", voice: "" } : o.cast(sp) || { name: sp, color: "#888" });
-  const scroll = () => sceneBox.scrollTo({ top: sceneBox.scrollHeight, behavior: "smooth" });
-  const say = (en, sp) => TTS.speak(en, undefined, who(sp)?.voice || undefined);
+  const scroll = () => { if (!replaying) sceneBox.scrollTo({ top: sceneBox.scrollHeight, behavior: "smooth" }); };
+  const say = (en, sp) => { if (!replaying) TTS.speak(en, undefined, who(sp)?.voice || undefined); };
   const tools = (en, zh, sp) => `<div class="sc-tools"><button class="speak sm" data-sc-say="${esc(en)}" data-sp="${sp}" title="重听（R）">🔊</button><button class="speak sm" data-say="${esc(en)}" data-rate="0.6" title="慢速">🐢</button>${shadowBtn(en, { zh })}<button class="star ${inSentNb(en) ? "on" : ""}" data-star="${esc(en)}" data-zh-text="${esc(zh || "")}" title="收藏到生词本（S）">★</button></div>`;
   const ava = (sp) => (sp === "me" ? `<div class="sc-ava sc-ava-me">你</div>` : `<img class="sc-ava" src="${storyAvatar(who(sp).avatar)}" alt="">`);
   const lineHtml = (sp, en, zh) => {
@@ -87,9 +99,23 @@ function storyStage(o) {
   }).join("");
   const goOn = () => {
     waiting = "next";
+    if (replaying) {
+      if (nexts < replay.n) { nexts++; return step(); } // 重放：上次点过的「继续」直接跳过
+      endReplay();
+    }
     foot.innerHTML = `<button class="btn primary" id="sc-go">继续 <span class="kbd">空格</span></button>`;
-    $("#sc-go", foot).onclick = step;
+    $("#sc-go", foot).onclick = next;
     scroll();
+  };
+  const next = () => { nexts++; save(); step(); };
+  // 重放结束：回到上次离开的地方（或者剧本对不上的地方），从这里开始正常演
+  const endReplay = () => {
+    if (!replaying) return;
+    replaying = false;
+    replay.t.length = 0;
+    sceneBox.insertAdjacentHTML("beforeend", `<div class="sc-note sc-resumed">⏩ 接着上次的地方继续</div>`);
+    sceneBox.scrollTo({ top: sceneBox.scrollHeight });
+    if (curLine && P.sc_voice !== false) say(curLine.en, curLine.sp);
   };
 
   const step = () => {
@@ -132,19 +158,25 @@ function storyStage(o) {
 
   // ---------- 怎么说：三档回答 ----------
   const choice = (node) => {
-    const opts = shuffle(node.opts.map(([s, en, zh, tip, then]) => ({ s, en, zh, tip, then: then || [] })));
+    const opts = shuffle(node.opts.map(([s, en, zh, tip, then], oi) => ({ s, en, zh, tip, then: then || [], oi })));
     App.shadowTarget = () => opts.map((x, i) => ({ en: x.en, zh: x.zh, label: `回答 ${i + 1}` }));
     sceneBox.insertAdjacentHTML("beforeend", `<div class="sc-choice">
       <div class="sc-ask">💭 ${esc(node.ask || "你怎么回答？")}</div>
       ${opts.map((x, i) => `<button class="sc-opt" data-i="${i}"><span class="kbd">${i + 1}</span><span class="sc-opt-text"><span class="en">${esc(x.en)}</span><span class="sc-zh">${esc(x.zh)}</span></span><span class="speak sm" data-sc-say="${esc(x.en)}" data-sp="me" title="听一听">🔊</span></button>`).join("")}
     </div>`);
-    ask({ opts, speakable: true, pick: (i, spoken, box) => answer(node, opts, i, spoken, box) });
+    ask({ opts, speakable: true, kind: "c", pick: (i, spoken, box) => answer(node, opts, i, spoken, box) });
   };
   const ask = (c) => {
     curChoice = c;
     const box = sceneBox.lastElementChild;
     box.addEventListener("click", (e) => { const b = e.target.closest(".sc-opt"); if (b && !b.disabled && !e.target.closest("[data-sc-say]") && waiting === "choice") pickOpt(+b.dataset.i); });
     waiting = "choice";
+    if (replaying) {
+      const r = replay.t.shift();
+      const k = r && r[c.kind] !== undefined ? c.opts.findIndex((x) => (c.kind === "d" ? x.i : x.oi) === r[c.kind] && !x.lock) : -1;
+      if (k >= 0) return pickOpt(k, r.s ? { text: "（上次说出来的）", sim: 1 } : null);
+      endReplay(); // 对不上：剧本改过，或者以前能选的现在锁住了
+    }
     foot.innerHTML = c.speakable ? `<button class="btn soft" id="sc-say">🎤 说出来 <span class="kbd">V</span></button><span class="small muted" id="sc-heard">挑一个回答，或者把它说出来</span>`
       : `<span class="small muted">${esc(c.hint || "按数字键或点一下选择")}</span>`;
     if (c.speakable) $("#sc-say", foot).onclick = speak;
@@ -157,6 +189,9 @@ function storyStage(o) {
     const box = sceneBox.lastElementChild;
     $$(".sc-opt", box).forEach((b, k) => { b.disabled = true; b.classList.add(k === i ? "picked" : "dim"); });
     box.classList.add("answered");
+    const opt = curChoice.opts[i];
+    trace.push({ [curChoice.kind]: curChoice.kind === "d" ? opt.i : opt.oi, ...(spoken && spoken.sim >= 0.75 ? { s: 1 } : {}) });
+    if (!replaying) save();
     curChoice.pick(i, spoken, box);
   };
   const answer = (node, opts, i, spoken, box) => {
@@ -170,14 +205,14 @@ function storyStage(o) {
     let spokeHtml = "";
     if (spoken) {
       const good = spoken.sim >= 0.75;
-      if (good) { score.spoke++; addXP(1); }
+      if (good) { score.spoke++; xp(1); }
       spokeHtml = `<div class="small">🎤 你说的是：<span class="en">${esc(spoken.text)}</span> ${good ? "<b>· 说得很清楚 +1 XP</b>" : "· 有几个词没听清，再多练练"}</div>`;
     }
     sceneBox.insertAdjacentHTML("beforeend", lineHtml("me", x.en, x.zh)
       + `<div class="sc-fb ${STORY_SCORE[x.s].cls}"><div class="row" style="gap:8px"><b>${STORY_SCORE[x.s].label}</b>${fxChips(fr)}</div>
           <div class="small">${esc(x.tip)}</div>${spokeHtml}
           ${x.s < 2 ? `<div class="small mt-s">更地道的说法：<span class="en">${esc(best.en)}</span> <button class="speak sm" data-sc-say="${esc(best.en)}" data-sp="me">🔊</button>${shadowBtn(best.en, { zh: best.zh })}</div>` : ""}</div>`);
-    if (x.s === 2) addXP(1);
+    if (x.s === 2) xp(1);
     App.shadowTarget = () => [{ en: x.en, zh: x.zh, label: "你的回答" }, ...(x.s < 2 ? [{ en: best.en, zh: best.zh, label: "更地道" }] : [])];
     queue.unshift(...x.then);
     goOn();
@@ -201,10 +236,10 @@ function storyStage(o) {
         ${o.seen?.(node.id, x.i) ? `<span class="badge" title="上一段人生选过这个">走过</span>` : ""}
         ${x.act ? "" : `<span class="speak sm" data-sc-say="${esc(x.en)}" data-sp="me" title="听一听">🔊</span>`}</button>`).join("")}
     </div>`);
-    ask({ opts: shown, speakable: shown.some((x) => x.speak && !x.lock), pick: (k, spoken) => {
+    ask({ opts: shown, speakable: shown.some((x) => x.speak && !x.lock), kind: "d", pick: (k, spoken) => {
       const x = shown[k];
       picks.push([node.id, x.i]);
-      if (spoken && spoken.sim >= 0.75) { score.spoke++; addXP(1); }
+      if (spoken && spoken.sim >= 0.75) { score.spoke++; xp(1); }
       sceneBox.insertAdjacentHTML("beforeend", x.act ? `<div class="sc-narr">（你${esc(x.zh.replace(/^你/, ""))}）</div>` : lineHtml("me", x.en, x.zh));
       addFx(x.fx);
       const chips = fxChips(x.fx || {});
@@ -227,15 +262,15 @@ function storyStage(o) {
       </div></div>`);
     const bubble = sceneBox.lastElementChild;
     say(en, sp);
-    const opts = shuffle(node.opts.map(([ok, text, then]) => ({ ok, text, then: then || [] })));
+    const opts = shuffle(node.opts.map(([ok, text, then], oi) => ({ ok, text, then: then || [], oi })));
     sceneBox.insertAdjacentHTML("beforeend", `<div class="sc-choice">
       <div class="sc-ask">🎧 ${esc(node.ask || "你听到了什么？")}</div>
       ${opts.map((x, i) => `<button class="sc-opt" data-i="${i}"><span class="kbd">${i + 1}</span><span class="sc-opt-text">${esc(x.text)}</span></button>`).join("")}
     </div>`);
-    ask({ opts, hint: "听不清可以按 R 再听，或者点 🐢 慢速", pick: (i, _s, box) => {
+    ask({ opts, hint: "听不清可以按 R 再听，或者点 🐢 慢速", kind: "l", pick: (i, _s, box) => {
       const x = opts[i];
       score.listens++;
-      if (x.ok) { score.heard++; addXP(1); }
+      if (x.ok) { score.heard++; xp(1); }
       $$(".sc-opt", box).forEach((b, k) => { if (opts[k].ok) b.classList.add("best"); });
       $(".sc-listen", bubble).remove();
       $(".sc-reveal", bubble).hidden = false;
@@ -288,6 +323,7 @@ function storyStage(o) {
   };
 
   const finish = () => {
+    endReplay();
     waiting = "end";
     App.shadowTarget = null;
     const r = o.onFinish({ delta, score, picks }) || {};
@@ -309,7 +345,7 @@ function storyStage(o) {
     const k = e.key.toLowerCase();
     if (e.key === " " || e.key === "Enter") {
       e.preventDefault();
-      if (waiting === "next") step();
+      if (waiting === "next") next();
       else if (waiting === "end") o.onDone();
     } else if (/^[1-4]$/.test(e.key) && waiting === "choice") pickOpt(+e.key - 1);
     else if (k === "v" && !e.ctrlKey && waiting === "choice") speak();

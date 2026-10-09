@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 DEFAULT_AI = {"provider": "none", "base_url": "", "model": "", "api_key": ""}
 PERSONAL_KV = {"tutor"}  # 每个人自己的（AI 语伴聊天记录）；其他命名空间是翻译、精讲的缓存，大家共用
-NO_AI = "电脑主人还没有给你开启 AI 功能（AI 用的是主人的 Key）。可以请 TA 在电脑的「设置 → 局域网访问」里打开。"
+NO_AI = "你还没有可用的 AI：可以在「设置 → AI 接入」填你自己的 API Key，或者请电脑主人在电脑的「设置 → 局域网访问」里给你开启。"
 
 
 class Api:
@@ -45,6 +45,7 @@ class Api:
         # 局域网里其他人：当前请求是谁（每个请求在自己的线程里处理），以及每个人的进度
         self._ctx = threading.local()
         self._profiles = {}
+        self._profile_settings = {}  # 其他人自己的设置（目前只有 AI），profiles/<id>/settings.json，Key 同样用 DPAPI 加密
         self._profiles_lock = threading.Lock()
         # 查询网卡要调用 PowerShell，比较慢，启动时在后台先查好
         threading.Thread(target=lan.local_ips, daemon=True).start()
@@ -62,11 +63,11 @@ class Api:
     # ---------- 局域网里的其他人 ----------
     def lan_call(self, user, name, args):
         """局域网接口的入口：user 是 None（主人）或 {id, name, ai}。在这个请求的线程里记下是谁，接口据此选进度、管 AI"""
-        self._ctx.user = user
+        self._ctx.user, self._ctx.lan = user, True
         try:
             return getattr(self, name)(*args)
         finally:
-            self._ctx.user = None
+            self._ctx.user, self._ctx.lan = None, False
 
     def _user(self):
         return getattr(self._ctx, "user", None)
@@ -91,9 +92,36 @@ class Api:
                     log.exception("备份 %s 的进度失败", user["id"])
             return p
 
-    def _ai_denied(self) -> bool:
+    def _user_settings(self, uid: str) -> settings.Settings:
+        with self._profiles_lock:
+            st = self._profile_settings.get(uid)
+            if st is None:
+                d = self._profile_dir(uid)
+                d.mkdir(parents=True, exist_ok=True)
+                st = self._profile_settings[uid] = settings.Settings(d / "settings.json")
+            return st
+
+    def _my_ai_store(self) -> settings.Settings:
+        """当前请求的人自己的 AI 设置存在哪：主人是 settings.json，其他人是 profiles/<id>/settings.json"""
         user = self._user()
-        return bool(user) and not user.get("ai")
+        return self._user_settings(user["id"]) if user else self._settings
+
+    def _ai_plan(self):
+        """这次 AI 调用用谁的配置：(cfg, 是不是用自己的 Key)；没有可用的返回 None。
+        其他人：自己填了 Key 就用自己的；没填、而主人给 TA 开了，就用主人的"""
+        user = self._user()
+        owner = self._ai_cfg()
+        if not user:
+            return owner, False
+        own = self._user_settings(user["id"]).section("ai", DEFAULT_AI)
+        if _enabled(own):
+            return own, True
+        if user.get("ai") and _enabled(owner):
+            return owner, False
+        return None
+
+    def _ai_denied(self) -> bool:
+        return self._ai_plan() is None
 
     def _kv_ns(self, ns):
         user = self._user()
@@ -209,18 +237,28 @@ class Api:
         return ai_client.PRESETS
 
     def get_ai_settings(self):
-        """返回给前端的设置里不包含完整 Key，只给一个掩码提示。"""
-        cfg = self._ai_cfg()
+        """返回给前端的设置里不包含完整 Key，只给一个掩码提示。
+        局域网里的其他人拿到的是 TA 自己的设置（own：自己的 Key 能用；shared：主人给 TA 开了 AI）"""
+        cfg = self._my_ai_store().section("ai", DEFAULT_AI)
         key = cfg.pop("api_key", "")
         cfg["has_key"] = bool(key)
         cfg["key_hint"] = f"{key[:3]}****{key[-4:]}" if len(key) > 8 else ("****" if key else "")
         cfg["enabled"] = _enabled({**cfg, "api_key": key})
-        if self._ai_denied():  # 局域网里没开 AI 的人：当作没配置，前端会显示提示
-            cfg.update(enabled=False, lan_denied=True)
+        user = self._user()
+        if user:
+            cfg["own"] = cfg["enabled"]
+            cfg["shared"] = bool(user.get("ai")) and _enabled(self._ai_cfg())
+            cfg["enabled"] = cfg["own"] or cfg["shared"]
+            if not cfg["enabled"]:  # 前端据此显示「填自己的 Key 或请主人开启」
+                cfg["lan_denied"] = True
         return cfg
 
     def save_ai_settings(self, new_cfg):
-        cfg = self._ai_cfg()
+        """主人只能在电脑上改；局域网里的其他人可以改 TA 自己的（存在 TA 的 profiles/<id>/settings.json）"""
+        if getattr(self._ctx, "lan", False) and not self._user():
+            raise PermissionError("AI 设置只能在电脑上修改")
+        store = self._my_ai_store()
+        cfg = store.section("ai", DEFAULT_AI)
         for field in ("provider", "base_url", "model"):
             if field in new_cfg:
                 cfg[field] = (new_cfg[field] or "").strip()
@@ -229,7 +267,7 @@ class Api:
             cfg["api_key"] = new_cfg["api_key"].strip()
         if new_cfg.get("clear_key"):
             cfg["api_key"] = ""
-        self._settings.update("ai", cfg)
+        store.update("ai", cfg)
         return self.get_ai_settings()
 
     def test_ai(self):
@@ -238,18 +276,23 @@ class Api:
             [{"role": "user", "content": "Reply with exactly: Hello from EngNest!"}],
         )
 
-    def _ai_run(self, system, messages, json_mode=False, on_delta=None):
-        """调用 AI 并记用量。返回 {ok, text, data?, error?}"""
-        if self._ai_denied():
+    def _ai_run(self, system, messages, json_mode=False, on_delta=None, plan=False):
+        """调用 AI 并记用量。返回 {ok, text, data?, error?}
+        plan：(cfg, own)，流式输出在后台线程里调用，拿不到「是谁」，要在请求线程里先算好传进来。
+        用别人自己的 Key 时不算进主人的用量，也不受主人的每月上限限制"""
+        if plan is False:
+            plan = self._ai_plan()
+        if plan is None:
             return {"ok": False, "error": NO_AI}
-        limit = self._settings.section("ai_limit")
-        msg = ai_usage.check_limit(limit)
-        if msg:
-            return {"ok": False, "error": msg}
-        cfg = self._ai_cfg()
+        cfg, own = plan
+        if not own:
+            msg = ai_usage.check_limit(self._settings.section("ai_limit"))
+            if msg:
+                return {"ok": False, "error": msg}
         try:
             text, usage = ai_client.chat(cfg, system, messages, json_mode=json_mode, on_delta=on_delta)
-            ai_usage.record(cfg.get("model"), usage)
+            if not own:
+                ai_usage.record(cfg.get("model"), usage)
         except ai_client.AIError as e:
             return {"ok": False, "error": str(e)}
         except Exception as e:  # noqa: BLE001 — 兜底，避免异常直接抛到前端变成看不懂的报错
@@ -272,7 +315,8 @@ class Api:
     def ai_stream_start(self, system, messages):
         sid = f"s{time.time_ns()}{secrets.token_hex(4)}"
         st = {"parts": [], "done": False, "result": None, "t": time.time()}
-        if self._ai_denied():  # 后台线程里拿不到「是谁」，在这里先拦下
+        plan = self._ai_plan()  # 后台线程里拿不到「是谁」，在这里先算好用谁的配置
+        if plan is None:
             st.update(done=True, result={"ok": False, "error": NO_AI})
             with self._streams_lock:
                 self._streams[sid] = st
@@ -284,7 +328,7 @@ class Api:
             self._streams[sid] = st
 
         def run():
-            st["result"] = self._ai_run(system, messages, on_delta=st["parts"].append)
+            st["result"] = self._ai_run(system, messages, on_delta=st["parts"].append, plan=plan)
             st["done"], st["t"] = True, time.time()
 
         threading.Thread(target=run, daemon=True, name="ai-stream").start()
@@ -305,7 +349,7 @@ class Api:
 
     def ai_models(self):
         try:
-            return {"ok": True, "models": ai_client.list_models(self._ai_cfg())}
+            return {"ok": True, "models": ai_client.list_models(self._my_ai_store().section("ai", DEFAULT_AI))}
         except ai_client.AIError as e:
             return {"ok": False, "error": str(e)}
         except Exception as e:  # noqa: BLE001
@@ -418,6 +462,7 @@ class Api:
         self._save_lan_cfg(cfg)
         with self._profiles_lock:
             p = self._profiles.pop(uid, None)
+            self._profile_settings.pop(uid, None)
             if p:
                 p.close()
         d = self._profile_dir(uid)
@@ -440,6 +485,7 @@ class Api:
 
     def lan_status(self):
         cfg = self._lan_cfg()
+        cfg["users"] = [{**u, "own_ai": _enabled(self._user_settings(u["id"]).section("ai", DEFAULT_AI))} for u in cfg["users"]]
         status = {**cfg, "https": cfg.get("https", True), "running": self._lan.running, "https_on": self._lan.https,
                   "error": self._lan.error, "urls": [], "qr": ""}
         if self._lan.running:
