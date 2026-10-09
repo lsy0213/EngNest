@@ -1300,9 +1300,7 @@ a.lf-card:hover { border-color: var(--brand); transform: translateY(-2px); }
 @keyframes fcInk { from { opacity: 0; } to { opacity: 1; } }
 .flashcard.curling { transition: none; }
 .pc-under, .pc-flap-wrap { position: absolute; pointer-events: none; transition: opacity .12s; }
-.pc-under { z-index: 0; overflow: hidden; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line);
-  /* 下一页上淡淡的横线，看得出是一页纸 */
-  background-image: repeating-linear-gradient(transparent 0 27px, color-mix(in srgb, var(--line) 55%, transparent) 27px 28px); background-position: 0 40px; }
+.pc-under { z-index: 0; overflow: hidden; margin: 0; } /* 下一页：和卡片一模一样（加了 .card），翻完以后看到的就是它，不会闪一下 */
 .pc-box { position: absolute; inset: 0; }
 /* 下一页上露出的下一个词：和卡片上单词的位置大致一样（卡片没翻开时单词在中间） */
 .pc-peek { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 16px 96px; text-align: center; }

@@ -518,7 +518,7 @@ const PageCurl = {
     this.drop(card);
     const W = card.offsetWidth, H = card.offsetHeight, D = Math.hypot(W, H);
     const mk = (cls, html = "") => { const d = document.createElement("div"); d.className = cls; d.innerHTML = html; return d; };
-    const under = mk("pc-under", peek ? `<div class="pc-peek">${peek}</div>` : ""), shadeBox = mk("pc-box"), shade = mk("pc-shade");
+    const under = mk("card pc-under", peek ? `<div class="pc-peek">${peek}</div>` : ""), shadeBox = mk("pc-box"), shade = mk("pc-shade");
     const wrap = mk("pc-flap-wrap"), flap = mk("pc-flap");
     shadeBox.appendChild(shade);
     under.appendChild(shadeBox);
