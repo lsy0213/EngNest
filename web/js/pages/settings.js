@@ -126,6 +126,9 @@ App.pages.settings = {
             <span class="help">用简单英语写的释义（来自 Simple English Wiktionary）。自动：释义里你不认识的词不超过 1 个才先显示英文，不然先显示中文，学的词越多，英文出现得越多。</span></div>
           <div class="field"><label>卡片滑动方向</label>
             <select class="select" id="swipe-dir"><option value="left" ${p.swipe_right_known ? "" : "selected"}>← 往左是「记住了」</option><option value="right" ${p.swipe_right_known ? "selected" : ""}>→ 往右是「记住了」（和多数 App 一样）</option></select></div>
+          <div class="field"><label>卡片翻过去的样子</label>
+            <select class="select" id="card-anim"><option value="page" ${p.card_anim === "slide" ? "" : "selected"}>📖 像翻书一样翻页</option><option value="slide" ${p.card_anim === "slide" ? "selected" : ""}>🃏 滑出去</option></select>
+            <span class="help">手机比较卡的话可以换成「滑出去」。</span></div>
         </div>
       </div>
 
@@ -240,6 +243,7 @@ App.pages.settings = {
     $("#daily-goal", root).onchange = (e) => { p.daily_goal = +e.target.value; Store.save(); toast("已保存", "good"); };
     $("#retention", root).onchange = (e) => { p.retention = +e.target.value; Store.save(); toast("已保存，之后的复习按新的目标安排", "good"); };
     $("#swipe-dir", root).onchange = (e) => { p.swipe_right_known = e.target.value === "right"; Store.save(); toast("已保存", "good"); };
+    $("#card-anim", root).onchange = (e) => { p.card_anim = e.target.value; Store.save(); toast("已保存", "good"); };
     if ($("#acc-card", root)) this.accountCard(root);
     if ($("#admin-card", root)) this.adminCard($("#admin-card", root));
     const lo = $("#lan-logout", root);

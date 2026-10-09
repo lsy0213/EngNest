@@ -4,23 +4,6 @@
 // 进度存在 Store.data.sent_srs：{ 规范化的英文: {en, zh, src, box, due, seen, wrong, first} }
 // ============================================================
 
-// 卡片飞出去：记住了往「记住了」那边（默认左），没记住往另一边，模糊往下。返回动画结束的 Promise
-function flyCard(card, g) {
-  const K = knownDir(), dir = g === 2 ? K : g === 0 ? -K : 0;
-  card.classList.remove("dragging");
-  card.classList.add("fly");
-  const st = dir && $(`.fc-stamp.${dir === K ? "ok" : "no"}`, card);
-  if (st) st.style.opacity = 1;
-  card.style.transform = dir ? `translateX(${dir * 130}%) rotate(${dir * 24}deg)` : "translateY(40%) scale(.85)";
-  card.style.opacity = 0;
-  if (typeof Sfx !== "undefined") {
-    if (g === 2) Sfx.good();
-    else if (g === 1) Sfx.ok();
-    else Sfx.play([[330, 0.14, "sine", 0.05], [262, 0.18, "sine", 0.04, 0.08]]);
-  }
-  return new Promise((r) => setTimeout(r, 260));
-}
-
 const SentSRS = {
   data() { return (Store.data.sent_srs ||= {}); },
   key: (en) => selNorm(en || ""),
@@ -113,7 +96,7 @@ function runSentenceCards(container, queue, signal, onFinish, { exitTo } = {}) {
       <div class="flash-wrap">
         <div class="flash-progress">${STUDY_EXIT_BTN}<span>${done} / ${total}</span><div class="bar"><i style="width:${pct}%"></i></div><span>短语句子复习</span>
           ${history.length ? `<button class="btn sm ghost" data-undo title="撤销上一次评分（Ctrl+Z）">↶ 撤销</button>` : ""}</div>
-        <div class="fc-stack ${enter ? "enter" : ""} ${q.length ? "" : "last"} ${K > 0 ? "swap-dir" : ""}">
+        <div class="fc-stack ${enter ? (PageCurl.justTurned() ? "turned" : "enter") : ""} ${q.length ? "" : "last"} ${K > 0 ? "swap-dir" : ""}">
         <div class="card flashcard sent-card" id="fc">
           <div class="fc-stamp ok">记住了 ✓</div><div class="fc-stamp no">没记住 ✗</div>
           <div class="fc-top"><span class="fc-tag">${esc(cur.src || "")}${cur.box ? ` · 第 ${cur.seen + 1} 次复习` : ""}</span></div>
