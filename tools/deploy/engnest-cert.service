@@ -1,0 +1,11 @@
+# 续 Let's Encrypt 证书（cert.sh 读 /etc/engnest-cert.env 里第一次申请时的参数）。由 engnest-cert.timer 触发。
+#   systemctl start engnest-cert     马上跑一次
+#   journalctl -u engnest-cert       看续期记录
+[Unit]
+Description=EngNest 续期 HTTPS 证书
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/engnest/app/tools/deploy/cert.sh

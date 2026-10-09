@@ -1,0 +1,11 @@
+# 每天两次检查证书；lego 只在剩一半有效期时才真的续（IP 证书约每 3 天一次）
+[Unit]
+Description=EngNest 每天检查两次 HTTPS 证书
+
+[Timer]
+OnCalendar=*-*-* 03,15:17
+RandomizedDelaySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

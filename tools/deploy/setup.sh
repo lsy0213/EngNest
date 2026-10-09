@@ -58,6 +58,8 @@ ENGNEST_PUBLIC_IP=$PUBLIC_IP
 ENGNEST_DOMAIN=$DOMAIN
 EOF
 cp $APP/tools/deploy/engnest.service /etc/systemd/system/engnest.service
+cp $APP/tools/deploy/engnest-cert.service $APP/tools/deploy/engnest-cert.timer /etc/systemd/system/
+mkdir -p /var/www/acme
 systemctl daemon-reload
 systemctl enable engnest >/dev/null
 systemctl restart engnest
@@ -68,6 +70,8 @@ systemctl is-active nginx
 
 echo
 echo "完成。还要做的："
-echo "  1) 在腾讯云控制台 → 轻量服务器 → 防火墙，放通 TCP $PORT 端口"
-echo "  2) 浏览器打开 https://$PUBLIC_IP:$PORT （第一次会提示证书不安全，点「继续访问」）"
-echo "  3) 第一次启动生成的管理员邀请码：journalctl -u engnest | grep 管理员邀请码"
+echo "  1) 在腾讯云控制台 → 轻量服务器 → 防火墙，放通 TCP $PORT 和 TCP 80 端口"
+echo "  2) 换正规证书（不换的话浏览器每次都要重新下载全部文件），见 部署说明.md 2.5："
+echo "     CERT_EMAIL=<邮箱> bash $APP/tools/deploy/cert.sh $PUBLIC_IP && systemctl enable --now engnest-cert.timer"
+echo "  3) 浏览器打开 https://$PUBLIC_IP:$PORT"
+echo "  4) 第一次启动生成的管理员邀请码：journalctl -u engnest | grep 管理员邀请码"
