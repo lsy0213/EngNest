@@ -502,40 +502,42 @@ const TechDict = {
   },
 };
 
-// ---------- 翻书效果：拖动卡片时像翻书页一样，角被掀起来、折过去 ----------
-// 几何（和 StPageFlip、turn.js 同一个思路）：被抓的书角从 C 移到 P，折线就是 CP 的垂直平分线；
-// 折线外侧的部分从卡片上剪掉（clip-path），沿折线翻折过来变成「纸的背面」，下面露出下一页，折线两边加阴影。
-// 统一按「从右边掀起、往左翻」计算，往右翻时左右镜像。卡片里的内容不用复制，只动 clip-path 和两个装饰层。
+// ---------- 翻书效果：拖动卡片时像翻书页一样，页角被掀起来、折过去 ----------
+// 几何和小说 App 的「仿真翻页」、StPageFlip 同一个思路：被抓的页角从 C 移到 P（跟着手指走），折线是 CP 的垂直平分线；
+// 折线外侧从卡片上剪掉（clip-path），沿折线翻过来变成「纸的背面」，下面露出下一页（能看到下一个词），折线两边加阴影。
+// 统一按「从右边掀起、往左翻」计算，往右翻时左右镜像。卡片内容不用复制，只动 clip-path 和几层装饰；每帧最多画一次。
 const PageCurl = {
   on: () => Store.prefs.card_anim !== "slide" && !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
   _turned: false,
-  // 刚翻完一页：下一张卡片不用再弹进来（翻开的就是它），只淡入内容
+  // 刚翻完一页：下一张卡片不用再弹进来（翻开的就是它），只淡入
   justTurned() { const v = this._turned; this._turned = false; return v; },
 
-  // side：-1 往左翻（从右边掀起），+1 往右翻；grab：手指按在页面的上部（掀上角）、下部（掀下角）还是中间（整页竖着翻，像小说 App）
-  start(card, side, grab = "bottom") {
-    const top = grab === "top";
+  // side：-1 往左翻（从右边掀起），+1 往右翻；grab：手指按在页面上部（掀上角）、下部（掀下角）还是中间（整页竖着翻）
+  // peek：下一页上显示的内容（HTML，可以不给）
+  start(card, side, grab = "bottom", peek = "") {
     this.drop(card);
     const W = card.offsetWidth, H = card.offsetHeight, D = Math.hypot(W, H);
-    const mk = (cls) => { const d = document.createElement("div"); d.className = cls; return d; };
-    const under = mk("pc-under"), shade = mk("pc-shade"), wrap = mk("pc-flap-wrap"), flap = mk("pc-flap");
-    under.appendChild(shade);
+    const mk = (cls, html = "") => { const d = document.createElement("div"); d.className = cls; d.innerHTML = html; return d; };
+    const under = mk("pc-under", peek ? `<div class="pc-peek">${peek}</div>` : ""), shadeBox = mk("pc-box"), shade = mk("pc-shade");
+    const wrap = mk("pc-flap-wrap"), flap = mk("pc-flap");
+    shadeBox.appendChild(shade);
+    under.appendChild(shadeBox);
     wrap.appendChild(flap);
-    for (const el of [under, wrap]) {
-      Object.assign(el.style, { left: card.offsetLeft + "px", top: card.offsetTop + "px", width: W + "px", height: H + "px" });
-      if (side > 0) el.style.transform = "scaleX(-1)";
-    }
+    for (const el of [under, wrap]) Object.assign(el.style, { left: card.offsetLeft + "px", top: card.offsetTop + "px", width: W + "px", height: H + "px" });
+    // 往右翻时镜像：下一页上的字不能反过来，所以只镜像阴影层和翻过来的纸背面
+    if (side > 0) shadeBox.style.transform = wrap.style.transform = "scaleX(-1)";
     for (const el of [shade, flap]) Object.assign(el.style, { width: D + "px", height: 2 * D + "px" });
     card.before(under);
     card.after(wrap);
     card.classList.add("curling");
-    return (card._curl = { card, under, shade, wrap, flap, W, H, D, side, flat: grab === "mid", cy: top ? 0 : H, px: W, py: top ? 0 : H });
+    const top = grab === "top";
+    return (card._curl = { card, under, shade, wrap, flap, W, H, D, side, flat: grab === "mid", cy: top ? 0 : H, px: W, py: top ? 0 : H, raf: 0 });
   },
 
-  // 把书角放到 (x, y)（按右边掀起的坐标），画出这一帧
+  // 把页角放到 (x, y)（按右边掀起的坐标），画出这一帧
   set(c, x, y) {
     const { W, H, D, cy } = c;
-    // 书页连着书脊（左边）：角离书脊不能超过一页宽，离另一个书脊角不能超过对角线，不然纸就「撕下来」了
+    // 书页连着书脊（左边）：页角离书脊不能超过一页宽，离另一个书脊角不能超过对角线，不然纸就「撕下来」了
     const lim = (ax, ay, r) => { const d = Math.hypot(x - ax, y - ay); if (d > r) { x = ax + ((x - ax) * r) / d; y = ay + ((y - ay) * r) / d; } };
     lim(0, cy, W);
     lim(0, H - cy, D);
@@ -574,16 +576,15 @@ const PageCurl = {
     c.shade.style.setProperty("--reach", Math.min(70, reach * 0.6).toFixed(1) + "px");
   },
 
-  // 跟着手指：dx 是朝书脊拖了多少（负数），dy 上下
-  drag(c, dx, dy) {
-    const { W, H, cy } = c;
-    // 手指的位移放大一倍，轻轻一拖页面就跟着翻起来
-    const x = W + Math.min(0, dx) * 2;
-    if (c.flat) return this.set(c, x, cy); // 从中间翻：折线是竖的，整页翻
-    // 从上下角翻：拖得越远角抬得越高（往页面中间），折线斜过来
-    const k = Math.min(1, Math.abs(dx) / W);
-    const lift = (cy === 0 ? 1 : -1) * H * 0.18 * Math.sin(Math.PI * Math.min(1, k * 1.4));
-    this.set(c, x, cy + lift + dy * 0.35);
+  // 跟着手指（1:1，翻起的页边和手指一样快）：dx 是朝书脊拖了多少（负数），fy 是手指离页角那条边的高度
+  // 从上下部翻：页角在前 60px 里慢慢「升」到手指的高度，折线斜过来；从中间翻：页角贴着底边，整页竖着翻
+  drag(c, dx, fy) {
+    const { W, cy } = c;
+    const x = W + Math.min(0, dx);
+    const y = c.flat ? cy : cy + (fy - cy) * Math.min(1, Math.abs(dx) / 60);
+    c.tx = x; c.ty = y;
+    // 手指一帧可能报好几次位置（120Hz 屏），只在下一帧画一次
+    if (!c.raf) c.raf = requestAnimationFrame(() => { c.raf = 0; if (c.card._curl === c) this.set(c, c.tx, c.ty); });
   },
 
   _anim(ms, step) {
@@ -603,35 +604,38 @@ const PageCurl = {
     });
   },
 
-  // 把这一页翻过去：接着手指掀起的样子翻；没在拖（按键、点按钮）就从下角开始翻
-  async turn(card, side) {
+  // 把这一页翻过去：从手指松开的位置接着翻（一开始最快，越来越慢，和手指的速度接得上）；没在拖（按键、点按钮）就从下角翻
+  async turn(card, side, peek = "") {
     let c = card._curl;
-    if (!c || c.side !== side) c = this.start(card, side, "bottom");
+    if (!c || c.side !== side) c = this.start(card, side, "bottom", peek);
+    cancelAnimationFrame(c.raf); c.raf = 0;
+    if (c.tx !== undefined) this.set(c, c.tx, c.ty); // 最后一次手指位置还没画的话先画上
     const x0 = c.px, y0 = c.py, { W, H, cy } = c;
     const up = c.flat ? 0 : cy === 0 ? 1 : -1;
+    const left = Math.min(1, (x0 + W) / (2 * W)); // 还剩多少没翻
     const ease = (t) => 1 - Math.pow(1 - t, 3);
-    await this._anim(Math.round(260 + 220 * Math.min(1, (x0 + W) / (2 * W))), (t) => {
+    await this._anim(Math.round(170 + 230 * left), (t) => {
       const e = ease(t);
-      this.set(c, x0 + (-W - x0) * e, y0 + (cy - y0) * e + up * H * 0.14 * Math.sin(Math.PI * e));
+      this.set(c, x0 + (-W - x0) * e, y0 + (cy - y0) * e + up * H * 0.1 * left * Math.sin(Math.PI * e));
     });
     c.wrap.classList.add("pc-gone");
-    c.under.classList.add("pc-gone");
     this._turned = true;
-    await new Promise((r) => setTimeout(r, 120));
   },
 
   // 没翻过去：落回原样
   async back(card) {
     const c = card._curl;
     if (!c) return;
+    cancelAnimationFrame(c.raf); c.raf = 0;
     const x0 = c.px, y0 = c.py;
-    await this._anim(200, (t) => { const e = 1 - Math.pow(1 - t, 2); this.set(c, x0 + (c.W - x0) * e, y0 + (c.cy - y0) * e); });
+    await this._anim(180, (t) => { const e = 1 - Math.pow(1 - t, 2); this.set(c, x0 + (c.W - x0) * e, y0 + (c.cy - y0) * e); });
     if (card._curl === c) this.drop(card);
   },
 
   drop(card) {
     const c = card._curl;
     if (!c) return;
+    cancelAnimationFrame(c.raf);
     c.under.remove();
     c.wrap.remove();
     card.style.clipPath = "";
@@ -641,7 +645,8 @@ const PageCurl = {
 };
 
 // 卡片评完分离开：翻书效果就把这一页翻过去，否则飞出去（记住了 / 没记住往两边，模糊往下）
-function flyCard(card, g) {
+// peek：翻页时下一页上显示的内容（单词卡显示下一个词）
+function flyCard(card, g, peek = "") {
   const K = knownDir(), dir = g === 2 ? K : g === 0 ? -K : 0;
   card.classList.remove("dragging");
   const st = dir && $(`.fc-stamp.${dir === K ? "ok" : "no"}`, card);
@@ -652,7 +657,7 @@ function flyCard(card, g) {
     else Sfx.play([[330, 0.14, "sine", 0.05], [262, 0.18, "sine", 0.04, 0.08]]);
   }
   card.style.pointerEvents = "none";
-  if (dir && PageCurl.on()) return PageCurl.turn(card, dir);
+  if (dir && PageCurl.on()) return PageCurl.turn(card, dir, peek);
   PageCurl.drop(card);
   card.classList.add("fly");
   card.style.transform = dir ? `translateX(${dir * 130}%) rotate(${dir * 24}deg)` : "translateY(40%) scale(.85)";
@@ -665,22 +670,24 @@ function flyCard(card, g) {
 //   或者很快地一甩（10px 就够）；拖过去又往回拉就算取消，弹回原样
 // - 几乎没动当作点击
 // - skip 里的元素不能开始拖：电脑上要能在释义里选中文字（鼠标）
-// - 手机上卡片的触摸全部自己处理（CSS touch-action: none）：手指先动的方向偏横（和水平夹角 55° 以内）就是左右滑卡片，
-//   偏竖就是上下滚动背面的释义（自己滚，带惯性）。交给浏览器的话，手指稍微斜一点它就当成上下滚动、把左右滑打断
-// - 手机上从按钮或可点的单词（touchSkip）开始：没动就是点它；动了照样算滑卡片 / 滚动
-function bindSwipeCard(card, { busy, onSwipe, onTap, skip = "button, a, .w", touchSkip = "button, a, .w" }) {
-  let x0 = null, y0 = 0, dx = 0, axis = null, onSkip = false, trail = [], scroller = null, top0 = 0, glide = 0, dragged = false, curl = null, grab = "bottom";
+// - 手机上卡片的触摸全部自己处理（CSS touch-action: none，再加上 touchmove 里 preventDefault，iPhone 上整页也不会跟着上下动）：
+//   只有背面的释义真的长得超出卡片、而且手指明显是竖着划（和水平夹角超过 63°）时才上下滚动释义，其他一律当成翻页
+// - 手机上从按钮或可点的单词（touchSkip）开始：没动就是点它；动了照样算翻页 / 滚动
+function bindSwipeCard(card, { busy, onSwipe, onTap, peek, skip = "button, a, .w", touchSkip = "button, a, .w" }) {
+  let x0 = null, y0 = 0, dx = 0, axis = null, onSkip = false, trail = [], scroller = null, top0 = 0, glide = 0, dragged = false, curl = null, grab = "bottom", fy0 = 0;
   const stamps = () => [$(".fc-stamp.ok", card), $(".fc-stamp.no", card)];
   const MIN = 24, STAMP = 40; // 翻过去最少要拖多远；印章拖多远完全显示
-  const LOCK = 8; // 动了这么多像素才判断方向
-  // 上下滚动交给手指下面最近的能滚的元素（背面的释义区，或者整个页面）
+  const LOCK = 6; // 动了这么多像素才判断方向
+  // 能上下滚的只有卡片里面超出高度的区域（背面的释义），页面本身不滚
   const scrollerAt = (t) => {
-    for (let n = t; n && n !== document.body && n !== document.documentElement; n = n.parentElement) {
+    for (let n = t; n && n !== card.parentElement; n = n.parentElement) {
       const oy = getComputedStyle(n).overflowY;
       if ((oy === "auto" || oy === "scroll") && n.scrollHeight > n.clientHeight + 1) return n;
     }
-    return document.scrollingElement;
+    return null;
   };
+  // iPhone Safari：光靠 touch-action 有时还是会整页上下动（回弹），触摸移动时直接拦下来，滚动和翻页都由下面自己做
+  card.addEventListener("touchmove", (e) => { if (e.cancelable) e.preventDefault(); }, { passive: false });
   card.addEventListener("pointerdown", (e) => {
     cancelAnimationFrame(glide);
     dragged = false;
@@ -691,6 +698,7 @@ function bindSwipeCard(card, { busy, onSwipe, onTap, skip = "button, a, .w", tou
     const r = card.getBoundingClientRect();
     const f = (e.clientY - r.top) / r.height;
     grab = f < 0.3 ? "top" : f > 0.7 ? "bottom" : "mid"; // 上部掀上角，下部掀下角，中间整页翻
+    fy0 = e.clientY - r.top; // 手指按下时的高度（卡片坐标）
     trail = [[e.clientX, e.clientY, e.timeStamp]];
     scroller = mouse ? null : scrollerAt(e.target);
     top0 = scroller?.scrollTop || 0;
@@ -700,21 +708,20 @@ function bindSwipeCard(card, { busy, onSwipe, onTap, skip = "button, a, .w", tou
     const mx = e.clientX - x0, my = e.clientY - y0;
     if (!axis) {
       if (Math.hypot(mx, my) < LOCK) return;
-      // 鼠标只有左右拖；手指偏横就算左右滑（给横向多留一点余量，斜着滑也不会被当成上下滚动）
-      axis = e.pointerType === "mouse" || Math.abs(mx) >= Math.abs(my) * 0.7 ? "x" : "y";
+      axis = scroller && Math.abs(my) > Math.abs(mx) * 2 ? "y" : "x";
       dragged = true;
       try { card.setPointerCapture(e.pointerId); } catch { /* 手指已经抬起 */ }
       if (axis === "x") card.classList.add("dragging");
     }
     trail.push([e.clientX, e.clientY, e.timeStamp]);
     while (trail.length > 2 && e.timeStamp - trail[0][2] > 100) trail.shift(); // 只看最近 0.1 秒的速度
-    if (axis === "y") { if (scroller) scroller.scrollTop = top0 - my; return; }
+    if (axis === "y") { scroller.scrollTop = top0 - my; return; }
     dx = mx;
     if (PageCurl.on()) {
-      // 翻书：往哪边拖就往哪边翻；中途换了方向就换一边掀
+      // 往哪边拖就往哪边翻；中途换了方向就换一边掀
       const side = dx < 0 ? -1 : 1;
-      if (Math.abs(dx) > 2 && (!curl || curl.side !== side)) curl = PageCurl.start(card, side, grab);
-      if (curl) PageCurl.drag(curl, -Math.abs(dx), my);
+      if (dx && (!curl || curl.side !== side)) curl = PageCurl.start(card, side, grab, peek?.() || "");
+      if (curl) PageCurl.drag(curl, -Math.abs(dx), fy0 + my);
     } else card.style.transform = `translateX(${dx}px) rotate(${dx / 18}deg)`;
     const [ok, no] = stamps(), K = knownDir();
     if (ok) ok.style.opacity = Math.min(1, Math.max(0, (dx * K) / STAMP));
@@ -735,7 +742,7 @@ function bindSwipeCard(card, { busy, onSwipe, onTap, skip = "button, a, .w", tou
         v *= Math.pow(0.95, k);
         if (Math.abs(v) > 0.02) glide = requestAnimationFrame(step);
       };
-      if (s && e.type !== "pointercancel" && Math.abs(v) > 0.1) glide = requestAnimationFrame(step);
+      if (e.type !== "pointercancel" && Math.abs(v) > 0.1) glide = requestAnimationFrame(step);
       return;
     }
     if (axis === "x") {
@@ -1219,6 +1226,10 @@ function enterStudyFocus(container, signal, exitTo) {
   }
   document.body.classList.add("study-focus");
   $("#view")?.scrollTo(0, 0);
+  // 学习界面整页固定，手机上手指怎么划页面都不上下动（iPhone 会整页回弹，CSS 拦不全）；查词浮层、弹窗里照常滚动
+  document.addEventListener("touchmove", (e) => {
+    if (e.cancelable && !e.target.closest?.(".modal-mask, .pop")) e.preventDefault();
+  }, { passive: false, signal });
   // ← 按钮（卡片和完成页上都有 data-exit）：重新渲染当前页面，signal 被中止，这里恢复原样
   container.addEventListener("click", (e) => {
     if (!e.target.closest("[data-exit]")) return;
@@ -1319,13 +1330,15 @@ function runFlashcards(container, queue, mode, signal, onFinish, { exitTo } = {}
     const card = $("#fc", container);
     if (busy || !card) return;
     busy = true;
-    await flyCard(card, g);
+    await flyCard(card, g, peekNext());
     busy = false;
     if (!signal.aborted) grade(g, evt);
   };
 
   // 拖动或轻轻一甩就算滑走（见 bindSwipeCard）；电脑上释义和例句区域不能拖（那里要能选中文字查词）
-  const bindDrag = () => bindSwipeCard($("#fc", container), { busy: () => busy, onSwipe: swipe, onTap: () => { if (!revealed) reveal(); }, skip: "button, a, .fc-back, .w" });
+  // 翻页时下一页上露出下一个词（和翻过去以后卡片上的位置一样）
+  const peekNext = () => (q[0] ? `<div class="fc-word">${esc(q[0].w)}</div><div class="fc-ipa">${esc(q[0].ph || "")}</div>` : "");
+  const bindDrag = () => bindSwipeCard($("#fc", container), { busy: () => busy, onSwipe: swipe, onTap: () => { if (!revealed) reveal(); }, peek: peekNext, skip: "button, a, .fc-back, .w" });
 
   const grade = (g, evt) => {
     const h = { cur, q: [...q], stats: { ...stats }, retry: { ...retry }, done, graded: false, xp: 0, kind: null };

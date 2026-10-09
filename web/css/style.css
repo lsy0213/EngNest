@@ -1295,17 +1295,21 @@ a.lf-card:hover { border-color: var(--brand); transform: translateY(-2px); }
 .fc-stack.enter .flashcard { animation: fcIn .3s cubic-bezier(.2, .9, .3, 1.2); }
 @keyframes fcIn { from { opacity: 0; transform: translateY(18px) scale(.95); } to { opacity: 1; transform: none; } }
 /* 翻书效果（components.js 的 PageCurl）：pc-under 是掀起后露出的下一页，pc-flap 是翻过来的纸背面 */
-.fc-stack.turned .flashcard > * { animation: fcInk .22s ease-out; } /* 翻过来就是这一页，内容像墨迹一样浮现 */
+/* 翻过来就是这一页：单词已经在下一页上看到了，不动；其他内容像墨迹一样浮现 */
+.fc-stack.turned .flashcard > :not(.fc-word):not(.fc-ipa) { animation: fcInk .2s ease-out; }
 @keyframes fcInk { from { opacity: 0; } to { opacity: 1; } }
 .flashcard.curling { transition: none; }
 .pc-under, .pc-flap-wrap { position: absolute; pointer-events: none; transition: opacity .12s; }
 .pc-under { z-index: 0; overflow: hidden; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line);
   /* 下一页上淡淡的横线，看得出是一页纸 */
   background-image: repeating-linear-gradient(transparent 0 27px, color-mix(in srgb, var(--line) 55%, transparent) 27px 28px); background-position: 0 40px; }
+.pc-box { position: absolute; inset: 0; }
+/* 下一页上露出的下一个词：和卡片上单词的位置大致一样（卡片没翻开时单词在中间） */
+.pc-peek { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 16px 96px; text-align: center; }
 .pc-shade, .pc-flap { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 /* 折线在下一页上投的影子：贴着折线最深，往外很快变淡 */
 .pc-shade { background: linear-gradient(90deg, rgba(20, 15, 10, .32), rgba(20, 15, 10, .1) calc(var(--reach) * .45), transparent var(--reach)); }
-.pc-flap-wrap { z-index: 3; filter: drop-shadow(-1px 2px 6px rgba(20, 15, 10, .28)); }
+.pc-flap-wrap { z-index: 3; } /* 不用 filter 阴影：iPhone 上每帧重算很卡，阴影都用渐变画 */
 /* 纸的背面：靠折线的地方是弯起来的暗面，中间受光最亮，翻起的边缘又暗一点 */
 .pc-flap { background: linear-gradient(90deg, rgba(20, 15, 10, .16) 0, rgba(20, 15, 10, .04) calc(var(--reach) * .22), rgba(255, 255, 255, .28) calc(var(--reach) * .6), rgba(20, 15, 10, .07) var(--reach)), var(--surface-2, var(--surface)); }
 .pc-gone { opacity: 0; }
@@ -1774,6 +1778,7 @@ details.mm-card[open] > summary { margin-bottom: 12px; }
 
 /* 学习专注模式（enterStudyFocus）：卡片占满一屏、页面不滚动；释义太长时只在卡片里滚动，按钮固定在卡片底部 */
 body.study-focus #app #view { overflow: hidden; padding: 14px 16px; }
+html:has(body.study-focus), body.study-focus { overflow: hidden; overscroll-behavior: none; } /* 学习界面整页固定，不回弹 */
 body.study-focus .study-hidden { display: none !important; }
 body.study-focus .flash-wrap { display: flex; flex-direction: column; height: min(calc(100dvh - 28px), 820px); }
 body.study-focus .flash-progress { flex: none; }
