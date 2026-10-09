@@ -378,11 +378,162 @@ BOOKS = [
          intro="罗马皇帝马可·奥勒留写给自己的哲学笔记：如何面对他人、挫折和死亡。（Meric Casaubon 17 世纪英译本，语言比较古老）"),
     dict(id="prophet", pg=58585, title="The Prophet", zh="先知", author="Kahlil Gibran", year=1923, level="中等", chapters=None, chunk=2500, cat="nonfic",
          start_at=r"Almustafa, the chosen and the", intro="先知亚墨斯达法在离开奥法利斯城之前，回答人们关于爱、婚姻、孩子、工作、欢乐与悲伤的提问。散文诗，语言优美，适合朗读和摘抄。"),
+    # ---------- 第四批：世界名著（挪威读书会「世界文学百佳」和中文常见的世界名著书目里，有公有领域英文全文的） ----------
+    # 翻译作品用的都是已进入公有领域的老译本（Garnett、Maude、Hapgood 等），归到「世界名著」；英语原著归到「经典文学」
+    dict(id="crime", pg=2554, title="Crime and Punishment", zh="罪与罚", author="Fyodor Dostoevsky", year=1866, level="较难", chapters=None, cat="world",
+         pat=r"CHAPTER ([IVXL]+)", num=True,
+         intro="穷大学生拉斯柯尔尼科夫认为「不平凡的人」有权越过道德界限，于是杀了放高利贷的老太婆，此后在良心和恐惧中煎熬。Constance Garnett 译本。"),
+    dict(id="karamazov", pg=28054, title="The Brothers Karamazov", zh="卡拉马佐夫兄弟", author="Fyodor Dostoevsky", year=1880, level="较难", chapters=None, cat="world",
+         pat=r"Chapter ([IVXL]+)\. ?(.*)", num=True,
+         intro="放荡的父亲被杀，三个性格截然不同的儿子——热情的德米特里、理性的伊万、虔诚的阿辽沙——都卷入其中。陀思妥耶夫斯基最后也最伟大的小说。"),
+    dict(id="idiot", pg=2638, title="The Idiot", zh="白痴", author="Fyodor Dostoevsky", year=1869, level="较难", chapters=None, cat="world",
+         pat=r"([IVXL]+)\.", num=True,
+         intro="善良单纯得像个孩子的梅什金公爵从瑞士回到彼得堡，被卷进两个女人的爱情和上流社会的算计。陀思妥耶夫斯基想写「一个绝对美好的人」。Eva Martin 译本。"),
+    dict(id="possessed", pg=8117, title="The Possessed", zh="群魔", author="Fyodor Dostoevsky", year=1872, level="较难", chapters=None, cat="world",
+         pat=r"CHAPTER ([IVXL]+)\.? ?(.*)", num=True,
+         intro="外省小城里，一群激进青年在神秘人物斯塔夫罗金周围策划阴谋，最后酿成血案。根据真实的革命小组凶杀案写成。Garnett 译本。"),
+    dict(id="anna", pg=1399, title="Anna Karenina", zh="安娜·卡列尼娜", author="Leo Tolstoy", year=1877, level="较难", chapters=None, cat="world",
+         pat=r"Chapter (\d+)", num=True,
+         intro="「幸福的家庭都是相似的，不幸的家庭各有各的不幸。」贵妇人安娜爱上军官伏伦斯基，和另一条线上列文的成长交织在一起。Garnett 译本。"),
+    dict(id="warpeace", pg=2600, title="War and Peace", zh="战争与和平", author="Leo Tolstoy", year=1869, level="较难", chapters=None, cat="world",
+         pat=r"CHAPTER ([IVXLC]+)", num=True,
+         intro="拿破仑战争中的俄国，几个贵族家庭的命运沉浮：皮埃尔、安德烈、娜塔莎。篇幅很长（五十多万词），可以当成长期计划慢慢读。Maude 夫妇译本。"),
+    dict(id="resurrection", pg=1938, title="Resurrection", zh="复活", author="Leo Tolstoy", year=1899, level="较难", chapters=None, cat="world",
+         pat=r"CHAPTER ([IVXLC]+)\.?\s*(.*)", num=True, next_title=True,
+         intro="聂赫留朵夫公爵当陪审员时，认出被告席上的妓女玛丝洛娃正是自己年轻时诱骗过的姑娘，决心为她赎罪。托尔斯泰晚年的代表作。"),
+    dict(id="fathersons", pg=47935, title="Fathers and Sons", zh="父与子", author="Ivan Turgenev", year=1862, level="较难", chapters=None, cat="world",
+         pat=r"([IVXL]+)", num=True,
+         intro="大学生巴扎罗夫自称「虚无主义者」，什么都不信，回到乡下和老一辈发生冲突。屠格涅夫最有名的小说，篇幅适中。"),
+    dict(id="deadsouls", pg=1081, title="Dead Souls", zh="死魂灵", author="Nikolai Gogol", year=1842, level="较难", chapters=None, cat="world",
+         pat=r"CHAPTER ([IVXL]+)", num=True,
+         intro="骗子乞乞科夫走遍外省，向地主们收购已经死去、但户籍上还在的农奴「死魂灵」，借此抵押发财。讽刺辛辣又好笑。"),
+    dict(id="bovary", pg=2413, title="Madame Bovary", zh="包法利夫人", author="Gustave Flaubert", year=1857, level="较难", chapters=None, cat="world",
+         pat=r"Chapter (One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve|Thirteen|Fourteen|Fifteen)", num=True,
+         intro="读多了浪漫小说的爱玛嫁给平庸的乡村医生，不甘心平淡的生活，一步步走向债务和毁灭。福楼拜精雕细琢的现实主义名作。Eleanor Marx 译本。"),
+    dict(id="goriot", pg=1237, title="Father Goriot", zh="高老头", author="Honoré de Balzac", year=1835, level="较难", chapters=None, chunk=4000, cat="world",
+         start_at=r"Mme\. Vauquer \(_nee_ de Conflans\).*",
+         intro="巴黎一家寒酸公寓里，退休面粉商高老头为两个女儿倾尽所有，却被她们抛弃；穷学生拉斯蒂涅在旁边看清了上流社会。（原书不分章，按篇幅分成若干部分）"),
+    dict(id="redblack", pg=44747, title="The Red and the Black", zh="红与黑", author="Stendhal", year=1830, level="较难", chapters=None, cat="world",
+         pat=r"CHAPTER ([IVXLC]+)", num=True, next_title=True,
+         intro="木匠的儿子于连野心勃勃，靠聪明才智进入市长家和巴黎贵族府邸，在爱情和野心之间走向悲剧。Horace B. Samuel 译本。"),
+    dict(id="miserables", pg=135, title="Les Misérables", zh="悲惨世界", author="Victor Hugo", year=1862, level="较难", chapters=None, cat="world",
+         pat=r"CHAPTER ([IVXLC]+)—(.*)", num=True, start_at=r"CHAPTER I—M\. MYRIEL", start_last=True,
+         intro="因为偷一块面包坐了十九年牢的冉·阿让，被主教感化后重新做人，却始终被警探沙威追捕。全书很长（五十多万词），Hapgood 译本。"),
+    dict(id="notredame", pg=2610, title="Notre-Dame de Paris", zh="巴黎圣母院", author="Victor Hugo", year=1831, level="较难", chapters=None, cat="world",
+         pat=r"CHAPTER ([IVXL]+)\. ?(.*)", num=True,
+         intro="美丽的吉卜赛姑娘爱斯梅拉达、丑陋善良的敲钟人卡西莫多和阴险的副主教，围绕巴黎圣母院展开的悲剧。Hapgood 译本。"),
+    dict(id="montecristo", pg=1184, title="The Count of Monte Cristo", zh="基督山伯爵", author="Alexandre Dumas", year=1844, level="较难", chapters=None, cat="world",
+         pat=r"Chapter (\d+)\. ?(.*)", num=True,
+         intro="水手唐泰斯被诬陷关进死牢十四年，越狱后得到宝藏，化身基督山伯爵向仇人一一复仇。情节紧张，是最好看的复仇故事。"),
+    dict(id="camille", pg=1608, title="Camille (La Dame aux Camélias)", zh="茶花女", author="Alexandre Dumas fils", year=1848, level="中等", chapters=None, cat="world",
+         pat=r"Chapter ([IVXL]+)", num=True,
+         intro="巴黎名妓玛格丽特和青年阿尔芒相爱，为了他的家庭名誉牺牲了爱情。小仲马的成名作，歌剧《茶花女》就是根据它改编的。"),
+    dict(id="grandet", pg=1715, title="Eugénie Grandet", zh="欧也妮·葛朗台", author="Honoré de Balzac", year=1833, level="较难", chapters=None, cat="world",
+         pat=r"([IVX]+)", num=True,
+         intro="外省守财奴葛朗台富甲一方却一毛不拔，女儿欧也妮爱上落难的堂弟，用一生等待。「吝啬鬼」形象的经典。"),
+    dict(id="candide", pg=19942, title="Candide", zh="老实人", author="Voltaire", year=1759, level="中等", chapters=None, cat="world",
+         pat=r"([IVXL]+)", num=True, next_title=True,
+         intro="天真的青年老实人相信「一切都是最好的安排」，却一路遭遇战争、地震、宗教审判和各种灾难。伏尔泰的讽刺小说，短小好读。"),
+    dict(id="swann", pg=7178, title="Swann's Way", zh="追忆似水年华：去斯万家那边", author="Marcel Proust", year=1913, level="较难", chapters=None, chunk=4000, cat="world",
+         start_at=r"For a long time I used to go to bed early\..*",
+         intro="《追忆似水年华》第一卷：一块玛德莲蛋糕唤起童年在贡布雷的回忆，以及斯万对奥黛特的痴恋。句子长而绵密，适合程度很高的读者。（按篇幅分成若干部分）"),
+    dict(id="werther", pg=2527, title="The Sorrows of Young Werther", zh="少年维特之烦恼", author="Johann Wolfgang von Goethe", year=1774, level="较难", chapters=None, chunk=3500, cat="world",
+         start_at=r"BOOK I", intro="青年维特爱上已经订婚的绿蒂，在一封封书信里倾诉热恋和绝望。歌德的成名作，曾风靡整个欧洲。（书信体，按篇幅分成若干部分）"),
+    dict(id="metamorphosis", pg=5200, title="Metamorphosis", zh="变形记", author="Franz Kafka", year=1915, level="中等", chapters=3, cat="world",
+         pat=r"([IVX]+)", num=True, label="Part",
+         intro="推销员格里高尔一天早上醒来，发现自己变成了一只巨大的甲虫。家人从同情到厌弃，荒诞又真实。只有两万多词，David Wyllie 译本。"),
+    dict(id="trial", pg=7849, title="The Trial", zh="审判", author="Franz Kafka", year=1925, level="中等", chapters=10, cat="world",
+         pat=r"Chapter (One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten)", num=True, next_title=True,
+         intro="银行职员约瑟夫·K 在三十岁生日那天早上被捕，却始终没人告诉他犯了什么罪。卡夫卡笔下令人窒息的官僚迷宫。David Wyllie 译本。"),
+    dict(id="hunger", pg=8387, title="Hunger", zh="饥饿", author="Knut Hamsun", year=1890, level="中等", chapters=4, cat="world",
+         pat=r"Part ([IV]+)", num=True, label="Part",
+         intro="一个穷困潦倒的年轻作家在奥斯陆街头挨饿、游荡、自尊又疯狂的内心独白。现代主义小说的先驱，汉姆生后来获得诺贝尔奖。"),
+    dict(id="donquixote", pg=996, title="Don Quixote", zh="堂吉诃德", author="Miguel de Cervantes", year=1605, level="较难", cat="world",
+         pat=r"CHAPTER ([IVXLC]+)\.", num=True, next_title=True, chapters=126,
+         intro="读骑士小说读疯了的乡绅堂吉诃德，骑着瘦马、带着侍从桑丘出门行侠，把风车当成巨人。被一百位作家评为「有史以来最好的文学作品」。Ormsby 译本。"),
+    dict(id="iliad", pg=2199, title="The Iliad", zh="伊利亚特", author="Homer", year=-750, level="中等", chapters=24, cat="world",
+         pat=r"BOOK ([IVXL]+)\.", num=True, label="Book", dedupe=True,
+         intro="特洛伊战争第十年，阿喀琉斯因为受辱拒绝出战，直到好友帕特洛克罗斯战死。荷马史诗之一，Samuel Butler 的散文译本，比诗体译本好读得多。"),
+    dict(id="odyssey", pg=1727, title="The Odyssey", zh="奥德赛", author="Homer", year=-725, level="中等", chapters=24, cat="world",
+         pat=r"BOOK ([IVXL]+)\.?", num=True, label="Book", dedupe=True,
+         intro="特洛伊战争结束后，奥德修斯在海上漂泊十年，经历独眼巨人、海妖塞壬等冒险才回到家乡。Butler 散文译本。"),
+    dict(id="oedipus", pg=31, title="Oedipus the King, Oedipus at Colonus, Antigone", zh="俄狄浦斯王（索福克勒斯三部曲）", author="Sophocles", year=-430, level="较难", chapters=3,
+         cat="drama", pat=r"(OEDIPUS THE KING|OEDIPUS AT COLONUS|ANTIGONE)", num=False, dedupe=True,
+         intro="俄狄浦斯想尽办法逃避「弑父娶母」的神谕，最后却发现自己早已应验。古希腊悲剧的巅峰，另附《俄狄浦斯在科罗诺斯》和《安提戈涅》。"),
+    dict(id="arabian", pg=128, title="The Arabian Nights Entertainments", zh="一千零一夜（安德鲁·朗格选编）", author="Andrew Lang (ed.)", year=1898, level="中等", chapters=None, cat="fairy",
+         caps_titles=True,
+         intro="山鲁佐德每晚给国王讲一个故事，阿拉丁神灯、阿里巴巴和四十大盗、辛巴达航海都在这里。安德鲁·朗格为青少年选编的版本，语言流畅。"),
+    dict(id="chekhov", pg=13415, title="The Lady with the Dog and Other Stories", zh="带小狗的女人（契诃夫短篇集）", author="Anton Chekhov", year=1899, level="中等", chapters=None, cat="short",
+         caps_titles=True,
+         intro="契诃夫最有名的几篇短篇：《带小狗的女人》《黑衣修士》《姚内奇》等，平淡的生活里藏着深深的孤独。Garnett 译本。"),
+    dict(id="redchamber", pg=[9603, 9604], title="Hung Lou Meng, or, the Dream of the Red Chamber", zh="红楼梦（前五十六回英译）", author="Cao Xueqin", year=1791, level="较难", chapters=None,
+         cat="world", pat=r"CHAPTER ([IVXL]+)\.?", num=True,
+         intro="H. Bencraft Joly 1892 年的英译本，只译到第五十六回。中文读者熟悉情节，正好看英语怎么讲宝玉、黛玉的故事。译文是十九世纪的英语，比较古雅。"),
+    dict(id="threekingdoms", pg=77416, title="Romance of the Three Kingdoms (Vol. 1)", zh="三国演义（上，英译）", author="Luo Guanzhong", year=1925, level="较难", chapters=None,
+         cat="world", pat=r"CHAPTER ([IVXL]+)\.", num=True, next_title=True,
+         intro="Brewitt-Taylor 1925 年的英译本上卷：从桃园结义到赤壁之战前后。看熟悉的故事学英语，人名用的是旧式拼音。"),
+    # 英语原著
+    dict(id="middlemarch", pg=145, title="Middlemarch", zh="米德尔马契", author="George Eliot", year=1871, level="较难", chapters=None, cat="classic",
+         pat=r"CHAPTER ([IVXLC]+)\.", num=True,
+         intro="英国外省小镇米德尔马契里，理想主义的多萝西娅、年轻医生利德盖特各自的婚姻与抱负。常被评为最伟大的英语小说之一。"),
+    dict(id="copperfield", pg=766, title="David Copperfield", zh="大卫·科波菲尔", author="Charles Dickens", year=1850, level="较难", chapters=None, cat="classic",
+         pat=r"CHAPTER (\d+)\. ?(.*)", num=True,
+         intro="狄更斯「最心爱的孩子」：孤儿大卫经历继父虐待、童工生涯，终于成长为作家。带有很强的自传色彩，人物鲜活。"),
+    dict(id="vanityfair", pg=599, title="Vanity Fair", zh="名利场", author="William Makepeace Thackeray", year=1848, level="较难", chapters=None, cat="classic",
+         pat=r"CHAPTER ([IVXL]+)", num=True, next_title=True,
+         intro="出身卑微、精明能干的蓓基·夏普一心往上流社会爬，和善良软弱的阿米莉亚形成对照。萨克雷笔下讽刺的英国社会全景。"),
+    dict(id="tess", pg=110, title="Tess of the d'Urbervilles", zh="德伯家的苔丝", author="Thomas Hardy", year=1891, level="较难", chapters=None, cat="classic",
+         pat=r"([IVXL]+)", num=True,
+         intro="贫苦农家女孩苔丝被富家子亚雷玷污，后来与安玑相爱却因过去被抛弃。哈代对命运和社会道德的控诉。"),
+    dict(id="mansfield", pg=141, title="Mansfield Park", zh="曼斯菲尔德庄园", author="Jane Austen", year=1814, level="较难", chapters=None, cat="classic",
+         pat=r"CHAPTER ([IVXL]+)", num=True,
+         intro="寄居在富亲戚家的穷女孩芬妮，安静、正直，在一群轻浮的年轻人中间坚持自己的判断。奥斯汀六部长篇里最后补齐的一部。"),
+    dict(id="scarletletter", pg=33, title="The Scarlet Letter", zh="红字", author="Nathaniel Hawthorne", year=1850, level="较难", cat="classic",
+         titles=[r'THE PRISON DOOR', r'THE MARKET-PLACE', r'THE RECOGNITION', r'THE INTERVIEW', r'HESTER AT HER NEEDLE', r'PEARL', r'THE GOVERNOR’S HALL', r'THE ELF-CHILD AND THE MINISTER', r'THE LEECH', r'THE LEECH AND HIS PATIENT', r'THE INTERIOR OF A HEART', r'THE MINISTER’S VIGIL', r'ANOTHER VIEW OF HESTER', r'HESTER AND THE PHYSICIAN', r'HESTER AND PEARL', r'A FOREST WALK', r'THE PASTOR AND HIS PARISHIONER', r'A FLOOD OF SUNSHINE', r'THE CHILD AT THE BROOKSIDE', r'THE MINISTER IN A MAZE', r'THE NEW ENGLAND HOLIDAY', r'THE PROCESSION', r'THE REVELATION OF THE SCARLET LETTER', r'CONCLUSION'], chapters=24,
+         intro="清教徒殖民地的海丝特因通奸被迫终身佩戴红色的字母 A，她独自抚养女儿，坚决不说出孩子的父亲是谁。（从正文开始，略去序言《海关》）"),
+    dict(id="uncletom", pg=203, title="Uncle Tom's Cabin", zh="汤姆叔叔的小屋", author="Harriet Beecher Stowe", year=1852, level="中等", chapters=None, cat="classic",
+         pat=r"CHAPTER ([IVXL]+)", num=True, next_title=True,
+         intro="忠厚的黑奴汤姆被一次次转卖，最后死在残暴的奴隶主手里。这本书激起了美国的废奴浪潮，林肯称作者为「引发一场大战的小妇人」。"),
+    dict(id="darkness", pg=219, title="Heart of Darkness", zh="黑暗的心", author="Joseph Conrad", year=1899, level="较难", chapters=3, cat="classic",
+         pat=r"([IVX]+)", num=True, label="Part",
+         intro="水手马洛沿刚果河深入非洲腹地，寻找神秘的象牙贸易站主管库尔茨。篇幅不长，但象征意味很浓，是二十世纪讨论最多的小说之一。"),
+    dict(id="sonslovers", pg=217, title="Sons and Lovers", zh="儿子与情人", author="D. H. Lawrence", year=1913, level="较难", chapters=None, cat="classic",
+         pat=r"CHAPTER ([IVX]+)", num=True, next_title=True,
+         intro="矿工家庭的儿子保罗被母亲强烈的爱牵绊，在两个女人之间无法自拔。劳伦斯带自传性质的成名作。"),
+    dict(id="martineden", pg=1056, title="Martin Eden", zh="马丁·伊登", author="Jack London", year=1909, level="中等", chapters=None, cat="classic",
+         pat=r"CHAPTER ([IVXL]+)\.?", num=True,
+         intro="粗野的水手马丁为了配得上心爱的上流小姐，拼命自学、写作，终于成名，却发现一切都失去了意义。杰克·伦敦带自传色彩的小说。"),
+    dict(id="moonsixpence", pg=222, title="The Moon and Sixpence", zh="月亮和六便士", author="W. Somerset Maugham", year=1919, level="中等", chapters=None, cat="classic",
+         pat=r"Chapter ([IVXL]+)", num=True,
+         intro="四十岁的伦敦证券经纪人突然抛妻弃子去巴黎画画，最后死在塔希提岛。以画家高更为原型，毛姆的语言清楚好读。"),
+    dict(id="bondage", pg=351, title="Of Human Bondage", zh="人性的枷锁", author="W. Somerset Maugham", year=1915, level="中等", chapters=None, cat="classic",
+         pat=r"([IVXLC]+)", num=True,
+         intro="跛足的孤儿菲利普一路求学、学画、学医，在一段痛苦的爱情里挣扎，慢慢找到生活的意义。毛姆的自传体长篇，语言平实。"),
+    dict(id="gadfly", pg=3431, title="The Gadfly", zh="牛虻", author="E. L. Voynich", year=1897, level="中等", chapters=None, cat="classic",
+         pat=r"CHAPTER ([IVX]+)\.", num=True,
+         intro="意大利青年亚瑟被神父欺骗、被恋人误解，出走南美十三年后化名「牛虻」归来，投身革命。在中国影响很大的一部小说。"),
+    dict(id="dalloway", pg=71865, title="Mrs. Dalloway", zh="达洛维夫人", author="Virginia Woolf", year=1925, level="较难", chapters=None, chunk=3500, cat="classic",
+         start_at=r"Mrs\. Dalloway said she would buy the flowers herself\.",
+         intro="六月的一天，达洛维夫人为晚宴买花、准备，思绪在过去和现在之间流动。意识流小说的代表作，原书不分章。（按篇幅分成若干部分）"),
+    dict(id="othello", pg=1531, title="Othello", zh="奥赛罗", author="William Shakespeare", year=1604, level="较难", chapters=5, cat="drama",
+         pat=r"ACT ([IV]+)\.?", num=True, label="Act", dedupe=True,
+         intro="摩尔人将军奥赛罗中了旗官伊阿古的奸计，怀疑妻子苔丝狄蒙娜不忠，亲手掐死了她。莎士比亚四大悲剧之一，讲嫉妒。"),
+    dict(id="lear", pg=1532, title="King Lear", zh="李尔王", author="William Shakespeare", year=1606, level="较难", chapters=5, cat="drama",
+         pat=r"ACT ([IV]+)\.?", num=True, label="Act", dedupe=True,
+         intro="年迈的李尔王把国土分给两个甜言蜜语的女儿，赶走了说真话的小女儿，最后众叛亲离。莎士比亚四大悲剧之一。"),
+    dict(id="merchant", pg=1515, title="The Merchant of Venice", zh="威尼斯商人", author="William Shakespeare", year=1598, level="较难", chapters=5, cat="drama",
+         pat=r"ACT ([IV]+)\.?", num=True, label="Act", dedupe=True,
+         intro="商人安东尼奥向犹太人夏洛克借钱，约定还不上就割一磅肉。聪明的鲍西娅女扮男装上法庭化解危机。"),
+    dict(id="walden", pg=205, title="Walden", zh="瓦尔登湖", author="Henry David Thoreau", year=1854, level="较难", chapters=None, cat="nonfic",
+         titles=[r"Economy", r"Where I Lived, and What I Lived For", r"Reading", r"Sounds", r"Solitude", r"Visitors", r"The Bean-Field", r"The Village",
+                 r"The Ponds", r"Baker Farm", r"Higher Laws", r"Brute Neighbors", r"House-Warming", r"Former Inhabitants and Winter Visitors",
+                 r"Winter Animals", r"The Pond in Winter", r"Spring", r"Conclusion", r"ON THE DUTY OF CIVIL DISOBEDIENCE"],
+         intro="梭罗在瓦尔登湖边亲手盖了一间小木屋，独自生活两年，记录简朴生活中的思考。另附名篇《论公民的不服从》。"),
 ]
 LEVEL_ORDER = ["较易", "中等", "较难"]
 # 书架分类（第一、二批的书在 CAT_OF 里归类，第三批在条目里写了 cat）
 CATS = [["fairy", "🧚 童话寓言"], ["kids", "🧸 儿童与成长"], ["adventure", "🧭 冒险"], ["mystery", "🔍 侦探推理"], ["scifi", "🚀 科幻"],
-        ["gothic", "🕯️ 哥特与惊悚"], ["classic", "🎩 经典文学"], ["short", "📝 短篇小说"], ["drama", "🎭 戏剧"], ["nonfic", "📜 传记与思想"]]
+        ["gothic", "🕯️ 哥特与惊悚"], ["classic", "🎩 经典文学"], ["world", "🌍 世界名著"], ["short", "📝 短篇小说"], ["drama", "🎭 戏剧"], ["nonfic", "📜 传记与思想"]]
 CAT_OF = {
     "fairy": "happyprince aesop justso grimm andersen",
     "kids": "oz peterpan alice secretgarden anne littlewomen willows blackbeauty princess railway heidi pollyanna avonlea",
@@ -399,6 +550,8 @@ PICKS = {"oz", "aesop", "happyprince", "alice", "callwild", "carol", "holmes", "
 
 
 def fetch(b: dict) -> str:
+    if isinstance(b["pg"], list):  # 分成几卷的书（比如《红楼梦》英译本上下两卷）：按顺序接起来
+        return "\n\n".join(fetch({**b, "id": f"{b['id']}{i + 1}", "pg": pg}) for i, pg in enumerate(b["pg"]))
     path = RAW / f"{b['id']}.txt"
     if not path.exists():
         RAW.mkdir(parents=True, exist_ok=True)
@@ -495,9 +648,9 @@ def split_book(b: dict, body: str) -> list:
     if b.get("start_after"):  # 跳过目录等前置内容，从这一行之后开始找章节
         s = next(i for i, l in enumerate(lines) if re.match(rf"^\s*{b['start_after']}\s*$", l))
         lines = lines[s + 1:]
-    if b.get("start_at"):  # 同上，但包括这一行（比如第一封信的标题）
-        s = next(i for i, l in enumerate(lines) if re.match(rf"^\s*{b['start_at']}\s*$", l))
-        lines = lines[s:]
+    if b.get("start_at"):  # 同上，但包括这一行（比如第一封信的标题）；start_last：目录里也有同样一行时用最后一次出现的
+        hits = [i for i, l in enumerate(lines) if re.match(rf"^\s*{b['start_at']}\s*$", l)]
+        lines = lines[hits[-1] if b.get("start_last") else hits[0]:]
     if b.get("whole"):
         return [[b["title"], clean_paragraphs("\n".join(lines))]]
     if b.get("chunk"):
@@ -566,7 +719,7 @@ def main():
         js = (f"// 自动生成，请勿手改：{b['title']}（{b['author']}，{b['year']}，公有领域），由 tools/fetch_books.py 生成\n"
               f"(window.BOOK_TEXT = window.BOOK_TEXT || {{}})[{json.dumps(b['id'])}] = "
               + json.dumps([[t, ps] for t, ps in chapters], ensure_ascii=False, separators=(",", ":")) + ";\n")
-        (OUT / "books" / f"{b['id']}.js").write_text(js, encoding="utf-8")
+        (OUT / "books" / f"{b['id']}.js").write_text(js, encoding="utf-8", newline="\n")
         index.append({k: b[k] for k in ("id", "title", "zh", "author", "year", "level", "intro")}
                      | {"cat": b.get("cat") or CAT_OF[b["id"]], "pick": bool(b.get("pick") or b["id"] in PICKS)}
                      | {"words": sum(words), "chapters": [[t, w] for (t, _), w in zip(chapters, words)]})
@@ -574,7 +727,7 @@ def main():
     js = ("// 自动生成，请勿手改：原著全文书架的书目，正文在 data/books/<id>.js，由 tools/fetch_books.py 生成\n"
           "window.BOOK_CATS = " + json.dumps(CATS, ensure_ascii=False) + ";\n"
           "window.BOOK_SHELF = " + json.dumps(index, ensure_ascii=False, indent=0, separators=(",", ":")) + ";\n")
-    (OUT / "books_index.js").write_text(js, encoding="utf-8")
+    (OUT / "books_index.js").write_text(js, encoding="utf-8", newline="\n")
     total = sum(f.stat().st_size for f in (OUT / "books").glob("*.js"))
     print(f"\n{len(index)} 本书，正文共 {total / 1e6:.1f} MB" + (f"；章节数不对：{bad}" if bad else ""))
 

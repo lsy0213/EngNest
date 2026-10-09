@@ -1,5 +1,5 @@
 // 自动生成，请勿手改：原著全文书架的书目，正文在 data/books/<id>.js，由 tools/fetch_books.py 生成
-window.BOOK_CATS = [["fairy", "🧚 童话寓言"], ["kids", "🧸 儿童与成长"], ["adventure", "🧭 冒险"], ["mystery", "🔍 侦探推理"], ["scifi", "🚀 科幻"], ["gothic", "🕯️ 哥特与惊悚"], ["classic", "🎩 经典文学"], ["short", "📝 短篇小说"], ["drama", "🎭 戏剧"], ["nonfic", "📜 传记与思想"]];
+window.BOOK_CATS = [["fairy", "🧚 童话寓言"], ["kids", "🧸 儿童与成长"], ["adventure", "🧭 冒险"], ["mystery", "🔍 侦探推理"], ["scifi", "🚀 科幻"], ["gothic", "🕯️ 哥特与惊悚"], ["classic", "🎩 经典文学"], ["world", "🌍 世界名著"], ["short", "📝 短篇小说"], ["drama", "🎭 戏剧"], ["nonfic", "📜 传记与思想"]];
 window.BOOK_SHELF = [
 {
 "id":"oz",
@@ -8922,6 +8922,2050 @@ window.BOOK_SHELF = [
 ]
 },
 {
+"id":"camille",
+"title":"Camille (La Dame aux Camélias)",
+"zh":"茶花女",
+"author":"Alexandre Dumas fils",
+"year":1848,
+"level":"中等",
+"intro":"巴黎名妓玛格丽特和青年阿尔芒相爱，为了他的家庭名誉牺牲了爱情。小仲马的成名作，歌剧《茶花女》就是根据它改编的。",
+"cat":"world",
+"pick":false,
+"words":66453,
+"chapters":[
+[
+"Chapter 1",
+1754
+],
+[
+"Chapter 2",
+1964
+],
+[
+"Chapter 3",
+2113
+],
+[
+"Chapter 4",
+2662
+],
+[
+"Chapter 5",
+2288
+],
+[
+"Chapter 6",
+2200
+],
+[
+"Chapter 7",
+3064
+],
+[
+"Chapter 8",
+1886
+],
+[
+"Chapter 9",
+2661
+],
+[
+"Chapter 10",
+2912
+],
+[
+"Chapter 11",
+3069
+],
+[
+"Chapter 12",
+2445
+],
+[
+"Chapter 13",
+3183
+],
+[
+"Chapter 14",
+2965
+],
+[
+"Chapter 15",
+2088
+],
+[
+"Chapter 16",
+2985
+],
+[
+"Chapter 17",
+2265
+],
+[
+"Chapter 18",
+2371
+],
+[
+"Chapter 19",
+1945
+],
+[
+"Chapter 20",
+1734
+],
+[
+"Chapter 21",
+2290
+],
+[
+"Chapter 22",
+2112
+],
+[
+"Chapter 23",
+2791
+],
+[
+"Chapter 24",
+3386
+],
+[
+"Chapter 25",
+2503
+],
+[
+"Chapter 26",
+4266
+],
+[
+"Chapter 27",
+551
+]
+]
+},
+{
+"id":"candide",
+"title":"Candide",
+"zh":"老实人",
+"author":"Voltaire",
+"year":1759,
+"level":"中等",
+"intro":"天真的青年老实人相信「一切都是最好的安排」，却一路遭遇战争、地震、宗教审判和各种灾难。伏尔泰的讽刺小说，短小好读。",
+"cat":"world",
+"pick":false,
+"words":34003,
+"chapters":[
+[
+"Chapter 1: How Candide Was Brought Up in a Magnificent Castle, and How He Was Expelled Thence",
+752
+],
+[
+"Chapter 2: What Became of Candide Among the Bulgarians",
+781
+],
+[
+"Chapter 3: How Candide Made His Escape From the Bulgarians, and What Afterwards Became of Him",
+722
+],
+[
+"Chapter 4: How Candide Found His Old Master Pangloss, and What Happened to Them",
+1046
+],
+[
+"Chapter 5: Tempest, Shipwreck, Earthquake, and What Became of Doctor Pangloss, Candide, and James the Anabaptist",
+835
+],
+[
+"Chapter 6",
+394
+],
+[
+"Chapter 7",
+688
+],
+[
+"Chapter 8: The History of Cunegonde",
+1026
+],
+[
+"Chapter 9: What Became of Cunegonde, Candide, the Grand Inquisitor, and the Jew",
+537
+],
+[
+"Chapter 10",
+657
+],
+[
+"Chapter 11: History of the Old Woman",
+1141
+],
+[
+"Chapter 12: The Adventures of the Old Woman Continued",
+1300
+],
+[
+"Chapter 13",
+765
+],
+[
+"Chapter 14: How Candide and Cacambo Were Received by the Jesuits of Paraguay",
+1134
+],
+[
+"Chapter 15: How Candide Killed the Brother of His Dear Cunegonde",
+709
+],
+[
+"Chapter 16",
+1234
+],
+[
+"Chapter 17",
+1176
+],
+[
+"Chapter 18: What They Saw in the Country of El Dorado",
+1856
+],
+[
+"Chapter 19: What Happened to Them at Surinam and How Candide Got Acquainted with Martin",
+1712
+],
+[
+"Chapter 20: What Happened at Sea to Candide and Martin",
+821
+],
+[
+"Chapter 21: Candide and Martin, Reasoning, Draw Near the Coast of France",
+535
+],
+[
+"Chapter 22: What Happened in France to Candide and Martin",
+3426
+],
+[
+"Chapter 23",
+443
+],
+[
+"Chapter 24: Of Paquette and Friar Giroflée",
+1617
+],
+[
+"Chapter 25: The Visit to Lord Pococurante, a Noble Venetian",
+1803
+],
+[
+"Chapter 26: Of a Supper Which Candide and Martin Took with Six Strangers, and Who They Were.[34]",
+1105
+],
+[
+"Chapter 27: Candide's Voyage to Constantinople",
+1251
+],
+[
+"Chapter 28: What Happened to Candide, Cunegonde, Pangloss, Martin, Etc",
+937
+],
+[
+"Chapter 29: How Candide Found Cunegonde and the Old Woman Again",
+363
+],
+[
+"Chapter 30: The Conclusion",
+3237
+]
+]
+},
+{
+"id":"metamorphosis",
+"title":"Metamorphosis",
+"zh":"变形记",
+"author":"Franz Kafka",
+"year":1915,
+"level":"中等",
+"intro":"推销员格里高尔一天早上醒来，发现自己变成了一只巨大的甲虫。家人从同情到厌弃，荒诞又真实。只有两万多词，David Wyllie 译本。",
+"cat":"world",
+"pick":false,
+"words":21932,
+"chapters":[
+[
+"Part 1",
+7082
+],
+[
+"Part 2",
+7464
+],
+[
+"Part 3",
+7386
+]
+]
+},
+{
+"id":"trial",
+"title":"The Trial",
+"zh":"审判",
+"author":"Franz Kafka",
+"year":1925,
+"level":"中等",
+"intro":"银行职员约瑟夫·K 在三十岁生日那天早上被捕，却始终没人告诉他犯了什么罪。卡夫卡笔下令人窒息的官僚迷宫。David Wyllie 译本。",
+"cat":"world",
+"pick":false,
+"words":83663,
+"chapters":[
+[
+"Chapter 1: Arrest--Conversation with Mrs. Grubach--Then Miss Bürstner",
+11123
+],
+[
+"Chapter 2: First Cross-examination",
+6407
+],
+[
+"Chapter 3: In the empty Courtroom--The Student--The Offices",
+9440
+],
+[
+"Chapter 4: Miss Bürstner's Friend",
+2957
+],
+[
+"Chapter 5: The whip-man",
+2696
+],
+[
+"Chapter 6: K.'s uncle--Leni",
+8239
+],
+[
+"Chapter 7: Lawyer--Manufacturer--Painter",
+19716
+],
+[
+"Chapter 8: Block, the businessman--Dismissing the lawyer",
+11855
+],
+[
+"Chapter 9: In the Cathedral",
+9143
+],
+[
+"Chapter 10: End",
+2087
+]
+]
+},
+{
+"id":"hunger",
+"title":"Hunger",
+"zh":"饥饿",
+"author":"Knut Hamsun",
+"year":1890,
+"level":"中等",
+"intro":"一个穷困潦倒的年轻作家在奥斯陆街头挨饿、游荡、自尊又疯狂的内心独白。现代主义小说的先驱，汉姆生后来获得诺贝尔奖。",
+"cat":"world",
+"pick":false,
+"words":64135,
+"chapters":[
+[
+"Part 1",
+17221
+],
+[
+"Part 2",
+13874
+],
+[
+"Part 3",
+19451
+],
+[
+"Part 4",
+13589
+]
+]
+},
+{
+"id":"iliad",
+"title":"The Iliad",
+"zh":"伊利亚特",
+"author":"Homer",
+"year":-750,
+"level":"中等",
+"intro":"特洛伊战争第十年，阿喀琉斯因为受辱拒绝出战，直到好友帕特洛克罗斯战死。荷马史诗之一，Samuel Butler 的散文译本，比诗体译本好读得多。",
+"cat":"world",
+"pick":false,
+"words":152639,
+"chapters":[
+[
+"Book 1",
+5816
+],
+[
+"Book 2",
+7927
+],
+[
+"Book 3",
+4034
+],
+[
+"Book 4",
+5066
+],
+[
+"Book 5",
+8607
+],
+[
+"Book 6",
+4949
+],
+[
+"Book 7",
+4409
+],
+[
+"Book 8",
+5312
+],
+[
+"Book 9",
+6831
+],
+[
+"Book 10",
+5505
+],
+[
+"Book 11",
+8508
+],
+[
+"Book 12",
+4733
+],
+[
+"Book 13",
+8355
+],
+[
+"Book 14",
+5211
+],
+[
+"Book 15",
+7367
+],
+[
+"Book 16",
+8879
+],
+[
+"Book 17",
+7252
+],
+[
+"Book 18",
+6009
+],
+[
+"Book 19",
+4016
+],
+[
+"Book 20",
+5005
+],
+[
+"Book 21",
+6171
+],
+[
+"Book 22",
+5434
+],
+[
+"Book 23",
+8926
+],
+[
+"Book 24",
+8317
+]
+]
+},
+{
+"id":"odyssey",
+"title":"The Odyssey",
+"zh":"奥德赛",
+"author":"Homer",
+"year":-725,
+"level":"中等",
+"intro":"特洛伊战争结束后，奥德修斯在海上漂泊十年，经历独眼巨人、海妖塞壬等冒险才回到家乡。Butler 散文译本。",
+"cat":"world",
+"pick":false,
+"words":125757,
+"chapters":[
+[
+"Book 1",
+4124
+],
+[
+"Book 2",
+4208
+],
+[
+"Book 3",
+4707
+],
+[
+"Book 4",
+8060
+],
+[
+"Book 5",
+4673
+],
+[
+"Book 6",
+3441
+],
+[
+"Book 7",
+3356
+],
+[
+"Book 8",
+5597
+],
+[
+"Book 9",
+5811
+],
+[
+"Book 10",
+5688
+],
+[
+"Book 11",
+6021
+],
+[
+"Book 12",
+4599
+],
+[
+"Book 13",
+4199
+],
+[
+"Book 14",
+5382
+],
+[
+"Book 15",
+5412
+],
+[
+"Book 16",
+4546
+],
+[
+"Book 17",
+5855
+],
+[
+"Book 18",
+4158
+],
+[
+"Book 19",
+6012
+],
+[
+"Book 20",
+3834
+],
+[
+"Book 21",
+4252
+],
+[
+"Book 22",
+4556
+],
+[
+"Book 23",
+3695
+],
+[
+"Book 24",
+13571
+]
+]
+},
+{
+"id":"arabian",
+"title":"The Arabian Nights Entertainments",
+"zh":"一千零一夜（安德鲁·朗格选编）",
+"author":"Andrew Lang (ed.)",
+"year":1898,
+"level":"中等",
+"intro":"山鲁佐德每晚给国王讲一个故事，阿拉丁神灯、阿里巴巴和四十大盗、辛巴达航海都在这里。安德鲁·朗格为青少年选编的版本，语言流畅。",
+"cat":"fairy",
+"pick":false,
+"words":111125,
+"chapters":[
+[
+"Preface",
+821
+],
+[
+"The Arabian Nights",
+1336
+],
+[
+"The Story of the Merchant and the Genius",
+1480
+],
+[
+"The Story of the First Old Man and of the Hind",
+1159
+],
+[
+"The Story of the Second Old Man, and of the Two Black Dogs",
+1133
+],
+[
+"The Story of the Fisherman",
+1217
+],
+[
+"The Story of the Greek King and the Physician Douban",
+671
+],
+[
+"The Story of the Husband and the Parrot",
+482
+],
+[
+"The Story of the Vizir Who Was Punished",
+3258
+],
+[
+"The Story of the Young King of the Black Isles",
+4653
+],
+[
+"The Story of the First Calender, Son of a King",
+2060
+],
+[
+"The Story of the Second Calendar, Son of a King",
+2851
+],
+[
+"The Story of the Envious Man and of Him Who Was Envied",
+4445
+],
+[
+"The Story of the Third Calendar, Son of a King",
+4839
+],
+[
+"The Seven Voyages of Sindbad the Sailor",
+984
+],
+[
+"First Voyage",
+1732
+],
+[
+"Second Voyage",
+1981
+],
+[
+"Third Voyage",
+2581
+],
+[
+"Fourth Voyage",
+2624
+],
+[
+"Fifth Voyage",
+1859
+],
+[
+"Sixth Voyage",
+2343
+],
+[
+"Seventh and Last Voyage",
+2046
+],
+[
+"The Little Hunchback",
+2957
+],
+[
+"The Story of the Barber's Fifth Brother",
+3643
+],
+[
+"The Story of the Barber's Sixth Brother",
+2034
+],
+[
+"The Adventures of Prince Camaralzaman and the Princess Badoura",
+13254
+],
+[
+"Noureddin and the Fair Persian",
+7522
+],
+[
+"Aladdin and the Wonderful Lamp",
+5290
+],
+[
+"The Adventures of Haroun-al-Raschid, Caliph of Bagdad",
+980
+],
+[
+"The Story of the Blind Baba-Abdalla",
+2656
+],
+[
+"The Story of Sidi-Nouman",
+4149
+],
+[
+"The Story of Ali Colia, Merchant of Bagdad",
+3595
+],
+[
+"The Enchanted Horse",
+8147
+],
+[
+"The Story of Two Sisters Who Were Jealous of Their Younger Sister",
+10343
+]
+]
+},
+{
+"id":"chekhov",
+"title":"The Lady with the Dog and Other Stories",
+"zh":"带小狗的女人（契诃夫短篇集）",
+"author":"Anton Chekhov",
+"year":1899,
+"level":"中等",
+"intro":"契诃夫最有名的几篇短篇：《带小狗的女人》《黑衣修士》《姚内奇》等，平淡的生活里藏着深深的孤独。Garnett 译本。",
+"cat":"short",
+"pick":false,
+"words":71434,
+"chapters":[
+[
+"The Lady with the Dog",
+6610
+],
+[
+"A Doctor's Visit",
+4389
+],
+[
+"An Upheaval",
+2707
+],
+[
+"Ionitch",
+6959
+],
+[
+"The Head of the Family",
+1453
+],
+[
+"The Black Monk",
+12549
+],
+[
+"Volodya",
+4947
+],
+[
+"An Anonymous Story",
+29988
+],
+[
+"The Husband",
+1832
+]
+]
+},
+{
+"id":"uncletom",
+"title":"Uncle Tom's Cabin",
+"zh":"汤姆叔叔的小屋",
+"author":"Harriet Beecher Stowe",
+"year":1852,
+"level":"中等",
+"intro":"忠厚的黑奴汤姆被一次次转卖，最后死在残暴的奴隶主手里。这本书激起了美国的废奴浪潮，林肯称作者为「引发一场大战的小妇人」。",
+"cat":"classic",
+"pick":false,
+"words":180338,
+"chapters":[
+[
+"Chapter 1: In Which the Reader Is Introduced to a Man of Humanity",
+4088
+],
+[
+"Chapter 2: The Mother",
+1235
+],
+[
+"Chapter 3: The Husband and Father",
+2100
+],
+[
+"Chapter 4: An Evening in Uncle Tom’s Cabin",
+4660
+],
+[
+"Chapter 5: Showing the Feelings of Living Property on Changing Owners",
+3538
+],
+[
+"Chapter 6: Discovery",
+3613
+],
+[
+"Chapter 7: The Mother’s Struggle",
+5275
+],
+[
+"Chapter 8: Eliza’s Escape",
+6410
+],
+[
+"Chapter 9: In Which It Appears That a Senator Is But a Man",
+6697
+],
+[
+"Chapter 10: The Property Is Carried Off",
+4029
+],
+[
+"Chapter 11: In Which Property Gets into an Improper State of Mind",
+5589
+],
+[
+"Chapter 12: Select Incident of Lawful Trade",
+6769
+],
+[
+"Chapter 13: The Quaker Settlement",
+3520
+],
+[
+"Chapter 14: Evangeline",
+4103
+],
+[
+"Chapter 15: Of Tom’s New Master, and Various Other Matters",
+6457
+],
+[
+"Chapter 16: Tom’s Mistress and Her Opinions",
+7475
+],
+[
+"Chapter 17: The Freeman’s Defence",
+6960
+],
+[
+"Chapter 18: Miss Ophelia’s Experiences and Opinions",
+6351
+],
+[
+"Chapter 19: Miss Ophelia’s Experiences and Opinions Continued",
+8201
+],
+[
+"Chapter 20: Topsy",
+5821
+],
+[
+"Chapter 21: Kentuck",
+1836
+],
+[
+"Chapter 22: “The Grass Withereth—the Flower Fadeth”",
+2736
+],
+[
+"Chapter 23: Henrique",
+2913
+],
+[
+"Chapter 24: Foreshadowings",
+2563
+],
+[
+"Chapter 25: The Little Evangelist",
+1899
+],
+[
+"Chapter 26: Death",
+5135
+],
+[
+"Chapter 27: “This Is the Last of Earth”[1]",
+2953
+],
+[
+"Chapter 28: Reunion",
+5738
+],
+[
+"Chapter 29: The Unprotected",
+2994
+],
+[
+"Chapter 30: The Slave Warehouse",
+3984
+],
+[
+"Chapter 31: The Middle Passage",
+2405
+],
+[
+"Chapter 32: Dark Places",
+3312
+],
+[
+"Chapter 33: Cassy",
+2875
+],
+[
+"Chapter 34: The Quadroon’s Story",
+4686
+],
+[
+"Chapter 35: The Tokens",
+2473
+],
+[
+"Chapter 36: Emmeline and Cassy",
+2545
+],
+[
+"Chapter 37: Liberty",
+2490
+],
+[
+"Chapter 38: The Victory",
+4025
+],
+[
+"Chapter 39: The Stratagem",
+3853
+],
+[
+"Chapter 40: The Martyr",
+2636
+],
+[
+"Chapter 41: The Young Master",
+2453
+],
+[
+"Chapter 42: An Authentic Ghost Story",
+2487
+],
+[
+"Chapter 43: Results",
+3244
+],
+[
+"Chapter 44: The Liberator",
+1422
+],
+[
+"Chapter 45: Concluding Remarks",
+3790
+]
+]
+},
+{
+"id":"martineden",
+"title":"Martin Eden",
+"zh":"马丁·伊登",
+"author":"Jack London",
+"year":1909,
+"level":"中等",
+"intro":"粗野的水手马丁为了配得上心爱的上流小姐，拼命自学、写作，终于成名，却发现一切都失去了意义。杰克·伦敦带自传色彩的小说。",
+"cat":"classic",
+"pick":false,
+"words":138610,
+"chapters":[
+[
+"Chapter 1",
+4443
+],
+[
+"Chapter 2",
+3908
+],
+[
+"Chapter 3",
+2638
+],
+[
+"Chapter 4",
+1958
+],
+[
+"Chapter 5",
+2227
+],
+[
+"Chapter 6",
+2923
+],
+[
+"Chapter 7",
+4235
+],
+[
+"Chapter 8",
+3272
+],
+[
+"Chapter 9",
+3510
+],
+[
+"Chapter 10",
+2347
+],
+[
+"Chapter 11",
+2830
+],
+[
+"Chapter 12",
+1985
+],
+[
+"Chapter 13",
+3872
+],
+[
+"Chapter 14",
+4564
+],
+[
+"Chapter 15",
+2977
+],
+[
+"Chapter 16",
+2896
+],
+[
+"Chapter 17",
+2553
+],
+[
+"Chapter 18",
+1523
+],
+[
+"Chapter 19",
+2564
+],
+[
+"Chapter 20",
+2722
+],
+[
+"Chapter 21",
+2226
+],
+[
+"Chapter 22",
+2511
+],
+[
+"Chapter 23",
+2446
+],
+[
+"Chapter 24",
+3266
+],
+[
+"Chapter 25",
+3605
+],
+[
+"Chapter 26",
+4074
+],
+[
+"Chapter 27",
+5041
+],
+[
+"Chapter 28",
+2255
+],
+[
+"Chapter 29",
+3961
+],
+[
+"Chapter 30",
+3138
+],
+[
+"Chapter 31",
+3118
+],
+[
+"Chapter 32",
+1921
+],
+[
+"Chapter 33",
+2255
+],
+[
+"Chapter 34",
+2215
+],
+[
+"Chapter 35",
+1733
+],
+[
+"Chapter 36",
+2674
+],
+[
+"Chapter 37",
+3308
+],
+[
+"Chapter 38",
+1666
+],
+[
+"Chapter 39",
+2651
+],
+[
+"Chapter 40",
+2503
+],
+[
+"Chapter 41",
+2506
+],
+[
+"Chapter 42",
+3529
+],
+[
+"Chapter 43",
+3598
+],
+[
+"Chapter 44",
+2928
+],
+[
+"Chapter 45",
+5180
+],
+[
+"Chapter 46",
+4355
+]
+]
+},
+{
+"id":"moonsixpence",
+"title":"The Moon and Sixpence",
+"zh":"月亮和六便士",
+"author":"W. Somerset Maugham",
+"year":1919,
+"level":"中等",
+"intro":"四十岁的伦敦证券经纪人突然抛妻弃子去巴黎画画，最后死在塔希提岛。以画家高更为原型，毛姆的语言清楚好读。",
+"cat":"classic",
+"pick":false,
+"words":74658,
+"chapters":[
+[
+"Chapter 1",
+2055
+],
+[
+"Chapter 2",
+1036
+],
+[
+"Chapter 3",
+930
+],
+[
+"Chapter 4",
+1192
+],
+[
+"Chapter 5",
+706
+],
+[
+"Chapter 6",
+950
+],
+[
+"Chapter 7",
+558
+],
+[
+"Chapter 8",
+2135
+],
+[
+"Chapter 9",
+597
+],
+[
+"Chapter 10",
+1783
+],
+[
+"Chapter 11",
+1290
+],
+[
+"Chapter 12",
+2132
+],
+[
+"Chapter 13",
+875
+],
+[
+"Chapter 14",
+1226
+],
+[
+"Chapter 15",
+2013
+],
+[
+"Chapter 16",
+447
+],
+[
+"Chapter 17",
+589
+],
+[
+"Chapter 18",
+950
+],
+[
+"Chapter 19",
+1963
+],
+[
+"Chapter 20",
+854
+],
+[
+"Chapter 21",
+1979
+],
+[
+"Chapter 22",
+711
+],
+[
+"Chapter 23",
+1112
+],
+[
+"Chapter 24",
+1412
+],
+[
+"Chapter 25",
+1489
+],
+[
+"Chapter 26",
+1300
+],
+[
+"Chapter 27",
+522
+],
+[
+"Chapter 28",
+1881
+],
+[
+"Chapter 29",
+1141
+],
+[
+"Chapter 30",
+1242
+],
+[
+"Chapter 31",
+1010
+],
+[
+"Chapter 32",
+751
+],
+[
+"Chapter 33",
+605
+],
+[
+"Chapter 34",
+1241
+],
+[
+"Chapter 35",
+736
+],
+[
+"Chapter 36",
+358
+],
+[
+"Chapter 37",
+449
+],
+[
+"Chapter 38",
+1018
+],
+[
+"Chapter 39",
+2176
+],
+[
+"Chapter 40",
+708
+],
+[
+"Chapter 41",
+2528
+],
+[
+"Chapter 42",
+1690
+],
+[
+"Chapter 43",
+2033
+],
+[
+"Chapter 44",
+582
+],
+[
+"Chapter 45",
+920
+],
+[
+"Chapter 46",
+1318
+],
+[
+"Chapter 47",
+3258
+],
+[
+"Chapter 48",
+1269
+],
+[
+"Chapter 49",
+1085
+],
+[
+"Chapter 50",
+1548
+],
+[
+"Chapter 51",
+1689
+],
+[
+"Chapter 52",
+567
+],
+[
+"Chapter 53",
+1652
+],
+[
+"Chapter 54",
+1268
+],
+[
+"Chapter 55",
+2886
+],
+[
+"Chapter 56",
+777
+],
+[
+"Chapter 57",
+1706
+],
+[
+"Chapter 58",
+1760
+]
+]
+},
+{
+"id":"bondage",
+"title":"Of Human Bondage",
+"zh":"人性的枷锁",
+"author":"W. Somerset Maugham",
+"year":1915,
+"level":"中等",
+"intro":"跛足的孤儿菲利普一路求学、学画、学医，在一段痛苦的爱情里挣扎，慢慢找到生活的意义。毛姆的自传体长篇，语言平实。",
+"cat":"classic",
+"pick":false,
+"words":259317,
+"chapters":[
+[
+"Chapter 1",
+620
+],
+[
+"Chapter 2",
+891
+],
+[
+"Chapter 3",
+1582
+],
+[
+"Chapter 4",
+1367
+],
+[
+"Chapter 5",
+1362
+],
+[
+"Chapter 6",
+2138
+],
+[
+"Chapter 7",
+1099
+],
+[
+"Chapter 8",
+1763
+],
+[
+"Chapter 9",
+2047
+],
+[
+"Chapter 10",
+1218
+],
+[
+"Chapter 11",
+1887
+],
+[
+"Chapter 12",
+1128
+],
+[
+"Chapter 13",
+976
+],
+[
+"Chapter 14",
+2038
+],
+[
+"Chapter 15",
+2455
+],
+[
+"Chapter 16",
+2365
+],
+[
+"Chapter 17",
+2204
+],
+[
+"Chapter 18",
+1429
+],
+[
+"Chapter 19",
+1672
+],
+[
+"Chapter 20",
+1657
+],
+[
+"Chapter 21",
+3800
+],
+[
+"Chapter 22",
+1507
+],
+[
+"Chapter 23",
+1884
+],
+[
+"Chapter 24",
+612
+],
+[
+"Chapter 25",
+1001
+],
+[
+"Chapter 26",
+2647
+],
+[
+"Chapter 27",
+2045
+],
+[
+"Chapter 28",
+2240
+],
+[
+"Chapter 29",
+1111
+],
+[
+"Chapter 30",
+2491
+],
+[
+"Chapter 31",
+946
+],
+[
+"Chapter 32",
+2819
+],
+[
+"Chapter 33",
+3647
+],
+[
+"Chapter 34",
+1761
+],
+[
+"Chapter 35",
+3135
+],
+[
+"Chapter 36",
+1696
+],
+[
+"Chapter 37",
+2300
+],
+[
+"Chapter 38",
+2618
+],
+[
+"Chapter 39",
+1705
+],
+[
+"Chapter 40",
+2833
+],
+[
+"Chapter 41",
+2843
+],
+[
+"Chapter 42",
+1813
+],
+[
+"Chapter 43",
+2847
+],
+[
+"Chapter 44",
+2576
+],
+[
+"Chapter 45",
+3221
+],
+[
+"Chapter 46",
+2017
+],
+[
+"Chapter 47",
+3614
+],
+[
+"Chapter 48",
+3071
+],
+[
+"Chapter 49",
+2592
+],
+[
+"Chapter 50",
+2868
+],
+[
+"Chapter 51",
+1567
+],
+[
+"Chapter 52",
+2615
+],
+[
+"Chapter 53",
+2042
+],
+[
+"Chapter 54",
+2030
+],
+[
+"Chapter 55",
+2229
+],
+[
+"Chapter 56",
+1787
+],
+[
+"Chapter 57",
+1938
+],
+[
+"Chapter 58",
+2408
+],
+[
+"Chapter 59",
+2800
+],
+[
+"Chapter 60",
+1112
+],
+[
+"Chapter 61",
+2098
+],
+[
+"Chapter 62",
+2078
+],
+[
+"Chapter 63",
+1472
+],
+[
+"Chapter 64",
+1769
+],
+[
+"Chapter 65",
+1322
+],
+[
+"Chapter 66",
+2201
+],
+[
+"Chapter 67",
+2222
+],
+[
+"Chapter 68",
+1760
+],
+[
+"Chapter 69",
+2921
+],
+[
+"Chapter 70",
+2683
+],
+[
+"Chapter 71",
+2001
+],
+[
+"Chapter 72",
+2020
+],
+[
+"Chapter 73",
+3080
+],
+[
+"Chapter 74",
+2295
+],
+[
+"Chapter 75",
+2144
+],
+[
+"Chapter 76",
+2708
+],
+[
+"Chapter 77",
+1469
+],
+[
+"Chapter 78",
+2483
+],
+[
+"Chapter 79",
+2819
+],
+[
+"Chapter 80",
+1733
+],
+[
+"Chapter 81",
+3269
+],
+[
+"Chapter 82",
+1359
+],
+[
+"Chapter 83",
+1846
+],
+[
+"Chapter 84",
+2156
+],
+[
+"Chapter 85",
+2086
+],
+[
+"Chapter 86",
+1610
+],
+[
+"Chapter 87",
+3006
+],
+[
+"Chapter 88",
+2999
+],
+[
+"Chapter 89",
+1390
+],
+[
+"Chapter 90",
+2228
+],
+[
+"Chapter 91",
+1362
+],
+[
+"Chapter 92",
+2490
+],
+[
+"Chapter 93",
+1868
+],
+[
+"Chapter 94",
+3282
+],
+[
+"Chapter 95",
+2685
+],
+[
+"Chapter 96",
+3111
+],
+[
+"Chapter 97",
+2017
+],
+[
+"Chapter 98",
+2461
+],
+[
+"Chapter 99",
+1179
+],
+[
+"Chapter 100",
+3155
+],
+[
+"Chapter 101",
+1470
+],
+[
+"Chapter 102",
+1164
+],
+[
+"Chapter 103",
+2109
+],
+[
+"Chapter 104",
+1627
+],
+[
+"Chapter 105",
+2276
+],
+[
+"Chapter 106",
+3074
+],
+[
+"Chapter 107",
+1982
+],
+[
+"Chapter 108",
+3069
+],
+[
+"Chapter 109",
+2677
+],
+[
+"Chapter 110",
+1924
+],
+[
+"Chapter 111",
+2474
+],
+[
+"Chapter 112",
+2213
+],
+[
+"Chapter 113",
+2483
+],
+[
+"Chapter 114",
+2125
+],
+[
+"Chapter 115",
+1848
+],
+[
+"Chapter 116",
+2535
+],
+[
+"Chapter 117",
+2119
+],
+[
+"Chapter 118",
+2715
+],
+[
+"Chapter 119",
+2064
+],
+[
+"Chapter 120",
+1818
+],
+[
+"Chapter 121",
+2665
+],
+[
+"Chapter 122",
+1363
+]
+]
+},
+{
+"id":"gadfly",
+"title":"The Gadfly",
+"zh":"牛虻",
+"author":"E. L. Voynich",
+"year":1897,
+"level":"中等",
+"intro":"意大利青年亚瑟被神父欺骗、被恋人误解，出走南美十三年后化名「牛虻」归来，投身革命。在中国影响很大的一部小说。",
+"cat":"classic",
+"pick":false,
+"words":99991,
+"chapters":[
+[
+"Chapter 1",
+2788
+],
+[
+"Chapter 2",
+3300
+],
+[
+"Chapter 3",
+2498
+],
+[
+"Chapter 4",
+2945
+],
+[
+"Chapter 5",
+2301
+],
+[
+"Chapter 6",
+4460
+],
+[
+"Chapter 7",
+4881
+],
+[
+"Chapter 8",
+3757
+],
+[
+"Chapter 9",
+4718
+],
+[
+"Chapter 10",
+3540
+],
+[
+"Chapter 11",
+3038
+],
+[
+"Chapter 12",
+3363
+],
+[
+"Chapter 13",
+2970
+],
+[
+"Chapter 14",
+2722
+],
+[
+"Chapter 15",
+5386
+],
+[
+"Chapter 16",
+4687
+],
+[
+"Chapter 17",
+3109
+],
+[
+"Chapter 18",
+6014
+],
+[
+"Chapter 19",
+4827
+],
+[
+"Chapter 20",
+3521
+],
+[
+"Chapter 21",
+3371
+],
+[
+"Chapter 22",
+4529
+],
+[
+"Chapter 23",
+2417
+],
+[
+"Chapter 24",
+6085
+],
+[
+"Chapter 25",
+2942
+],
+[
+"Chapter 26",
+5822
+]
+]
+},
+{
 "id":"crusoe",
 "title":"Robinson Crusoe",
 "zh":"鲁滨逊漂流记",
@@ -13322,6 +15366,10072 @@ window.BOOK_SHELF = [
 [
 "Book 12",
 12901
+]
+]
+},
+{
+"id":"crime",
+"title":"Crime and Punishment",
+"zh":"罪与罚",
+"author":"Fyodor Dostoevsky",
+"year":1866,
+"level":"较难",
+"intro":"穷大学生拉斯柯尔尼科夫认为「不平凡的人」有权越过道德界限，于是杀了放高利贷的老太婆，此后在良心和恐惧中煎熬。Constance Garnett 译本。",
+"cat":"world",
+"pick":false,
+"words":202613,
+"chapters":[
+[
+"Chapter 1",
+3326
+],
+[
+"Chapter 2",
+7279
+],
+[
+"Chapter 3",
+5539
+],
+[
+"Chapter 4",
+5084
+],
+[
+"Chapter 5",
+4198
+],
+[
+"Chapter 6",
+5023
+],
+[
+"Chapter 7",
+4883
+],
+[
+"Chapter 8",
+6717
+],
+[
+"Chapter 9",
+4155
+],
+[
+"Chapter 10",
+5281
+],
+[
+"Chapter 11",
+4064
+],
+[
+"Chapter 12",
+3974
+],
+[
+"Chapter 13",
+7505
+],
+[
+"Chapter 14",
+6919
+],
+[
+"Chapter 15",
+5077
+],
+[
+"Chapter 16",
+4424
+],
+[
+"Chapter 17",
+4983
+],
+[
+"Chapter 18",
+4174
+],
+[
+"Chapter 19",
+6997
+],
+[
+"Chapter 20",
+4271
+],
+[
+"Chapter 21",
+4932
+],
+[
+"Chapter 22",
+4535
+],
+[
+"Chapter 23",
+3028
+],
+[
+"Chapter 24",
+6093
+],
+[
+"Chapter 25",
+6990
+],
+[
+"Chapter 26",
+2732
+],
+[
+"Chapter 27",
+6130
+],
+[
+"Chapter 28",
+4917
+],
+[
+"Chapter 29",
+5520
+],
+[
+"Chapter 30",
+6575
+],
+[
+"Chapter 31",
+5043
+],
+[
+"Chapter 32",
+3792
+],
+[
+"Chapter 33",
+5555
+],
+[
+"Chapter 34",
+3788
+],
+[
+"Chapter 35",
+4381
+],
+[
+"Chapter 36",
+5516
+],
+[
+"Chapter 37",
+5402
+],
+[
+"Chapter 38",
+3571
+],
+[
+"Chapter 39",
+10240
+]
+]
+},
+{
+"id":"karamazov",
+"title":"The Brothers Karamazov",
+"zh":"卡拉马佐夫兄弟",
+"author":"Fyodor Dostoevsky",
+"year":1880,
+"level":"较难",
+"intro":"放荡的父亲被杀，三个性格截然不同的儿子——热情的德米特里、理性的伊万、虔诚的阿辽沙——都卷入其中。陀思妥耶夫斯基最后也最伟大的小说。",
+"cat":"world",
+"pick":false,
+"words":349807,
+"chapters":[
+[
+"Chapter 1",
+1332
+],
+[
+"Chapter 2",
+1304
+],
+[
+"Chapter 3",
+2592
+],
+[
+"Chapter 4",
+3510
+],
+[
+"Chapter 5",
+3635
+],
+[
+"Chapter 6",
+1796
+],
+[
+"Chapter 7",
+3575
+],
+[
+"Chapter 8",
+3241
+],
+[
+"Chapter 9",
+3035
+],
+[
+"Chapter 10",
+3671
+],
+[
+"Chapter 11",
+3929
+],
+[
+"Chapter 12",
+3467
+],
+[
+"Chapter 13",
+3519
+],
+[
+"Chapter 14",
+2256
+],
+[
+"Chapter 15",
+1647
+],
+[
+"Chapter 16",
+3327
+],
+[
+"Chapter 17",
+3375
+],
+[
+"Chapter 18",
+3367
+],
+[
+"Chapter 19",
+2148
+],
+[
+"Chapter 20",
+2174
+],
+[
+"Chapter 21",
+2873
+],
+[
+"Chapter 22",
+2058
+],
+[
+"Chapter 23",
+4444
+],
+[
+"Chapter 24",
+3129
+],
+[
+"Chapter 25",
+4122
+],
+[
+"Chapter 26",
+1955
+],
+[
+"Chapter 27",
+1824
+],
+[
+"Chapter 28",
+2318
+],
+[
+"Chapter 29",
+4505
+],
+[
+"Chapter 30",
+3316
+],
+[
+"Chapter 31",
+4390
+],
+[
+"Chapter 32",
+4422
+],
+[
+"Chapter 33",
+2543
+],
+[
+"Chapter 34",
+3836
+],
+[
+"Chapter 35",
+4923
+],
+[
+"Chapter 36",
+9255
+],
+[
+"Chapter 37",
+4331
+],
+[
+"Chapter 38",
+3413
+],
+[
+"Chapter 39",
+6364
+],
+[
+"Chapter 40",
+9139
+],
+[
+"Chapter 41",
+6239
+],
+[
+"Chapter 42",
+5180
+],
+[
+"Chapter 43",
+2420
+],
+[
+"Chapter 44",
+7818
+],
+[
+"Chapter 45",
+2053
+],
+[
+"Chapter 46",
+4768
+],
+[
+"Chapter 47",
+2969
+],
+[
+"Chapter 48",
+4726
+],
+[
+"Chapter 49",
+2389
+],
+[
+"Chapter 50",
+6288
+],
+[
+"Chapter 51",
+3115
+],
+[
+"Chapter 52",
+6336
+],
+[
+"Chapter 53",
+5544
+],
+[
+"Chapter 54",
+2802
+],
+[
+"Chapter 55",
+2701
+],
+[
+"Chapter 56",
+3573
+],
+[
+"Chapter 57",
+3013
+],
+[
+"Chapter 58",
+4405
+],
+[
+"Chapter 59",
+3168
+],
+[
+"Chapter 60",
+4767
+],
+[
+"Chapter 61",
+3925
+],
+[
+"Chapter 62",
+1528
+],
+[
+"Chapter 63",
+2252
+],
+[
+"Chapter 64",
+2267
+],
+[
+"Chapter 65",
+2913
+],
+[
+"Chapter 66",
+3262
+],
+[
+"Chapter 67",
+6664
+],
+[
+"Chapter 68",
+2637
+],
+[
+"Chapter 69",
+1391
+],
+[
+"Chapter 70",
+3942
+],
+[
+"Chapter 71",
+4378
+],
+[
+"Chapter 72",
+2564
+],
+[
+"Chapter 73",
+5794
+],
+[
+"Chapter 74",
+2239
+],
+[
+"Chapter 75",
+4004
+],
+[
+"Chapter 76",
+3848
+],
+[
+"Chapter 77",
+6408
+],
+[
+"Chapter 78",
+7942
+],
+[
+"Chapter 79",
+2258
+],
+[
+"Chapter 80",
+2818
+],
+[
+"Chapter 81",
+3809
+],
+[
+"Chapter 82",
+2299
+],
+[
+"Chapter 83",
+3984
+],
+[
+"Chapter 84",
+4127
+],
+[
+"Chapter 85",
+4046
+],
+[
+"Chapter 86",
+2063
+],
+[
+"Chapter 87",
+4104
+],
+[
+"Chapter 88",
+4587
+],
+[
+"Chapter 89",
+1714
+],
+[
+"Chapter 90",
+2826
+],
+[
+"Chapter 91",
+3420
+],
+[
+"Chapter 92",
+3419
+],
+[
+"Chapter 93",
+2574
+],
+[
+"Chapter 94",
+2211
+],
+[
+"Chapter 95",
+3097
+],
+[
+"Chapter 96",
+4159
+]
+]
+},
+{
+"id":"idiot",
+"title":"The Idiot",
+"zh":"白痴",
+"author":"Fyodor Dostoevsky",
+"year":1869,
+"level":"较难",
+"intro":"善良单纯得像个孩子的梅什金公爵从瑞士回到彼得堡，被卷进两个女人的爱情和上流社会的算计。陀思妥耶夫斯基想写「一个绝对美好的人」。Eva Martin 译本。",
+"cat":"world",
+"pick":false,
+"words":241469,
+"chapters":[
+[
+"Chapter 1",
+4134
+],
+[
+"Chapter 2",
+4057
+],
+[
+"Chapter 3",
+5102
+],
+[
+"Chapter 4",
+5416
+],
+[
+"Chapter 5",
+6360
+],
+[
+"Chapter 6",
+4285
+],
+[
+"Chapter 7",
+4964
+],
+[
+"Chapter 8",
+5096
+],
+[
+"Chapter 9",
+2981
+],
+[
+"Chapter 10",
+2536
+],
+[
+"Chapter 11",
+2815
+],
+[
+"Chapter 12",
+3967
+],
+[
+"Chapter 13",
+3485
+],
+[
+"Chapter 14",
+3795
+],
+[
+"Chapter 15",
+3654
+],
+[
+"Chapter 16",
+4606
+],
+[
+"Chapter 17",
+3786
+],
+[
+"Chapter 18",
+5686
+],
+[
+"Chapter 19",
+5825
+],
+[
+"Chapter 20",
+2179
+],
+[
+"Chapter 21",
+4934
+],
+[
+"Chapter 22",
+5356
+],
+[
+"Chapter 23",
+3379
+],
+[
+"Chapter 24",
+6892
+],
+[
+"Chapter 25",
+4990
+],
+[
+"Chapter 26",
+5187
+],
+[
+"Chapter 27",
+5460
+],
+[
+"Chapter 28",
+2516
+],
+[
+"Chapter 29",
+5942
+],
+[
+"Chapter 30",
+5117
+],
+[
+"Chapter 31",
+6414
+],
+[
+"Chapter 32",
+6031
+],
+[
+"Chapter 33",
+5666
+],
+[
+"Chapter 34",
+7050
+],
+[
+"Chapter 35",
+5557
+],
+[
+"Chapter 36",
+5418
+],
+[
+"Chapter 37",
+5441
+],
+[
+"Chapter 38",
+2663
+],
+[
+"Chapter 39",
+4818
+],
+[
+"Chapter 40",
+3324
+],
+[
+"Chapter 41",
+4382
+],
+[
+"Chapter 42",
+4899
+],
+[
+"Chapter 43",
+7269
+],
+[
+"Chapter 44",
+6072
+],
+[
+"Chapter 45",
+7079
+],
+[
+"Chapter 46",
+7626
+],
+[
+"Chapter 47",
+4826
+],
+[
+"Chapter 48",
+5408
+],
+[
+"Chapter 49",
+5559
+],
+[
+"Chapter 50",
+1465
+]
+]
+},
+{
+"id":"possessed",
+"title":"The Possessed",
+"zh":"群魔",
+"author":"Fyodor Dostoevsky",
+"year":1872,
+"level":"较难",
+"intro":"外省小城里，一群激进青年在神秘人物斯塔夫罗金周围策划阴谋，最后酿成血案。根据真实的革命小组凶杀案写成。Garnett 译本。",
+"cat":"world",
+"pick":false,
+"words":253202,
+"chapters":[
+[
+"Chapter 1: Introductory",
+13409
+],
+[
+"Chapter 2: Prince Harry. Matchmaking. I",
+15841
+],
+[
+"Chapter 3: The Sins of Others I",
+17040
+],
+[
+"Chapter 4: The Cripple I",
+12535
+],
+[
+"Chapter 5: The Subtle Serpent I",
+17876
+],
+[
+"Chapter 6: Night I",
+18394
+],
+[
+"Chapter 7: NIGHT (continued)",
+9241
+],
+[
+"Chapter 8: The Duel I",
+4413
+],
+[
+"Chapter 9: All in Expectation I",
+8939
+],
+[
+"Chapter 10: On the Eve of the Fete I",
+9826
+],
+[
+"Chapter 11: Pyotr Stepanovitch Is Busy I",
+16319
+],
+[
+"Chapter 12: A Meeting I",
+9072
+],
+[
+"Chapter 13: Ivan the Tsarevitch",
+4060
+],
+[
+"Chapter 14: A Raid at Stepan Trofimovitch's",
+3637
+],
+[
+"Chapter 15: Filibusters. a Fatal Morning I",
+9385
+],
+[
+"Chapter 16: The Fete--first Part I",
+11640
+],
+[
+"Chapter 17: The End of the Fete I",
+11692
+],
+[
+"Chapter 18: A Romance Ended I",
+8392
+],
+[
+"Chapter 19: The Last Resolution I",
+8945
+],
+[
+"Chapter 20: A Wanderer I",
+11998
+],
+[
+"Chapter 21: A Busy Night I",
+12325
+],
+[
+"Chapter 22: Stepan Trofimovitch's Last Wandering I",
+13181
+],
+[
+"Conclusion",
+5042
+]
+]
+},
+{
+"id":"anna",
+"title":"Anna Karenina",
+"zh":"安娜·卡列尼娜",
+"author":"Leo Tolstoy",
+"year":1877,
+"level":"较难",
+"intro":"「幸福的家庭都是相似的，不幸的家庭各有各的不幸。」贵妇人安娜爱上军官伏伦斯基，和另一条线上列文的成长交织在一起。Garnett 译本。",
+"cat":"world",
+"pick":false,
+"words":349242,
+"chapters":[
+[
+"Chapter 1",
+952
+],
+[
+"Chapter 2",
+1215
+],
+[
+"Chapter 3",
+1659
+],
+[
+"Chapter 4",
+1870
+],
+[
+"Chapter 5",
+3071
+],
+[
+"Chapter 6",
+1137
+],
+[
+"Chapter 7",
+770
+],
+[
+"Chapter 8",
+885
+],
+[
+"Chapter 9",
+2424
+],
+[
+"Chapter 10",
+2417
+],
+[
+"Chapter 11",
+1504
+],
+[
+"Chapter 12",
+1675
+],
+[
+"Chapter 13",
+891
+],
+[
+"Chapter 14",
+2368
+],
+[
+"Chapter 15",
+866
+],
+[
+"Chapter 16",
+738
+],
+[
+"Chapter 17",
+1101
+],
+[
+"Chapter 18",
+1892
+],
+[
+"Chapter 19",
+2247
+],
+[
+"Chapter 20",
+1283
+],
+[
+"Chapter 21",
+839
+],
+[
+"Chapter 22",
+1733
+],
+[
+"Chapter 23",
+1618
+],
+[
+"Chapter 24",
+1599
+],
+[
+"Chapter 25",
+1740
+],
+[
+"Chapter 26",
+1343
+],
+[
+"Chapter 27",
+898
+],
+[
+"Chapter 28",
+1051
+],
+[
+"Chapter 29",
+1284
+],
+[
+"Chapter 30",
+1082
+],
+[
+"Chapter 31",
+1363
+],
+[
+"Chapter 32",
+840
+],
+[
+"Chapter 33",
+1364
+],
+[
+"Chapter 34",
+1532
+],
+[
+"Chapter 35",
+1331
+],
+[
+"Chapter 36",
+1432
+],
+[
+"Chapter 37",
+1283
+],
+[
+"Chapter 38",
+1249
+],
+[
+"Chapter 39",
+1345
+],
+[
+"Chapter 40",
+1799
+],
+[
+"Chapter 41",
+1910
+],
+[
+"Chapter 42",
+1545
+],
+[
+"Chapter 43",
+1436
+],
+[
+"Chapter 44",
+246
+],
+[
+"Chapter 45",
+764
+],
+[
+"Chapter 46",
+1180
+],
+[
+"Chapter 47",
+2598
+],
+[
+"Chapter 48",
+1647
+],
+[
+"Chapter 49",
+1261
+],
+[
+"Chapter 50",
+1603
+],
+[
+"Chapter 51",
+1641
+],
+[
+"Chapter 52",
+731
+],
+[
+"Chapter 53",
+1210
+],
+[
+"Chapter 54",
+1004
+],
+[
+"Chapter 55",
+1911
+],
+[
+"Chapter 56",
+1903
+],
+[
+"Chapter 57",
+1046
+],
+[
+"Chapter 58",
+2241
+],
+[
+"Chapter 59",
+2023
+],
+[
+"Chapter 60",
+1861
+],
+[
+"Chapter 61",
+966
+],
+[
+"Chapter 62",
+1465
+],
+[
+"Chapter 63",
+1431
+],
+[
+"Chapter 64",
+1294
+],
+[
+"Chapter 65",
+977
+],
+[
+"Chapter 66",
+1711
+],
+[
+"Chapter 67",
+1644
+],
+[
+"Chapter 68",
+2048
+],
+[
+"Chapter 69",
+1832
+],
+[
+"Chapter 70",
+1410
+],
+[
+"Chapter 71",
+1068
+],
+[
+"Chapter 72",
+2200
+],
+[
+"Chapter 73",
+1952
+],
+[
+"Chapter 74",
+1998
+],
+[
+"Chapter 75",
+1205
+],
+[
+"Chapter 76",
+1511
+],
+[
+"Chapter 77",
+1753
+],
+[
+"Chapter 78",
+1086
+],
+[
+"Chapter 79",
+1521
+],
+[
+"Chapter 80",
+1161
+],
+[
+"Chapter 81",
+1525
+],
+[
+"Chapter 82",
+2502
+],
+[
+"Chapter 83",
+1690
+],
+[
+"Chapter 84",
+2102
+],
+[
+"Chapter 85",
+1406
+],
+[
+"Chapter 86",
+1861
+],
+[
+"Chapter 87",
+1516
+],
+[
+"Chapter 88",
+1258
+],
+[
+"Chapter 89",
+1272
+],
+[
+"Chapter 90",
+2297
+],
+[
+"Chapter 91",
+2004
+],
+[
+"Chapter 92",
+1442
+],
+[
+"Chapter 93",
+1533
+],
+[
+"Chapter 94",
+1254
+],
+[
+"Chapter 95",
+1853
+],
+[
+"Chapter 96",
+2291
+],
+[
+"Chapter 97",
+1792
+],
+[
+"Chapter 98",
+1829
+],
+[
+"Chapter 99",
+1401
+],
+[
+"Chapter 100",
+1558
+],
+[
+"Chapter 101",
+1147
+],
+[
+"Chapter 102",
+992
+],
+[
+"Chapter 103",
+860
+],
+[
+"Chapter 104",
+2016
+],
+[
+"Chapter 105",
+1305
+],
+[
+"Chapter 106",
+1882
+],
+[
+"Chapter 107",
+1352
+],
+[
+"Chapter 108",
+1542
+],
+[
+"Chapter 109",
+1466
+],
+[
+"Chapter 110",
+2278
+],
+[
+"Chapter 111",
+1434
+],
+[
+"Chapter 112",
+645
+],
+[
+"Chapter 113",
+1642
+],
+[
+"Chapter 114",
+1386
+],
+[
+"Chapter 115",
+1587
+],
+[
+"Chapter 116",
+1358
+],
+[
+"Chapter 117",
+1287
+],
+[
+"Chapter 118",
+2758
+],
+[
+"Chapter 119",
+1552
+],
+[
+"Chapter 120",
+2220
+],
+[
+"Chapter 121",
+734
+],
+[
+"Chapter 122",
+1162
+],
+[
+"Chapter 123",
+1872
+],
+[
+"Chapter 124",
+1152
+],
+[
+"Chapter 125",
+2493
+],
+[
+"Chapter 126",
+1882
+],
+[
+"Chapter 127",
+1053
+],
+[
+"Chapter 128",
+2199
+],
+[
+"Chapter 129",
+935
+],
+[
+"Chapter 130",
+707
+],
+[
+"Chapter 131",
+1918
+],
+[
+"Chapter 132",
+1283
+],
+[
+"Chapter 133",
+1175
+],
+[
+"Chapter 134",
+1009
+],
+[
+"Chapter 135",
+1951
+],
+[
+"Chapter 136",
+750
+],
+[
+"Chapter 137",
+1045
+],
+[
+"Chapter 138",
+1740
+],
+[
+"Chapter 139",
+1514
+],
+[
+"Chapter 140",
+1180
+],
+[
+"Chapter 141",
+1729
+],
+[
+"Chapter 142",
+1316
+],
+[
+"Chapter 143",
+1350
+],
+[
+"Chapter 144",
+2806
+],
+[
+"Chapter 145",
+1443
+],
+[
+"Chapter 146",
+1517
+],
+[
+"Chapter 147",
+1056
+],
+[
+"Chapter 148",
+1615
+],
+[
+"Chapter 149",
+1023
+],
+[
+"Chapter 150",
+1102
+],
+[
+"Chapter 151",
+1702
+],
+[
+"Chapter 152",
+1406
+],
+[
+"Chapter 153",
+1945
+],
+[
+"Chapter 154",
+1258
+],
+[
+"Chapter 155",
+1564
+],
+[
+"Chapter 156",
+989
+],
+[
+"Chapter 157",
+2682
+],
+[
+"Chapter 158",
+992
+],
+[
+"Chapter 159",
+1899
+],
+[
+"Chapter 160",
+1363
+],
+[
+"Chapter 161",
+1139
+],
+[
+"Chapter 162",
+931
+],
+[
+"Chapter 163",
+1659
+],
+[
+"Chapter 164",
+1897
+],
+[
+"Chapter 165",
+1476
+],
+[
+"Chapter 166",
+1400
+],
+[
+"Chapter 167",
+1894
+],
+[
+"Chapter 168",
+2399
+],
+[
+"Chapter 169",
+1674
+],
+[
+"Chapter 170",
+711
+],
+[
+"Chapter 171",
+1485
+],
+[
+"Chapter 172",
+1595
+],
+[
+"Chapter 173",
+1915
+],
+[
+"Chapter 174",
+1642
+],
+[
+"Chapter 175",
+1426
+],
+[
+"Chapter 176",
+1748
+],
+[
+"Chapter 177",
+1848
+],
+[
+"Chapter 178",
+1673
+],
+[
+"Chapter 179",
+2764
+],
+[
+"Chapter 180",
+1679
+],
+[
+"Chapter 181",
+1454
+],
+[
+"Chapter 182",
+1130
+],
+[
+"Chapter 183",
+1599
+],
+[
+"Chapter 184",
+855
+],
+[
+"Chapter 185",
+1648
+],
+[
+"Chapter 186",
+1579
+],
+[
+"Chapter 187",
+1791
+],
+[
+"Chapter 188",
+1257
+],
+[
+"Chapter 189",
+1504
+],
+[
+"Chapter 190",
+1386
+],
+[
+"Chapter 191",
+1597
+],
+[
+"Chapter 192",
+1702
+],
+[
+"Chapter 193",
+1264
+],
+[
+"Chapter 194",
+798
+],
+[
+"Chapter 195",
+764
+],
+[
+"Chapter 196",
+1286
+],
+[
+"Chapter 197",
+1113
+],
+[
+"Chapter 198",
+1146
+],
+[
+"Chapter 199",
+1807
+],
+[
+"Chapter 200",
+1011
+],
+[
+"Chapter 201",
+1199
+],
+[
+"Chapter 202",
+1312
+],
+[
+"Chapter 203",
+2166
+],
+[
+"Chapter 204",
+1050
+],
+[
+"Chapter 205",
+960
+],
+[
+"Chapter 206",
+1599
+],
+[
+"Chapter 207",
+1060
+],
+[
+"Chapter 208",
+1020
+],
+[
+"Chapter 209",
+1649
+],
+[
+"Chapter 210",
+1872
+],
+[
+"Chapter 211",
+896
+],
+[
+"Chapter 212",
+1308
+],
+[
+"Chapter 213",
+1640
+],
+[
+"Chapter 214",
+1884
+],
+[
+"Chapter 215",
+1614
+],
+[
+"Chapter 216",
+1052
+],
+[
+"Chapter 217",
+1468
+],
+[
+"Chapter 218",
+993
+],
+[
+"Chapter 219",
+1285
+],
+[
+"Chapter 220",
+1745
+],
+[
+"Chapter 221",
+1378
+],
+[
+"Chapter 222",
+1151
+],
+[
+"Chapter 223",
+873
+],
+[
+"Chapter 224",
+824
+],
+[
+"Chapter 225",
+829
+],
+[
+"Chapter 226",
+955
+],
+[
+"Chapter 227",
+820
+],
+[
+"Chapter 228",
+832
+],
+[
+"Chapter 229",
+758
+],
+[
+"Chapter 230",
+1220
+],
+[
+"Chapter 231",
+1127
+],
+[
+"Chapter 232",
+1414
+],
+[
+"Chapter 233",
+1066
+],
+[
+"Chapter 234",
+1694
+],
+[
+"Chapter 235",
+1418
+],
+[
+"Chapter 236",
+1242
+],
+[
+"Chapter 237",
+836
+],
+[
+"Chapter 238",
+1086
+],
+[
+"Chapter 239",
+1011
+]
+]
+},
+{
+"id":"warpeace",
+"title":"War and Peace",
+"zh":"战争与和平",
+"author":"Leo Tolstoy",
+"year":1869,
+"level":"较难",
+"intro":"拿破仑战争中的俄国，几个贵族家庭的命运沉浮：皮埃尔、安德烈、娜塔莎。篇幅很长（五十多万词），可以当成长期计划慢慢读。Maude 夫妇译本。",
+"cat":"world",
+"pick":false,
+"words":561754,
+"chapters":[
+[
+"Chapter 1",
+2015
+],
+[
+"Chapter 2",
+1377
+],
+[
+"Chapter 3",
+1465
+],
+[
+"Chapter 4",
+1415
+],
+[
+"Chapter 5",
+1870
+],
+[
+"Chapter 6",
+1357
+],
+[
+"Chapter 7",
+1017
+],
+[
+"Chapter 8",
+1195
+],
+[
+"Chapter 9",
+2096
+],
+[
+"Chapter 10",
+1705
+],
+[
+"Chapter 11",
+871
+],
+[
+"Chapter 12",
+1355
+],
+[
+"Chapter 13",
+726
+],
+[
+"Chapter 14",
+1527
+],
+[
+"Chapter 15",
+1481
+],
+[
+"Chapter 16",
+1848
+],
+[
+"Chapter 17",
+706
+],
+[
+"Chapter 18",
+2354
+],
+[
+"Chapter 19",
+1123
+],
+[
+"Chapter 20",
+2047
+],
+[
+"Chapter 21",
+2715
+],
+[
+"Chapter 22",
+1794
+],
+[
+"Chapter 23",
+1782
+],
+[
+"Chapter 24",
+1656
+],
+[
+"Chapter 25",
+3595
+],
+[
+"Chapter 26",
+1951
+],
+[
+"Chapter 27",
+1561
+],
+[
+"Chapter 28",
+3283
+],
+[
+"Chapter 29",
+1680
+],
+[
+"Chapter 30",
+2619
+],
+[
+"Chapter 31",
+2406
+],
+[
+"Chapter 32",
+3037
+],
+[
+"Chapter 33",
+1169
+],
+[
+"Chapter 34",
+943
+],
+[
+"Chapter 35",
+1760
+],
+[
+"Chapter 36",
+3290
+],
+[
+"Chapter 37",
+1830
+],
+[
+"Chapter 38",
+2129
+],
+[
+"Chapter 39",
+871
+],
+[
+"Chapter 40",
+1974
+],
+[
+"Chapter 41",
+2126
+],
+[
+"Chapter 42",
+1123
+],
+[
+"Chapter 43",
+2060
+],
+[
+"Chapter 44",
+879
+],
+[
+"Chapter 45",
+1805
+],
+[
+"Chapter 46",
+1676
+],
+[
+"Chapter 47",
+2071
+],
+[
+"Chapter 48",
+2175
+],
+[
+"Chapter 49",
+2867
+],
+[
+"Chapter 50",
+3429
+],
+[
+"Chapter 51",
+3353
+],
+[
+"Chapter 52",
+3109
+],
+[
+"Chapter 53",
+2919
+],
+[
+"Chapter 54",
+2175
+],
+[
+"Chapter 55",
+2170
+],
+[
+"Chapter 56",
+3316
+],
+[
+"Chapter 57",
+1715
+],
+[
+"Chapter 58",
+2317
+],
+[
+"Chapter 59",
+1887
+],
+[
+"Chapter 60",
+1534
+],
+[
+"Chapter 61",
+2351
+],
+[
+"Chapter 62",
+2102
+],
+[
+"Chapter 63",
+2005
+],
+[
+"Chapter 64",
+2146
+],
+[
+"Chapter 65",
+1464
+],
+[
+"Chapter 66",
+1912
+],
+[
+"Chapter 67",
+2610
+],
+[
+"Chapter 68",
+1566
+],
+[
+"Chapter 69",
+2891
+],
+[
+"Chapter 70",
+2257
+],
+[
+"Chapter 71",
+1889
+],
+[
+"Chapter 72",
+1875
+],
+[
+"Chapter 73",
+837
+],
+[
+"Chapter 74",
+1827
+],
+[
+"Chapter 75",
+1233
+],
+[
+"Chapter 76",
+1578
+],
+[
+"Chapter 77",
+911
+],
+[
+"Chapter 78",
+1288
+],
+[
+"Chapter 79",
+928
+],
+[
+"Chapter 80",
+1199
+],
+[
+"Chapter 81",
+1180
+],
+[
+"Chapter 82",
+1076
+],
+[
+"Chapter 83",
+1235
+],
+[
+"Chapter 84",
+1262
+],
+[
+"Chapter 85",
+1277
+],
+[
+"Chapter 86",
+2315
+],
+[
+"Chapter 87",
+2630
+],
+[
+"Chapter 88",
+1453
+],
+[
+"Chapter 89",
+707
+],
+[
+"Chapter 90",
+1617
+],
+[
+"Chapter 91",
+555
+],
+[
+"Chapter 92",
+1525
+],
+[
+"Chapter 93",
+2107
+],
+[
+"Chapter 94",
+1748
+],
+[
+"Chapter 95",
+3133
+],
+[
+"Chapter 96",
+1384
+],
+[
+"Chapter 97",
+1474
+],
+[
+"Chapter 98",
+854
+],
+[
+"Chapter 99",
+1643
+],
+[
+"Chapter 100",
+1965
+],
+[
+"Chapter 101",
+1347
+],
+[
+"Chapter 102",
+1044
+],
+[
+"Chapter 103",
+1534
+],
+[
+"Chapter 104",
+1417
+],
+[
+"Chapter 105",
+1720
+],
+[
+"Chapter 106",
+149
+],
+[
+"Chapter 107",
+933
+],
+[
+"Chapter 108",
+1018
+],
+[
+"Chapter 109",
+921
+],
+[
+"Chapter 110",
+1095
+],
+[
+"Chapter 111",
+1911
+],
+[
+"Chapter 112",
+1136
+],
+[
+"Chapter 113",
+1640
+],
+[
+"Chapter 114",
+1255
+],
+[
+"Chapter 115",
+908
+],
+[
+"Chapter 116",
+2017
+],
+[
+"Chapter 117",
+1402
+],
+[
+"Chapter 118",
+932
+],
+[
+"Chapter 119",
+1342
+],
+[
+"Chapter 120",
+1367
+],
+[
+"Chapter 121",
+1073
+],
+[
+"Chapter 122",
+1392
+],
+[
+"Chapter 123",
+759
+],
+[
+"Chapter 124",
+1690
+],
+[
+"Chapter 125",
+717
+],
+[
+"Chapter 126",
+1186
+],
+[
+"Chapter 127",
+1115
+],
+[
+"Chapter 128",
+1429
+],
+[
+"Chapter 129",
+2218
+],
+[
+"Chapter 130",
+1121
+],
+[
+"Chapter 131",
+1409
+],
+[
+"Chapter 132",
+1314
+],
+[
+"Chapter 133",
+1697
+],
+[
+"Chapter 134",
+738
+],
+[
+"Chapter 135",
+1074
+],
+[
+"Chapter 136",
+2166
+],
+[
+"Chapter 137",
+1788
+],
+[
+"Chapter 138",
+2570
+],
+[
+"Chapter 139",
+3246
+],
+[
+"Chapter 140",
+1219
+],
+[
+"Chapter 141",
+1431
+],
+[
+"Chapter 142",
+3098
+],
+[
+"Chapter 143",
+1486
+],
+[
+"Chapter 144",
+1126
+],
+[
+"Chapter 145",
+1174
+],
+[
+"Chapter 146",
+1953
+],
+[
+"Chapter 147",
+1420
+],
+[
+"Chapter 148",
+2071
+],
+[
+"Chapter 149",
+942
+],
+[
+"Chapter 150",
+1723
+],
+[
+"Chapter 151",
+1235
+],
+[
+"Chapter 152",
+1391
+],
+[
+"Chapter 153",
+1458
+],
+[
+"Chapter 154",
+1952
+],
+[
+"Chapter 155",
+1296
+],
+[
+"Chapter 156",
+916
+],
+[
+"Chapter 157",
+1212
+],
+[
+"Chapter 158",
+1153
+],
+[
+"Chapter 159",
+1147
+],
+[
+"Chapter 160",
+1923
+],
+[
+"Chapter 161",
+1921
+],
+[
+"Chapter 162",
+881
+],
+[
+"Chapter 163",
+1218
+],
+[
+"Chapter 164",
+1381
+],
+[
+"Chapter 165",
+1152
+],
+[
+"Chapter 166",
+1447
+],
+[
+"Chapter 167",
+1112
+],
+[
+"Chapter 168",
+1767
+],
+[
+"Chapter 169",
+1525
+],
+[
+"Chapter 170",
+1413
+],
+[
+"Chapter 171",
+1527
+],
+[
+"Chapter 172",
+834
+],
+[
+"Chapter 173",
+2644
+],
+[
+"Chapter 174",
+1183
+],
+[
+"Chapter 175",
+2410
+],
+[
+"Chapter 176",
+2788
+],
+[
+"Chapter 177",
+1315
+],
+[
+"Chapter 178",
+1945
+],
+[
+"Chapter 179",
+1635
+],
+[
+"Chapter 180",
+1100
+],
+[
+"Chapter 181",
+1203
+],
+[
+"Chapter 182",
+1274
+],
+[
+"Chapter 183",
+1205
+],
+[
+"Chapter 184",
+1373
+],
+[
+"Chapter 185",
+2116
+],
+[
+"Chapter 186",
+1452
+],
+[
+"Chapter 187",
+2215
+],
+[
+"Chapter 188",
+2046
+],
+[
+"Chapter 189",
+2149
+],
+[
+"Chapter 190",
+706
+],
+[
+"Chapter 191",
+2117
+],
+[
+"Chapter 192",
+1636
+],
+[
+"Chapter 193",
+972
+],
+[
+"Chapter 194",
+4008
+],
+[
+"Chapter 195",
+2792
+],
+[
+"Chapter 196",
+1570
+],
+[
+"Chapter 197",
+1232
+],
+[
+"Chapter 198",
+3303
+],
+[
+"Chapter 199",
+1929
+],
+[
+"Chapter 200",
+1957
+],
+[
+"Chapter 201",
+1021
+],
+[
+"Chapter 202",
+844
+],
+[
+"Chapter 203",
+1439
+],
+[
+"Chapter 204",
+1849
+],
+[
+"Chapter 205",
+2403
+],
+[
+"Chapter 206",
+1323
+],
+[
+"Chapter 207",
+1651
+],
+[
+"Chapter 208",
+1842
+],
+[
+"Chapter 209",
+1958
+],
+[
+"Chapter 210",
+1419
+],
+[
+"Chapter 211",
+1718
+],
+[
+"Chapter 212",
+1344
+],
+[
+"Chapter 213",
+701
+],
+[
+"Chapter 214",
+1053
+],
+[
+"Chapter 215",
+2957
+],
+[
+"Chapter 216",
+1478
+],
+[
+"Chapter 217",
+1251
+],
+[
+"Chapter 218",
+1082
+],
+[
+"Chapter 219",
+1061
+],
+[
+"Chapter 220",
+1179
+],
+[
+"Chapter 221",
+2918
+],
+[
+"Chapter 222",
+724
+],
+[
+"Chapter 223",
+1244
+],
+[
+"Chapter 224",
+1752
+],
+[
+"Chapter 225",
+1545
+],
+[
+"Chapter 226",
+1919
+],
+[
+"Chapter 227",
+1153
+],
+[
+"Chapter 228",
+1263
+],
+[
+"Chapter 229",
+1089
+],
+[
+"Chapter 230",
+1322
+],
+[
+"Chapter 231",
+1302
+],
+[
+"Chapter 232",
+1056
+],
+[
+"Chapter 233",
+1389
+],
+[
+"Chapter 234",
+1023
+],
+[
+"Chapter 235",
+1353
+],
+[
+"Chapter 236",
+1537
+],
+[
+"Chapter 237",
+816
+],
+[
+"Chapter 238",
+1230
+],
+[
+"Chapter 239",
+1345
+],
+[
+"Chapter 240",
+836
+],
+[
+"Chapter 241",
+1523
+],
+[
+"Chapter 242",
+1383
+],
+[
+"Chapter 243",
+1065
+],
+[
+"Chapter 244",
+1278
+],
+[
+"Chapter 245",
+1903
+],
+[
+"Chapter 246",
+1706
+],
+[
+"Chapter 247",
+1292
+],
+[
+"Chapter 248",
+1661
+],
+[
+"Chapter 249",
+938
+],
+[
+"Chapter 250",
+999
+],
+[
+"Chapter 251",
+874
+],
+[
+"Chapter 252",
+1579
+],
+[
+"Chapter 253",
+1454
+],
+[
+"Chapter 254",
+3520
+],
+[
+"Chapter 255",
+2103
+],
+[
+"Chapter 256",
+1547
+],
+[
+"Chapter 257",
+1061
+],
+[
+"Chapter 258",
+3803
+],
+[
+"Chapter 259",
+646
+],
+[
+"Chapter 260",
+1733
+],
+[
+"Chapter 261",
+2363
+],
+[
+"Chapter 262",
+2559
+],
+[
+"Chapter 263",
+1666
+],
+[
+"Chapter 264",
+1390
+],
+[
+"Chapter 265",
+944
+],
+[
+"Chapter 266",
+1033
+],
+[
+"Chapter 267",
+1902
+],
+[
+"Chapter 268",
+1253
+],
+[
+"Chapter 269",
+1604
+],
+[
+"Chapter 270",
+1742
+],
+[
+"Chapter 271",
+1519
+],
+[
+"Chapter 272",
+864
+],
+[
+"Chapter 273",
+1495
+],
+[
+"Chapter 274",
+1490
+],
+[
+"Chapter 275",
+2186
+],
+[
+"Chapter 276",
+1110
+],
+[
+"Chapter 277",
+2050
+],
+[
+"Chapter 278",
+1533
+],
+[
+"Chapter 279",
+2182
+],
+[
+"Chapter 280",
+1261
+],
+[
+"Chapter 281",
+803
+],
+[
+"Chapter 282",
+1090
+],
+[
+"Chapter 283",
+743
+],
+[
+"Chapter 284",
+559
+],
+[
+"Chapter 285",
+1310
+],
+[
+"Chapter 286",
+812
+],
+[
+"Chapter 287",
+792
+],
+[
+"Chapter 288",
+1332
+],
+[
+"Chapter 289",
+1271
+],
+[
+"Chapter 290",
+1616
+],
+[
+"Chapter 291",
+1063
+],
+[
+"Chapter 292",
+1274
+],
+[
+"Chapter 293",
+1724
+],
+[
+"Chapter 294",
+917
+],
+[
+"Chapter 295",
+981
+],
+[
+"Chapter 296",
+1115
+],
+[
+"Chapter 297",
+664
+],
+[
+"Chapter 298",
+813
+],
+[
+"Chapter 299",
+1219
+],
+[
+"Chapter 300",
+890
+],
+[
+"Chapter 301",
+1058
+],
+[
+"Chapter 302",
+1341
+],
+[
+"Chapter 303",
+1379
+],
+[
+"Chapter 304",
+874
+],
+[
+"Chapter 305",
+1411
+],
+[
+"Chapter 306",
+908
+],
+[
+"Chapter 307",
+1200
+],
+[
+"Chapter 308",
+1542
+],
+[
+"Chapter 309",
+1077
+],
+[
+"Chapter 310",
+1235
+],
+[
+"Chapter 311",
+1232
+],
+[
+"Chapter 312",
+577
+],
+[
+"Chapter 313",
+910
+],
+[
+"Chapter 314",
+625
+],
+[
+"Chapter 315",
+650
+],
+[
+"Chapter 316",
+641
+],
+[
+"Chapter 317",
+1771
+],
+[
+"Chapter 318",
+1555
+],
+[
+"Chapter 319",
+839
+],
+[
+"Chapter 320",
+1018
+],
+[
+"Chapter 321",
+1181
+],
+[
+"Chapter 322",
+1250
+],
+[
+"Chapter 323",
+1091
+],
+[
+"Chapter 324",
+916
+],
+[
+"Chapter 325",
+1435
+],
+[
+"Chapter 326",
+880
+],
+[
+"Chapter 327",
+2095
+],
+[
+"Chapter 328",
+602
+],
+[
+"Chapter 329",
+1135
+],
+[
+"Chapter 330",
+2034
+],
+[
+"Chapter 331",
+827
+],
+[
+"Chapter 332",
+1233
+],
+[
+"Chapter 333",
+966
+],
+[
+"Chapter 334",
+1898
+],
+[
+"Chapter 335",
+1959
+],
+[
+"Chapter 336",
+726
+],
+[
+"Chapter 337",
+569
+],
+[
+"Chapter 338",
+1119
+],
+[
+"Chapter 339",
+722
+],
+[
+"Chapter 340",
+1713
+],
+[
+"Chapter 341",
+969
+],
+[
+"Chapter 342",
+1243
+],
+[
+"Chapter 343",
+1603
+],
+[
+"Chapter 344",
+1290
+],
+[
+"Chapter 345",
+1401
+],
+[
+"Chapter 346",
+2110
+],
+[
+"Chapter 347",
+1931
+],
+[
+"Chapter 348",
+1243
+],
+[
+"Chapter 349",
+1806
+],
+[
+"Chapter 350",
+1266
+],
+[
+"Chapter 351",
+1949
+],
+[
+"Chapter 352",
+1849
+],
+[
+"Chapter 353",
+1896
+],
+[
+"Chapter 354",
+1755
+],
+[
+"Chapter 355",
+1605
+],
+[
+"Chapter 356",
+874
+],
+[
+"Chapter 357",
+2333
+],
+[
+"Chapter 358",
+1103
+],
+[
+"Chapter 359",
+1361
+],
+[
+"Chapter 360",
+1286
+],
+[
+"Chapter 361",
+1677
+],
+[
+"Chapter 362",
+2099
+],
+[
+"Chapter 363",
+1996
+],
+[
+"Chapter 364",
+605
+],
+[
+"Chapter 365",
+840
+]
+]
+},
+{
+"id":"resurrection",
+"title":"Resurrection",
+"zh":"复活",
+"author":"Leo Tolstoy",
+"year":1899,
+"level":"较难",
+"intro":"聂赫留朵夫公爵当陪审员时，认出被告席上的妓女玛丝洛娃正是自己年轻时诱骗过的姑娘，决心为她赎罪。托尔斯泰晚年的代表作。",
+"cat":"world",
+"pick":false,
+"words":172044,
+"chapters":[
+[
+"Chapter 1: Maslova in Prison",
+1187
+],
+[
+"Chapter 2: Maslova’s Early Life",
+1973
+],
+[
+"Chapter 3: Nekhludoff",
+1813
+],
+[
+"Chapter 4: Missy",
+898
+],
+[
+"Chapter 5: The Jurymen",
+880
+],
+[
+"Chapter 6: The Judges",
+1138
+],
+[
+"Chapter 7: The Officials of the Court",
+1084
+],
+[
+"Chapter 8: Swearing in the Jury",
+1029
+],
+[
+"Chapter 9: The Trial--the Prisoners Questioned",
+1145
+],
+[
+"Chapter 10: The Trial--the Indictment",
+922
+],
+[
+"Chapter 11: The Trial--maslova Cross-examined",
+2087
+],
+[
+"Chapter 12: Twelve Years Before",
+1730
+],
+[
+"Chapter 13: Life in the Army",
+1400
+],
+[
+"Chapter 14: The Second Meeting with Maslova",
+1474
+],
+[
+"Chapter 15: The Early Mass",
+1577
+],
+[
+"Chapter 16: The First Step",
+1055
+],
+[
+"Chapter 17: Nekhludoff and Katusha",
+1062
+],
+[
+"Chapter 18: Afterwards",
+957
+],
+[
+"Chapter 19: The Trial--resumption",
+831
+],
+[
+"Chapter 20: The Trial--the Medical Report",
+1181
+],
+[
+"Chapter 21: The Trial--the Prosecutor and the Advocates",
+1719
+],
+[
+"Chapter 22: The Trial--the Summing Up",
+1167
+],
+[
+"Chapter 23: The Trial--the Verdict",
+2698
+],
+[
+"Chapter 24: The Trial--the Sentence",
+1012
+],
+[
+"Chapter 25: Nekhludoff Consults an Advocate",
+589
+],
+[
+"Chapter 26: The House of Korchagin",
+1731
+],
+[
+"Chapter 27: Missy’s Mother",
+1729
+],
+[
+"Chapter 28: The Awakening",
+2246
+],
+[
+"Chapter 29: Maslova in Prison",
+1216
+],
+[
+"Chapter 30: The Cell",
+1228
+],
+[
+"Chapter 31: The Prisoners",
+1038
+],
+[
+"Chapter 32: A Prison Quarrel",
+1393
+],
+[
+"Chapter 33: The Leaven at Work--nekhludoff’s Domestic Changes",
+1347
+],
+[
+"Chapter 34: The Absurdity of Law--reflections of a Juryman",
+1801
+],
+[
+"Chapter 35: The Procureur--nekhludoff Refuses to Serve",
+923
+],
+[
+"Chapter 36: Nekhludoff Endeavours to Visit Maslova",
+793
+],
+[
+"Chapter 37: Maslova Recalls the Past",
+1342
+],
+[
+"Chapter 38: Sunday in Prison--preparing for Mass",
+788
+],
+[
+"Chapter 39: The Prison Church--blind Leaders of the Blind",
+1243
+],
+[
+"Chapter 40: The Husks of Religion",
+1006
+],
+[
+"Chapter 41: Visiting Day--the Men’s Ward",
+1695
+],
+[
+"Chapter 42: Visiting Day--the Women’s Ward",
+777
+],
+[
+"Chapter 43: Nekhludoff Visits Maslova",
+2005
+],
+[
+"Chapter 44: Maslova’s View of Life",
+810
+],
+[
+"Chapter 45: Fanarin, the Advocate--the Petition",
+2288
+],
+[
+"Chapter 46: A Prison Flogging",
+1001
+],
+[
+"Chapter 47: Nekhludoff Again Visits Maslova",
+873
+],
+[
+"Chapter 48: Maslova Refuses to Marry",
+1191
+],
+[
+"Chapter 49: Vera Doukhova",
+1098
+],
+[
+"Chapter 50: The Vice-governor of the Prison",
+1271
+],
+[
+"Chapter 51: The Cells",
+1056
+],
+[
+"Chapter 52: No. 21",
+861
+],
+[
+"Chapter 53: Victims of Government",
+860
+],
+[
+"Chapter 54: Prisoners and Friends",
+828
+],
+[
+"Chapter 55: Vera Doukhova Explains",
+775
+],
+[
+"Chapter 56: Nekhludoff and the Prisoners",
+811
+],
+[
+"Chapter 57: The Vice-governor’s “at-home”",
+1327
+],
+[
+"Chapter 58: The Vice-governor Suspicious",
+948
+],
+[
+"Chapter 59: Nekhludoff’s Third Interview with Maslova in Prison",
+1402
+],
+[
+"Chapter 60: Property in Land",
+2175
+],
+[
+"Chapter 61: Efforts at Land Restoration",
+1463
+],
+[
+"Chapter 62: Old Associations",
+970
+],
+[
+"Chapter 63: The Peasants’ Lot",
+1473
+],
+[
+"Chapter 64: Maslova’s Aunt",
+1377
+],
+[
+"Chapter 65: Reflections of a Landlord",
+2144
+],
+[
+"Chapter 66: The Disinherited",
+1278
+],
+[
+"Chapter 67: God’s Peace in the Heart",
+1229
+],
+[
+"Chapter 68: The Land Settlement",
+2197
+],
+[
+"Chapter 69: Nekhludoff Returns to Town",
+1555
+],
+[
+"Chapter 70: An Advocate’s Views on Judges and Prosecutors",
+827
+],
+[
+"Chapter 71: Why the Peasants Flock to Town",
+821
+],
+[
+"Chapter 72: Nurse Maslova",
+2014
+],
+[
+"Chapter 73: An Aristocratic Circle",
+1898
+],
+[
+"Chapter 74: An Average Statesman",
+1764
+],
+[
+"Chapter 75: An Up-to-date Senator",
+1436
+],
+[
+"Chapter 76: Countess Katerina Ivanovna’s Dinner Party",
+1129
+],
+[
+"Chapter 77: Officialdom",
+1143
+],
+[
+"Chapter 78: An Old General of Repute",
+2243
+],
+[
+"Chapter 79: Maslova’s Appeal",
+1280
+],
+[
+"Chapter 80: The Appeal Dismissed",
+1253
+],
+[
+"Chapter 81: An Old Friend",
+856
+],
+[
+"Chapter 82: The Public Prosecutor",
+1438
+],
+[
+"Chapter 83: Mariette Tempts Nekhludoff",
+2440
+],
+[
+"Chapter 84: Lydia Shoustova’s Home",
+1474
+],
+[
+"Chapter 85: Lydia’s Aunt",
+669
+],
+[
+"Chapter 86: The State Church and the People",
+2090
+],
+[
+"Chapter 87: The Meaning of Mariette’s Attraction",
+1419
+],
+[
+"Chapter 88: For Her Sake and for God’s",
+2102
+],
+[
+"Chapter 89: The Astonishing Institution Called Criminal Law",
+1675
+],
+[
+"Chapter 90: Nekhludoff’s Sister and Her Husband",
+987
+],
+[
+"Chapter 91: Nekhludoff’s Anarchism",
+1835
+],
+[
+"Chapter 92: The Aim of the Law",
+1319
+],
+[
+"Chapter 93: The Prisoners Start for Siberia",
+1842
+],
+[
+"Chapter 94: Not Men But Strange and Terrible Creatures?",
+1310
+],
+[
+"Chapter 95: The Tender Mercies of the Lord",
+1553
+],
+[
+"Chapter 96: Spilled Like Water on the Ground",
+1730
+],
+[
+"Chapter 97: The Convict Train",
+1188
+],
+[
+"Chapter 98: Brother and Sister",
+1926
+],
+[
+"Chapter 99: The Fundamental Law of Human Life",
+1593
+],
+[
+"Chapter 100: Taras’s Story",
+2325
+],
+[
+"Chapter 101: Le Vrai Grand Monde",
+1517
+],
+[
+"Chapter 102: Maslova Makes New Friends",
+973
+],
+[
+"Chapter 103: An Incident of the March",
+835
+],
+[
+"Chapter 104: Mary Pavlovna",
+891
+],
+[
+"Chapter 105: Simonson",
+987
+],
+[
+"Chapter 106: The Political Prisoners",
+1511
+],
+[
+"Chapter 107: Kryltzoff’s Story",
+1678
+],
+[
+"Chapter 108: Nekhludoff Seeks an Interview with Maslova",
+929
+],
+[
+"Chapter 109: Nekhludoff and the Officer",
+1307
+],
+[
+"Chapter 110: The Political Prisoners",
+795
+],
+[
+"Chapter 111: Makar Devkin",
+683
+],
+[
+"Chapter 112: Maslova and Her Companions",
+1212
+],
+[
+"Chapter 113: Nabatoff and Markel",
+1866
+],
+[
+"Chapter 114: Love Affairs of the Exiles",
+884
+],
+[
+"Chapter 115: Conversations in Prison",
+754
+],
+[
+"Chapter 116: Novodvoroff",
+758
+],
+[
+"Chapter 117: Simonson Speaks to Nekhludoff",
+1189
+],
+[
+"Chapter 118: “i Have Nothing More to Say.”",
+806
+],
+[
+"Chapter 119: Neveroff’s Fate",
+1059
+],
+[
+"Chapter 120: Why Is It Done?",
+1767
+],
+[
+"Chapter 121: The Journey Resumed",
+1316
+],
+[
+"Chapter 122: “just a Worthless Tramp.”",
+975
+],
+[
+"Chapter 123: Nekhludoff Sees the General",
+1575
+],
+[
+"Chapter 124: The Sentence Commuted",
+1165
+],
+[
+"Chapter 125: The General’s Household",
+1889
+],
+[
+"Chapter 126: Maslova’s Decision",
+1191
+],
+[
+"Chapter 127: The English Visitor",
+618
+],
+[
+"Chapter 128: Kryltzoff at Rest",
+893
+],
+[
+"Chapter 129: A New Life Dawns for Nekhludoff",
+2272
+]
+]
+},
+{
+"id":"fathersons",
+"title":"Fathers and Sons",
+"zh":"父与子",
+"author":"Ivan Turgenev",
+"year":1862,
+"level":"较难",
+"intro":"大学生巴扎罗夫自称「虚无主义者」，什么都不信，回到乡下和老一辈发生冲突。屠格涅夫最有名的小说，篇幅适中。",
+"cat":"world",
+"pick":false,
+"words":78545,
+"chapters":[
+[
+"Chapter 1",
+1420
+],
+[
+"Chapter 2",
+723
+],
+[
+"Chapter 3",
+2065
+],
+[
+"Chapter 4",
+1588
+],
+[
+"Chapter 5",
+2306
+],
+[
+"Chapter 6",
+1118
+],
+[
+"Chapter 7",
+2569
+],
+[
+"Chapter 8",
+2703
+],
+[
+"Chapter 9",
+1031
+],
+[
+"Chapter 10",
+4415
+],
+[
+"Chapter 11",
+1547
+],
+[
+"Chapter 12",
+2001
+],
+[
+"Chapter 13",
+2336
+],
+[
+"Chapter 14",
+1797
+],
+[
+"Chapter 15",
+1638
+],
+[
+"Chapter 16",
+3824
+],
+[
+"Chapter 17",
+4092
+],
+[
+"Chapter 18",
+1771
+],
+[
+"Chapter 19",
+2776
+],
+[
+"Chapter 20",
+3917
+],
+[
+"Chapter 21",
+6144
+],
+[
+"Chapter 22",
+2191
+],
+[
+"Chapter 23",
+2537
+],
+[
+"Chapter 24",
+6572
+],
+[
+"Chapter 25",
+3775
+],
+[
+"Chapter 26",
+3401
+],
+[
+"Chapter 27",
+6156
+],
+[
+"Chapter 28",
+2132
+]
+]
+},
+{
+"id":"deadsouls",
+"title":"Dead Souls",
+"zh":"死魂灵",
+"author":"Nikolai Gogol",
+"year":1842,
+"level":"较难",
+"intro":"骗子乞乞科夫走遍外省，向地主们收购已经死去、但户籍上还在的农奴「死魂灵」，借此抵押发财。讽刺辛辣又好笑。",
+"cat":"world",
+"pick":false,
+"words":137747,
+"chapters":[
+[
+"Chapter 1",
+5473
+],
+[
+"Chapter 2",
+8746
+],
+[
+"Chapter 3",
+9067
+],
+[
+"Chapter 4",
+11556
+],
+[
+"Chapter 5",
+8033
+],
+[
+"Chapter 6",
+5609
+],
+[
+"Chapter 7",
+7603
+],
+[
+"Chapter 8",
+7207
+],
+[
+"Chapter 9",
+3863
+],
+[
+"Chapter 10",
+5114
+],
+[
+"Chapter 11",
+14467
+],
+[
+"Chapter 12",
+12306
+],
+[
+"Chapter 13",
+2039
+],
+[
+"Chapter 14",
+14738
+],
+[
+"Chapter 15",
+21926
+]
+]
+},
+{
+"id":"bovary",
+"title":"Madame Bovary",
+"zh":"包法利夫人",
+"author":"Gustave Flaubert",
+"year":1857,
+"level":"较难",
+"intro":"读多了浪漫小说的爱玛嫁给平庸的乡村医生，不甘心平淡的生活，一步步走向债务和毁灭。福楼拜精雕细琢的现实主义名作。Eleanor Marx 译本。",
+"cat":"world",
+"pick":false,
+"words":115474,
+"chapters":[
+[
+"Chapter 1",
+3467
+],
+[
+"Chapter 2",
+2977
+],
+[
+"Chapter 3",
+2070
+],
+[
+"Chapter 4",
+1950
+],
+[
+"Chapter 5",
+1194
+],
+[
+"Chapter 6",
+1793
+],
+[
+"Chapter 7",
+2208
+],
+[
+"Chapter 8",
+3480
+],
+[
+"Chapter 9",
+4048
+],
+[
+"Chapter 10",
+3461
+],
+[
+"Chapter 11",
+2246
+],
+[
+"Chapter 12",
+3882
+],
+[
+"Chapter 13",
+1372
+],
+[
+"Chapter 14",
+3037
+],
+[
+"Chapter 15",
+4167
+],
+[
+"Chapter 16",
+2911
+],
+[
+"Chapter 17",
+7663
+],
+[
+"Chapter 18",
+3326
+],
+[
+"Chapter 19",
+2940
+],
+[
+"Chapter 20",
+4298
+],
+[
+"Chapter 21",
+4592
+],
+[
+"Chapter 22",
+3306
+],
+[
+"Chapter 23",
+3670
+],
+[
+"Chapter 24",
+2913
+],
+[
+"Chapter 25",
+4801
+],
+[
+"Chapter 26",
+3218
+],
+[
+"Chapter 27",
+688
+],
+[
+"Chapter 28",
+986
+],
+[
+"Chapter 29",
+5507
+],
+[
+"Chapter 30",
+5544
+],
+[
+"Chapter 31",
+4319
+],
+[
+"Chapter 32",
+5735
+],
+[
+"Chapter 33",
+2640
+],
+[
+"Chapter 34",
+1999
+],
+[
+"Chapter 35",
+3066
+]
+]
+},
+{
+"id":"goriot",
+"title":"Father Goriot",
+"zh":"高老头",
+"author":"Honoré de Balzac",
+"year":1835,
+"level":"较难",
+"intro":"巴黎一家寒酸公寓里，退休面粉商高老头为两个女儿倾尽所有，却被她们抛弃；穷学生拉斯蒂涅在旁边看清了上流社会。（原书不分章，按篇幅分成若干部分）",
+"cat":"world",
+"pick":false,
+"words":103564,
+"chapters":[
+[
+"Part 1",
+4152
+],
+[
+"Part 2",
+4018
+],
+[
+"Part 3",
+4039
+],
+[
+"Part 4",
+4026
+],
+[
+"Part 5",
+4254
+],
+[
+"Part 6",
+4016
+],
+[
+"Part 7",
+4051
+],
+[
+"Part 8",
+4543
+],
+[
+"Part 9",
+4090
+],
+[
+"Part 10",
+4323
+],
+[
+"Part 11",
+4009
+],
+[
+"Part 12",
+4020
+],
+[
+"Part 13",
+4008
+],
+[
+"Part 14",
+4038
+],
+[
+"Part 15",
+4012
+],
+[
+"Part 16",
+4064
+],
+[
+"Part 17",
+4002
+],
+[
+"Part 18",
+4048
+],
+[
+"Part 19",
+4014
+],
+[
+"Part 20",
+4159
+],
+[
+"Part 21",
+4002
+],
+[
+"Part 22",
+4050
+],
+[
+"Part 23",
+4041
+],
+[
+"Part 24",
+4021
+],
+[
+"Part 25",
+4013
+],
+[
+"Part 26",
+1551
+]
+]
+},
+{
+"id":"redblack",
+"title":"The Red and the Black",
+"zh":"红与黑",
+"author":"Stendhal",
+"year":1830,
+"level":"较难",
+"intro":"木匠的儿子于连野心勃勃，靠聪明才智进入市长家和巴黎贵族府邸，在爱情和野心之间走向悲剧。Horace B. Samuel 译本。",
+"cat":"world",
+"pick":false,
+"words":189960,
+"chapters":[
+[
+"Chapter 1: A Small Town",
+1320
+],
+[
+"Chapter 2: A Mayor",
+1178
+],
+[
+"Chapter 3: The Poor Fund",
+2066
+],
+[
+"Chapter 4: A Father and a Son",
+1600
+],
+[
+"Chapter 5: A Negotiation",
+2930
+],
+[
+"Chapter 6: Ennui",
+3020
+],
+[
+"Chapter 7: The Elective Affinities",
+4155
+],
+[
+"Chapter 8: Little Episodes",
+3049
+],
+[
+"Chapter 9: An Evening in the Country",
+3107
+],
+[
+"Chapter 10: A Great Heart and a Small Fortune",
+1180
+],
+[
+"Chapter 11: An Evening",
+1853
+],
+[
+"Chapter 12: A Journey",
+2550
+],
+[
+"Chapter 13: The Open Work Stockings",
+1928
+],
+[
+"Chapter 14: The English Scissors",
+1155
+],
+[
+"Chapter 15: The Cock's Song",
+1334
+],
+[
+"Chapter 16: The Day After",
+1711
+],
+[
+"Chapter 17: The First Deputy",
+1765
+],
+[
+"Chapter 18: A King at Verrières",
+5020
+],
+[
+"Chapter 19: Thinking Produces Suffering",
+3131
+],
+[
+"Chapter 20: Anonymous Letters",
+1564
+],
+[
+"Chapter 21: Dialogue with a Master",
+5294
+],
+[
+"Chapter 22: Manners of Procedure in 1830",
+4927
+],
+[
+"Chapter 23: Sorrows of an Official",
+4857
+],
+[
+"Chapter 24: A Capital",
+2495
+],
+[
+"Chapter 25: The Seminary",
+2618
+],
+[
+"Chapter 26: The World, or What the Rich Lack",
+3735
+],
+[
+"Chapter 27: First Experience of Life",
+1401
+],
+[
+"Chapter 28: A Procession",
+2626
+],
+[
+"Chapter 29: The First Promotion",
+5710
+],
+[
+"Chapter 30: An Ambitious Man",
+6443
+],
+[
+"Chapter 31: The Pleasures of the Country",
+4016
+],
+[
+"Chapter 32: Entry Into Society",
+3001
+],
+[
+"Chapter 33: The First Steps",
+1262
+],
+[
+"Chapter 34: The Hôtel De La Mole",
+4701
+],
+[
+"Chapter 35: Sensibility and a Great Pious Lady",
+1044
+],
+[
+"Chapter 36: Pronunciation",
+2440
+],
+[
+"Chapter 37: An Attack of Gout",
+2927
+],
+[
+"Chapter 38: What Is the Decoration Which Confers Distinction?",
+3669
+],
+[
+"Chapter 39: The Ball",
+3396
+],
+[
+"Chapter 40: Queen Marguerite",
+3053
+],
+[
+"Chapter 41: A Young Girl's Dominion",
+1540
+],
+[
+"Chapter 42: Is He a Danton?",
+2236
+],
+[
+"Chapter 43: A Plot",
+3392
+],
+[
+"Chapter 44: A Young Girl's Thoughts",
+2213
+],
+[
+"Chapter 45: Is It a Plot?",
+1915
+],
+[
+"Chapter 46: One O'clock in the Morning",
+2375
+],
+[
+"Chapter 47: An Old Sword",
+1721
+],
+[
+"Chapter 48: Cruel Moments",
+2023
+],
+[
+"Chapter 49: The Opera Bouffe",
+3506
+],
+[
+"Chapter 50: The Japanese Vase",
+2305
+],
+[
+"Chapter 51: The Secret Note",
+1877
+],
+[
+"Chapter 52: The Discussion",
+2904
+],
+[
+"Chapter 53: The Clergy, the Forests, Liberty",
+3002
+],
+[
+"Chapter 54: Strasbourg",
+2273
+],
+[
+"Chapter 55: The Ministry of Virtue",
+2456
+],
+[
+"Chapter 56: Moral Love",
+1303
+],
+[
+"Chapter 57: The Finest Places in the Church",
+1217
+],
+[
+"Chapter 58: Manon Lescaut",
+1505
+],
+[
+"Chapter 59: Ennui",
+1250
+],
+[
+"Chapter 60: A Box at the Bouffes",
+1613
+],
+[
+"Chapter 61: Frighten Her",
+1733
+],
+[
+"Chapter 62: The Tiger",
+1918
+],
+[
+"Chapter 63: The Hell of Weakness",
+1866
+],
+[
+"Chapter 64: A Man of Intellect",
+2396
+],
+[
+"Chapter 65: A Storm",
+1980
+],
+[
+"Chapter 66: Sad Details",
+2607
+],
+[
+"Chapter 67: A Turret",
+1675
+],
+[
+"Chapter 68: A Powerful Man",
+2328
+],
+[
+"Chapter 69: The Intrigue",
+1731
+],
+[
+"Chapter 70: Tranquility",
+1555
+],
+[
+"Chapter 71: The Trial",
+4648
+],
+[
+"Chapter 72",
+1868
+],
+[
+"Chapter 73",
+2819
+],
+[
+"Chapter 74",
+2979
+]
+]
+},
+{
+"id":"miserables",
+"title":"Les Misérables",
+"zh":"悲惨世界",
+"author":"Victor Hugo",
+"year":1862,
+"level":"较难",
+"intro":"因为偷一块面包坐了十九年牢的冉·阿让，被主教感化后重新做人，却始终被警探沙威追捕。全书很长（五十多万词），Hapgood 译本。",
+"cat":"world",
+"pick":false,
+"words":559995,
+"chapters":[
+[
+"Chapter 1: M. Myriel",
+1048
+],
+[
+"Chapter 2: M. Myriel Becomes M. Welcome",
+2021
+],
+[
+"Chapter 3: A Hard Bishopric for a Good Bishop",
+766
+],
+[
+"Chapter 4: Works Corresponding to Words",
+2916
+],
+[
+"Chapter 5: Monseigneur Bienvenu Made His Cassocks Last Too Long",
+1023
+],
+[
+"Chapter 6: Who Guarded His House for Him",
+2183
+],
+[
+"Chapter 7: Cravatte",
+1267
+],
+[
+"Chapter 8: Philosophy After Drinking",
+1459
+],
+[
+"Chapter 9: The Brother As Depicted by the Sister",
+1465
+],
+[
+"Chapter 10: The Bishop in the Presence of an Unknown Light",
+4650
+],
+[
+"Chapter 11: A Restriction",
+1664
+],
+[
+"Chapter 12: The Solitude of Monseigneur Welcome",
+1115
+],
+[
+"Chapter 13: What He Believed",
+1543
+],
+[
+"Chapter 14: What He Thought",
+923
+],
+[
+"Chapter 15: The Evening of a Day of Walking",
+4341
+],
+[
+"Chapter 16: Prudence Counselled to Wisdom",
+1433
+],
+[
+"Chapter 17: The Heroism of Passive Obedience",
+2054
+],
+[
+"Chapter 18: Details Concerning the Cheese-dairies of Pontarlier",
+1340
+],
+[
+"Chapter 19: Tranquillity",
+525
+],
+[
+"Chapter 20: Jean Valjean",
+2126
+],
+[
+"Chapter 21: The Interior of Despair",
+2934
+],
+[
+"Chapter 22: Billows and Shadows",
+760
+],
+[
+"Chapter 23: New Troubles",
+446
+],
+[
+"Chapter 24: The Man Aroused",
+1123
+],
+[
+"Chapter 25: What He Does",
+1418
+],
+[
+"Chapter 26: The Bishop Works",
+1126
+],
+[
+"Chapter 27: Little Gervais",
+3330
+],
+[
+"Chapter 28: The Year 1817",
+2242
+],
+[
+"Chapter 29: A Double Quartette",
+1565
+],
+[
+"Chapter 30: Four and Four",
+1444
+],
+[
+"Chapter 31: Tholomyès Is So Merry That He Sings a Spanish Ditty",
+878
+],
+[
+"Chapter 32: At Bombarda’s",
+1008
+],
+[
+"Chapter 33: A Chapter in Which They Adore Each Other",
+514
+],
+[
+"Chapter 34: The Wisdom of Tholomyès",
+2091
+],
+[
+"Chapter 35: The Death of a Horse",
+788
+],
+[
+"Chapter 36: A Merry End to Mirth",
+921
+],
+[
+"Chapter 37: One Mother Meets Another Mother",
+3339
+],
+[
+"Chapter 38: First Sketch of Two Unprepossessing Figures",
+796
+],
+[
+"Chapter 39: The Lark",
+1038
+],
+[
+"Chapter 40: The History of a Progress in Black Glass Trinkets",
+540
+],
+[
+"Chapter 41: Madeleine",
+1385
+],
+[
+"Chapter 42: Sums Deposited with Laffitte",
+1173
+],
+[
+"Chapter 43: M. Madeleine in Mourning",
+854
+],
+[
+"Chapter 44: Vague Flashes on the Horizon",
+2081
+],
+[
+"Chapter 45: Father Fauchelevent",
+991
+],
+[
+"Chapter 46: Fauchelevent Becomes a Gardener in Paris",
+432
+],
+[
+"Chapter 47: Madame Victurnien Expends Thirty Francs on Morality",
+1068
+],
+[
+"Chapter 48: Madame Victurnien’s Success",
+948
+],
+[
+"Chapter 49: Result of the Success",
+1863
+],
+[
+"Chapter 50: Christus Nos Liberavit",
+300
+],
+[
+"Chapter 51: M. Bamatabois’s Inactivity",
+943
+],
+[
+"Chapter 52: The Solution of Some Questions Connected with the Municipal Police",
+3792
+],
+[
+"Chapter 53: The Beginning of Repose",
+1243
+],
+[
+"Chapter 54: How Jean May Become Champ",
+3244
+],
+[
+"Chapter 55: Sister Simplice",
+1101
+],
+[
+"Chapter 56: The Perspicacity of Master Scaufflaire",
+1637
+],
+[
+"Chapter 57: A Tempest in a Skull",
+7725
+],
+[
+"Chapter 58: Forms Assumed by Suffering During Sleep",
+1201
+],
+[
+"Chapter 59: Hindrances",
+4083
+],
+[
+"Chapter 60: Sister Simplice Put to the Proof",
+2497
+],
+[
+"Chapter 61: The Traveller on His Arrival Takes Precautions for Departure",
+1631
+],
+[
+"Chapter 62: An Entrance by Favor",
+1269
+],
+[
+"Chapter 63: A Place Where Convictions Are in Process of Formation",
+2651
+],
+[
+"Chapter 64: The System of Denials",
+2783
+],
+[
+"Chapter 65: Champmathieu More and More Astonished",
+1623
+],
+[
+"Chapter 66: In What Mirror M. Madeleine Contemplates His Hair",
+918
+],
+[
+"Chapter 67: Fantine Happy",
+1475
+],
+[
+"Chapter 68: Javert Satisfied",
+1378
+],
+[
+"Chapter 69: Authority Reasserts Its Rights",
+1437
+],
+[
+"Chapter 70: A Suitable Tomb",
+2081
+],
+[
+"Chapter 71: What Is Met with on the Way From Nivelles",
+650
+],
+[
+"Chapter 72: Hougomont",
+2668
+],
+[
+"Chapter 73: The Eighteenth of June, 1815",
+965
+],
+[
+"Chapter 74: A",
+739
+],
+[
+"Chapter 75: The Quid Obscurum of Battles",
+1107
+],
+[
+"Chapter 76: Four O’clock in the Afternoon",
+1015
+],
+[
+"Chapter 77: Napoleon in a Good Humor",
+2171
+],
+[
+"Chapter 78: The Emperor Puts a Question to the Guide Lacoste",
+899
+],
+[
+"Chapter 79: The Unexpected",
+1363
+],
+[
+"Chapter 80: The Plateau of Mont-saint-jean",
+1758
+],
+[
+"Chapter 81: A Bad Guide to Napoleon; a Good Guide to Bülow",
+522
+],
+[
+"Chapter 82: The Guard",
+572
+],
+[
+"Chapter 83: The Catastrophe",
+893
+],
+[
+"Chapter 84: The Last Square",
+431
+],
+[
+"Chapter 85: Cambronne",
+855
+],
+[
+"Chapter 86: Quot Libras in Duce?",
+1797
+],
+[
+"Chapter 87: Is Waterloo to Be Considered Good?",
+648
+],
+[
+"Chapter 88: A Recrudescence of Divine Right",
+975
+],
+[
+"Chapter 89: The Battle-field at Night",
+2382
+],
+[
+"Chapter 90: Number 24,601 Becomes Number 9,430",
+1079
+],
+[
+"Chapter 91: In Which the Reader Will Peruse Two Verses, Which Are of the Devil’s Composition, Possibly",
+1803
+],
+[
+"Chapter 92: The Ankle-chain Must Have Undergone a Certain Preparatory Manipulation to Be Thus Broken with a Blow From a Hammer",
+3131
+],
+[
+"Chapter 93: The Water Question at Montfermeil",
+1316
+],
+[
+"Chapter 94: Two Complete Portraits",
+1980
+],
+[
+"Chapter 95: Men Must Have Wine, and Horses Must Have Water",
+808
+],
+[
+"Chapter 96: Entrance on the Scene of a Doll",
+513
+],
+[
+"Chapter 97: The Little One All Alone",
+2126
+],
+[
+"Chapter 98: Which Possibly Proves Boulatruelle’s Intelligence",
+1912
+],
+[
+"Chapter 99: Cosette Side by Side with the Stranger in the Dark",
+807
+],
+[
+"Chapter 100: The Unpleasantness of Receiving Into One’s House a Poor Man Who May Be a Rich Man",
+6306
+],
+[
+"Chapter 101: Thénardier and His Manœuvres",
+2856
+],
+[
+"Chapter 102: He Who Seeks to Better Himself May Render His Situation Worse",
+1795
+],
+[
+"Chapter 103: Number 9,430 Reappears, and Cosette Wins It in the Lottery",
+504
+],
+[
+"Chapter 104: Master Gorbeau",
+2359
+],
+[
+"Chapter 105: A Nest for Owl and a Warbler",
+534
+],
+[
+"Chapter 106: Two Misfortunes Make One Piece of Good Fortune",
+1530
+],
+[
+"Chapter 107: The Remarks of the Principal Tenant",
+789
+],
+[
+"Chapter 108: A Five-franc Piece Falls on the Ground and Produces a Tumult",
+1300
+],
+[
+"Chapter 109: The Zigzags of Strategy",
+1408
+],
+[
+"Chapter 110: It Is Lucky That the Pont D’austerlitz Bears Carriages",
+577
+],
+[
+"Chapter 111: To Wit, the Plan of Paris in 1727",
+1162
+],
+[
+"Chapter 112: The Gropings of Flight",
+960
+],
+[
+"Chapter 113: Which Would Be Impossible with Gas Lanterns",
+1375
+],
+[
+"Chapter 114: The Beginning of an Enigma",
+881
+],
+[
+"Chapter 115: Continuation of the Enigma",
+708
+],
+[
+"Chapter 116: The Enigma Becomes Doubly Mysterious",
+674
+],
+[
+"Chapter 117: The Man with the Bell",
+1303
+],
+[
+"Chapter 118: Which Explains How Javert Got on the Scent",
+3411
+],
+[
+"Chapter 119: Number 62 Rue Petit-picpus",
+1399
+],
+[
+"Chapter 120: The Obedience of Martin Verga",
+2555
+],
+[
+"Chapter 121: Austerities",
+589
+],
+[
+"Chapter 122: Gayeties",
+1232
+],
+[
+"Chapter 123: Distractions",
+2050
+],
+[
+"Chapter 124: The Little Convent",
+919
+],
+[
+"Chapter 125: Some Silhouettes of This Darkness",
+778
+],
+[
+"Chapter 126: Post Corda Lapides",
+630
+],
+[
+"Chapter 127: A Century Under a Guimpe",
+714
+],
+[
+"Chapter 128: Origin of the Perpetual Adoration",
+594
+],
+[
+"Chapter 129: End of the Petit-picpus",
+650
+],
+[
+"Chapter 130: The Convent As an Abstract Idea",
+178
+],
+[
+"Chapter 131: The Convent As an Historical Fact",
+1072
+],
+[
+"Chapter 132: On What Conditions One Can Respect the Past",
+833
+],
+[
+"Chapter 133: The Convent From the Point of View of Principles",
+502
+],
+[
+"Chapter 134: Prayer",
+427
+],
+[
+"Chapter 135: The Absolute Goodness of Prayer",
+776
+],
+[
+"Chapter 136: Precautions to Be Observed in Blame",
+234
+],
+[
+"Chapter 137: Faith, Law",
+756
+],
+[
+"Chapter 138: Which Treats of the Manner of Entering a Convent",
+2936
+],
+[
+"Chapter 139: Fauchelevent in the Presence of a Difficulty",
+800
+],
+[
+"Chapter 140: Mother Innocente",
+3284
+],
+[
+"Chapter 141: In Which Jean Valjean Has Quite the Air of Having Read Austin Castillejo",
+2046
+],
+[
+"Chapter 142: It Is Not Necessary to Be Drunk in Order to Be Immortal",
+2060
+],
+[
+"Chapter 143: Between Four Planks",
+564
+],
+[
+"Chapter 144: In Which Will Be Found the Origin of the Saying: Don’t Lose the Card",
+2542
+],
+[
+"Chapter 145: A Successful Interrogatory",
+1094
+],
+[
+"Chapter 146: Cloistered",
+2656
+],
+[
+"Chapter 147: Parvulus",
+253
+],
+[
+"Chapter 148: Some of His Particular Characteristics",
+489
+],
+[
+"Chapter 149: He Is Agreeable",
+413
+],
+[
+"Chapter 150: He May Be of Use",
+252
+],
+[
+"Chapter 151: His Frontiers",
+813
+],
+[
+"Chapter 152: A Bit of History",
+741
+],
+[
+"Chapter 153: The Gamin Should Have His Place in the Classifications of India",
+731
+],
+[
+"Chapter 154: In Which the Reader Will Find a Charming Saying of the Last King",
+565
+],
+[
+"Chapter 155: The Old Soul of Gaul",
+287
+],
+[
+"Chapter 156: Ecce Paris, Ecce Homo",
+1089
+],
+[
+"Chapter 157: To Scoff, to Reign",
+832
+],
+[
+"Chapter 158: The Future Latent in the People",
+350
+],
+[
+"Chapter 159: Little Gavroche",
+889
+],
+[
+"Chapter 160: Ninety Years and Thirty-two Teeth",
+693
+],
+[
+"Chapter 161: Like Master, Like House",
+420
+],
+[
+"Chapter 162: Luc-esprit",
+342
+],
+[
+"Chapter 163: A Centenarian Aspirant",
+329
+],
+[
+"Chapter 164: Basque and Nicolette",
+448
+],
+[
+"Chapter 165: In Which Magnon and Her Two Children Are Seen",
+750
+],
+[
+"Chapter 166: Rule: Receive No One Except in the Evening",
+207
+],
+[
+"Chapter 167: Two Do Not Make a Pair",
+819
+],
+[
+"Chapter 168: An Ancient Salon",
+1237
+],
+[
+"Chapter 169: One of the Red Spectres of That Epoch",
+2603
+],
+[
+"Chapter 170: Requiescant",
+2938
+],
+[
+"Chapter 171: End of the Brigand",
+1249
+],
+[
+"Chapter 172: The Utility of Going to Mass, in Order to Become a Revolutionist",
+633
+],
+[
+"Chapter 173: The Consequences of Having Met a Warden",
+2526
+],
+[
+"Chapter 174: Some Petticoat",
+1676
+],
+[
+"Chapter 175: Marble Against Granite",
+1933
+],
+[
+"Chapter 176: A Group Which Barely Missed Becoming Historic",
+5239
+],
+[
+"Chapter 177: Blondeau’s Funeral Oration by Bossuet",
+1238
+],
+[
+"Chapter 178: Marius’ Astonishments",
+704
+],
+[
+"Chapter 179: The Back Room of the Café Musain",
+2819
+],
+[
+"Chapter 180: Enlargement of Horizon",
+1415
+],
+[
+"Chapter 181: Res Angusta",
+877
+],
+[
+"Chapter 182: Marius Indigent",
+857
+],
+[
+"Chapter 183: Marius Poor",
+1257
+],
+[
+"Chapter 184: Marius Grown Up",
+1916
+],
+[
+"Chapter 185: M. Mabeuf",
+1710
+],
+[
+"Chapter 186: Poverty a Good Neighbor for Misery",
+856
+],
+[
+"Chapter 187: The Substitute",
+1700
+],
+[
+"Chapter 188: The Sobriquet: Mode of Formation of Family Names",
+1216
+],
+[
+"Chapter 189: Lux Facta Est",
+871
+],
+[
+"Chapter 190: Effect of the Spring",
+425
+],
+[
+"Chapter 191: Beginning of a Great Malady",
+1122
+],
+[
+"Chapter 192: Divers Claps of Thunder Fall on Ma’am Bougon",
+437
+],
+[
+"Chapter 193: Taken Prisoner",
+1003
+],
+[
+"Chapter 194: Adventures of the Letter U Delivered Over to Conjectures",
+686
+],
+[
+"Chapter 195: The Veterans Themselves Can Be Happy",
+655
+],
+[
+"Chapter 196: Eclipse",
+779
+],
+[
+"Chapter 197: Mines and Miners",
+860
+],
+[
+"Chapter 198: The Lowest Depths",
+581
+],
+[
+"Chapter 199: Babet, Gueulemer, Claquesous, and Montparnasse",
+930
+],
+[
+"Chapter 200: Composition of the Troupe",
+919
+],
+[
+"Chapter 201: Marius, While Seeking a Girl in a Bonnet, Encounters a Man in a Cap",
+688
+],
+[
+"Chapter 202: Treasure Trove",
+644
+],
+[
+"Chapter 203: Quadrifrons",
+1497
+],
+[
+"Chapter 204: A Rose in Misery",
+2537
+],
+[
+"Chapter 205: A Providential Peep-hole",
+908
+],
+[
+"Chapter 206: The Wild Man in His Lair",
+1552
+],
+[
+"Chapter 207: Strategy and Tactics",
+1229
+],
+[
+"Chapter 208: The Ray of Light in the Hovel",
+779
+],
+[
+"Chapter 209: Jondrette Comes Near Weeping",
+1357
+],
+[
+"Chapter 210: Tariff of Licensed Cabs: Two Francs an Hour",
+1254
+],
+[
+"Chapter 211: Offers of Service From Misery to Wretchedness",
+924
+],
+[
+"Chapter 212: The Use Made of M. Leblanc’s Five-franc Piece",
+1692
+],
+[
+"Chapter 213: Solus Cum Solo, in Loco Remoto, Non Cogitabuntur Orare Pater Noster",
+975
+],
+[
+"Chapter 214: In Which a Police Agent Bestows Two Fistfuls on a Lawyer",
+1193
+],
+[
+"Chapter 215: Jondrette Makes His Purchases",
+833
+],
+[
+"Chapter 216: In Which Will Be Found the Words to an English Air Which Was in Fashion in 1832",
+1193
+],
+[
+"Chapter 217: The Use Made of Marius’ Five-franc Piece",
+1446
+],
+[
+"Chapter 218: Marius’ Two Chairs Form a Vis-a-vis",
+512
+],
+[
+"Chapter 219: Occupying One’s Self with Obscure Depths",
+1620
+],
+[
+"Chapter 220: The Trap",
+9292
+],
+[
+"Chapter 221: One Should Always Begin by Arresting the Victims",
+1232
+],
+[
+"Chapter 222: The Little One Who Was Crying in Volume Two",
+617
+],
+[
+"Chapter 223: Well Cut",
+2126
+],
+[
+"Chapter 224: Badly Sewed",
+1186
+],
+[
+"Chapter 225: Louis Philippe",
+2741
+],
+[
+"Chapter 226: Cracks Beneath the Foundation",
+2589
+],
+[
+"Chapter 227: Facts Whence History Springs and Which History Ignores",
+4011
+],
+[
+"Chapter 228: Enjolras and His Lieutenants",
+1411
+],
+[
+"Chapter 229: The Lark’s Meadow",
+2200
+],
+[
+"Chapter 230: Embryonic Formation of Crimes in the Incubation of Prisons",
+1752
+],
+[
+"Chapter 231: Apparition to Father Mabeuf",
+1468
+],
+[
+"Chapter 232: An Apparition to Marius",
+1611
+],
+[
+"Chapter 233: The House with a Secret",
+1790
+],
+[
+"Chapter 234: Jean Valjean As a National Guard",
+938
+],
+[
+"Chapter 235: Foliis Ac Frondibus",
+1400
+],
+[
+"Chapter 236: Change of Gate",
+1870
+],
+[
+"Chapter 237: The Rose Perceives That It Is an Engine of War",
+1740
+],
+[
+"Chapter 238: The Battle Begun",
+1279
+],
+[
+"Chapter 239: To One Sadness Oppose a Sadness and a Half",
+2006
+],
+[
+"Chapter 240: The Chain-gang",
+3899
+],
+[
+"Chapter 241: A Wound Without, Healing Within",
+866
+],
+[
+"Chapter 242: Mother Plutarque Finds No Difficulty in Explaining a Phenomenon",
+3082
+],
+[
+"Chapter 243: Solitude and the Barracks Combined",
+608
+],
+[
+"Chapter 244: Cosette’s Apprehensions",
+1256
+],
+[
+"Chapter 245: Enriched with Commentaries by Toussaint",
+1073
+],
+[
+"Chapter 246: A Heart Beneath a Stone",
+1284
+],
+[
+"Chapter 247: Cosette After the Letter",
+915
+],
+[
+"Chapter 248: Old People Are Made to Go Out Opportunely",
+1286
+],
+[
+"Chapter 249: The Malicious Playfulness of the Wind",
+1310
+],
+[
+"Chapter 250: In Which Little Gavroche Extracts Profit From Napoleon the Great",
+7907
+],
+[
+"Chapter 251: The Vicissitudes of Flight",
+4874
+],
+[
+"Chapter 252: Origin",
+2759
+],
+[
+"Chapter 253: Roots",
+3245
+],
+[
+"Chapter 254: Slang Which Weeps and Slang Which Laughs",
+1621
+],
+[
+"Chapter 255: The Two Duties: to Watch and to Hope",
+1542
+],
+[
+"Chapter 256: Full Light",
+2135
+],
+[
+"Chapter 257: The Bewilderment of Perfect Happiness",
+798
+],
+[
+"Chapter 258: The Beginning of Shadow",
+1159
+],
+[
+"Chapter 259: A Cab Runs in English and Barks in Slang",
+2448
+],
+[
+"Chapter 260: Things of the Night",
+251
+],
+[
+"Chapter 261: Marius Becomes Practical Once More to the Extent of Giving Cosette His Address",
+2091
+],
+[
+"Chapter 262: The Old Heart and the Young Heart in the Presence of Each Other",
+4609
+],
+[
+"Chapter 263: Jean Valjean",
+634
+],
+[
+"Chapter 264: Marius",
+935
+],
+[
+"Chapter 265: M. Mabeuf",
+1427
+],
+[
+"Chapter 266: The Surface of the Question",
+1276
+],
+[
+"Chapter 267: The Root of the Matter",
+2302
+],
+[
+"Chapter 268: A Burial; an Occasion to Be Born Again",
+2088
+],
+[
+"Chapter 269: The Ebullitions of Former Days",
+1948
+],
+[
+"Chapter 270: Originality of Paris",
+1027
+],
+[
+"Chapter 271: Some Explanations with Regard to the Origin of Gavroche’s Poetry. the Influence of an Academician on This Poetry",
+868
+],
+[
+"Chapter 272: Gavroche on the March",
+1199
+],
+[
+"Chapter 273: Just Indignation of a Hair-dresser",
+574
+],
+[
+"Chapter 274: The Child Is Amazed at the Old Man",
+576
+],
+[
+"Chapter 275: The Old Man",
+506
+],
+[
+"Chapter 276: Recruits",
+491
+],
+[
+"Chapter 277: History of Corinthe From Its Foundation",
+1982
+],
+[
+"Chapter 278: Preliminary Gayeties",
+3529
+],
+[
+"Chapter 279: Night Begins to Descend Upon Grantaire",
+1152
+],
+[
+"Chapter 280: An Attempt to Console the Widow Hucheloup",
+1331
+],
+[
+"Chapter 281: Preparations",
+729
+],
+[
+"Chapter 282: Waiting",
+829
+],
+[
+"Chapter 283: The Man Recruited in the Rue Des Billettes",
+1269
+],
+[
+"Chapter 284: Many Interrogation Points with Regard to a Certain Le Cabuc Whose Name May Not Have Been Le Cabuc",
+1612
+],
+[
+"Chapter 285: From the Rue Plumet to the Quartier Saint-denis",
+1083
+],
+[
+"Chapter 286: An Owl’s View of Paris",
+1020
+],
+[
+"Chapter 287: The Extreme Edge",
+2392
+],
+[
+"Chapter 288: The Flag: Act First",
+933
+],
+[
+"Chapter 289: The Flag: Act Second",
+991
+],
+[
+"Chapter 290: Gavroche Would Have Done Better to Accept Enjolras’ Carbine",
+392
+],
+[
+"Chapter 291: The Barrel of Powder",
+922
+],
+[
+"Chapter 292: End of the Verses of Jean Prouvaire",
+649
+],
+[
+"Chapter 293: The Agony of Death After the Agony of Life",
+1430
+],
+[
+"Chapter 294: Gavroche As a Profound Calculator of Distances",
+1334
+],
+[
+"Chapter 295: A Drinker Is a Babbler",
+3404
+],
+[
+"Chapter 296: The Street Urchin an Enemy of Light",
+1401
+],
+[
+"Chapter 297: While Cosette and Toussaint Are Asleep",
+568
+],
+[
+"Chapter 298: Gavroche’s Excess of Zeal",
+1601
+],
+[
+"Chapter 299: The Charybdis of the Faubourg Saint Antoine and the Scylla of the Faubourg Du Temple",
+2815
+],
+[
+"Chapter 300: What Is to Be Done in the Abyss If One Does Not Converse",
+1443
+],
+[
+"Chapter 301: Light and Shadow",
+620
+],
+[
+"Chapter 302: Minus Five, Plus One",
+2394
+],
+[
+"Chapter 303: The Horizon Which One Beholds From the Summit of a Barricade",
+1554
+],
+[
+"Chapter 304: Marius Haggard, Javert Laconic",
+705
+],
+[
+"Chapter 305: The Situation Becomes Aggravated",
+1525
+],
+[
+"Chapter 306: The Artillery-men Compel People to Take Them Seriously",
+1022
+],
+[
+"Chapter 307: Employment of the Old Talents of a Poacher and That Infallible Marksmanship Which Influenced the Condemnation of 1796",
+574
+],
+[
+"Chapter 308: Dawn",
+1480
+],
+[
+"Chapter 309: The Shot Which Misses Nothing and Kills No One",
+416
+],
+[
+"Chapter 310: Disorder a Partisan of Order",
+1167
+],
+[
+"Chapter 311: Passing Gleams",
+711
+],
+[
+"Chapter 312: Wherein Will Appear the Name of Enjolras’ Mistress",
+746
+],
+[
+"Chapter 313: Gavroche Outside",
+1071
+],
+[
+"Chapter 314: How From a Brother One Becomes a Father",
+3243
+],
+[
+"Chapter 315: Mortuus Pater Filium Moriturum Expectat",
+583
+],
+[
+"Chapter 316: The Vulture Become Prey",
+1308
+],
+[
+"Chapter 317: Jean Valjean Takes His Revenge",
+859
+],
+[
+"Chapter 318: The Dead Are in the Right and the Living Are Not in the Wrong",
+3486
+],
+[
+"Chapter 319: The Heroes",
+1642
+],
+[
+"Chapter 320: Foot to Foot",
+1353
+],
+[
+"Chapter 321: Orestes Fasting and Pylades Drunk",
+1189
+],
+[
+"Chapter 322: Prisoner",
+1063
+],
+[
+"Chapter 323: The Land Impoverished by the Sea",
+1489
+],
+[
+"Chapter 324: Ancient History of the Sewer",
+1259
+],
+[
+"Chapter 325: Bruneseau",
+2477
+],
+[
+"Chapter 326: Present Progress",
+482
+],
+[
+"Chapter 327: Future Progress",
+1835
+],
+[
+"Chapter 328: The Sewer and Its Surprises",
+2514
+],
+[
+"Chapter 329: Explanation",
+823
+],
+[
+"Chapter 330: The “spun” Man",
+1683
+],
+[
+"Chapter 331: He Also Bears His Cross",
+1417
+],
+[
+"Chapter 332: In the Case of Sand As in That of Woman, There Is a Fineness Which Is Treacherous",
+1887
+],
+[
+"Chapter 333: The Fontis",
+821
+],
+[
+"Chapter 334: One Sometimes Runs Aground When One Fancies That One Is Disembarking",
+903
+],
+[
+"Chapter 335: The Torn Coat-tail",
+1791
+],
+[
+"Chapter 336: Marius Produces on Some One Who Is a Judge of the Matter, the Effect of Being Dead",
+1540
+],
+[
+"Chapter 337: Return of the Son Who Was Prodigal of His Life",
+630
+],
+[
+"Chapter 338: Concussion in the Absolute",
+633
+],
+[
+"Chapter 339: The Grandfather",
+7101
+],
+[
+"Chapter 340: In Which the Tree with the Zinc Plaster Appears Again",
+1256
+],
+[
+"Chapter 341: Marius, Emerging From Civil War, Makes Ready for Domestic War",
+1819
+],
+[
+"Chapter 342: Marius Attacked",
+1150
+],
+[
+"Chapter 343: Mademoiselle Gillenormand Ends by No Longer Thinking It a",
+1914
+],
+[
+"Chapter 344: Deposit Your Money in a Forest Rather Than with a Notary",
+449
+],
+[
+"Chapter 345: The Two Old Men Do Everything, Each One After His Own Fashion, to Render Cosette Happy",
+3200
+],
+[
+"Chapter 346: The Effects of Dreams Mingled with Happiness",
+883
+],
+[
+"Chapter 347: Two Men Impossible to Find",
+1573
+],
+[
+"Chapter 348: The 16th of February, 1833",
+3208
+],
+[
+"Chapter 349: Jean Valjean Still Wears His Arm in a Sling",
+3620
+],
+[
+"Chapter 350: The Inseparable",
+923
+],
+[
+"Chapter 351: The Immortal Liver 68",
+1721
+],
+[
+"Chapter 352: The Seventh Circle and the Eighth Heaven",
+6867
+],
+[
+"Chapter 353: The Obscurities Which a Revelation Can Contain",
+3230
+],
+[
+"Chapter 354: The Lower Chamber",
+1624
+],
+[
+"Chapter 355: Another Step Backwards",
+976
+],
+[
+"Chapter 356: They Recall the Garden of the Rue Plumet",
+1622
+],
+[
+"Chapter 357: Attraction and Extinction",
+696
+],
+[
+"Chapter 358: Pity for the Unhappy, But Indulgence for the Happy",
+833
+],
+[
+"Chapter 359: Last Flickerings of a Lamp Without Oil",
+614
+],
+[
+"Chapter 360: A Pen Is Heavy to the Man Who Lifted the Fauchelevent’s Cart",
+1114
+],
+[
+"Chapter 361: A Bottle of Ink Which Only Succeeded in Whitening",
+6965
+],
+[
+"Chapter 362: A Night Behind Which There Is Day",
+3857
+],
+[
+"Chapter 363: The Grass Covers and the Rain Effaces",
+3377
+]
+]
+},
+{
+"id":"notredame",
+"title":"Notre-Dame de Paris",
+"zh":"巴黎圣母院",
+"author":"Victor Hugo",
+"year":1831,
+"level":"较难",
+"intro":"美丽的吉卜赛姑娘爱斯梅拉达、丑陋善良的敲钟人卡西莫多和阴险的副主教，围绕巴黎圣母院展开的悲剧。Hapgood 译本。",
+"cat":"world",
+"pick":false,
+"words":183421,
+"chapters":[
+[
+"Chapter 1: The Grand Hall",
+5185
+],
+[
+"Chapter 2: Pierre Gringoire",
+3192
+],
+[
+"Chapter 3: Monsieur the Cardinal",
+2442
+],
+[
+"Chapter 4: Master Jacques Coppenole",
+3248
+],
+[
+"Chapter 5: Quasimodo",
+2384
+],
+[
+"Chapter 6: Esmeralda",
+754
+],
+[
+"Chapter 7: From Charybdis to Scylla",
+999
+],
+[
+"Chapter 8: The Place De Grève",
+852
+],
+[
+"Chapter 9: Kisses for Blows",
+3403
+],
+[
+"Chapter 10: The Inconveniences of Following a Pretty Woman Through the Streets in the Evening",
+1470
+],
+[
+"Chapter 11: Result of the Dangers",
+778
+],
+[
+"Chapter 12: The Broken Jug",
+6773
+],
+[
+"Chapter 13: A Bridal Night",
+3333
+],
+[
+"Chapter 14: Notre-dame",
+3063
+],
+[
+"Chapter 15: A Bird’s-eye View of Paris",
+9369
+],
+[
+"Chapter 16: Good Souls",
+1256
+],
+[
+"Chapter 17: Claude Frollo",
+1953
+],
+[
+"Chapter 18: _immanis Pecoris Custos, Immanior Ipse_",
+2825
+],
+[
+"Chapter 19: The Dog and His Master",
+413
+],
+[
+"Chapter 20: More About Claude Frollo",
+2447
+],
+[
+"Chapter 21: Unpopularity",
+288
+],
+[
+"Chapter 22: _abbas Beati Martini_",
+3540
+],
+[
+"Chapter 23: This Will Kill That",
+5506
+],
+[
+"Chapter 24: An Impartial Glance at the Ancient Magistracy",
+3974
+],
+[
+"Chapter 25: The Rat-hole",
+1603
+],
+[
+"Chapter 26: History of a Leavened Cake of Maize",
+7632
+],
+[
+"Chapter 27: A Tear for a Drop of Water",
+3395
+],
+[
+"Chapter 28: End of the Story of the Cake",
+237
+],
+[
+"Chapter 29: The Danger of Confiding One’s Secret to a Goat",
+5108
+],
+[
+"Chapter 30: A Priest and a Philosopher Are Two Different Things",
+3382
+],
+[
+"Chapter 31: The Bells",
+886
+],
+[
+"Chapter 32: Ἀνáγκη",
+4808
+],
+[
+"Chapter 33: The Two Men Clothed in Black",
+2038
+],
+[
+"Chapter 34: The Effect Which Seven Oaths in the Open Air Can Produce",
+1412
+],
+[
+"Chapter 35: The Mysterious Monk",
+2799
+],
+[
+"Chapter 36: The Utility of Windows Which Open on the River",
+2933
+],
+[
+"Chapter 37: The Crown Changed Into a Dry Leaf",
+3407
+],
+[
+"Chapter 38: Continuation of the Crown Which Was Changed Into a Dry Leaf",
+1613
+],
+[
+"Chapter 39: End of the Crown Which Was Turned Into a Dry Leaf",
+1027
+],
+[
+"Chapter 40: _lasciate Ogni Speranza_—leave All Hope Behind, Ye Who Enter Here",
+5366
+],
+[
+"Chapter 41: The Mother",
+1704
+],
+[
+"Chapter 42: Three Human Hearts Differently Constructed",
+6018
+],
+[
+"Chapter 43: Delirium",
+4253
+],
+[
+"Chapter 44: Hunchbacked, One Eyed, Lame",
+1508
+],
+[
+"Chapter 45: Deaf",
+1031
+],
+[
+"Chapter 46: Earthenware and Crystal",
+3911
+],
+[
+"Chapter 47: The Key to the Red Door",
+738
+],
+[
+"Chapter 48: Continuation of the Key to the Red Door",
+1082
+],
+[
+"Chapter 49: Gringoire Has Many Good Ideas in Succession.—rue Des Bernardins",
+3467
+],
+[
+"Chapter 50: Turn Vagabond",
+698
+],
+[
+"Chapter 51: Long Live Mirth",
+2857
+],
+[
+"Chapter 52: An Awkward Friend",
+7229
+],
+[
+"Chapter 53: The Retreat in Which Monsieur Louis of France Says His Prayers",
+11104
+],
+[
+"Chapter 54: Little Sword in Pocket",
+304
+],
+[
+"Chapter 55: Chateaupers to the Rescue",
+719
+],
+[
+"Chapter 56: The Little Shoe",
+12477
+],
+[
+"Chapter 57: THE BEAUTIFUL CREATURE CLAD IN WHITE. (Dante.)",
+3319
+],
+[
+"Chapter 58: The Marriage of Phoebus",
+263
+],
+[
+"Chapter 59: The Marriage of Quasimodo",
+3646
+]
+]
+},
+{
+"id":"montecristo",
+"title":"The Count of Monte Cristo",
+"zh":"基督山伯爵",
+"author":"Alexandre Dumas",
+"year":1844,
+"level":"较难",
+"intro":"水手唐泰斯被诬陷关进死牢十四年，越狱后得到宝藏，化身基督山伯爵向仇人一一复仇。情节紧张，是最好看的复仇故事。",
+"cat":"world",
+"pick":false,
+"words":459816,
+"chapters":[
+[
+"Chapter 1: Marseilles—The Arrival",
+3127
+],
+[
+"Chapter 2: Father and Son",
+2480
+],
+[
+"Chapter 3: The Catalans",
+3868
+],
+[
+"Chapter 4: Conspiracy",
+2207
+],
+[
+"Chapter 5: The Marriage Feast",
+5510
+],
+[
+"Chapter 6: The Deputy Procureur du Roi",
+4168
+],
+[
+"Chapter 7: The Examination",
+3469
+],
+[
+"Chapter 8: The Château d’If",
+3172
+],
+[
+"Chapter 9: The Evening of the Betrothal",
+1818
+],
+[
+"Chapter 10: The King’s Closet at the Tuileries",
+2759
+],
+[
+"Chapter 11: The Corsican Ogre",
+2888
+],
+[
+"Chapter 12: Father and Son",
+2536
+],
+[
+"Chapter 13: The Hundred Days",
+2450
+],
+[
+"Chapter 14: The Two Prisoners",
+3093
+],
+[
+"Chapter 15: Number 34 and Number 27",
+5350
+],
+[
+"Chapter 16: A Learned Italian",
+4151
+],
+[
+"Chapter 17: The Abbé’s Chamber",
+7698
+],
+[
+"Chapter 18: The Treasure",
+4585
+],
+[
+"Chapter 19: The Third Attack",
+3904
+],
+[
+"Chapter 20: The Cemetery of the Château d’If",
+1941
+],
+[
+"Chapter 21: The Island of Tiboulen",
+3698
+],
+[
+"Chapter 22: The Smugglers",
+2925
+],
+[
+"Chapter 23: The Island of Monte Cristo",
+3018
+],
+[
+"Chapter 24: The Secret Cave",
+3162
+],
+[
+"Chapter 25: The Unknown",
+3138
+],
+[
+"Chapter 26: The Pont du Gard Inn",
+5517
+],
+[
+"Chapter 27: The Story",
+5103
+],
+[
+"Chapter 28: The Prison Register",
+2309
+],
+[
+"Chapter 29: The House of Morrel & Son",
+4294
+],
+[
+"Chapter 30: The Fifth of September",
+5606
+],
+[
+"Chapter 31: Italy: Sinbad the Sailor",
+8584
+],
+[
+"Chapter 32: The Waking",
+2260
+],
+[
+"Chapter 33: Roman Bandits",
+10956
+],
+[
+"Chapter 34: The Colosseum",
+10754
+],
+[
+"Chapter 35: La Mazzolata",
+5278
+],
+[
+"Chapter 36: The Carnival at Rome",
+6341
+],
+[
+"Chapter 37: The Catacombs of Saint Sebastian",
+5968
+],
+[
+"Chapter 38: The Rendezvous",
+3070
+],
+[
+"Chapter 39: The Guests",
+2716
+],
+[
+"Chapter 40: The Breakfast",
+8249
+],
+[
+"Chapter 41: The Presentation",
+5052
+],
+[
+"Chapter 42: Monsieur Bertuccio",
+1580
+],
+[
+"Chapter 43: The House at Auteuil",
+2341
+],
+[
+"Chapter 44: The Vendetta",
+8341
+],
+[
+"Chapter 45: The Rain of Blood",
+5320
+],
+[
+"Chapter 46: Unlimited Credit",
+5045
+],
+[
+"Chapter 47: The Dappled Grays",
+5148
+],
+[
+"Chapter 48: Ideology",
+4495
+],
+[
+"Chapter 49: Haydée",
+1893
+],
+[
+"Chapter 50: The Morrel Family",
+3415
+],
+[
+"Chapter 51: Pyramus and Thisbe",
+4892
+],
+[
+"Chapter 52: Toxicology",
+6271
+],
+[
+"Chapter 53: Robert le Diable",
+6102
+],
+[
+"Chapter 54: A Flurry in Stocks",
+4062
+],
+[
+"Chapter 55: Major Cavalcanti",
+3508
+],
+[
+"Chapter 56: Andrea Cavalcanti",
+4361
+],
+[
+"Chapter 57: In the Lucern Patch",
+4388
+],
+[
+"Chapter 58: M. Noirtier de Villefort",
+3273
+],
+[
+"Chapter 59: The Will",
+3030
+],
+[
+"Chapter 60: The Telegraph",
+3605
+],
+[
+"Chapter 61: How a Gardener May Get Rid of the Dormice that Eat His",
+3014
+],
+[
+"Chapter 62: Ghosts",
+2868
+],
+[
+"Chapter 63: The Dinner",
+3369
+],
+[
+"Chapter 64: The Beggar",
+3038
+],
+[
+"Chapter 65: A Conjugal Scene",
+3565
+],
+[
+"Chapter 66: Matrimonial Projects",
+3265
+],
+[
+"Chapter 67: The Office of the King’s Attorney",
+4219
+],
+[
+"Chapter 68: A Summer Ball",
+2202
+],
+[
+"Chapter 69: The Inquiry",
+3095
+],
+[
+"Chapter 70: The Ball",
+3033
+],
+[
+"Chapter 71: Bread and Salt",
+1320
+],
+[
+"Chapter 72: Madame de Saint-Méran",
+4141
+],
+[
+"Chapter 73: The Promise",
+9252
+],
+[
+"Chapter 74: The Villefort Family Vault",
+3141
+],
+[
+"Chapter 75: A Signed Statement",
+3725
+],
+[
+"Chapter 76: Progress of Cavalcanti the Younger",
+3374
+],
+[
+"Chapter 77: Haydée",
+8049
+],
+[
+"Chapter 78: We hear From Yanina",
+7223
+],
+[
+"Chapter 79: The Lemonade",
+4006
+],
+[
+"Chapter 80: The Accusation",
+1979
+],
+[
+"Chapter 81: The Room of the Retired Baker",
+5626
+],
+[
+"Chapter 82: The Burglary",
+4449
+],
+[
+"Chapter 83: The Hand of God",
+1987
+],
+[
+"Chapter 84: Beauchamp",
+2084
+],
+[
+"Chapter 85: The Journey",
+3410
+],
+[
+"Chapter 86: The Trial",
+4514
+],
+[
+"Chapter 87: The Challenge",
+2209
+],
+[
+"Chapter 88: The Insult",
+3253
+],
+[
+"Chapter 89: The Night",
+2971
+],
+[
+"Chapter 90: The Meeting",
+4086
+],
+[
+"Chapter 91: Mother and Son",
+2222
+],
+[
+"Chapter 92: The Suicide",
+3071
+],
+[
+"Chapter 93: Valentine",
+2547
+],
+[
+"Chapter 94: Maximilian’s Avowal",
+3869
+],
+[
+"Chapter 95: Father and Daughter",
+3260
+],
+[
+"Chapter 96: The Contract",
+3694
+],
+[
+"Chapter 97: The Departure for Belgium",
+2157
+],
+[
+"Chapter 98: The Bell and Bottle Tavern",
+4413
+],
+[
+"Chapter 99: The Law",
+3408
+],
+[
+"Chapter 100: The Apparition",
+2423
+],
+[
+"Chapter 101: Locusta",
+1900
+],
+[
+"Chapter 102: Valentine",
+1991
+],
+[
+"Chapter 103: Maximilian",
+2973
+],
+[
+"Chapter 104: Danglars’ Signature",
+3509
+],
+[
+"Chapter 105: The Cemetery of Père-Lachaise",
+4457
+],
+[
+"Chapter 106: Dividing the Proceeds",
+5272
+],
+[
+"Chapter 107: The Lions’ Den",
+2612
+],
+[
+"Chapter 108: The Judge",
+3409
+],
+[
+"Chapter 109: The Assizes",
+1969
+],
+[
+"Chapter 110: The Indictment",
+2573
+],
+[
+"Chapter 111: Expiation",
+3047
+],
+[
+"Chapter 112: The Departure",
+5166
+],
+[
+"Chapter 113: The Past",
+4212
+],
+[
+"Chapter 114: Peppino",
+3710
+],
+[
+"Chapter 115: Luigi Vampa’s Bill of Fare",
+2139
+],
+[
+"Chapter 116: The Pardon",
+1697
+],
+[
+"Chapter 117: The Fifth of October",
+5407
+]
+]
+},
+{
+"id":"grandet",
+"title":"Eugénie Grandet",
+"zh":"欧也妮·葛朗台",
+"author":"Honoré de Balzac",
+"year":1833,
+"level":"较难",
+"intro":"外省守财奴葛朗台富甲一方却一毛不拔，女儿欧也妮爱上落难的堂弟，用一生等待。「吝啬鬼」形象的经典。",
+"cat":"world",
+"pick":false,
+"words":65576,
+"chapters":[
+[
+"Chapter 1",
+4666
+],
+[
+"Chapter 2",
+5675
+],
+[
+"Chapter 3",
+5804
+],
+[
+"Chapter 4",
+6694
+],
+[
+"Chapter 5",
+4063
+],
+[
+"Chapter 6",
+4295
+],
+[
+"Chapter 7",
+4169
+],
+[
+"Chapter 8",
+5291
+],
+[
+"Chapter 9",
+5218
+],
+[
+"Chapter 10",
+4553
+],
+[
+"Chapter 11",
+4263
+],
+[
+"Chapter 12",
+3846
+],
+[
+"Chapter 13",
+3215
+],
+[
+"Chapter 14",
+3824
+]
+]
+},
+{
+"id":"swann",
+"title":"Swann's Way",
+"zh":"追忆似水年华：去斯万家那边",
+"author":"Marcel Proust",
+"year":1913,
+"level":"较难",
+"intro":"《追忆似水年华》第一卷：一块玛德莲蛋糕唤起童年在贡布雷的回忆，以及斯万对奥黛特的痴恋。句子长而绵密，适合程度很高的读者。（按篇幅分成若干部分）",
+"cat":"world",
+"pick":false,
+"words":195182,
+"chapters":[
+[
+"Part 1",
+4600
+],
+[
+"Part 2",
+4226
+],
+[
+"Part 3",
+4350
+],
+[
+"Part 4",
+4484
+],
+[
+"Part 5",
+4053
+],
+[
+"Part 6",
+4423
+],
+[
+"Part 7",
+4286
+],
+[
+"Part 8",
+4034
+],
+[
+"Part 9",
+4257
+],
+[
+"Part 10",
+4004
+],
+[
+"Part 11",
+4047
+],
+[
+"Part 12",
+4442
+],
+[
+"Part 13",
+4323
+],
+[
+"Part 14",
+4088
+],
+[
+"Part 15",
+4173
+],
+[
+"Part 16",
+4018
+],
+[
+"Part 17",
+4245
+],
+[
+"Part 18",
+4293
+],
+[
+"Part 19",
+4610
+],
+[
+"Part 20",
+4230
+],
+[
+"Part 21",
+4042
+],
+[
+"Part 22",
+4004
+],
+[
+"Part 23",
+4004
+],
+[
+"Part 24",
+4356
+],
+[
+"Part 25",
+4030
+],
+[
+"Part 26",
+4394
+],
+[
+"Part 27",
+4196
+],
+[
+"Part 28",
+4040
+],
+[
+"Part 29",
+4130
+],
+[
+"Part 30",
+4011
+],
+[
+"Part 31",
+4019
+],
+[
+"Part 32",
+4384
+],
+[
+"Part 33",
+4311
+],
+[
+"Part 34",
+5427
+],
+[
+"Part 35",
+4746
+],
+[
+"Part 36",
+4229
+],
+[
+"Part 37",
+4210
+],
+[
+"Part 38",
+4473
+],
+[
+"Part 39",
+4655
+],
+[
+"Part 40",
+4129
+],
+[
+"Part 41",
+4249
+],
+[
+"Part 42",
+4492
+],
+[
+"Part 43",
+4190
+],
+[
+"Part 44",
+4300
+],
+[
+"Part 45",
+4093
+],
+[
+"Part 46",
+2882
+]
+]
+},
+{
+"id":"werther",
+"title":"The Sorrows of Young Werther",
+"zh":"少年维特之烦恼",
+"author":"Johann Wolfgang von Goethe",
+"year":1774,
+"level":"较难",
+"intro":"青年维特爱上已经订婚的绿蒂，在一封封书信里倾诉热恋和绝望。歌德的成名作，曾风靡整个欧洲。（书信体，按篇幅分成若干部分）",
+"cat":"world",
+"pick":false,
+"words":42385,
+"chapters":[
+[
+"Part 1",
+3882
+],
+[
+"Part 2",
+3651
+],
+[
+"Part 3",
+3542
+],
+[
+"Part 4",
+3544
+],
+[
+"Part 5",
+3602
+],
+[
+"Part 6",
+3573
+],
+[
+"Part 7",
+3613
+],
+[
+"Part 8",
+3545
+],
+[
+"Part 9",
+3518
+],
+[
+"Part 10",
+3543
+],
+[
+"Part 11",
+3537
+],
+[
+"Part 12",
+2835
+]
+]
+},
+{
+"id":"donquixote",
+"title":"Don Quixote",
+"zh":"堂吉诃德",
+"author":"Miguel de Cervantes",
+"year":1605,
+"level":"较难",
+"intro":"读骑士小说读疯了的乡绅堂吉诃德，骑着瘦马、带着侍从桑丘出门行侠，把风车当成巨人。被一百位作家评为「有史以来最好的文学作品」。Ormsby 译本。",
+"cat":"world",
+"pick":false,
+"words":402474,
+"chapters":[
+[
+"Chapter 1",
+2034
+],
+[
+"Chapter 2: Which Treats of the First Sally the Ingenious Don Quixote Made From Home",
+2363
+],
+[
+"Chapter 3: Wherein Is Related the Droll Way in Which Don Quixote Had Himself Dubbed a Knight",
+2517
+],
+[
+"Chapter 4: Of What Happened to Our Knight When He Left the Inn",
+2604
+],
+[
+"Chapter 5: In Which the Narrative of Our Knight’s Mishap Is Continued",
+1714
+],
+[
+"Chapter 6",
+2783
+],
+[
+"Chapter 7: Of the Second Sally of Our Worthy Knight Don Quixote of La Mancha",
+2031
+],
+[
+"Chapter 8: Of the Good Fortune Which the Valiant Don Quixote Had in the Terrible and Undreamt-of Adventure of the Windmills, with Other Occurrences Worthy to Be Fitly Recorded",
+3089
+],
+[
+"Chapter 9: In Which Is Concluded and Finished the Terrific Battle Between the Gallant Biscayan and the Valiant Manchegan",
+2111
+],
+[
+"Chapter 10: Of the Pleasant Discourse That Passed Between Don Quixote and His Squire Sancho Panza",
+2094
+],
+[
+"Chapter 11: What Befell Don Quixote with Certain Goatherds",
+2208
+],
+[
+"Chapter 12: Of What a Goatherd Related to Those with Don Quixote",
+2462
+],
+[
+"Chapter 13: In Which Is Ended the Story of the Shepherdess Marcela, with Other Incidents",
+3646
+],
+[
+"Chapter 14: Wherein Are Inserted the Despairing Verses of the Dead Shepherd, Together with Other Incidents Not Looked for",
+3037
+],
+[
+"Chapter 15",
+2990
+],
+[
+"Chapter 16",
+3016
+],
+[
+"Chapter 17: In Which Are Contained the Innumerable Troubles Which the Brave Don Quixote and His Good Squire Sancho Panza Endured in the Inn, Which to His Misfortune He Took to Be a Castle",
+3450
+],
+[
+"Chapter 18: In Which Is Related the Discourse Sancho Panza Held with His Master, Don Quixote, and Other Adventures Worth Relating",
+4117
+],
+[
+"Chapter 19: Of the Shrewd Discourse Which Sancho Held with His Master, and of the",
+2986
+],
+[
+"Chapter 20: Of the Unexampled and Unheard-of Adventure Which Was Achieved by the",
+5364
+],
+[
+"Chapter 21: Which Treats of the Exalted Adventure and Rich Prize of Mambrino’s Helmet, Together with Other Things That Happened to Our Invincible Knight",
+4747
+],
+[
+"Chapter 22: Of the Freedom Don Quixote Conferred on Several Unfortunates Who Against Their Will Were Being Carried Where They Had No Wish to Go",
+4348
+],
+[
+"Chapter 23: Of What Befell Don Quixote in the Sierra Morena, Which Was One of the Rarest Adventures Related in This Veracious History",
+4781
+],
+[
+"Chapter 24: In Which Is Continued the Adventure of the Sierra Morena",
+3646
+],
+[
+"Chapter 25",
+6783
+],
+[
+"Chapter 26",
+3203
+],
+[
+"Chapter 27",
+6845
+],
+[
+"Chapter 28: Which Treats of the Strange and Delightful Adventure That Befell the Curate and the Barber in the Same Sierra",
+6039
+],
+[
+"Chapter 29: Which Treats of the Droll Device and Method Adopted to Extricate Our Love-stricken Knight From the Severe Penance He Had Imposed Upon Himself",
+4839
+],
+[
+"Chapter 30: Which Treats of Address Displayed by the Fair Dorothea, with Other Matters Pleasant and Amusing",
+4165
+],
+[
+"Chapter 31",
+3839
+],
+[
+"Chapter 32: Which Treats of What Befell Don Quixote’s Party at the Inn",
+2738
+],
+[
+"Chapter 33: In Which Is Related the Novel of “the Ill-advised Curiosity”",
+7918
+],
+[
+"Chapter 34: In Which Is Continued the Novel of “the Ill-advised Curiosity”",
+7740
+],
+[
+"Chapter 35: Which Treats of the Heroic and Prodigious Battle Don Quixote Had with Certain Skins of Red Wine, and Brings the Novel of “the Ill-advised Curiosity” to a Close",
+3571
+],
+[
+"Chapter 36: Which Treats of More Curious Incidents That Occurred at the Inn",
+3892
+],
+[
+"Chapter 37",
+4250
+],
+[
+"Chapter 38",
+1647
+],
+[
+"Chapter 39: Wherein the Captive Relates His Life and Adventures",
+3287
+],
+[
+"Chapter 40: In Which the Story of the Captive Is Continued",
+5127
+],
+[
+"Chapter 41: In Which the Captive Still Continues His Adventures",
+8234
+],
+[
+"Chapter 42: Which Treats of What Further Took Place in the Inn, and of Several Other Things Worth Knowing",
+2959
+],
+[
+"Chapter 43: Wherein Is Related the Pleasant Story of the Muleteer, Together with Other Strange Things That Came to Pass in the Inn",
+3941
+],
+[
+"Chapter 44: In Which Are Continued the Unheard-of Adventures of the Inn",
+3525
+],
+[
+"Chapter 45",
+3134
+],
+[
+"Chapter 46: Of the End of the Notable Adventure of the Officers of the Holy Brotherhood; and of the Great Ferocity of Our Worthy Knight, Don Quixote",
+3306
+],
+[
+"Chapter 47: Of the Strange Manner in Which Don Quixote of La Mancha Was Carried Away Enchanted, Together with Other Remarkable Incidents",
+3989
+],
+[
+"Chapter 48: In Which the Canon Pursues the Subject of the Books of Chivalry, with Other Matters Worthy of His Wit",
+3110
+],
+[
+"Chapter 49: Which Treats of the Shrewd Conversation Which Sancho Panza Held with His Master Don Quixote",
+2806
+],
+[
+"Chapter 50: Of the Shrewd Controversy Which Don Quixote and the Canon Held, Together with Other Incidents",
+2632
+],
+[
+"Chapter 51",
+2207
+],
+[
+"Chapter 52: Of the Quarrel That Don Quixote Had with the Goatherd, Together with",
+6170
+],
+[
+"Chapter 53: Of the Interview the Curate and the Barber Had with Don Quixote About His Malady",
+4344
+],
+[
+"Chapter 54",
+1863
+],
+[
+"Chapter 55: Of the Laughable Conversation That Passed Between Don Quixote, Sancho Panza, and the Bachelor Samson Carrasco",
+3020
+],
+[
+"Chapter 56: In Which Sancho Panza Gives a Satisfactory Reply to the Doubts and",
+2112
+],
+[
+"Chapter 57: Of the Shrewd and Droll Conversation That Passed Between Sancho Panza and His Wife Teresa Panza, and Other Matters Worthy of Being Duly Recorded",
+2596
+],
+[
+"Chapter 58: Of What Took Place Between Don Quixote and His Niece and Housekeeper; One of the Most Important Chapters in the Whole History",
+2176
+],
+[
+"Chapter 59",
+2790
+],
+[
+"Chapter 60: Wherein Is Related What Befell Don Quixote on His Way to See His Lady Dulcinea Del Toboso",
+2890
+],
+[
+"Chapter 61: Wherein Is Related What Will Be Seen There",
+1547
+],
+[
+"Chapter 62",
+3602
+],
+[
+"Chapter 63",
+2480
+],
+[
+"Chapter 64",
+2466
+],
+[
+"Chapter 65: In Which Is Continued the Adventure of the Knight of the Grove,",
+2458
+],
+[
+"Chapter 66: Wherein Is Continued the Adventure of the Knight of the Grove",
+4474
+],
+[
+"Chapter 67: Wherein It Is Told and Known Who the Knight of the Mirrors and His Squire Were",
+824
+],
+[
+"Chapter 68: Of What Befell Don Quixote with a Discreet Gentleman of La Mancha",
+3831
+],
+[
+"Chapter 69: Wherein Is Shown the Furthest and Highest Point Which the Unexampled Courage of Don Quixote Reached or Could Reach; Together with the Happily Achieved Adventure of the Lions",
+4075
+],
+[
+"Chapter 70: Of What Happened Don Quixote in the Castle or House of the Knight of the Green Gaban, Together with Other Matters Out of the Common",
+3161
+],
+[
+"Chapter 71: In Which Is Related the Adventure of the Enamoured Shepherd, Together with Other Truly Droll Incidents",
+2959
+],
+[
+"Chapter 72: Wherein an Account Is Given of the Wedding of Camacho the Rich, Together with the Incident of Basilio the Poor",
+3307
+],
+[
+"Chapter 73: In Which Camacho’s Wedding Is Continued, with Other Delightful Incidents",
+2500
+],
+[
+"Chapter 74",
+3124
+],
+[
+"Chapter 75",
+4138
+],
+[
+"Chapter 76",
+2577
+],
+[
+"Chapter 77: Wherein Is Set Down the Braying Adventure, and the Droll One of the",
+3888
+],
+[
+"Chapter 78: Wherein Is Continued the Droll Adventure of the Puppet-showman, Together with Other Things in Truth Right Good",
+3196
+],
+[
+"Chapter 79: Wherein It Is Shown Who Master Pedro and His Ape Were, Together with the Mishap Don Quixote Had in the Braying Adventure, Which He Did Not Conclude As He Would Have Liked or As He Had Expected",
+2648
+],
+[
+"Chapter 80",
+2133
+],
+[
+"Chapter 81: Of the Famous Adventure of the Enchanted Bark",
+2407
+],
+[
+"Chapter 82: Of Don Quixote’s Adventure with a Fair Huntress",
+1920
+],
+[
+"Chapter 83: Which Treats of Many and Great Matters",
+3263
+],
+[
+"Chapter 84",
+5578
+],
+[
+"Chapter 85",
+2907
+],
+[
+"Chapter 86",
+2913
+],
+[
+"Chapter 87",
+2716
+],
+[
+"Chapter 88: Wherein Is Related the Strange and Undreamt-of Adventure of the",
+2252
+],
+[
+"Chapter 89: Wherein Is Continued the Notable Adventure of the Distressed Duenna",
+794
+],
+[
+"Chapter 90: Wherein Is Told the Distressed Duenna’s Tale of Her Misfortunes",
+2413
+],
+[
+"Chapter 91: In Which the Trifaldi Continues Her Marvellous and Memorable Story",
+1026
+],
+[
+"Chapter 92: Of Matters Relating and Belonging to This Adventure and to This Memorable History",
+2170
+],
+[
+"Chapter 93: Of the Arrival of Clavileño and the End of This Protracted Adventure",
+4108
+],
+[
+"Chapter 94: Of the Counsels Which Don Quixote Gave Sancho Panza Before He Set Out to Govern the Island, Together with Other Well-considered Matters",
+2059
+],
+[
+"Chapter 95: Of the Second Set of Counsels Don Quixote Gave Sancho Panza",
+2386
+],
+[
+"Chapter 96: How Sancho Panza Was Conducted to His Government, and of the Strange Adventure That Befell Don Quixote in the Castle",
+3469
+],
+[
+"Chapter 97",
+2860
+],
+[
+"Chapter 98",
+1498
+],
+[
+"Chapter 99",
+3394
+],
+[
+"Chapter 100: Of What Befell Don Quixote with Doña Rodriguez, the Duchess’s Duenna, Together with Other Occurrences Worthy of Record and Eternal Remembrance",
+3294
+],
+[
+"Chapter 101: Of What Happened Sancho in Making the Round of His Island",
+4475
+],
+[
+"Chapter 102: Wherein Is Set Forth Who the Enchanters and Executioners Were Who Flogged the Duenna and Pinched Don Quixote, and Also What Befell the Page Who Carried the Letter to Teresa Panza, Sancho Panza’s Wife",
+3466
+],
+[
+"Chapter 103: Of the Progress of Sancho’s Government, and Other Such Entertaining Matters",
+3429
+],
+[
+"Chapter 104",
+2881
+],
+[
+"Chapter 105",
+2303
+],
+[
+"Chapter 106: Which Deals with Matters Relating to This History and No Other",
+3167
+],
+[
+"Chapter 107: Of What Befell Sancho on the Road, and Other Things That Cannot Be Surpassed",
+2962
+],
+[
+"Chapter 108: Of the Prodigious and Unparalleled Battle That Took Place Between Don",
+2001
+],
+[
+"Chapter 109: Which Treats of How Don Quixote Took Leave of the Duke, and of What Followed with the Witty and Impudent Altisidora, One of the Duchess’s Damsels",
+1313
+],
+[
+"Chapter 110",
+4534
+],
+[
+"Chapter 111: Wherein Is Related the Strange Thing, Which May Be Regarded As an Adventure, That Happened Don Quixote",
+3135
+],
+[
+"Chapter 112: Of What Happened Don Quixote on His Way to Barcelona",
+5056
+],
+[
+"Chapter 113",
+1071
+],
+[
+"Chapter 114: Which Deals with the Adventure of the Enchanted Head, Together with Other Trivial Matters Which Cannot Be Left Untold",
+4739
+],
+[
+"Chapter 115: Of the Mishap That Befell Sancho Panza Through the Visit to the Galleys, and the Strange Adventure of the Fair Morisco",
+3875
+],
+[
+"Chapter 116",
+1757
+],
+[
+"Chapter 117: Wherein Is Made Known Who the Knight of the White Moon Was; Likewise Don Gregorio’s Release, and Other Events",
+2149
+],
+[
+"Chapter 118",
+2062
+],
+[
+"Chapter 119: Of the Resolution Don Quixote Formed to Turn Shepherd and Take to a Life in the Fields While the Year for Which He Had Given His Word Was Running Its Course; with Other Events Truly Delectable and Happy",
+1884
+],
+[
+"Chapter 120: Of the Bristly Adventure That Befell Don Quixote",
+1934
+],
+[
+"Chapter 121: Of the Strangest and Most Extraordinary Adventure That Befell Don Quixote in the Whole Course of This Great History",
+1975
+],
+[
+"Chapter 122: Which Follows Sixty-nine and Deals with Matters Indispensable for the Clear Comprehension of This History",
+2862
+],
+[
+"Chapter 123",
+2361
+],
+[
+"Chapter 124: Of How Don Quixote and Sancho Reached Their Village",
+1874
+],
+[
+"Chapter 125: Of the Omens Don Quixote Had As He Entered His Own Village, and Other Incidents That Embellish and Give a Colour to This Great History",
+1866
+],
+[
+"Chapter 126",
+2703
+]
+]
+},
+{
+"id":"oedipus",
+"title":"Oedipus the King, Oedipus at Colonus, Antigone",
+"zh":"俄狄浦斯王（索福克勒斯三部曲）",
+"author":"Sophocles",
+"year":-430,
+"level":"较难",
+"intro":"俄狄浦斯想尽办法逃避「弑父娶母」的神谕，最后却发现自己早已应验。古希腊悲剧的巅峰，另附《俄狄浦斯在科罗诺斯》和《安提戈涅》。",
+"cat":"drama",
+"pick":false,
+"words":37076,
+"chapters":[
+[
+"Oedipus the King",
+13008
+],
+[
+"Oedipus at Colonus",
+13974
+],
+[
+"Antigone",
+10094
+]
+]
+},
+{
+"id":"redchamber",
+"title":"Hung Lou Meng, or, the Dream of the Red Chamber",
+"zh":"红楼梦（前五十六回英译）",
+"author":"Cao Xueqin",
+"year":1791,
+"level":"较难",
+"intro":"H. Bencraft Joly 1892 年的英译本，只译到第五十六回。中文读者熟悉情节，正好看英语怎么讲宝玉、黛玉的故事。译文是十九世纪的英语，比较古雅。",
+"cat":"world",
+"pick":false,
+"words":443829,
+"chapters":[
+[
+"Chapter 1",
+8961
+],
+[
+"Chapter 2",
+7196
+],
+[
+"Chapter 3",
+9785
+],
+[
+"Chapter 4",
+7232
+],
+[
+"Chapter 5",
+9720
+],
+[
+"Chapter 6",
+7791
+],
+[
+"Chapter 7",
+7316
+],
+[
+"Chapter 8",
+6893
+],
+[
+"Chapter 9",
+6689
+],
+[
+"Chapter 10",
+5632
+],
+[
+"Chapter 11",
+6026
+],
+[
+"Chapter 12",
+5512
+],
+[
+"Chapter 13",
+6303
+],
+[
+"Chapter 14",
+6701
+],
+[
+"Chapter 15",
+5955
+],
+[
+"Chapter 16",
+8867
+],
+[
+"Chapter 17",
+11071
+],
+[
+"Chapter 18",
+8614
+],
+[
+"Chapter 19",
+10313
+],
+[
+"Chapter 20",
+5938
+],
+[
+"Chapter 21",
+6976
+],
+[
+"Chapter 22",
+8454
+],
+[
+"Chapter 23",
+6606
+],
+[
+"Chapter 24",
+9804
+],
+[
+"Chapter 25",
+7568
+],
+[
+"Chapter 26",
+7568
+],
+[
+"Chapter 27",
+6931
+],
+[
+"Chapter 28",
+10022
+],
+[
+"Chapter 29",
+9700
+],
+[
+"Chapter 30",
+6130
+],
+[
+"Chapter 31",
+7307
+],
+[
+"Chapter 32",
+6196
+],
+[
+"Chapter 33",
+5736
+],
+[
+"Chapter 34",
+8066
+],
+[
+"Chapter 35",
+8096
+],
+[
+"Chapter 36",
+7515
+],
+[
+"Chapter 37",
+10441
+],
+[
+"Chapter 38",
+7030
+],
+[
+"Chapter 39",
+6986
+],
+[
+"Chapter 40",
+9694
+],
+[
+"Chapter 41",
+7218
+],
+[
+"Chapter 42",
+8264
+],
+[
+"Chapter 43",
+7785
+],
+[
+"Chapter 44",
+7462
+],
+[
+"Chapter 45",
+8612
+],
+[
+"Chapter 46",
+9169
+],
+[
+"Chapter 47",
+7903
+],
+[
+"Chapter 48",
+7358
+],
+[
+"Chapter 49",
+7943
+],
+[
+"Chapter 50",
+7860
+],
+[
+"Chapter 51",
+7510
+],
+[
+"Chapter 52",
+9076
+],
+[
+"Chapter 53",
+9174
+],
+[
+"Chapter 54",
+8963
+],
+[
+"Chapter 55",
+9450
+],
+[
+"Chapter 56",
+10741
+]
+]
+},
+{
+"id":"threekingdoms",
+"title":"Romance of the Three Kingdoms (Vol. 1)",
+"zh":"三国演义（上，英译）",
+"author":"Luo Guanzhong",
+"year":1925,
+"level":"较难",
+"intro":"Brewitt-Taylor 1925 年的英译本上卷：从桃园结义到赤壁之战前后。看熟悉的故事学英语，人名用的是旧式拼音。",
+"cat":"world",
+"pick":false,
+"words":286248,
+"chapters":[
+[
+"Chapter 1: Feast in the Garden of Peaches: Brotherhood Sworn: Slaughter of Rebels: the Brothers Heroes",
+4684
+],
+[
+"Chapter 2: An Official Is Thrashed; Uncle Ho Plots to Kill the Eunuchs",
+5356
+],
+[
+"Chapter 3: Tung Cho Silences Ting Yüan: Li Su Bribes Lü Pu",
+4664
+],
+[
+"Chapter 4: The Deposition of the Emperor: Prince of Chʻên-liu Becomes Emperor: Schemes Against Tung Cho: Mêng-tê Presents a Sword",
+4000
+],
+[
+"Chapter 5: Sending Out the Call: Many Respond: Destroying an Army: the Three Brothers Fight Against Lü Pu",
+5446
+],
+[
+"Chapter 6: Burning the Capital, Tung Cho Commits an Atrocity: Hiding the Seal, Sun Chien Breaks Faith",
+3782
+],
+[
+"Chapter 7: Yüan Shao Fights with Kungsun Tsan at Pʻanho: Sun Chien Attacks Liu Piao",
+4279
+],
+[
+"Chapter 8: Governor Wang Prepares the “chain” Scheme: Tung Cho’s Rages at the Fengi Pavilion",
+4279
+],
+[
+"Chapter 9: Lü Pu Helps to Suppress Disorder: Chia Hsü Counsels an Attack on the Capital",
+4981
+],
+[
+"Chapter 10: Ma Tʻeng Serves His Country Well: Tsʻao Tsʻao Avenges His Father’s Murder",
+3785
+],
+[
+"Chapter 11: Liu, the Emperor’s Uncle, Rescues Kʻung Jung: Lu, Marquis of Wen, Defeats Tsʻao Tsʻao",
+5515
+],
+[
+"Chapter 12: The Prefect Tʻao Thrice Offers His Charge: Tsʻao Tsʻao Fights a Great Battle",
+4405
+],
+[
+"Chapter 13: Great Battle Between Li Tsʻui and Kuo Ssŭ: the Emperor Rescued",
+5677
+],
+[
+"Chapter 14: Tsʻao Mêng-tê Moves the Court: Lü Fêng-hsien Raids Hsüchun",
+5737
+],
+[
+"Chapter 15: Tʻaishih Tzŭ Fights for Friendship’s Sake: Sun Po-fu Does Battle with Yen, the White Tiger",
+6648
+],
+[
+"Chapter 16: A Feat of Archery: a Battle Lost at Yushui River",
+6357
+],
+[
+"Chapter 17: An Army of Seven Divisions Marches Out: Three Generals Are Brought Together",
+4075
+],
+[
+"Chapter 18: Chia Hsü Engineers a Great Victory: Hsiahou Tun Loses an Eye",
+3684
+],
+[
+"Chapter 19: Tsʻao Tsʻao Fights at Hsiapʻei: Lü Pu Perishes at the White Gate Tower",
+6296
+],
+[
+"Chapter 20: Tsʻao A-man Organises a Hunting Expedition: Tung, “state Uncle,” Receives a Command in the Palace",
+4771
+],
+[
+"Chapter 21: Tsʻao Tsʻao Discusses Heroes: Kuan Yu Slays Chʻê Chou",
+4337
+],
+[
+"Chapter 22: Yüan and Tsʻao Both Take the Field: the Two Brothers Capture Two Captains",
+5402
+],
+[
+"Chapter 23: Mi Hêng Slips His Garment and Rails at Traitors: Cruel Punishment of the Physician Chi",
+5837
+],
+[
+"Chapter 24: Murder of a Kuei-fei: Liu Pei Defeated; Flight to Yüan Shao",
+2490
+],
+[
+"Chapter 25: From Tʻushan Camp Kuan Yü Makes Three Conditions: the Rescue at Paima Releases Tsʻao Tsʻao",
+4753
+],
+[
+"Chapter 26: Yüan Shao Is Defeated and Loses a Leader: Kuan Yü Abandons Rank and Wealth",
+3760
+],
+[
+"Chapter 27: “beautiful Beard” Rides on a Solitary Journey: and Slays Six Men at Five Passes",
+5068
+],
+[
+"Chapter 28: Tsʻai Yang Put to Death, the Brothers’ Doubts Disappear: Meeting at Kuchʻeng, Lord and Liege Fortify Each Other",
+5466
+],
+[
+"Chapter 29: The “little Chief of the Feudal Lords” Slays Yü Chi: the “blue-eyed Boy” Lays Hold on Chiangtung",
+5193
+],
+[
+"Chapter 30: Yüan Shao Defeated at the Ferry: Tsʻao Tsʻao Burns the Wuchʻao Granaries",
+5479
+],
+[
+"Chapter 31: Tsʻao Tsʻao Overcomes Yüan Shao: Liu Pei Seeks Shelter with Liu Piao",
+4697
+],
+[
+"Chapter 32: Chʻichou Taken: Yüan Shang Strives: the Chang River Cut: Hsü Yu’s Scheme",
+5466
+],
+[
+"Chapter 33: Tsʻao Pʻei Finds a Wife: a Plan for Settling Liaotung",
+5151
+],
+[
+"Chapter 34: A Woman Overhears a Secret: a Warrior Leaps a Stream",
+4538
+],
+[
+"Chapter 35: Yüan-tê Meets a Recluse at Nanchang: Tan Fu Meets a Noble Lord at Hsinyeh",
+3480
+],
+[
+"Chapter 36: Capture of Fanchʻêng: Chuko Liang Recommended",
+4001
+],
+[
+"Chapter 37: Another Scholar Introduced: the Three Visits to the Recluse",
+4770
+],
+[
+"Chapter 38: Plan for Three Kingdoms: the Suns Avenge Themselves",
+4960
+],
+[
+"Chapter 39: At Chingchou the Son of Liu Piao Thrice Begs Advice: at Powang Slope the Master Directs His First Battle",
+4144
+],
+[
+"Chapter 40: The Lady Tsʻai Discusses the Renunciation of Chingchou: Chuko Liang Burns Hsinyeh",
+4083
+],
+[
+"Chapter 41: Liu Pei Leads His People Over the River: Chao Yün Rescues His Lord",
+5542
+],
+[
+"Chapter 42: Chang Fei’s Great Fight at Chʻangpan Slope: Liu Pei, Defeated, Goes to Hanchingkʻou",
+3458
+],
+[
+"Chapter 43: Chuko Liang Disputes with the Scholars: Lu Su Denounces the Majority Opinion",
+5305
+],
+[
+"Chapter 44: Kʻung-ming Stirs Chou Yü to Action: Sun Chʻüan Decides to Attack Tsʻao Tsʻao",
+4540
+],
+[
+"Chapter 45: Tsʻao Tsʻao Loses Soldiers: Chiang Kan Victim of a Ruse",
+5579
+],
+[
+"Chapter 46: Kʻung-ming “borrows” Some Arrows: Huang Kai Accepts a Punishment",
+4411
+],
+[
+"Chapter 47: Kʻan Tsê Presents the Treacherous Letter: Pʻan Tʻung Suggests Chaining the Ships Together",
+4045
+],
+[
+"Chapter 48: Banquet on the Yangtse; Tsʻao Tsʻao’s Song: the Northern Men Fight on the Chained Ships",
+3258
+],
+[
+"Chapter 49: On the Seven Stars Altar Chuko Sacrifices to the Winds: at the Three Rivers Chou Yü Liberates Fire",
+4744
+],
+[
+"Chapter 50: Chuko Liang Foresees the Huayung Episode: Kuan Yün-chʻang Releases Tsʻao Tsʻao",
+3666
+],
+[
+"Chapter 51: A Great Battle Between North and South: Kʻung-ming Angers Chou Yü",
+4368
+],
+[
+"Chapter 52: Chuko Liang Talks Cunningly to Lu Su: Chao Yün, by a Ruse, Captures Kueiyang",
+4448
+],
+[
+"Chapter 53: Kuan Yu, From a Sense of Righteousness, Releases Huang Chung: Sun Chʻüan Fights a Great Battle with Chang Liao",
+4948
+],
+[
+"Chapter 54: The Dowager Marchioness Sees Her Son-in-law at a Temple: Liu, the Imperial Uncle, Takes a Worthy Consort",
+5015
+],
+[
+"Chapter 55: Yüan-tê Rouses the Spirit of His Bride: Kʻung-ming a Second Time Angers His Rival",
+4002
+],
+[
+"Chapter 56: A Banquet in the Bronze Bird Pavilion: Kʻung-ming Provokes Chou Yü a Third Time",
+4745
+],
+[
+"Chapter 57: “sleeping Dragon” Mourns at Chʻaisang: “phoenix Fledgeling” Intervenes at Leiyang",
+5408
+],
+[
+"Chapter 58: An Expedition for Revenge: Expedients to Conceal Identity",
+4849
+],
+[
+"Chapter 59: Hsu Chʻü Strips for a Fight with Ma Chʻao: Tsʻao Tsʻao Writes a Letter to Sow Dissension",
+5255
+],
+[
+"Chapter 60: Chang Sung Turns the Tables on Yang Hsiu: Occupation of Shu Discussed",
+7166
+]
+]
+},
+{
+"id":"middlemarch",
+"title":"Middlemarch",
+"zh":"米德尔马契",
+"author":"George Eliot",
+"year":1871,
+"level":"较难",
+"intro":"英国外省小镇米德尔马契里，理想主义的多萝西娅、年轻医生利德盖特各自的婚姻与抱负。常被评为最伟大的英语小说之一。",
+"cat":"classic",
+"pick":false,
+"words":315966,
+"chapters":[
+[
+"Chapter 1",
+493
+],
+[
+"Chapter 2",
+3281
+],
+[
+"Chapter 3",
+2919
+],
+[
+"Chapter 4",
+4316
+],
+[
+"Chapter 5",
+2844
+],
+[
+"Chapter 6",
+3459
+],
+[
+"Chapter 7",
+4286
+],
+[
+"Chapter 8",
+1596
+],
+[
+"Chapter 9",
+2103
+],
+[
+"Chapter 10",
+3946
+],
+[
+"Chapter 11",
+4336
+],
+[
+"Chapter 12",
+3584
+],
+[
+"Chapter 13",
+6556
+],
+[
+"Chapter 14",
+3707
+],
+[
+"Chapter 15",
+3504
+],
+[
+"Chapter 16",
+5482
+],
+[
+"Chapter 17",
+5193
+],
+[
+"Chapter 18",
+3426
+],
+[
+"Chapter 19",
+4436
+],
+[
+"Chapter 20",
+1485
+],
+[
+"Chapter 21",
+4559
+],
+[
+"Chapter 22",
+3113
+],
+[
+"Chapter 23",
+5584
+],
+[
+"Chapter 24",
+4867
+],
+[
+"Chapter 25",
+4569
+],
+[
+"Chapter 26",
+2644
+],
+[
+"Chapter 27",
+1846
+],
+[
+"Chapter 28",
+3424
+],
+[
+"Chapter 29",
+1905
+],
+[
+"Chapter 30",
+3052
+],
+[
+"Chapter 31",
+2567
+],
+[
+"Chapter 32",
+3759
+],
+[
+"Chapter 33",
+4398
+],
+[
+"Chapter 34",
+2143
+],
+[
+"Chapter 35",
+2989
+],
+[
+"Chapter 36",
+4311
+],
+[
+"Chapter 37",
+5868
+],
+[
+"Chapter 38",
+8190
+],
+[
+"Chapter 39",
+3264
+],
+[
+"Chapter 40",
+4595
+],
+[
+"Chapter 41",
+5360
+],
+[
+"Chapter 42",
+1978
+],
+[
+"Chapter 43",
+4583
+],
+[
+"Chapter 44",
+2660
+],
+[
+"Chapter 45",
+1214
+],
+[
+"Chapter 46",
+6858
+],
+[
+"Chapter 47",
+3537
+],
+[
+"Chapter 48",
+2192
+],
+[
+"Chapter 49",
+3573
+],
+[
+"Chapter 50",
+1475
+],
+[
+"Chapter 51",
+4049
+],
+[
+"Chapter 52",
+4843
+],
+[
+"Chapter 53",
+3698
+],
+[
+"Chapter 54",
+5125
+],
+[
+"Chapter 55",
+4585
+],
+[
+"Chapter 56",
+1771
+],
+[
+"Chapter 57",
+7721
+],
+[
+"Chapter 58",
+3768
+],
+[
+"Chapter 59",
+7343
+],
+[
+"Chapter 60",
+1116
+],
+[
+"Chapter 61",
+4079
+],
+[
+"Chapter 62",
+5367
+],
+[
+"Chapter 63",
+4449
+],
+[
+"Chapter 64",
+2930
+],
+[
+"Chapter 65",
+6585
+],
+[
+"Chapter 66",
+2017
+],
+[
+"Chapter 67",
+3759
+],
+[
+"Chapter 68",
+2955
+],
+[
+"Chapter 69",
+3076
+],
+[
+"Chapter 70",
+3912
+],
+[
+"Chapter 71",
+4819
+],
+[
+"Chapter 72",
+6458
+],
+[
+"Chapter 73",
+1460
+],
+[
+"Chapter 74",
+1633
+],
+[
+"Chapter 75",
+4145
+],
+[
+"Chapter 76",
+2927
+],
+[
+"Chapter 77",
+3975
+],
+[
+"Chapter 78",
+2746
+],
+[
+"Chapter 79",
+1662
+],
+[
+"Chapter 80",
+852
+],
+[
+"Chapter 81",
+2435
+],
+[
+"Chapter 82",
+3855
+],
+[
+"Chapter 83",
+1527
+],
+[
+"Chapter 84",
+3024
+],
+[
+"Chapter 85",
+3631
+],
+[
+"Chapter 86",
+1287
+],
+[
+"Chapter 87",
+4353
+]
+]
+},
+{
+"id":"copperfield",
+"title":"David Copperfield",
+"zh":"大卫·科波菲尔",
+"author":"Charles Dickens",
+"year":1850,
+"level":"较难",
+"intro":"狄更斯「最心爱的孩子」：孤儿大卫经历继父虐待、童工生涯，终于成长为作家。带有很强的自传色彩，人物鲜活。",
+"cat":"classic",
+"pick":false,
+"words":353519,
+"chapters":[
+[
+"Chapter 1: I Am Born",
+4537
+],
+[
+"Chapter 2: I Observe",
+6124
+],
+[
+"Chapter 3: I Have a Change",
+6337
+],
+[
+"Chapter 4: I Fall Into Disgrace",
+7834
+],
+[
+"Chapter 5: I Am Sent Away From Home",
+7551
+],
+[
+"Chapter 6: I Enlarge My Circle of Acquaintance",
+3022
+],
+[
+"Chapter 7: My ‘first Half’ at Salem House",
+7363
+],
+[
+"Chapter 8: My Holidays. Especially One Happy Afternoon",
+6000
+],
+[
+"Chapter 9: I Have a Memorable Birthday",
+4902
+],
+[
+"Chapter 10: I Become Neglected, and Am Provided for",
+8287
+],
+[
+"Chapter 11: I Begin Life on My Own Account, and Don’t Like It",
+6885
+],
+[
+"Chapter 12: Liking Life on My Own Account No Better, I Form a Great Resolution",
+3917
+],
+[
+"Chapter 13: The Sequel of My Resolution",
+8424
+],
+[
+"Chapter 14: My Aunt Makes Up Her Mind About Me",
+6314
+],
+[
+"Chapter 15: I Make Another Beginning",
+3975
+],
+[
+"Chapter 16: I Am a New Boy in More Senses Than One",
+8886
+],
+[
+"Chapter 17: Somebody Turns Up",
+7097
+],
+[
+"Chapter 18: A Retrospect",
+3073
+],
+[
+"Chapter 19: I Look About Me, and Make a Discovery",
+6716
+],
+[
+"Chapter 20: Steerforth’s Home",
+3609
+],
+[
+"Chapter 21: Little Em’ly",
+8088
+],
+[
+"Chapter 22: Some Old Scenes, and Some New People",
+9085
+],
+[
+"Chapter 23: I CORROBORATE Mr. DICK, AND CHOOSE A PROFESSION",
+5953
+],
+[
+"Chapter 24: My First Dissipation",
+3487
+],
+[
+"Chapter 25: Good and Bad Angels",
+8061
+],
+[
+"Chapter 26: I Fall Into Captivity",
+6446
+],
+[
+"Chapter 27: Tommy Traddles",
+3808
+],
+[
+"Chapter 28: Mr. MICAWBER’S GAUNTLET",
+7765
+],
+[
+"Chapter 29: I Visit Steerforth at His Home, Again",
+2998
+],
+[
+"Chapter 30: A Loss",
+3266
+],
+[
+"Chapter 31: A Greater Loss",
+3721
+],
+[
+"Chapter 32: The Beginning of a Long Journey",
+7845
+],
+[
+"Chapter 33: Blissful",
+6921
+],
+[
+"Chapter 34: My Aunt Astonishes Me",
+3384
+],
+[
+"Chapter 35: Depression",
+8367
+],
+[
+"Chapter 36: Enthusiasm",
+6834
+],
+[
+"Chapter 37: A Little Cold Water",
+3270
+],
+[
+"Chapter 38: A Dissolution of Partnership",
+6724
+],
+[
+"Chapter 39: Wickfield and Heep",
+7748
+],
+[
+"Chapter 40: The Wanderer",
+3679
+],
+[
+"Chapter 41: Dora’s Aunts",
+6319
+],
+[
+"Chapter 42: Mischief",
+8209
+],
+[
+"Chapter 43: Another Retrospect",
+3313
+],
+[
+"Chapter 44: Our Housekeeping",
+6205
+],
+[
+"Chapter 45: Mr. Dick Fulfils My Aunt’s Predictions",
+6222
+],
+[
+"Chapter 46: Intelligence",
+5450
+],
+[
+"Chapter 47: Martha",
+4515
+],
+[
+"Chapter 48: Domestic",
+4654
+],
+[
+"Chapter 49: I Am Involved in Mystery",
+4668
+],
+[
+"Chapter 50: Mr. PEGGOTTY’S DREAM COMES TRUE",
+4112
+],
+[
+"Chapter 51: The Beginning of a Longer Journey",
+7351
+],
+[
+"Chapter 52: I Assist at an Explosion",
+9263
+],
+[
+"Chapter 53: Another Retrospect",
+1966
+],
+[
+"Chapter 54: Mr. MICAWBER’S TRANSACTIONS",
+5895
+],
+[
+"Chapter 55: Tempest",
+5008
+],
+[
+"Chapter 56: The New Wound, and the Old",
+2475
+],
+[
+"Chapter 57: The Emigrants",
+4203
+],
+[
+"Chapter 58: Absence",
+2716
+],
+[
+"Chapter 59: Return",
+6477
+],
+[
+"Chapter 60: Agnes",
+3494
+],
+[
+"Chapter 61: I Am Shown Two Interesting Penitents",
+4769
+],
+[
+"Chapter 62: A Light Shines on My Way",
+3317
+],
+[
+"Chapter 63: A Visitor",
+3005
+],
+[
+"Chapter 64: A Last Retrospect",
+1610
+]
+]
+},
+{
+"id":"vanityfair",
+"title":"Vanity Fair",
+"zh":"名利场",
+"author":"William Makepeace Thackeray",
+"year":1848,
+"level":"较难",
+"intro":"出身卑微、精明能干的蓓基·夏普一心往上流社会爬，和善良软弱的阿米莉亚形成对照。萨克雷笔下讽刺的英国社会全景。",
+"cat":"classic",
+"pick":false,
+"words":300784,
+"chapters":[
+[
+"Chapter 1: Chiswick Mall",
+2667
+],
+[
+"Chapter 2: In Which Miss Sharp and Miss Sedley Prepare to Open the Campaign",
+3862
+],
+[
+"Chapter 3: Rebecca Is in Presence of the Enemy",
+2920
+],
+[
+"Chapter 4: The Green Silk Purse",
+5171
+],
+[
+"Chapter 5: Dobbin of Ours",
+4335
+],
+[
+"Chapter 6: Vauxhall",
+5062
+],
+[
+"Chapter 7: Crawley of Queen's Crawley",
+3182
+],
+[
+"Chapter 8: Private and Confidential",
+3816
+],
+[
+"Chapter 9: Family Portraits",
+2965
+],
+[
+"Chapter 10: Miss Sharp Begins to Make Friends",
+2471
+],
+[
+"Chapter 11: Arcadian Simplicity",
+6067
+],
+[
+"Chapter 12: Quite a Sentimental Chapter",
+3475
+],
+[
+"Chapter 13: Sentimental and Otherwise",
+4874
+],
+[
+"Chapter 14: Miss Crawley at Home",
+7397
+],
+[
+"Chapter 15: In Which Rebecca's Husband Appears for a Short Time",
+3473
+],
+[
+"Chapter 16: The Letter on the Pincushion",
+3488
+],
+[
+"Chapter 17: How Captain Dobbin Bought a Piano",
+3406
+],
+[
+"Chapter 18: Who Played on the Piano Captain Dobbin Bought",
+5030
+],
+[
+"Chapter 19: Miss Crawley at Nurse",
+4337
+],
+[
+"Chapter 20: In Which Captain Dobbin Acts as the Messenger of Hymen",
+4149
+],
+[
+"Chapter 21: A Quarrel About an Heiress",
+3817
+],
+[
+"Chapter 22: A Marriage and Part of a Honeymoon",
+3619
+],
+[
+"Chapter 23: Captain Dobbin Proceeds on His Canvass",
+2591
+],
+[
+"Chapter 24: In Which Mr. Osborne Takes Down the Family Bible",
+5644
+],
+[
+"Chapter 25: In Which All the Principal Personages Think Fit to Leave Brighton",
+8066
+],
+[
+"Chapter 26: Between London and Chatham",
+3284
+],
+[
+"Chapter 27: In Which Amelia Joins Her Regiment",
+2663
+],
+[
+"Chapter 28: In Which Amelia Invades the Low Countries",
+3883
+],
+[
+"Chapter 29: Brussels",
+5521
+],
+[
+"Chapter 30: \"The Girl I Left Behind Me\"",
+4112
+],
+[
+"Chapter 31: In Which Jos Sedley Takes Care of His Sister",
+4847
+],
+[
+"Chapter 32: In Which Jos Takes Flight, and the War Is Brought to a Close",
+6860
+],
+[
+"Chapter 33: In Which Miss Crawley's Relations Are Very Anxious About Her",
+4324
+],
+[
+"Chapter 34: James Crawley's Pipe Is Put Out",
+7059
+],
+[
+"Chapter 35: Widow and Mother",
+4639
+],
+[
+"Chapter 36: How to Live Well on Nothing a Year",
+3573
+],
+[
+"Chapter 37: The Subject Continued",
+6275
+],
+[
+"Chapter 38: A Family in a Very Small Way",
+6162
+],
+[
+"Chapter 39: A Cynical Chapter",
+3842
+],
+[
+"Chapter 40: In Which Becky Is Recognized by the Family",
+3569
+],
+[
+"Chapter 41: In Which Becky Revisits the Halls of Her Ancestors",
+4950
+],
+[
+"Chapter 42: Which Treats of the Osborne Family",
+3131
+],
+[
+"Chapter 43: In Which the Reader Has to Double the Cape",
+3986
+],
+[
+"Chapter 44: A Round-about Chapter between London and Hampshire",
+4359
+],
+[
+"Chapter 45: Between Hampshire and London",
+3805
+],
+[
+"Chapter 46: Struggles and Trials",
+3512
+],
+[
+"Chapter 47: Gaunt House",
+3630
+],
+[
+"Chapter 48: In Which the Reader Is Introduced to the Very Best of Company",
+4775
+],
+[
+"Chapter 49: In Which We Enjoy Three Courses and a Dessert",
+3133
+],
+[
+"Chapter 50: Contains a Vulgar Incident",
+3824
+],
+[
+"Chapter 51: In Which a Charade Is Acted Which May or May Not Puzzle the Reader",
+7598
+],
+[
+"Chapter 52: In Which Lord Steyne Shows Himself in a Most Amiable Light",
+4285
+],
+[
+"Chapter 53: A Rescue and a Catastrophe",
+3717
+],
+[
+"Chapter 54: Sunday After the Battle",
+3726
+],
+[
+"Chapter 55: In Which the Same Subject is Pursued",
+6319
+],
+[
+"Chapter 56: Georgy is Made a Gentleman",
+5053
+],
+[
+"Chapter 57: Eothen",
+3559
+],
+[
+"Chapter 58: Our Friend the Major",
+4848
+],
+[
+"Chapter 59: The Old Piano",
+4598
+],
+[
+"Chapter 60: Returns to the Genteel World",
+2479
+],
+[
+"Chapter 61: In Which Two Lights are Put Out",
+5893
+],
+[
+"Chapter 62: Am Rhein",
+4393
+],
+[
+"Chapter 63: In Which We Meet an Old Acquaintance",
+4914
+],
+[
+"Chapter 64: A Vagabond Chapter",
+6803
+],
+[
+"Chapter 65: Full of Business and Pleasure",
+3334
+],
+[
+"Chapter 66: Amantium Irae",
+6382
+],
+[
+"Chapter 67: Which Contains Births, Marriages, and Deaths",
+7281
+]
+]
+},
+{
+"id":"tess",
+"title":"Tess of the d'Urbervilles",
+"zh":"德伯家的苔丝",
+"author":"Thomas Hardy",
+"year":1891,
+"level":"较难",
+"intro":"贫苦农家女孩苔丝被富家子亚雷玷污，后来与安玑相爱却因过去被抛弃。哈代对命运和社会道德的控诉。",
+"cat":"classic",
+"pick":false,
+"words":148411,
+"chapters":[
+[
+"Chapter 1",
+1715
+],
+[
+"Chapter 2",
+2645
+],
+[
+"Chapter 3",
+2395
+],
+[
+"Chapter 4",
+3882
+],
+[
+"Chapter 5",
+3380
+],
+[
+"Chapter 6",
+1655
+],
+[
+"Chapter 7",
+1644
+],
+[
+"Chapter 8",
+1653
+],
+[
+"Chapter 9",
+2056
+],
+[
+"Chapter 10",
+3225
+],
+[
+"Chapter 11",
+2072
+],
+[
+"Chapter 12",
+3086
+],
+[
+"Chapter 13",
+1274
+],
+[
+"Chapter 14",
+4639
+],
+[
+"Chapter 15",
+1049
+],
+[
+"Chapter 16",
+2052
+],
+[
+"Chapter 17",
+2849
+],
+[
+"Chapter 18",
+2755
+],
+[
+"Chapter 19",
+2773
+],
+[
+"Chapter 20",
+1445
+],
+[
+"Chapter 21",
+2131
+],
+[
+"Chapter 22",
+1016
+],
+[
+"Chapter 23",
+2529
+],
+[
+"Chapter 24",
+1471
+],
+[
+"Chapter 25",
+3389
+],
+[
+"Chapter 26",
+2374
+],
+[
+"Chapter 27",
+2248
+],
+[
+"Chapter 28",
+1793
+],
+[
+"Chapter 29",
+2060
+],
+[
+"Chapter 30",
+2422
+],
+[
+"Chapter 31",
+3422
+],
+[
+"Chapter 32",
+2488
+],
+[
+"Chapter 33",
+3747
+],
+[
+"Chapter 34",
+3743
+],
+[
+"Chapter 35",
+3288
+],
+[
+"Chapter 36",
+3920
+],
+[
+"Chapter 37",
+3299
+],
+[
+"Chapter 38",
+1823
+],
+[
+"Chapter 39",
+2393
+],
+[
+"Chapter 40",
+2350
+],
+[
+"Chapter 41",
+2806
+],
+[
+"Chapter 42",
+1904
+],
+[
+"Chapter 43",
+4050
+],
+[
+"Chapter 44",
+3657
+],
+[
+"Chapter 45",
+3337
+],
+[
+"Chapter 46",
+4080
+],
+[
+"Chapter 47",
+3278
+],
+[
+"Chapter 48",
+2314
+],
+[
+"Chapter 49",
+2728
+],
+[
+"Chapter 50",
+2619
+],
+[
+"Chapter 51",
+2654
+],
+[
+"Chapter 52",
+2705
+],
+[
+"Chapter 53",
+1735
+],
+[
+"Chapter 54",
+1571
+],
+[
+"Chapter 55",
+1524
+],
+[
+"Chapter 56",
+1498
+],
+[
+"Chapter 57",
+2308
+],
+[
+"Chapter 58",
+2762
+],
+[
+"Chapter 59",
+731
+]
+]
+},
+{
+"id":"mansfield",
+"title":"Mansfield Park",
+"zh":"曼斯菲尔德庄园",
+"author":"Jane Austen",
+"year":1814,
+"level":"较难",
+"intro":"寄居在富亲戚家的穷女孩芬妮，安静、正直，在一群轻浮的年轻人中间坚持自己的判断。奥斯汀六部长篇里最后补齐的一部。",
+"cat":"classic",
+"pick":false,
+"words":159513,
+"chapters":[
+[
+"Chapter 1",
+3103
+],
+[
+"Chapter 2",
+3668
+],
+[
+"Chapter 3",
+3748
+],
+[
+"Chapter 4",
+3439
+],
+[
+"Chapter 5",
+2852
+],
+[
+"Chapter 6",
+3830
+],
+[
+"Chapter 7",
+4245
+],
+[
+"Chapter 8",
+2821
+],
+[
+"Chapter 9",
+4467
+],
+[
+"Chapter 10",
+3336
+],
+[
+"Chapter 11",
+2406
+],
+[
+"Chapter 12",
+2255
+],
+[
+"Chapter 13",
+3148
+],
+[
+"Chapter 14",
+2624
+],
+[
+"Chapter 15",
+3921
+],
+[
+"Chapter 16",
+2475
+],
+[
+"Chapter 17",
+1923
+],
+[
+"Chapter 18",
+3111
+],
+[
+"Chapter 19",
+4159
+],
+[
+"Chapter 20",
+2917
+],
+[
+"Chapter 21",
+2960
+],
+[
+"Chapter 22",
+4024
+],
+[
+"Chapter 23",
+4002
+],
+[
+"Chapter 24",
+3159
+],
+[
+"Chapter 25",
+4873
+],
+[
+"Chapter 26",
+3087
+],
+[
+"Chapter 27",
+3907
+],
+[
+"Chapter 28",
+3330
+],
+[
+"Chapter 29",
+2894
+],
+[
+"Chapter 30",
+2482
+],
+[
+"Chapter 31",
+3713
+],
+[
+"Chapter 32",
+5125
+],
+[
+"Chapter 33",
+2806
+],
+[
+"Chapter 34",
+3905
+],
+[
+"Chapter 35",
+3715
+],
+[
+"Chapter 36",
+3531
+],
+[
+"Chapter 37",
+3183
+],
+[
+"Chapter 38",
+4764
+],
+[
+"Chapter 39",
+1590
+],
+[
+"Chapter 40",
+2224
+],
+[
+"Chapter 41",
+2966
+],
+[
+"Chapter 42",
+2212
+],
+[
+"Chapter 43",
+1770
+],
+[
+"Chapter 44",
+3245
+],
+[
+"Chapter 45",
+2906
+],
+[
+"Chapter 46",
+3655
+],
+[
+"Chapter 47",
+4535
+],
+[
+"Chapter 48",
+4502
+]
+]
+},
+{
+"id":"scarletletter",
+"title":"The Scarlet Letter",
+"zh":"红字",
+"author":"Nathaniel Hawthorne",
+"year":1850,
+"level":"较难",
+"intro":"清教徒殖民地的海丝特因通奸被迫终身佩戴红色的字母 A，她独自抚养女儿，坚决不说出孩子的父亲是谁。（从正文开始，略去序言《海关》）",
+"cat":"classic",
+"pick":false,
+"words":68033,
+"chapters":[
+[
+"The Prison Door",
+488
+],
+[
+"The Market-place",
+3464
+],
+[
+"The Recognition",
+3168
+],
+[
+"The Interview",
+2358
+],
+[
+"Hester at Her Needle",
+3438
+],
+[
+"Pearl",
+3420
+],
+[
+"The Governor’s Hall",
+2474
+],
+[
+"The Elf-child and the Minister",
+3095
+],
+[
+"The Leech",
+3501
+],
+[
+"The Leech and His Patient",
+3306
+],
+[
+"The Interior of a Heart",
+2431
+],
+[
+"The Minister’s Vigil",
+3754
+],
+[
+"Another View of Hester",
+2932
+],
+[
+"Hester and the Physician",
+2233
+],
+[
+"Hester and Pearl",
+2265
+],
+[
+"A Forest Walk",
+2214
+],
+[
+"The Pastor and His Parishioner",
+3244
+],
+[
+"A Flood of Sunshine",
+2126
+],
+[
+"The Child at the Brookside",
+2394
+],
+[
+"The Minister in a Maze",
+3825
+],
+[
+"The New England Holiday",
+3112
+],
+[
+"The Procession",
+3688
+],
+[
+"The Revelation of the Scarlet Letter",
+3040
+],
+[
+"Conclusion",
+2063
+]
+]
+},
+{
+"id":"darkness",
+"title":"Heart of Darkness",
+"zh":"黑暗的心",
+"author":"Joseph Conrad",
+"year":1899,
+"level":"较难",
+"intro":"水手马洛沿刚果河深入非洲腹地，寻找神秘的象牙贸易站主管库尔茨。篇幅不长，但象征意味很浓，是二十世纪讨论最多的小说之一。",
+"cat":"classic",
+"pick":false,
+"words":37904,
+"chapters":[
+[
+"Part 1",
+14258
+],
+[
+"Part 2",
+12053
+],
+[
+"Part 3",
+11593
+]
+]
+},
+{
+"id":"sonslovers",
+"title":"Sons and Lovers",
+"zh":"儿子与情人",
+"author":"D. H. Lawrence",
+"year":1913,
+"level":"较难",
+"intro":"矿工家庭的儿子保罗被母亲强烈的爱牵绊，在两个女人之间无法自拔。劳伦斯带自传性质的成名作。",
+"cat":"classic",
+"pick":false,
+"words":160022,
+"chapters":[
+[
+"Chapter 1: The Early Married Life of the Morels",
+10462
+],
+[
+"Chapter 2: The Birth of Paul, and Another Battle",
+7516
+],
+[
+"Chapter 3: The Casting Off of Morel—the Taking on of William",
+4711
+],
+[
+"Chapter 4: The Young Life of Paul",
+9986
+],
+[
+"Chapter 5: Paul Launches Into Life",
+11897
+],
+[
+"Chapter 6: Death in the Family",
+10505
+],
+[
+"Chapter 7: Lad-and-girl Love",
+14758
+],
+[
+"Chapter 8: Strife in Love",
+12950
+],
+[
+"Chapter 9: Defeat of Miriam",
+14130
+],
+[
+"Chapter 10: Clara",
+9497
+],
+[
+"Chapter 11: The Test on Miriam",
+8951
+],
+[
+"Chapter 12: Passion",
+15189
+],
+[
+"Chapter 13: Baxter Dawes",
+14036
+],
+[
+"Chapter 14: The Release",
+11076
+],
+[
+"Chapter 15: Derelict",
+4358
+]
+]
+},
+{
+"id":"dalloway",
+"title":"Mrs. Dalloway",
+"zh":"达洛维夫人",
+"author":"Virginia Woolf",
+"year":1925,
+"level":"较难",
+"intro":"六月的一天，达洛维夫人为晚宴买花、准备，思绪在过去和现在之间流动。意识流小说的代表作，原书不分章。（按篇幅分成若干部分）",
+"cat":"classic",
+"pick":false,
+"words":63443,
+"chapters":[
+[
+"Part 1",
+3528
+],
+[
+"Part 2",
+3587
+],
+[
+"Part 3",
+3603
+],
+[
+"Part 4",
+3516
+],
+[
+"Part 5",
+3578
+],
+[
+"Part 6",
+3544
+],
+[
+"Part 7",
+3690
+],
+[
+"Part 8",
+3525
+],
+[
+"Part 9",
+3842
+],
+[
+"Part 10",
+3526
+],
+[
+"Part 11",
+3539
+],
+[
+"Part 12",
+3641
+],
+[
+"Part 13",
+3659
+],
+[
+"Part 14",
+3632
+],
+[
+"Part 15",
+3545
+],
+[
+"Part 16",
+3518
+],
+[
+"Part 17",
+3571
+],
+[
+"Part 18",
+2399
+]
+]
+},
+{
+"id":"othello",
+"title":"Othello",
+"zh":"奥赛罗",
+"author":"William Shakespeare",
+"year":1604,
+"level":"较难",
+"intro":"摩尔人将军奥赛罗中了旗官伊阿古的奸计，怀疑妻子苔丝狄蒙娜不忠，亲手掐死了她。莎士比亚四大悲剧之一，讲嫉妒。",
+"cat":"drama",
+"pick":false,
+"words":27704,
+"chapters":[
+[
+"Act 1",
+5790
+],
+[
+"Act 2",
+5887
+],
+[
+"Act 3",
+6311
+],
+[
+"Act 4",
+5358
+],
+[
+"Act 5",
+4358
+]
+]
+},
+{
+"id":"lear",
+"title":"King Lear",
+"zh":"李尔王",
+"author":"William Shakespeare",
+"year":1606,
+"level":"较难",
+"intro":"年迈的李尔王把国土分给两个甜言蜜语的女儿，赶走了说真话的小女儿，最后众叛亲离。莎士比亚四大悲剧之一。",
+"cat":"drama",
+"pick":false,
+"words":27345,
+"chapters":[
+[
+"Act 1",
+7455
+],
+[
+"Act 2",
+5234
+],
+[
+"Act 3",
+5122
+],
+[
+"Act 4",
+5851
+],
+[
+"Act 5",
+3683
+]
+]
+},
+{
+"id":"merchant",
+"title":"The Merchant of Venice",
+"zh":"威尼斯商人",
+"author":"William Shakespeare",
+"year":1598,
+"level":"较难",
+"intro":"商人安东尼奥向犹太人夏洛克借钱，约定还不上就割一磅肉。聪明的鲍西娅女扮男装上法庭化解危机。",
+"cat":"drama",
+"pick":false,
+"words":22107,
+"chapters":[
+[
+"Act 1",
+4200
+],
+[
+"Act 2",
+5669
+],
+[
+"Act 3",
+5525
+],
+[
+"Act 4",
+4066
+],
+[
+"Act 5",
+2647
+]
+]
+},
+{
+"id":"walden",
+"title":"Walden",
+"zh":"瓦尔登湖",
+"author":"Henry David Thoreau",
+"year":1854,
+"level":"较难",
+"intro":"梭罗在瓦尔登湖边亲手盖了一间小木屋，独自生活两年，记录简朴生活中的思考。另附名篇《论公民的不服从》。",
+"cat":"nonfic",
+"pick":false,
+"words":115671,
+"chapters":[
+[
+"Economy",
+25548
+],
+[
+"Where I Lived, and What I Lived For",
+6079
+],
+[
+"Reading",
+3766
+],
+[
+"Sounds",
+5697
+],
+[
+"Solitude",
+3432
+],
+[
+"Visitors",
+4746
+],
+[
+"The Bean-Field",
+3871
+],
+[
+"The Village",
+2020
+],
+[
+"The Ponds",
+9156
+],
+[
+"Baker Farm",
+2553
+],
+[
+"Higher Laws",
+4206
+],
+[
+"Brute Neighbors",
+4789
+],
+[
+"House-Warming",
+5718
+],
+[
+"Former Inhabitants and Winter Visitors",
+4672
+],
+[
+"Winter Animals",
+3634
+],
+[
+"The Pond in Winter",
+5205
+],
+[
+"Spring",
+6628
+],
+[
+"Conclusion",
+4625
+],
+[
+"On the Duty of Civil Disobedience",
+9326
 ]
 ]
 }
