@@ -830,7 +830,18 @@ mark.hl.flash { animation: hlFlash 1.2s; }
   .v-stick { position: sticky; top: 0; z-index: 47; background: var(--bg); padding-bottom: 8px; box-shadow: 0 8px 14px -10px rgba(20, 15, 10, .35); }
 }
 /* 手机上 #view 顶上留了 60px 给 ☰ 按钮，钉住的位置往上挪掉这段，贴着屏幕顶 */
-@media (max-width: 720px) { .v-stick { top: -60px; } }
+@media (max-width: 720px) {
+  .v-stick { top: -60px; }
+  /* 播放按钮挤成一行：按钮小一点，「本句」两个字省掉，时间字号小一点 */
+  .v-stick .v-controls { flex-wrap: nowrap; gap: 4px; margin-top: 8px; }
+  .v-stick .v-controls .btn.sm { padding: 5px 9px; flex: none; }
+  .v-stick .v-lbl { display: none; }
+  .v-stick .v-time { font-size: 11px; margin-left: 2px; white-space: nowrap; }
+  .v-stick #rate { padding: 4px 2px !important; font-size: 13px; flex: none; }
+}
+/* 朗读按钮正在读 / 暂停中 */
+[data-say].saying { color: var(--brand); }
+[data-say].say-paused { opacity: .75; }
 
 /* ========== 连词成句 ========== */
 .bd-intro { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: center; }

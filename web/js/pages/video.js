@@ -105,7 +105,7 @@ App.pages.video = {
               <button class="btn sm" id="b-prev" title="上一句（←）">⏮</button>
               <button class="btn sm primary" id="b-play" title="播放/暂停（空格）">▶</button>
               <button class="btn sm" id="b-next" title="下一句（→）">⏭</button>
-              <button class="btn sm" id="b-rep" title="重播本句（R）">🔁 本句</button>
+              <button class="btn sm" id="b-rep" title="重播本句（R）">🔁<span class="v-lbl"> 本句</span></button>
               <span class="v-time" id="vtime">00:00 / 00:00</span>
               <span class="spacer"></span>
               <select class="select" id="rate" style="width:auto;padding:5px 8px">${[0.5, 0.75, 0.9, 1, 1.25, 1.5].map((r) => `<option value="${r}" ${r === 1 ? "selected" : ""}>${r}x</option>`).join("")}</select>

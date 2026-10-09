@@ -15,10 +15,38 @@ function pageHead(title, sub = "", right = "") {
 function speakBtn(text, cls = "") {
   return `<button class="speak ${cls}" data-say="${esc(text)}" title="朗读">🔊</button>`;
 }
-// 全局：任何带 data-say 的按钮点一下就朗读
+// 全局：任何带 data-say 的按钮点一下就朗读；正在读的时候再点同一个按钮是暂停，再点继续（图标 🔊 → ⏸ / ▶）
+const SayBtn = {
+  btn: null,
+  run: 0,
+  mark(b, state) { // state：playing / paused / 不传 = 恢复原样
+    if (!b) return;
+    if (b.dataset.sayIco === undefined) { b.dataset.sayIco = b.innerHTML; b.dataset.sayTitle = b.title; }
+    b.classList.toggle("saying", state === "playing");
+    b.classList.toggle("say-paused", state === "paused");
+    // 只换掉 🔊 这个图标；🐢（慢速）之类的按钮只靠样式提示
+    b.innerHTML = state ? b.dataset.sayIco.replace("🔊", state === "playing" ? "⏸" : "▶") : b.dataset.sayIco;
+    b.title = state === "playing" ? "暂停" : state === "paused" ? "继续" : b.dataset.sayTitle;
+  },
+  async click(b) {
+    if (this.btn === b) { // 还在读（或已暂停）：切换暂停 / 继续
+      if (TTS.paused) { TTS.resume(); this.mark(b, "playing"); } else { TTS.pause(); this.mark(b, "paused"); }
+      return;
+    }
+    const my = ++this.run;
+    this.mark(this.btn);
+    this.btn = b;
+    this.mark(b, "playing");
+    try { await TTS.speak(b.dataset.say, b.dataset.rate ? +b.dataset.rate : undefined); }
+    finally {
+      // 读完了，或者被别的朗读打断（TTS.stop 会让上面的 await 结束）
+      if (this.run === my) { this.mark(b); this.btn = null; }
+    }
+  },
+};
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-say]");
-  if (b) { e.stopPropagation(); TTS.speak(b.dataset.say, b.dataset.rate ? +b.dataset.rate : undefined); }
+  if (b) { e.stopPropagation(); SayBtn.click(b); }
 });
 
 function tabsHtml(items, active) {
