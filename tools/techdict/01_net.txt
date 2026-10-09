@@ -1,0 +1,287 @@
+# 网络与协议
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+# 由 tools/build_techdict.py 合成 web/data/techdict.js；本目录的内容由 EngNest 编写，随项目以 MIT 协议发布
+
+network | | 网络 | 把多台设备连起来互相传数据的系统
+networking | | 网络技术；联网 | 和计算机网络有关的技术和配置工作
+protocol | | 协议 | 双方通信时必须共同遵守的规则：数据格式、先后顺序、出错怎么办
+protocol stack | | 协议栈 | 一层叠一层的一组协议，比如 TCP/IP 协议栈 | stack
+OSI | Open Systems Interconnection | 开放系统互连（模型） | 把网络通信分成 7 层的参考模型：物理、数据链路、网络、传输、会话、表示、应用 | OSI model
+OSI layer | | OSI 层 | OSI 七层模型里的某一层，常说 layer 2（二层，交换）、layer 3（三层，路由）、layer 4（四层，TCP/UDP）、layer 7（七层，应用）
+layer | | 层 | 网络或软件按功能分开的一级，每层只和上下两层打交道
+physical layer | | 物理层 | OSI 第 1 层，负责在网线、光纤、无线电上传比特 | layer 1
+data link layer | | 数据链路层 | OSI 第 2 层，同一个局域网里按 MAC 地址传帧，以太网就在这层 | link layer / layer 2
+network layer | | 网络层 | OSI 第 3 层，负责跨网络寻址和路由，IP 协议在这层 | layer 3
+transport layer | | 传输层 | OSI 第 4 层，负责端到端传输，TCP、UDP 在这层 | layer 4
+session layer | | 会话层 | OSI 第 5 层，管理通信会话的建立和结束 | layer 5
+presentation layer | | 表示层 | OSI 第 6 层，负责数据格式转换、加密、压缩 | layer 6
+application layer | | 应用层 | OSI 第 7 层，直接给应用用的协议，比如 HTTP、DNS、SMTP | layer 7
+TCP/IP | Transmission Control Protocol / Internet Protocol | TCP/IP 协议族 | 互联网实际使用的协议体系，通常分 4 层：链路层、网络层、传输层、应用层 | TCP/IP model
+TCP | Transmission Control Protocol | 传输控制协议 | 面向连接的可靠传输协议：先三次握手建立连接，保证数据不丢、不乱序
+UDP | User Datagram Protocol | 用户数据报协议 | 无连接的传输协议，不保证送达，但开销小、延迟低，常用于视频、语音、DNS
+IP | Internet Protocol | 网际协议 | 负责给每台主机编地址（IP 地址）并把数据包送到目标网络
+IPv4 | Internet Protocol version 4 | 第 4 版网际协议 | 用 32 位地址，写成 192.168.1.1 这样的四段数字
+IPv6 | Internet Protocol version 6 | 第 6 版网际协议 | 用 128 位地址，写成冒号分隔的十六进制，解决 IPv4 地址不够用的问题
+IP address | Internet Protocol address | IP 地址 | 网络上每台设备的数字地址
+ICMP | Internet Control Message Protocol | 互联网控制报文协议 | 传递网络出错和诊断信息，ping 和 traceroute 用的就是它
+ICMPv6 | Internet Control Message Protocol for IPv6 | IPv6 的控制报文协议 | IPv6 下的 ICMP，还承担邻居发现等功能
+ARP | Address Resolution Protocol | 地址解析协议 | 已知 IP 地址，在局域网里问出对应的 MAC 地址
+RARP | Reverse Address Resolution Protocol | 反向地址解析协议 | 由 MAC 地址查 IP 地址，已基本被 DHCP 取代
+NDP | Neighbor Discovery Protocol | 邻居发现协议 | IPv6 里代替 ARP 的协议
+MAC address | Media Access Control address | MAC 地址；物理地址 | 网卡出厂时写入的 48 位硬件地址，如 00:1A:2B:3C:4D:5E | hardware address
+MAC | Media Access Control | 媒体访问控制 | 数据链路层的子层，决定谁什么时候能往线路上发数据；也常指 MAC 地址。（安全领域里 MAC 还指消息认证码）
+Ethernet | | 以太网 | 最常见的有线局域网技术，用网线连接，按帧传数据
+Wi-Fi | | 无线局域网 | 基于 IEEE 802.11 标准的无线网络 | WiFi / wifi
+WLAN | Wireless Local Area Network | 无线局域网 | 用无线电组成的局域网，Wi-Fi 是最常见的一种
+LAN | Local Area Network | 局域网 | 一栋楼、一个办公室范围内的网络
+WAN | Wide Area Network | 广域网 | 跨城市、跨国家的大范围网络；路由器上的 WAN 口接外网
+MAN | Metropolitan Area Network | 城域网 | 覆盖一个城市的网络
+PAN | Personal Area Network | 个人区域网 | 个人身边设备组成的小网络，比如蓝牙
+VLAN | Virtual Local Area Network | 虚拟局域网 | 在一台交换机上用编号（VLAN ID）把网络划分成几个互相隔离的逻辑局域网
+VXLAN | Virtual Extensible LAN | 虚拟扩展局域网 | 把二层帧封装在 UDP 里跨三层网络传输，数据中心常用
+VPN | Virtual Private Network | 虚拟专用网络 | 在公共网络上建一条加密隧道，像在内网里一样访问资源
+tunnel | | 隧道 | 把一种协议的数据包封装在另一种协议里传输 | tunneling / tunnelling
+GRE | Generic Routing Encapsulation | 通用路由封装 | 一种简单的隧道协议，把任意网络层数据包装进 IP 包
+IPsec | Internet Protocol Security | IP 安全协议 | 在网络层给 IP 包做加密和认证的一组协议，常用于 VPN | IPSec
+SCTP | Stream Control Transmission Protocol | 流控制传输协议 | 和 TCP 一样可靠，但支持多流、多宿主，电信信令网络里常用
+QUIC | | QUIC 协议 | 基于 UDP 的新传输协议，把加密和多路复用做在一起，HTTP/3 用它
+DCCP | Datagram Congestion Control Protocol | 数据报拥塞控制协议 | 不可靠但带拥塞控制的传输协议
+port | | 端口 | ① 传输层用来区分同一台主机上不同程序的编号（0–65535），如 HTTP 用 80；② 设备上的物理接口，如 USB 口、网口
+port number | | 端口号 | TCP/UDP 用来标识应用程序的 16 位数字
+well-known port | | 知名端口 | 0–1023 的端口，分配给常用服务，如 22（SSH）、80（HTTP）、443（HTTPS） | well known port
+socket | | 套接字 | 程序进行网络通信的端点，由 IP 地址加端口号确定；也是操作系统提供的网络编程接口
+host | | 主机 | 网络上的一台计算机或设备；也指托管
+hostname | | 主机名 | 给主机起的名字，如 www.example.com 里的 www | host name
+client | | 客户端 | 发起请求、使用服务的一方
+server | | 服务器；服务端 | 提供服务、响应请求的一方（可以指程序，也可以指机器）
+peer | | 对等方；对端 | 通信中的另一方；P2P 网络里地位平等的节点
+peer-to-peer | | 点对点；对等网络 | 各节点地位平等、直接互相通信，不依赖中心服务器 | P2P
+node | | 节点 | 网络中的一个设备；数据结构里的一个元素；集群里的一台机器
+topology | | 拓扑（结构） | 网络里设备怎样连接的布局，如星型、环型、总线型
+packet | | 数据包；分组 | 网络中传输的一个数据单元，分成头部和载荷两部分
+frame | | 帧 | 数据链路层的数据单元（如以太网帧）；视频里的一帧画面；调用栈里的一层（栈帧）
+segment | | 段；报文段 | TCP 的数据单元；内存分段；网络里的一个网段
+datagram | | 数据报 | 无连接传输的数据单元，UDP、IP 的数据单元都叫 datagram
+PDU | Protocol Data Unit | 协议数据单元 | 某一层协议传输的数据单元的统称：二层叫帧、三层叫包、四层叫段或数据报
+SDU | Service Data Unit | 服务数据单元 | 上层交给下层、还没加上本层头部的数据
+upper PDU | | 上层 PDU | Wireshark 里的「上层协议数据单元」，导出时去掉下层头部只保留高层协议数据 | Upper PDU / exported PDU
+header | | 头部；首部；报头 | 数据包开头的控制信息，比如源地址、目的地址、长度、类型
+trailer | | 尾部 | 加在数据单元末尾的信息，如以太网帧尾部的 FCS 校验
+payload | | 载荷；有效载荷 | 数据包里真正要传送的内容，不包括头部等控制信息
+encapsulation | | 封装 | 网络里：每一层给上层数据加上自己的头部再往下交；编程里：把数据和操作包在对象里、隐藏内部细节 | encapsulate / encapsulated
+decapsulation | | 解封装 | 接收端逐层去掉头部、取出上层数据 | decapsulate
+fragmentation | | 分片 | 数据包比链路允许的最大长度大时，被切成几片分别传送 | fragment
+reassembly | | 重组 | 把分片或分段的数据重新拼回完整数据 | reassemble
+MTU | Maximum Transmission Unit | 最大传输单元 | 一条链路一次能传的最大数据包大小，以太网一般是 1500 字节
+MSS | Maximum Segment Size | 最大报文段长度 | TCP 一个段里最多能放多少字节的数据
+TTL | Time To Live | 生存时间 | IP 包每经过一个路由器减 1，减到 0 就丢弃，防止无限循环；DNS 里指缓存有效期
+hop | | 跳 | 数据包从一个路由器到下一个路由器算一跳
+checksum | | 校验和 | 根据数据算出的一个数，接收方再算一遍对比，用来发现传输错误
+CRC | Cyclic Redundancy Check | 循环冗余校验 | 常用的错误检测算法，以太网帧、Modbus RTU 都用它
+FCS | Frame Check Sequence | 帧校验序列 | 帧尾部的 CRC 值，用来检查整帧是否出错
+handshake | | 握手 | 正式传数据前双方交换信息、确认参数的过程
+three-way handshake | | 三次握手 | TCP 建立连接的过程：SYN → SYN-ACK → ACK
+SYN | Synchronize | 同步（标志） | TCP 头部标志位，请求建立连接
+ACK | Acknowledgment | 确认（标志） | 表示已经收到数据的确认信息 | acknowledgement / acknowledgment
+FIN | Finish | 结束（标志） | TCP 标志位，表示这一方数据发完了，请求关闭连接
+RST | Reset | 复位（标志） | TCP 标志位，强行中断连接
+PSH | Push | 推送（标志） | TCP 标志位，要求接收方尽快把数据交给应用
+sequence number | | 序列号 | TCP 给每个字节编的号，用来排序和发现丢包 | seq
+acknowledgment number | | 确认号 | 告诉对方「下一个我想收的序列号」 | ack number
+retransmission | | 重传 | 数据没有被确认时再发一次 | retransmit
+timeout | | 超时 | 等待超过设定时间还没结果
+flow control | | 流量控制 | 让发送方别发得比接收方处理得快
+congestion control | | 拥塞控制 | 网络拥堵时自动降低发送速度
+sliding window | | 滑动窗口 | TCP 流量控制的机制：允许连续发送多少未确认数据
+window size | | 窗口大小 | 接收方告诉发送方自己还能收多少字节
+keepalive | | 保活 | 定期发送小报文，确认连接还活着 | keep-alive
+connection-oriented | | 面向连接的 | 先建立连接再通信，如 TCP
+connectionless | | 无连接的 | 不建立连接直接发，如 UDP
+unicast | | 单播 | 一对一发送
+multicast | | 组播；多播 | 一对一组发送，只有加入组的主机才收到
+broadcast | | 广播 | 一对全部发送，局域网里所有主机都会收到
+anycast | | 任播 | 发给一组节点里离得最近的那一个
+latency | | 延迟；时延 | 数据从发出到收到要花的时间
+jitter | | 抖动 | 延迟忽大忽小的程度，影响语音视频质量
+bandwidth | | 带宽 | 单位时间内最多能传多少数据，单位如 Mbps
+throughput | | 吞吐量 | 单位时间内实际处理或传输了多少数据
+packet loss | | 丢包 | 数据包在传输中丢失
+round-trip time | | 往返时间 | 包发出去再收到回应总共用的时间 | RTT
+bps | bits per second | 比特每秒 | 传输速率单位；Mbps 是百万比特每秒，注意 MB/s 是字节
+QoS | Quality of Service | 服务质量 | 给不同流量分配优先级和带宽，保证重要业务的质量
+router | | 路由器 | 连接不同网络、按 IP 地址转发数据包的设备
+routing | | 路由 | 决定数据包走哪条路到达目的地
+routing table | | 路由表 | 路由器里记录「去哪个网络从哪个口出去」的表
+route | | 路由；路径 | 到达某个网络的路径；Web 框架里指 URL 到处理函数的映射
+switch | | 交换机 | 在局域网里按 MAC 地址转发帧的设备；编程里是 switch 分支语句
+hub | | 集线器 | 把收到的数据发给所有端口的简单设备，已被交换机取代
+bridge | | 网桥 | 连接两个局域网段的二层设备；也指桥接模式
+gateway | | 网关 | 连接两个不同网络的出入口，比如家里路由器就是你的默认网关
+default gateway | | 默认网关 | 发往其他网络的数据包都先交给它
+firewall | | 防火墙 | 按规则放行或拦截网络流量的软件或设备
+proxy | | 代理 | 替客户端去访问服务器的中间服务器 | proxy server
+reverse proxy | | 反向代理 | 挡在服务器前面接收请求、再转给后端的服务器，如 Nginx
+NAT | Network Address Translation | 网络地址转换 | 让内网很多设备共用一个公网 IP 上网
+PAT | Port Address Translation | 端口地址转换 | 用不同端口区分内网主机的 NAT
+subnet | | 子网 | 把一个大网络划分出的小网络
+subnet mask | | 子网掩码 | 区分 IP 地址里哪部分是网络号、哪部分是主机号，如 255.255.255.0 | netmask
+CIDR | Classless Inter-Domain Routing | 无类别域间路由 | 用 192.168.1.0/24 这样的写法表示网段，/24 表示前 24 位是网络号
+loopback | | 环回 | 发给自己的地址，IPv4 是 127.0.0.1，主机名 localhost
+localhost | | 本机 | 指当前这台计算机，对应 127.0.0.1
+public IP | | 公网 IP | 互联网上全球唯一、可直接访问的地址 | public IP address
+private IP | | 私有 IP；内网 IP | 只在局域网内使用的地址，如 192.168.x.x、10.x.x.x | private IP address
+DHCP | Dynamic Host Configuration Protocol | 动态主机配置协议 | 设备接入网络时自动分配 IP 地址、网关、DNS
+DNS | Domain Name System | 域名系统 | 把 www.example.com 这样的域名翻译成 IP 地址
+domain name | | 域名 | 网站的文字地址，如 example.com | domain
+resolver | | 解析器 | 负责查询 DNS 的程序或服务器
+A record | | A 记录 | DNS 记录类型：域名指向 IPv4 地址；AAAA 记录指向 IPv6
+CNAME | Canonical Name | 别名记录 | DNS 记录：把一个域名指向另一个域名
+MX record | Mail Exchange record | 邮件交换记录 | DNS 记录：指定接收这个域名邮件的服务器
+TLD | Top-Level Domain | 顶级域名 | 域名最后一段，如 .com、.org、.cn
+FQDN | Fully Qualified Domain Name | 完全限定域名 | 带主机名的完整域名，如 mail.example.com
+URL | Uniform Resource Locator | 统一资源定位符；网址 | 资源的地址，如 https://example.com/page?id=1
+URI | Uniform Resource Identifier | 统一资源标识符 | 标识资源的字符串，URL 是它的一种
+HTTP | Hypertext Transfer Protocol | 超文本传输协议 | 浏览器和网站服务器之间传网页和数据的应用层协议
+HTTPS | HTTP Secure | 安全超文本传输协议 | 用 TLS 加密的 HTTP，地址栏有小锁
+HTTP/2 | | HTTP 第 2 版 | 支持多路复用、头部压缩的 HTTP 版本
+HTTP/3 | | HTTP 第 3 版 | 基于 QUIC（UDP）的 HTTP 版本
+SSL | Secure Sockets Layer | 安全套接层 | TLS 的前身，现在已淘汰，但大家仍常说「SSL 证书」
+TLS | Transport Layer Security | 传输层安全协议 | 给 TCP 上的通信加密并验证对方身份，HTTPS 就是 HTTP + TLS
+DTLS | Datagram Transport Layer Security | 数据报传输层安全协议 | 用在 UDP 上的 TLS
+FTP | File Transfer Protocol | 文件传输协议 | 传文件的老协议，明文传输
+SFTP | SSH File Transfer Protocol | SSH 文件传输协议 | 通过 SSH 加密传文件
+TFTP | Trivial File Transfer Protocol | 简单文件传输协议 | 基于 UDP 的简化文件传输，常用于网络设备升级固件
+SSH | Secure Shell | 安全外壳协议 | 加密的远程登录协议，用来远程操作服务器的命令行
+Telnet | | 远程终端协议 | 明文的远程登录协议，已基本被 SSH 取代
+SMTP | Simple Mail Transfer Protocol | 简单邮件传输协议 | 发送邮件用的协议
+POP3 | Post Office Protocol 3 | 邮局协议第 3 版 | 把邮件下载到本地的收信协议
+IMAP | Internet Message Access Protocol | 互联网消息访问协议 | 在服务器上管理邮件的收信协议，多设备同步
+SNMP | Simple Network Management Protocol | 简单网络管理协议 | 监控和管理路由器、交换机等网络设备
+NTP | Network Time Protocol | 网络时间协议 | 让设备的时钟和时间服务器同步
+LDAP | Lightweight Directory Access Protocol | 轻量级目录访问协议 | 查询和管理用户、组织等目录信息
+SMB | Server Message Block | 服务器消息块 | Windows 共享文件夹、打印机用的协议
+NFS | Network File System | 网络文件系统 | Unix/Linux 下通过网络挂载远程目录
+RDP | Remote Desktop Protocol | 远程桌面协议 | Windows 远程桌面使用的协议
+VNC | Virtual Network Computing | 虚拟网络计算 | 跨平台的远程桌面方案
+SIP | Session Initiation Protocol | 会话初始协议 | 建立、修改、结束网络电话和视频通话的信令协议
+SDP | Session Description Protocol | 会话描述协议 | 描述音视频会话参数（编码、端口等），常和 SIP 一起用
+RTP | Real-time Transport Protocol | 实时传输协议 | 传输音频、视频流的协议
+RTCP | RTP Control Protocol | RTP 控制协议 | 配合 RTP 反馈传输质量
+RTSP | Real Time Streaming Protocol | 实时流协议 | 控制流媒体播放（播放、暂停），网络摄像头常用
+RTMP | Real-Time Messaging Protocol | 实时消息协议 | 直播推流常用的协议
+VoIP | Voice over IP | 网络电话 | 通过 IP 网络打电话
+WebRTC | Web Real-Time Communication | 网页实时通信 | 浏览器里直接进行音视频通话的技术
+WebSocket | | WebSocket 协议 | 在一个 TCP 连接上实现浏览器和服务器双向实时通信 | websocket / WebSockets
+MQTT | Message Queuing Telemetry Transport | 消息队列遥测传输 | 物联网常用的轻量级发布/订阅消息协议
+CoAP | Constrained Application Protocol | 受限应用协议 | 给低功耗设备用的类似 HTTP 的协议，基于 UDP
+AMQP | Advanced Message Queuing Protocol | 高级消息队列协议 | 消息中间件的标准协议，RabbitMQ 使用
+XMPP | Extensible Messaging and Presence Protocol | 可扩展消息与存在协议 | 即时通讯协议
+Diameter | | Diameter 协议 | 电信网络里做认证、授权、计费（AAA）的协议，是 RADIUS 的后继（diameter 本义是「直径」）
+RADIUS | Remote Authentication Dial-In User Service | 远程认证拨号用户服务 | 集中做网络用户认证、授权和计费的协议
+AAA | Authentication, Authorization, Accounting | 认证、授权、计费 | 网络接入管理的三件事：你是谁、能做什么、用了多少
+H.248 | | H.248 协议 | 媒体网关控制协议，也叫 Megaco，用于电信网络控制媒体网关 | H248
+Megaco | Media Gateway Control | 媒体网关控制协议 | 即 H.248，控制电话网里的媒体网关
+SMPP | Short Message Peer-to-Peer | 短消息点对点协议 | 短信中心和应用之间收发短信的协议
+SS7 | Signaling System No. 7 | 7 号信令系统 | 传统电话网用来建立通话、传短信的信令协议
+RELOAD | REsource LOcation And Discovery | 资源定位与发现协议 | 用于 P2P 覆盖网络的协议（Wireshark 里的「RELOAD framing」指它的分帧）
+CredSSP | Credential Security Support Provider | 凭据安全支持提供程序 | Windows 远程桌面用来安全传递登录凭据的协议
+GTP | GPRS Tunnelling Protocol | GPRS 隧道协议 | 移动网络核心网里传用户数据和信令的隧道协议
+LTE | Long-Term Evolution | 长期演进（4G） | 4G 移动通信标准
+5G | | 第五代移动通信 | 速度更快、延迟更低的移动通信技术
+DVB | Digital Video Broadcasting | 数字视频广播 | 欧洲的数字电视广播标准
+DVB-CI | DVB Common Interface | DVB 通用接口 | 数字电视接收机插条件接收（CA）模块的接口
+BGP | Border Gateway Protocol | 边界网关协议 | 互联网上各大网络（自治系统）之间交换路由信息的协议
+OSPF | Open Shortest Path First | 开放最短路径优先 | 企业内部常用的动态路由协议
+RIP | Routing Information Protocol | 路由信息协议 | 按跳数选路的老式路由协议
+IS-IS | Intermediate System to Intermediate System | 中间系统到中间系统 | 运营商网络常用的链路状态路由协议
+AS | Autonomous System | 自治系统 | 由一个机构统一管理路由策略的网络，用 AS 号标识
+MPLS | Multiprotocol Label Switching | 多协议标签交换 | 运营商网络里按标签快速转发数据包的技术
+STP | Spanning Tree Protocol | 生成树协议 | 防止交换机之间形成环路的协议
+LACP | Link Aggregation Control Protocol | 链路聚合控制协议 | 把多条网线捆成一条逻辑链路，提高带宽和可靠性
+PPP | Point-to-Point Protocol | 点对点协议 | 两点之间直连链路的二层协议
+PPPoE | PPP over Ethernet | 以太网上的点对点协议 | 宽带拨号上网常用
+LLDP | Link Layer Discovery Protocol | 链路层发现协议 | 网络设备向邻居通告自己身份和能力
+IGMP | Internet Group Management Protocol | 互联网组管理协议 | 主机用来加入或离开组播组
+802.1Q | | IEEE 802.1Q 标准 | 在以太网帧里加 VLAN 标签的标准
+IEEE 802.11 | | IEEE 802.11 标准 | 无线局域网（Wi-Fi）标准系列，如 802.11ac、802.11ax（Wi-Fi 6） | 802.11
+SSID | Service Set Identifier | 服务集标识符 | Wi-Fi 网络的名字
+access point | | 接入点；无线 AP | 让无线设备接入有线网络的设备 | AP
+Bluetooth | | 蓝牙 | 短距离无线通信技术
+BLE | Bluetooth Low Energy | 低功耗蓝牙 | 功耗很低的蓝牙版本，手环、传感器常用
+NFC | Near Field Communication | 近场通信 | 几厘米内的无线通信，用于刷卡、支付
+RFID | Radio Frequency Identification | 射频识别 | 用无线电读取标签信息，如门禁卡、物流标签
+Zigbee | | Zigbee 协议 | 低功耗、低速率的无线组网协议，智能家居常用
+LoRa | Long Range | 远距离无线技术 | 低功耗、传得远的物联网无线技术
+NB-IoT | Narrowband Internet of Things | 窄带物联网 | 基于蜂窝网络的低功耗物联网技术
+IoT | Internet of Things | 物联网 | 把各种设备、传感器连到网络上
+modem | modulator-demodulator | 调制解调器；猫 | 把数字信号和线路上的模拟信号互相转换的设备
+NIC | Network Interface Card | 网卡 | 计算机接入网络的硬件 | network adapter / network card
+interface | | 接口；网口 | 网络里指一个网络接口，如 eth0、wlan0；编程里指约定好的调用方式
+ping | | ping 命令 | 用 ICMP 测试能否连通目标主机、延迟多少
+traceroute | | 路由跟踪 | 显示数据包到目标主机经过了哪些路由器；Windows 下叫 tracert | tracert
+netstat | | 网络状态命令 | 查看本机网络连接、监听端口的命令
+nslookup | | 域名查询命令 | 查询 DNS 解析结果的命令 | dig
+ipconfig | | IP 配置命令 | Windows 下查看网卡 IP 配置的命令；Linux 下用 ifconfig 或 ip | ifconfig
+packet capture | | 抓包 | 把经过网卡的数据包记录下来分析 | capture / sniffing
+sniffer | | 嗅探器；抓包工具 | 截获并分析网络流量的工具
+Wireshark | | Wireshark 抓包分析工具 | 最流行的开源网络协议分析器，可以抓包并逐层解析每个字段
+tcpdump | | tcpdump 命令 | 命令行抓包工具
+pcap | packet capture | 抓包文件格式；抓包库 | 保存抓包数据的文件格式（.pcap），也指 libpcap 抓包库 | libpcap
+pcapng | PCAP Next Generation | 新一代抓包文件格式 | Wireshark 默认的保存格式，能存多个接口和注释
+dissector | | 解析器（Wireshark） | Wireshark 里负责解析某个协议、把字节翻译成可读字段的模块（dissect 本义是「解剖」）
+dissect | | 解析；剖析 | 把数据包按协议格式逐字段拆开分析（本义「解剖」） | dissection
+display filter | | 显示过滤器 | Wireshark 里只显示符合条件的包，如 tcp.port == 80
+capture filter | | 捕获过滤器 | 抓包时只抓符合条件的包，用 BPF 语法，如 port 80
+BPF | Berkeley Packet Filter | 伯克利包过滤器 | 内核里高效过滤数据包的机制，tcpdump 的过滤语法就是它；eBPF 是它的扩展版 | eBPF
+DLT | Data Link Type | 数据链路类型 | 抓包文件里标明链路层格式的编号，如以太网是 DLT_EN10MB；「DLT User」是留给用户自定义协议的编号
+link-layer type | | 链路层类型 | 同 DLT，说明抓到的每个包最外层是什么格式 | linktype / link type
+Logcat | | Logcat 日志 | Android 系统的日志工具和日志格式
+stream | | 流 | 连续的数据序列；TCP 流指一个连接里来回的所有数据；视频流
+flow | | 流；数据流 | 源地址、目的地址、端口、协议都相同的一组数据包
+conversation | | 会话（Wireshark） | Wireshark 里两个端点之间的全部流量
+endpoint | | 端点 | 通信的一端（IP + 端口）；Web API 里指一个可以访问的地址
+multiplexing | | 多路复用 | 在一条链路或连接上同时传多路数据 | multiplex / mux
+demultiplexing | | 解复用 | 把混在一起的多路数据分开 | demultiplex / demux
+modulation | | 调制 | 把数字信号「搭载」到载波上发出去
+baud rate | | 波特率 | 每秒传多少个信号符号，串口里常和比特率相同，如 9600、115200 | baud
+duplex | | 双工 | 通信方向：full-duplex 全双工（同时双向）、half-duplex 半双工（轮流双向） | full-duplex / half-duplex
+simplex | | 单工 | 只能单向传输
+octet | | 八位组；字节 | 正好 8 位的一个字节，协议文档里常用这个词代替 byte
+big-endian | | 大端序 | 高位字节放在前面（低地址），网络字节序就是大端 | big endian
+little-endian | | 小端序 | 低位字节放在前面，x86 CPU 用小端 | little endian
+network byte order | | 网络字节序 | 网络协议规定统一使用大端序
+CDN | Content Delivery Network | 内容分发网络 | 把网站内容缓存到各地节点，让用户就近下载
+load balancer | | 负载均衡器 | 把请求分配到多台服务器上 | load balancing
+SDN | Software-Defined Networking | 软件定义网络 | 把网络的控制和转发分开，用软件集中管理
+NFV | Network Functions Virtualization | 网络功能虚拟化 | 用普通服务器上的软件代替专用网络设备
+DMZ | Demilitarized Zone | 隔离区；非军事区 | 内网和外网之间放对外服务器的缓冲区域
+ISP | Internet Service Provider | 互联网服务提供商 | 给你提供上网服务的公司，如电信、联通
+RFC | Request for Comments | 请求评论（互联网标准文档） | 互联网协议的标准文档，如 TCP 定义在 RFC 793（现为 RFC 9293）
+IETF | Internet Engineering Task Force | 互联网工程任务组 | 制定互联网协议标准（RFC）的组织
+IEEE | Institute of Electrical and Electronics Engineers | 电气电子工程师学会 | 制定以太网、Wi-Fi 等标准的组织
+IANA | Internet Assigned Numbers Authority | 互联网号码分配机构 | 管理 IP 地址、端口号、协议号等编号的机构
+ITU | International Telecommunication Union | 国际电信联盟 | 联合国下属的电信标准组织，ITU-T 制定电信标准
+3GPP | 3rd Generation Partnership Project | 第三代合作伙伴计划 | 制定 4G、5G 移动通信标准的组织
+dial-up | | 拨号上网 | 通过电话线拨号连接互联网的老方式
+uplink | | 上行链路 | 从用户到网络方向的传输；也指交换机接上级的端口
+downlink | | 下行链路 | 从网络到用户方向的传输
+backbone | | 骨干网 | 网络中承载大量流量的核心部分
+last mile | | 最后一公里 | 从运营商到用户家的那段接入线路
+fiber | | 光纤 | 用光传信号的线缆，速度快、距离远 | fibre / optical fiber
+twisted pair | | 双绞线 | 普通网线，几对铜线绞在一起；Cat5e、Cat6 是它的规格 | Cat5e / Cat6
+RJ45 | Registered Jack 45 | RJ45 接口；水晶头 | 网线用的 8 针接头 | RJ-45
+PoE | Power over Ethernet | 以太网供电 | 通过网线同时给设备供电，如给摄像头、AP 供电
+SFP | Small Form-factor Pluggable | 小型可插拔光模块 | 交换机上插光纤或网线的模块
+link | | 链路；链接 | 网络里两个节点之间的连接；网页上的超链接
+link-local address | | 链路本地地址 | 只在本链路内有效的地址，如 IPv6 的 fe80:: 开头地址、IPv4 的 169.254.x.x
+DSL | Digital Subscriber Line | 数字用户线路 | 通过电话线提供宽带的技术，ADSL 是其中一种 | ADSL
+leased line | | 专线 | 运营商给企业独享的线路
+egress | | 出口（流量） | 从网络或设备流出去的流量
+ingress | | 入口（流量） | 流进网络或设备的流量；Kubernetes 里指外部访问集群服务的入口
+inbound | | 入站的 | 从外面进来的（连接或流量）
+outbound | | 出站的 | 从里面往外发的（连接或流量）
+listen | | 监听 | 服务器在某个端口上等待客户端连接
+bind | | 绑定 | 把套接字和某个 IP 地址、端口关联起来
+promiscuous mode | | 混杂模式 | 网卡接收所有经过它的数据包而不只是发给自己的，抓包时要开
+monitor mode | | 监听模式 | 无线网卡抓所有空中 Wi-Fi 帧的模式
+mirror port | | 镜像端口 | 把交换机其他端口的流量复制一份到这个口，方便抓包 | port mirroring / SPAN

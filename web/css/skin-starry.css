@@ -121,7 +121,6 @@
   :root[data-skin="starry"] .hero::before { display: none; }
   :root[data-skin="starry"] .page-head::after, :root[data-skin="starry"] .page-title::after { display: none; }
   :root[data-skin="starry"] .card { border-width: 10px; }
-  :root[data-skin="starry"] .sidebar .nav-item.active { padding-right: 0; clip-path: none; border-radius: 999px; }
 }
 
 /* ---------- 夜间：蕾丝换成深灰紫，手帕变深蓝亚麻，拼贴退到背景 ---------- */

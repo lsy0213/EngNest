@@ -279,30 +279,262 @@ const Dict = {
   },
 };
 
+// ---------- 计算机英语词典（data/techdict.js，由 tools/build_techdict.py 生成，第一次查词时才加载） ----------
+// 每条 { w 术语, full 英文全称, zh 中文, note 解释, alias 别名, cat 分类, common 日常也常见的词, ext 来自 computerese }
+// 查词浮层里显示「💻 计算机」释义：设置里可选 auto（默认）/ always / off。
+// auto：本句里出现的多词术语（Display Filter、Modbus TCP）总是显示；单个词如果日常也很常见（set、frame、port），
+//       只有这段话里还有别的术语、看起来是技术文章时才显示，读小说时不打扰
+const TechDict = {
+  items: null, cats: [], map: null, phrases: null, loading: null,
+  async load() {
+    if (this.items) return true;
+    try {
+      if (!window.TECH_DICT) await (this.loading ||= loadScript("data/techdict.js"));
+      this.build(window.TECH_DICT);
+      return true;
+    } catch { this.loading = null; return false; }
+  },
+  build(d) {
+    this.cats = d.cats;
+    this.items = d.items.map(([w, full, zh, note, alias, cat, flags], i) => ({ i, w, full, zh, note, alias, cat: d.cats[cat], ci: cat, common: !!(flags & 1), ext: !!(flags & 2) }));
+    this.map = new Map();
+    this.phrases = new Map(); // 多词术语：按其中每个单词索引，查词时在上下文里找整个短语
+    for (const it of this.items) {
+      for (const key of new Set([it.w, ...it.alias])) {
+        const lo = key.toLowerCase();
+        if (!this.map.has(lo)) this.map.set(lo, []);
+        this.map.get(lo).push({ it, key });
+        const toks = lo.split(/[\s/]+/).filter(Boolean);
+        if (toks.length < 2) continue;
+        const re = new RegExp(`(?<![A-Za-z0-9])${toks.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("[\\s/]+")}(?![A-Za-z0-9])`, "i");
+        for (const t of new Set(toks.map((t) => t.replace(/[^a-z0-9]/g, "")).filter(Boolean))) {
+          if (!this.phrases.has(t)) this.phrases.set(t, []);
+          this.phrases.get(t).push({ it, key, re });
+        }
+      }
+    }
+  },
+  // 大小写：全大写的缩写（TCP、SIP、ARM）只匹配全大写，免得把 sip（啜饮）、arm（手臂）当成术语；
+  // 带大写的专名（Python、Go、IPsec）不匹配全小写的词；全小写的术语不限
+  caseOk(key, word) {
+    if (key === key.toLowerCase()) return true;
+    const letters = key.replace(/[^A-Za-z]/g, "");
+    if (letters.length > 1 && letters === letters.toUpperCase()) return word === key;
+    return word !== word.toLowerCase();
+  },
+  // 简单还原复数和动词变形：PDUs → PDU，packets → packet，encapsulated → encapsulate
+  forms(word) {
+    const w = word, out = [w];
+    if (/[^s]s$/i.test(w)) out.push(w.slice(0, -1));
+    if (/(ch|sh|x|ss)es$/i.test(w)) out.push(w.slice(0, -2));
+    if (/ies$/i.test(w)) out.push(w.slice(0, -3) + "y");
+    if (/ed$/i.test(w)) out.push(w.slice(0, -2), w.slice(0, -1));
+    if (/ing$/i.test(w)) out.push(w.slice(0, -3), w.slice(0, -3) + "e");
+    return out;
+  },
+  // 一个词（或选中的短语）的全部计算机释义，同一条只出现一次
+  senses(word) {
+    if (!this.map) return [];
+    const w = (word || "").trim().replace(/\s+/g, " ");
+    const seen = new Set(), out = [];
+    for (const f of this.forms(w)) {
+      for (const { it, key } of this.map.get(f.toLowerCase()) || []) {
+        if (seen.has(it) || !this.caseOk(key, f)) continue;
+        seen.add(it);
+        out.push(it);
+      }
+    }
+    return out.sort((a, b) => a.ext - b.ext); // 自编的（带解释）排前面
+  },
+  // 上下文里包含这个词的多词术语，比如在「OSI layer 7」里点 layer → OSI layer
+  phrasesIn(word, context) {
+    if (!this.phrases || !context) return [];
+    const seen = new Set(), out = [];
+    for (const f of this.forms(word.toLowerCase())) {
+      for (const p of this.phrases.get(f) || []) {
+        if (seen.has(p.it) || p.key.toLowerCase() === word.toLowerCase()) continue;
+        if (p.re.test(context)) { seen.add(p.it); out.push(p.it); }
+      }
+    }
+    return out.sort((a, b) => a.ext - b.ext || b.w.length - a.w.length).slice(0, 4);
+  },
+  // 这段话像不像技术文章：除了 word 自己，还出现了至少两个不常见的术语（或者任意一个多词术语）
+  isTechContext(context, word = "") {
+    if (!this.map || !context) return false;
+    const self = word.toLowerCase(), hits = new Set();
+    for (const m of context.matchAll(/[A-Za-z][A-Za-z0-9.+#-]*[A-Za-z0-9+#]|[A-Za-z]/g)) {
+      const t = m[0];
+      if (t.toLowerCase() === self) continue;
+      for (const it of this.senses(t)) if (!it.common && !it.ext) hits.add(it.w.toLowerCase());
+      if (hits.size >= 2) return true;
+    }
+    for (const t of context.toLowerCase().match(/[a-z0-9]+/g) || []) {
+      if (t === self) continue;
+      for (const p of this.phrases.get(t) || []) if (!p.it.ext && p.re.test(context)) return true;
+    }
+    return false;
+  },
+  // 查词浮层用：按设置挑出要显示的释义 { senses, phrases }
+  pick(word, context = "", mode = "auto") {
+    if (mode === "off") return { senses: [], phrases: [] };
+    let senses = this.senses(word);
+    const phrases = this.phrasesIn(word, context);
+    if (mode === "auto" && senses.some((s) => s.common || s.ext) && !phrases.length && !this.isTechContext(context, word))
+      senses = senses.filter((s) => !s.common && !s.ext);
+    return { senses: senses.slice(0, 4), phrases };
+  },
+  // 搜索：英文按术语、别名、英文全称的前缀，中文按中文和解释
+  search(q, limit = 40) {
+    if (!this.items) return [];
+    q = (q || "").trim();
+    if (!q) return [];
+    const scored = [];
+    if (/[㐀-鿿]/.test(q)) {
+      for (const it of this.items) {
+        const s = it.zh.includes(q) ? (it.zh.split(/[；;，,（(]/)[0] === q ? 0 : 1) : it.note.includes(q) ? 3 : -1;
+        if (s >= 0) scored.push([s + (it.ext ? 0.5 : 0), it]);
+      }
+    } else {
+      const lo = q.toLowerCase();
+      for (const it of this.items) {
+        let best = 9;
+        for (const k of [it.w, ...it.alias]) {
+          const kl = k.toLowerCase();
+          best = Math.min(best, kl === lo ? 0 : kl.startsWith(lo) ? 2 : kl.includes(" " + lo) ? 4 : 9);
+        }
+        const fl = it.full.toLowerCase();
+        if (fl) best = Math.min(best, fl === lo ? 1 : fl.startsWith(lo) ? 3 : fl.includes(" " + lo) ? 5 : 9);
+        if (best < 9) scored.push([best + (it.ext ? 0.5 : 0), it]);
+      }
+    }
+    return scored.sort((a, b) => a[0] - b[0] || a[1].w.length - b[1].w.length).slice(0, limit).map((x) => x[1]);
+  },
+  byCat(ci) { return (this.items || []).filter((it) => it.ci === ci); },
+  // 和这个术语相关的多词术语（查 port 时列出 port number、well-known port……）
+  related(word) {
+    const lo = word.toLowerCase(), seen = new Set();
+    return (this.phrases?.get(lo.replace(/[^a-z0-9]/g, "")) || []).map((p) => p.it)
+      .filter((it) => it.w.toLowerCase() !== lo && !seen.has(it) && seen.add(it)).slice(0, 16);
+  },
+  senseHtml(it, big = false) {
+    return `<div class="tech-sense">
+      <div><b class="tech-w">${esc(it.w)}</b>${it.full ? ` <span class="tech-full">${esc(it.full)}</span>` : ""}</div>
+      <div class="tech-zh"><b>${esc(it.zh)}</b> <span class="tech-cat">${esc(it.cat)}</span></div>
+      ${it.note ? `<div class="tech-note">${esc(it.note)}</div>` : ""}
+      ${big && it.alias.length ? `<div class="small faint">也写作：${it.alias.map(esc).join("、")}</div>` : ""}</div>`;
+  },
+  // 浮层里的「💻 计算机」一栏
+  popupHtml({ senses, phrases }) {
+    if (!senses.length && !phrases.length) return "";
+    return `<div class="tech-box">
+      <div class="tech-head">💻 计算机</div>
+      ${senses.map((it) => this.senseHtml(it)).join("")}
+      ${phrases.length ? `<div class="tech-sub">本句中的术语</div>${phrases.map((it) => this.senseHtml(it)).join("")}` : ""}</div>`;
+  },
+  // 「查单词」面板详情里的整张卡片：全部释义 + 相关术语（可以点）
+  detailHtml(word) {
+    const senses = this.senses(word), rel = this.related(word);
+    if (!senses.length && !rel.length) return "";
+    return `<div class="tech-box tech-detail">
+      <div class="tech-head">💻 计算机词典</div>
+      ${senses.map((it) => this.senseHtml(it, true)).join("")}
+      ${rel.length ? `<div class="tech-sub">相关术语</div><div class="tech-rel">${rel.map((it) => `<a href="#" data-dict-q="${esc(it.w)}">${esc(it.w)}</a>`).join("")}</div>` : ""}</div>`;
+  },
+};
+
+// 拖动卡片（单词卡、短语和句子复习卡共用）：
+// - 拖过卡片宽度的约 1/5（最多 80px）松手就滑走；或者轻轻一甩（够快、方向一致）也算，不用拖到一半
+// - 不到就弹回；几乎没动当作点击
+// - skip 里的元素不能开始拖：电脑上要能在释义里选中文字；手机上没有拖选，只跳过按钮和可点的单词（touchSkip）
+function bindSwipeCard(card, { busy, onSwipe, onTap, skip = "button, a, .w", touchSkip = "button, a, .w" }) {
+  let x0 = null, dx = 0, moved = false, trail = [];
+  const stamps = () => [$(".fc-stamp.ok", card), $(".fc-stamp.no", card)];
+  const need = () => Math.min(80, card.offsetWidth * 0.22);
+  card.addEventListener("pointerdown", (e) => {
+    if (busy() || e.button !== 0 || e.target.closest(e.pointerType === "mouse" ? skip : touchSkip)) return;
+    x0 = e.clientX; dx = 0; moved = false; trail = [[e.clientX, e.timeStamp]];
+    card.setPointerCapture(e.pointerId);
+    card.classList.add("dragging");
+  });
+  card.addEventListener("pointermove", (e) => {
+    if (x0 === null) return;
+    dx = e.clientX - x0;
+    if (Math.abs(dx) > 6) moved = true;
+    trail.push([e.clientX, e.timeStamp]);
+    while (trail.length > 2 && e.timeStamp - trail[0][1] > 100) trail.shift(); // 只看最近 0.1 秒的速度
+    card.style.transform = `translateX(${dx}px) rotate(${dx / 18}deg)`;
+    const [ok, no] = stamps(), K = knownDir(), n = need();
+    if (ok) ok.style.opacity = Math.min(1, Math.max(0, (dx * K) / n));
+    if (no) no.style.opacity = Math.min(1, Math.max(0, (-dx * K) / n));
+  });
+  const end = (e) => {
+    if (x0 === null) return;
+    x0 = null;
+    const K = knownDir(), [x1, t1] = trail[0], dt = e.timeStamp - t1;
+    const v = dt > 0 ? (e.clientX - x1) / dt : 0; // 像素 / 毫秒
+    const flick = Math.abs(v) > 0.4 && Math.abs(dx) > 24 && Math.sign(v) === Math.sign(dx);
+    if (e.type !== "pointercancel" && (Math.abs(dx) >= need() || flick)) return onSwipe(dx * K > 0 ? 2 : 0, e);
+    card.classList.remove("dragging");
+    card.style.transform = "";
+    stamps().forEach((st) => st && (st.style.opacity = 0));
+    if (!moved) onTap?.();
+  };
+  card.addEventListener("pointerup", end);
+  card.addEventListener("pointercancel", end);
+}
+
 // 查单词面板：Ctrl+K 或侧栏的「查单词」打开；英文按前缀搜，中文按释义搜
-function openDictSearch(initial = "") {
+// tech：只查计算机词典（没输入时按分类浏览）
+function openDictSearch(initial = "", { tech = false } = {}) {
   closePopups();
   if ($(".ds-modal")) return;
   const { root, close } = modal(`
     <div class="ds">
-      <div class="row ds-top"><input class="input ds-input" id="ds-q" placeholder="输入英文或中文，比如 happy、look forward、苹果" autocomplete="off" spellcheck="false">
+      <div class="row ds-top"><input class="input ds-input" id="ds-q" autocomplete="off" spellcheck="false">
+        <button class="btn sm ds-mode" id="ds-tech" title="只查计算机词典：网络、编程、系统、安全、工控、AI、技术文档常用词……">💻 计算机</button>
         <button class="btn ghost sm" data-close title="关闭 (Esc)">✕</button></div>
       <div class="ds-body"><div class="ds-list" id="ds-list"></div><div class="ds-detail" id="ds-detail"></div></div>
-      <div class="small faint ds-foot">↑ ↓ 选择 · Enter 朗读 · Esc 关闭 · 英汉词典数据来自 ECDICT（MIT 协议）</div>
+      <div class="small faint ds-foot" id="ds-foot"></div>
     </div>`);
   $(".modal", root).classList.add("ds-modal");
-  const inp = $("#ds-q", root), list = $("#ds-list", root), detail = $("#ds-detail", root);
-  let results = [], active = -1, seq = 0;
+  const inp = $("#ds-q", root), list = $("#ds-list", root), detail = $("#ds-detail", root), modeBtn = $("#ds-tech", root);
+  // results 的每一项：英汉词典的 { word, trans, … }，计算机词典来的另带 tech: true
+  let results = [], active = -1, seq = 0, techMode = tech, browseCat = null;
+  const techLoaded = TechDict.load();
 
   const empty = (html) => (detail.innerHTML = `<div class="ds-empty">${html}</div>`);
-  empty(`<div class="big">🔍</div>输入单词、短语或中文开始搜索<div class="small faint mt-s">${Dict.ok ? "" : "当前只能搜索词书里的词，完整词典需要在桌面版中使用"}</div>`);
+  const welcome = () => techMode
+    ? empty(`<div class="big">💻</div>输入术语、缩写或中文，比如 TCP、encapsulation、封装<div class="small faint mt-s">也可以在左边按分类浏览</div>`)
+    : empty(`<div class="big">🔍</div>输入单词、短语或中文开始搜索<div class="small faint mt-s">${Dict.ok ? "" : "当前只能搜索词书里的词，完整词典需要在桌面版中使用"}</div>`);
+  const setMode = () => {
+    modeBtn.classList.toggle("primary", techMode);
+    modeBtn.classList.toggle("ghost", !techMode);
+    inp.placeholder = techMode ? "搜索计算机术语，比如 PDU、Modbus、deprecated、协议" : "输入英文或中文，比如 happy、look forward、苹果";
+    $("#ds-foot", root).textContent = techMode
+      ? "↑ ↓ 选择 · Enter 朗读 · Esc 关闭 · 计算机词典由 EngNest 编写，另收 computerese-cross-references（MIT 协议）的术语对照"
+      : "↑ ↓ 选择 · Enter 朗读 · Esc 关闭 · 英汉词典数据来自 ECDICT（MIT 协议）";
+  };
+  const techRow = (it) => ({ word: it.w, trans: it.zh, tech: true, phonetic: "", tag: "" });
 
   const drawList = () => {
-    list.innerHTML = results.map((r, i) => `<div class="ds-row ${i === active ? "active" : ""}" data-i="${i}">
-      <div class="row" style="gap:6px"><b class="ds-w">${esc(r.word)}</b>${inNotebook(r.word) ? `<span class="ds-star">★</span>` : ""}<span class="spacer"></span>${Dict.tagsHtml(r, 2)}</div>
+    if (techMode && browseCat === null && !inp.value.trim()) {
+      list.innerHTML = TechDict.cats.map((c, ci) => `<div class="ds-row" data-cat="${ci}"><div class="row"><b>${esc(c)}</b><span class="spacer"></span><span class="small faint">${TechDict.byCat(ci).length}</span></div></div>`).join("");
+      return;
+    }
+    const back = techMode && browseCat !== null && !inp.value.trim() ? `<div class="ds-row ds-back" data-back>← ${esc(TechDict.cats[browseCat])}</div>` : "";
+    list.innerHTML = back + (results.map((r, i) => `<div class="ds-row ${i === active ? "active" : ""}" data-i="${i}">
+      <div class="row" style="gap:6px"><b class="ds-w">${esc(r.word)}</b>${inNotebook(r.word) ? `<span class="ds-star">★</span>` : ""}<span class="spacer"></span>${!techMode && (r.tech || TechDict.senses(r.word).length) ? `<span class="ds-tech" title="计算机词典里有">💻</span>` : ""}${Dict.tagsHtml(r, 2)}</div>
       <div class="ds-t">${esc(r.trans.split("\n")[0])}</div></div>`).join("")
-      || (inp.value.trim() ? `<div class="ds-none small muted">没有找到「${esc(inp.value.trim())}」</div>` : "");
+      || (inp.value.trim() ? `<div class="ds-none small muted">没有找到「${esc(inp.value.trim())}」</div>` : ""));
   };
+
+  const bindDetail = (word, item) => {
+    $("#ds-star", detail).onclick = (e) => { e.currentTarget.classList.toggle("on", toggleNotebook(item)); drawList(); };
+    $$("[data-dict-q]", detail).forEach((a) => (a.onclick = (e) => { e.preventDefault(); inp.value = a.dataset.dictQ; browseCat = null; run(); }));
+    TTS.speak(word);
+  };
+  const headHtml = (word) => `<div class="row"><span class="ds-word">${esc(word)}</span>${speakBtn(word)}<button class="btn sm ghost" data-say="${esc(word)}" data-rate="0.6" title="慢速">🐢</button>
+    <span class="spacer"></span><button class="star ${inNotebook(word) ? "on" : ""}" id="ds-star" title="加入生词本">★</button></div>`;
 
   const show = async (i) => {
     active = i;
@@ -311,38 +543,63 @@ function openDictSearch(initial = "") {
     if (!r) return;
     $(".ds-row.active", list)?.scrollIntoView({ block: "nearest" });
     const my = ++seq;
-    const d = (await Dict.lookup(r.word)) || { ...r, defn: "", exchange: "", oxford: 0 };
+    await techLoaded;
+    const found = await Dict.lookup(r.word);
     if (my !== seq) return;
+    const techHtml = TechDict.detailHtml(r.word);
+    // 只在计算机词典里有（Modbus TCP、Wireshark……）：只显示术语卡片
+    if (!found && r.tech) {
+      const it = TechDict.senses(r.word)[0];
+      detail.innerHTML = headHtml(r.word) + techHtml;
+      bindDetail(r.word, { w: r.word, ph: "", m: it ? [it.zh, it.note].filter(Boolean).join("  ") : r.trans });
+      return;
+    }
+    const d = found || { ...r, defn: "", exchange: "", oxford: 0 };
     const local = WORD_MAP[d.word.toLowerCase()];
     const item = local || Dict.toItem(d);
     detail.innerHTML = `
-      <div class="row"><span class="ds-word">${esc(d.word)}</span>${speakBtn(d.word)}<button class="btn sm ghost" data-say="${esc(d.word)}" data-rate="0.6" title="慢速">🐢</button>
-        <span class="spacer"></span><button class="star ${inNotebook(d.word) ? "on" : ""}" id="ds-star" title="加入生词本">★</button></div>
+      ${headHtml(d.word)}
       ${local?.ph || d.phonetic ? `<div class="pop-ipa">${esc(local?.ph || `/${d.phonetic}/`)}</div>` : ""}
       ${Dict.formNote(d)}
       <div class="row ds-badges">${Dict.tagsHtml(d)}${d.collins ? `<span class="badge brand" title="柯林斯星级，越多越常用">${"★".repeat(d.collins)}</span>` : ""}
         ${d.oxford ? `<span class="badge good" title="牛津 3000 核心词">牛津 3000</span>` : ""}${d.rank ? `<span class="small faint">词频第 ${d.rank} 位</span>` : ""}</div>
+      ${techMode ? techHtml : ""}
       <div class="ds-trans">${d.trans.split("\n").map((l) => `<div>${esc(l)}</div>`).join("")}</div>
+      ${techMode ? "" : techHtml}
       ${Dict.formsHtml(d) ? `<div class="ds-forms">${Dict.formsHtml(d)}</div>` : ""}
       ${local ? `<div class="small faint mt">📚 ${esc(unitLabel(local))}</div><div class="ds-local">${wordDetailHtml(local)}</div>` : ""}
       ${d.defn ? `<details class="mt-s"><summary class="small muted" style="cursor:pointer">英文释义</summary><div class="ds-defn">${esc(d.defn).replace(/\n/g, "<br>")}</div></details>` : ""}
       <div id="ds-tat"></div>`;
     tatoebaHtml($("#ds-tat", detail), d.word, d.exchange);
-    $("#ds-star", detail).onclick = (e) => { e.currentTarget.classList.toggle("on", toggleNotebook(item)); drawList(); };
-    const also = $("[data-dict-q]", detail);
-    if (also) also.onclick = (e) => { e.preventDefault(); inp.value = also.dataset.dictQ; run(); };
-    TTS.speak(d.word);
+    bindDetail(d.word, item);
   };
 
   let timer = 0;
   const run = async () => {
     const q = inp.value.trim(), my = ++seq;
-    if (!q) { results = []; drawList(); return; }
-    const res = await Dict.search(q);
+    await techLoaded;
     if (my !== seq) return;
-    results = res;
+    if (!q) {
+      results = browseCat !== null && techMode ? TechDict.byCat(browseCat).map(techRow) : [];
+      active = -1;
+      drawList();
+      if (results.length) show(0); else welcome();
+      return;
+    }
+    if (techMode) {
+      results = TechDict.search(q).map(techRow);
+    } else {
+      // 英汉词典的结果为主；计算机词典里完全对上的术语放最前面，其他前缀匹配的接在后面
+      const res = await Dict.search(q);
+      if (my !== seq) return;
+      const have = new Set(res.map((r) => r.word.toLowerCase()));
+      const tech = TechDict.search(q, 12).filter((it) => !have.has(it.w.toLowerCase()));
+      const exact = tech.filter((it) => [it.w, ...it.alias].some((k) => k.toLowerCase() === q.toLowerCase()));
+      results = [...exact.map(techRow), ...res, ...tech.filter((it) => !exact.includes(it)).slice(0, 8).map(techRow)];
+    }
+    active = -1;
     if (results.length) show(0);
-    else { drawList(); empty(`没有找到「${esc(q)}」${Dict.ok ? `<div class="small faint mt-s">可以在设置里下载完整词典（77 万条）</div>` : ""}`); }
+    else { drawList(); empty(`没有找到「${esc(q)}」${!techMode && Dict.ok ? `<div class="small faint mt-s">可以在设置里下载完整词典（77 万条）</div>` : ""}`); }
   };
   inp.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(run, 120); });
   inp.addEventListener("keydown", (e) => {
@@ -351,10 +608,16 @@ function openDictSearch(initial = "") {
       if (results.length) show((active + (e.key === "ArrowDown" ? 1 : results.length - 1)) % results.length);
     } else if (e.key === "Enter" && results[active]) TTS.speak(results[active].word);
   });
-  list.onclick = (e) => { const r = e.target.closest("[data-i]"); if (r) { show(+r.dataset.i); inp.focus(); } };
+  list.onclick = (e) => {
+    const c = e.target.closest("[data-cat]"), b = e.target.closest("[data-back]"), r = e.target.closest("[data-i]");
+    if (c) { browseCat = +c.dataset.cat; run(); } else if (b) { browseCat = null; run(); } else if (r) show(+r.dataset.i);
+    inp.focus();
+  };
+  modeBtn.onclick = () => { techMode = !techMode; browseCat = null; setMode(); run(); inp.focus(); };
+  setMode();
   inp.value = initial;
   setTimeout(() => inp.focus(), 30);
-  if (initial) run();
+  if (initial || techMode) run(); else welcome();
   return close;
 }
 
@@ -390,6 +653,10 @@ async function showWordPopup(rawWord, anchor, context = "", extra = null) {
     pop.style.top = top + "px";
   };
 
+  // 计算机释义（第一次用时要先加载 data/techdict.js）
+  await TechDict.load();
+  let tech = TechDict.pick(word, context, Store.prefs.tech_terms || "auto");
+
   const render = (item, fromAI = false) => {
     pop.innerHTML = `
       <div class="row"><span class="pop-word">${esc(item.w)}</span>${speakBtn(item.w, "sm")}${shadowBtn(item.w, { ph: item.ph || "" })}<span class="spacer"></span>
@@ -397,7 +664,8 @@ async function showWordPopup(rawWord, anchor, context = "", extra = null) {
       ${item.ph ? `<div class="pop-ipa">${esc(item.ph)}</div>` : ""}
       ${item.formNote || ""}
       ${item.tagsHtml ? `<div class="row ds-badges">${item.tagsHtml}</div>` : ""}
-      <div class="pop-meaning">${esc(item.m).replace(/\s{2,}/g, "<br>")}</div>
+      ${item.m ? `<div class="pop-meaning">${esc(item.m).replace(/\s{2,}/g, "<br>")}</div>` : ""}
+      ${fromAI ? "" : TechDict.popupHtml(tech)}
       ${typeof morphHtml === "function" ? morphHtml(item.w) : ""}
       ${item.ex ? `<div class="pop-ex"><div class="en">${esc(item.ex)}</div><div class="zh">${esc(item.zh || "")}</div></div>` : ""}
       ${fromAI ? `<div class="small faint mt-s">由 AI 解释</div>` : ""}
@@ -407,7 +675,7 @@ async function showWordPopup(rawWord, anchor, context = "", extra = null) {
     const also = $("[data-dict-q]", pop);
     if (also) also.onclick = (e) => { e.preventDefault(); openDictSearch(also.dataset.dictQ); };
     // 收进生词本时不带界面用的临时字段
-    const save = { w: item.w, ph: item.ph, m: item.m, ex: item.ex, zh: item.zh };
+    const save = { w: item.w, ph: item.ph, m: item.m || item.save, ex: item.ex, zh: item.zh };
     $(".star", pop).onclick = (e) => { e.currentTarget.classList.toggle("on", toggleNotebook(WORD_MAP[item.w.toLowerCase()] || save)); anchor.classList?.toggle("saved", inNotebook(item.w)); };
     if (extra) extra.bind(pop);
     place();
@@ -423,6 +691,13 @@ async function showWordPopup(rawWord, anchor, context = "", extra = null) {
   if (!pop.isConnected) return;
   if (d) {
     render({ ...Dict.toItem(d), formNote: Dict.formNote(d), tagsHtml: Dict.tagsHtml(d, 4) });
+    return;
+  }
+  // 英汉词典里没有、计算机词典里有（Wireshark、Modbus、Logcat……）：不管设置，直接显示术语释义
+  const only = TechDict.senses(word);
+  if (only.length) {
+    tech = TechDict.pick(word, context, "always");
+    render({ w: only[0].w, ph: "", m: "", save: [only[0].zh, only[0].note].filter(Boolean).join("  ") });
     return;
   }
   pop.innerHTML = `<div class="row"><span class="pop-word">${esc(word)}</span>${speakBtn(word, "sm")}</div>
@@ -639,7 +914,33 @@ function wordDetailHtml(item) {
 
 // ---------- 单词卡片学习 ----------
 // queue: 词条数组；mode: "new" 学新词 / "review" 复习 / "notebook" 生词本
-function runFlashcards(container, queue, mode, signal, onFinish) {
+// 学习专注模式：卡片单独占一屏，页面上别的东西（标题、标签页、词书……）先藏起来，页面本身也不滚动，
+// 左右滑卡片时不会误触成上下滚动。卡片上方的 ← 回到原来的页面（已经评过分的都已保存）；离开页面时自动退出
+// exitTo：← 去哪个地址（复习一打开就开始的页面要回到别处，否则重新渲染又会直接进入卡片）；不给就重新渲染当前页面
+function enterStudyFocus(container, signal, exitTo) {
+  const hidden = [];
+  for (let el = container; el && el.id !== "view" && el.parentElement; el = el.parentElement) {
+    for (const sib of el.parentElement.children) {
+      if (sib !== el && !sib.classList.contains("study-hidden")) { sib.classList.add("study-hidden"); hidden.push(sib); }
+    }
+  }
+  document.body.classList.add("study-focus");
+  $("#view")?.scrollTo(0, 0);
+  // ← 按钮（卡片和完成页上都有 data-exit）：重新渲染当前页面，signal 被中止，这里恢复原样
+  container.addEventListener("click", (e) => {
+    if (!e.target.closest("[data-exit]")) return;
+    if (exitTo && location.hash !== exitTo) location.hash = exitTo;
+    else Router.render();
+  });
+  signal.addEventListener("abort", () => {
+    document.body.classList.remove("study-focus");
+    hidden.forEach((el) => el.classList.remove("study-hidden"));
+  }, { once: true });
+}
+const STUDY_EXIT_BTN = `<button class="btn sm ghost fc-exit" data-exit title="返回（已经评过分的都已保存）" aria-label="返回">←</button>`;
+
+function runFlashcards(container, queue, mode, signal, onFinish, { exitTo } = {}) {
+  enterStudyFocus(container, signal, exitTo);
   const total = queue.length;
   const q = [...queue];
   const retry = {};            // 答错的词回到队尾再来一次（最多 2 次）
@@ -686,7 +987,7 @@ function runFlashcards(container, queue, mode, signal, onFinish) {
     const tag = { new: "新词", review: "复习", notebook: "生词本" }[mode];
     container.innerHTML = `
       <div class="flash-wrap">
-        <div class="flash-progress"><span>${done} / ${total}</span><div class="bar"><i style="width:${pct}%"></i></div><span>${tag}</span>
+        <div class="flash-progress">${STUDY_EXIT_BTN}<span>${done} / ${total}</span><div class="bar"><i style="width:${pct}%"></i></div><span>${tag}</span>
           ${history.length ? `<button class="btn sm ghost" data-undo title="撤销上一次评分（Ctrl+Z）">↶ 撤销</button>` : ""}</div>
         <div class="fc-stack ${enter ? "enter" : ""} ${q.length ? "" : "last"} ${K > 0 ? "swap-dir" : ""}">
         <div class="card flashcard" id="fc">
@@ -737,40 +1038,8 @@ function runFlashcards(container, queue, mode, signal, onFinish) {
     setTimeout(() => { busy = false; if (!signal.aborted) grade(g, evt); }, 260);
   };
 
-  // 拖动：超过 110px 松手就算滑走，不到就弹回来；没怎么动就当作点击翻开
-  // 释义和例句区域不能拖（那里要能选中文字查词）
-  const bindDrag = () => {
-    const card = $("#fc", container);
-    let x0 = null, dx = 0, moved = false;
-    const stamps = () => [$(".fc-stamp.ok", card), $(".fc-stamp.no", card)];
-    card.addEventListener("pointerdown", (e) => {
-      if (busy || e.button !== 0 || e.target.closest("button, a, .fc-back, .w")) return;
-      x0 = e.clientX; dx = 0; moved = false;
-      card.setPointerCapture(e.pointerId);
-      card.classList.add("dragging");
-    });
-    card.addEventListener("pointermove", (e) => {
-      if (x0 === null) return;
-      dx = e.clientX - x0;
-      if (Math.abs(dx) > 6) moved = true;
-      card.style.transform = `translateX(${dx}px) rotate(${dx / 18}deg)`;
-      const [ok, no] = stamps();
-      ok.style.opacity = Math.min(1, Math.max(0, (dx * K) / 110));
-      no.style.opacity = Math.min(1, Math.max(0, (-dx * K) / 110));
-    });
-    const end = (e) => {
-      if (x0 === null) return;
-      x0 = null;
-      if (dx * K > 110) return swipe(2, e);
-      if (dx * K < -110) return swipe(0, e);
-      card.classList.remove("dragging");
-      card.style.transform = "";
-      stamps().forEach((s) => (s.style.opacity = 0));
-      if (!moved && !revealed) reveal();
-    };
-    card.addEventListener("pointerup", end);
-    card.addEventListener("pointercancel", end);
-  };
+  // 拖动或轻轻一甩就算滑走（见 bindSwipeCard）；电脑上释义和例句区域不能拖（那里要能选中文字查词）
+  const bindDrag = () => bindSwipeCard($("#fc", container), { busy: () => busy, onSwipe: swipe, onTap: () => { if (!revealed) reveal(); }, skip: "button, a, .fc-back, .w" });
 
   const grade = (g, evt) => {
     const h = { cur, q: [...q], stats: { ...stats }, retry: { ...retry }, done, graded: false, xp: 0, kind: null };
@@ -793,7 +1062,7 @@ function runFlashcards(container, queue, mode, signal, onFinish) {
   const finish = () => {
     renderNav();
     container.innerHTML = `
-      <div class="flash-wrap"><div class="card center" style="padding:40px">
+      <div class="flash-wrap"><div class="flash-progress">${STUDY_EXIT_BTN}</div><div class="card center fc-done" style="padding:40px">
         <div style="font-size:48px">🎉</div>
         <h2 class="mt-s">这一组完成啦！</h2>
         <p class="muted">共 ${total} 个词：认识 ${stats.known} · 模糊 ${stats.fuzzy} · 不认识 ${stats.unknown}</p>

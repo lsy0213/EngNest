@@ -4,39 +4,6 @@
 // 进度存在 Store.data.sent_srs：{ 规范化的英文: {en, zh, src, box, due, seen, wrong, first} }
 // ============================================================
 
-// 拖动卡片：超过 110px 松手就滑走，不到就弹回；没怎么动当作点击。skip 里的元素不能拖（要能选中文字）
-function bindSwipeCard(card, { busy, onSwipe, onTap, skip = "button, a, .w" }) {
-  let x0 = null, dx = 0, moved = false;
-  const stamps = () => [$(".fc-stamp.ok", card), $(".fc-stamp.no", card)];
-  card.addEventListener("pointerdown", (e) => {
-    if (busy() || e.button !== 0 || e.target.closest(skip)) return;
-    x0 = e.clientX; dx = 0; moved = false;
-    card.setPointerCapture(e.pointerId);
-    card.classList.add("dragging");
-  });
-  card.addEventListener("pointermove", (e) => {
-    if (x0 === null) return;
-    dx = e.clientX - x0;
-    if (Math.abs(dx) > 6) moved = true;
-    card.style.transform = `translateX(${dx}px) rotate(${dx / 18}deg)`;
-    const [ok, no] = stamps(), K = knownDir();
-    if (ok) ok.style.opacity = Math.min(1, Math.max(0, (dx * K) / 110));
-    if (no) no.style.opacity = Math.min(1, Math.max(0, (-dx * K) / 110));
-  });
-  const end = (e) => {
-    if (x0 === null) return;
-    x0 = null;
-    const K = knownDir();
-    if (dx * K > 110) return onSwipe(2, e);
-    if (dx * K < -110) return onSwipe(0, e);
-    card.classList.remove("dragging");
-    card.style.transform = "";
-    stamps().forEach((s) => s && (s.style.opacity = 0));
-    if (!moved) onTap?.();
-  };
-  card.addEventListener("pointerup", end);
-  card.addEventListener("pointercancel", end);
-}
 // 卡片飞出去：记住了往「记住了」那边（默认左），没记住往另一边，模糊往下。返回动画结束的 Promise
 function flyCard(card, g) {
   const K = knownDir(), dir = g === 2 ? K : g === 0 ? -K : 0;
@@ -101,7 +68,8 @@ const SentSRS = {
 };
 
 // 复习卡片
-function runSentenceCards(container, queue, signal, onFinish) {
+function runSentenceCards(container, queue, signal, onFinish, { exitTo } = {}) {
+  enterStudyFocus(container, signal, exitTo);
   const total = queue.length, q = [...queue], retry = {};
   const stats = { known: 0, fuzzy: 0, unknown: 0 };
   let cur = null, revealed = false, done = 0, busy = false;
@@ -143,7 +111,7 @@ function runSentenceCards(container, queue, signal, onFinish) {
         <div class="row" style="justify-content:center;gap:6px;margin-top:8px">${speakBtn(cur.en)}<button class="speak" data-say="${esc(cur.en)}" data-rate="0.6" title="慢速">🐢</button>${shadowBtn(cur.en, { zh: cur.zh })}</div></div>`;
     container.innerHTML = `
       <div class="flash-wrap">
-        <div class="flash-progress"><span>${done} / ${total}</span><div class="bar"><i style="width:${pct}%"></i></div><span>短语句子复习</span>
+        <div class="flash-progress">${STUDY_EXIT_BTN}<span>${done} / ${total}</span><div class="bar"><i style="width:${pct}%"></i></div><span>短语句子复习</span>
           ${history.length ? `<button class="btn sm ghost" data-undo title="撤销上一次评分（Ctrl+Z）">↶ 撤销</button>` : ""}</div>
         <div class="fc-stack ${enter ? "enter" : ""} ${q.length ? "" : "last"} ${K > 0 ? "swap-dir" : ""}">
         <div class="card flashcard sent-card" id="fc">
@@ -189,7 +157,7 @@ function runSentenceCards(container, queue, signal, onFinish) {
   const finish = () => {
     App.shadowTarget = null;
     renderNav();
-    container.innerHTML = `<div class="flash-wrap"><div class="card center" style="padding:40px">
+    container.innerHTML = `<div class="flash-wrap"><div class="flash-progress">${STUDY_EXIT_BTN}</div><div class="card center fc-done" style="padding:40px">
         <div style="font-size:48px">🎉</div><h2 class="mt-s">复习完啦！</h2>
         <p class="muted">共 ${total} 条：记住了 ${stats.known} · 模糊 ${stats.fuzzy} · 没记住 ${stats.unknown}</p>
         <p class="small faint">没记住的明天还会出现；记住的会隔得越来越久再复习。</p>

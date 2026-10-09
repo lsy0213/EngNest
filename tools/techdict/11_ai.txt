@@ -1,0 +1,116 @@
+# 人工智能与数据科学
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+AI | Artificial Intelligence | 人工智能 | 让计算机完成需要人类智能的任务 | artificial intelligence
+machine learning | | 机器学习 | 让程序从数据中自动学习规律，而不是人工写规则 | ML
+deep learning | | 深度学习 | 用多层神经网络做机器学习 | DL
+neural network | | 神经网络 | 模仿神经元连接的计算模型，由很多层带权重的节点组成 | NN / artificial neural network
+neuron | | 神经元 | 神经网络里的一个计算单元
+layer | | 层 | 神经网络里的一层神经元，如输入层、隐藏层、输出层
+hidden layer | | 隐藏层 | 输入层和输出层之间的层
+weight | | 权重 | 神经网络里需要学习的参数
+bias | | 偏置；偏差 | 神经网络里的偏置项；也指模型的系统性偏差或偏见
+parameter | | 参数 | 模型通过训练学到的数值，如权重；大模型常以参数量衡量规模（如 7B = 70 亿）
+hyperparameter | | 超参数 | 训练前人工设定的参数，如学习率、批大小
+model | | 模型 | 从数据中学到的、可以做预测的数学结构
+training | | 训练 | 用数据调整模型参数的过程 | train
+inference | | 推理 | 用训练好的模型对新数据做预测
+dataset | | 数据集 | 用来训练或评估的一批数据 | data set
+training set | | 训练集 | 用来训练模型的数据
+validation set | | 验证集 | 训练中用来调超参数的数据
+test set | | 测试集 | 最后评估模型效果的数据
+label | | 标签 | 数据的正确答案，如图片对应的类别 | labeled data
+annotation | | 标注 | 给数据打标签
+feature | | 特征 | 用来描述数据的输入变量；也指软件的功能
+supervised learning | | 监督学习 | 用带标签的数据训练
+unsupervised learning | | 无监督学习 | 用没有标签的数据找规律，如聚类
+reinforcement learning | | 强化学习 | 通过试错和奖励来学习策略 | RL
+RLHF | Reinforcement Learning from Human Feedback | 基于人类反馈的强化学习 | 用人的评价来调整大模型输出
+classification | | 分类 | 预测数据属于哪一类
+regression | | 回归 | 预测一个连续数值；软件测试里指回归问题
+clustering | | 聚类 | 把相似的数据自动分组
+loss function | | 损失函数 | 衡量模型预测和正确答案差多少的函数 | loss / cost function
+gradient | | 梯度 | 损失函数对参数的变化方向和大小
+gradient descent | | 梯度下降 | 沿梯度反方向一点点调参数，让损失变小 | SGD
+backpropagation | | 反向传播 | 从输出往回计算每个参数梯度的算法 | backprop
+learning rate | | 学习率 | 每次调整参数的步长
+epoch | | 轮次 | 把整个训练集完整过一遍；Unix 时间里指 1970-01-01 起点
+batch | | 批；批次 | 一次一起处理的一组数据 | batch size / mini-batch
+overfitting | | 过拟合 | 模型把训练数据记得太死，对新数据表现差 | overfit
+underfitting | | 欠拟合 | 模型太简单，连训练数据都学不好
+regularization | | 正则化 | 防止过拟合的技术，如 L2、Dropout | dropout
+generalization | | 泛化 | 模型在没见过的数据上也表现好的能力
+accuracy | | 准确率 | 预测正确的比例
+precision | | 精确率 | 预测为正的样本中真正为正的比例
+recall | | 召回率 | 真正为正的样本中被找出来的比例
+F1 score | | F1 分数 | 精确率和召回率的调和平均 | F1
+confusion matrix | | 混淆矩阵 | 统计预测类别和真实类别对应情况的表
+benchmark | | 基准测试 | 用标准数据或任务比较性能
+baseline | | 基线 | 用来对比的简单方法或参考结果
+activation function | | 激活函数 | 给神经元加入非线性的函数，如 ReLU、sigmoid | ReLU / sigmoid / softmax
+CNN | Convolutional Neural Network | 卷积神经网络 | 擅长处理图像的神经网络
+RNN | Recurrent Neural Network | 循环神经网络 | 处理序列数据的神经网络 | LSTM
+transformer | | Transformer 模型 | 基于注意力机制的神经网络结构，GPT 等大模型的基础
+attention | | 注意力（机制） | 让模型在处理每个词时关注输入中最相关的部分 | self-attention / attention mechanism
+encoder | | 编码器 | 把输入转换成内部表示的部分
+decoder | | 解码器 | 把内部表示转换成输出的部分
+embedding | | 嵌入；向量表示 | 把词、句子、图片转换成一串数字向量，意思相近的向量也相近
+vector database | | 向量数据库 | 存储和按相似度检索向量的数据库
+LLM | Large Language Model | 大语言模型 | 用海量文本训练的超大神经网络，能理解和生成语言，如 GPT、Claude
+GPT | Generative Pre-trained Transformer | 生成式预训练 Transformer | OpenAI 的大语言模型系列
+generative AI | | 生成式人工智能 | 能生成文本、图片、音频等内容的 AI | GenAI / AIGC
+NLP | Natural Language Processing | 自然语言处理 | 让计算机理解和生成人类语言
+computer vision | | 计算机视觉 | 让计算机理解图像和视频 | CV
+OCR | Optical Character Recognition | 光学字符识别 | 从图片中识别出文字
+ASR | Automatic Speech Recognition | 自动语音识别 | 把语音转成文字 | speech recognition / STT / speech-to-text
+TTS | Text-to-Speech | 文本转语音；语音合成 | 把文字读出来
+token | | 词元；token | 大模型处理文本的基本单位，一个英文单词约 1–2 个 token；计费按 token 算
+tokenization | | 分词 | 把文本切成 token
+context window | | 上下文窗口 | 模型一次能处理的最大 token 数 | context length
+prompt | | 提示词 | 给大模型的输入指令 | prompting
+prompt engineering | | 提示词工程 | 设计提示词让模型输出更好的结果
+system prompt | | 系统提示词 | 设定模型角色和规则的提示词
+temperature | | 温度 | 控制生成随机性的参数，越高越发散
+hallucination | | 幻觉 | 模型一本正经地编造不存在的信息
+pre-training | | 预训练 | 先用海量通用数据训练出基础模型 | pretraining / pretrained
+fine-tuning | | 微调 | 在预训练模型基础上用少量特定数据继续训练 | fine-tune / finetune
+LoRA | Low-Rank Adaptation | 低秩适配 | 只训练少量附加参数的高效微调方法
+RAG | Retrieval-Augmented Generation | 检索增强生成 | 先检索相关资料再交给大模型回答，减少胡编
+agent | | 智能体；代理 | 能自主规划、调用工具完成任务的 AI 程序；也泛指代理程序 | AI agent
+tool use | | 工具调用 | 让大模型调用外部函数或 API | function calling
+multimodal | | 多模态 | 能同时处理文字、图片、声音等多种数据
+diffusion model | | 扩散模型 | 从噪声一步步还原出图片的生成模型，如 Stable Diffusion
+GAN | Generative Adversarial Network | 生成对抗网络 | 生成器和判别器互相对抗训练的模型
+alignment | | 对齐 | 让 AI 的行为符合人类意图和价值观；也指内存对齐
+quantization | | 量化 | 用更低精度的数存模型参数，减小体积、加快速度
+distillation | | 蒸馏 | 用大模型教出一个小模型 | knowledge distillation
+GPU | Graphics Processing Unit | 图形处理器；显卡 | 擅长大规模并行计算，AI 训练的主力
+CUDA | Compute Unified Device Architecture | CUDA 并行计算平台 | 英伟达 GPU 的通用计算编程平台
+TPU | Tensor Processing Unit | 张量处理器 | 谷歌专为 AI 设计的芯片
+NPU | Neural Processing Unit | 神经网络处理器 | 专门加速 AI 推理的芯片
+tensor | | 张量 | 多维数组，深度学习数据的基本形式
+PyTorch | | PyTorch 框架 | Meta 主导的深度学习框架
+TensorFlow | | TensorFlow 框架 | 谷歌的深度学习框架
+NumPy | | NumPy 库 | Python 的数值计算库
+pandas | | pandas 库 | Python 的数据分析库，核心是 DataFrame 表格 | DataFrame
+Jupyter Notebook | | Jupyter 笔记本 | 在网页里分块写代码、看结果、写说明的工具 | Jupyter / notebook
+data science | | 数据科学 | 用统计、编程从数据中获取洞见
+big data | | 大数据 | 量大、类型多、增长快的数据及处理技术
+data mining | | 数据挖掘 | 从大量数据中发现有价值的模式
+data cleaning | | 数据清洗 | 处理缺失、错误、重复的数据 | data cleansing
+visualization | | 可视化 | 用图表展示数据 | data visualization
+outlier | | 离群值；异常值 | 和大多数数据差别很大的点
+anomaly detection | | 异常检测 | 找出不正常的数据或行为
+correlation | | 相关性 | 两个变量一起变化的程度
+distribution | | 分布 | 数据取各个值的频率情况
+mean | | 均值 | 平均数 | average
+median | | 中位数 | 排序后位于中间的数
+standard deviation | | 标准差 | 数据分散程度的度量 | std / variance
+probability | | 概率 | 事件发生的可能性
+statistics | | 统计学；统计数据 | 收集分析数据的学科；统计结果 | stats
+sampling | | 采样；抽样 | 从总体中取一部分数据
+A/B testing | | A/B 测试 | 让两组用户用不同版本，比较效果 | A/B test / split test
+recommendation system | | 推荐系统 | 根据用户喜好推荐内容 | recommender
+knowledge graph | | 知识图谱 | 用实体和关系组成的网络表示知识
+AGI | Artificial General Intelligence | 通用人工智能 | 像人一样能处理各种任务的 AI
+open weights | | 开放权重 | 公开模型参数、可以下载运行的模型 | open-weight

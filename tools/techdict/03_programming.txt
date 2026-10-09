@@ -1,0 +1,271 @@
+# 编程基础与编程语言
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+program | | 程序 | 让计算机按步骤执行的一组指令
+programming | | 编程；程序设计 | 编写程序的工作
+programming language | | 编程语言 | 用来写程序的语言，如 Python、C、Java
+code | | 代码 | 用编程语言写成的文本；也作动词「写代码」
+source code | | 源代码 | 人写的、还没编译的程序文本 | source
+codebase | | 代码库 | 一个项目的全部源代码 | code base
+snippet | | 代码片段 | 一小段示例代码 | code snippet
+script | | 脚本 | 由解释器直接执行的小程序，如 Python、Shell 脚本
+syntax | | 语法 | 编程语言规定的书写规则
+semantics | | 语义 | 代码实际表达的含义和行为
+statement | | 语句 | 程序里一条完整的指令，如赋值、if、return
+expression | | 表达式 | 能算出一个值的代码，如 a + b
+operator | | 运算符；操作符 | 做运算的符号，如 +、==、&&；也指运维人员或 Kubernetes Operator
+operand | | 操作数 | 参与运算的值
+keyword | | 关键字 | 语言保留、有特殊含义的单词，如 if、class、return
+reserved word | | 保留字 | 不能用作变量名的词
+identifier | | 标识符 | 变量、函数、类等的名字
+literal | | 字面量 | 直接写在代码里的值，如 42、"hello"、true
+variable | | 变量 | 有名字、可以存放和修改值的存储位置
+constant | | 常量 | 赋值后不能再改变的量
+assignment | | 赋值 | 把值存进变量，如 x = 5 | assign
+declaration | | 声明 | 告诉编译器有这样一个变量、函数或类型 | declare
+definition | | 定义 | 给出变量、函数的具体内容 | define
+initialization | | 初始化 | 给变量或对象设定初始值 | initialize / init / initialise
+scope | | 作用域 | 一个名字在代码里能被访问到的范围
+global variable | | 全局变量 | 在整个程序里都能访问的变量 | global
+local variable | | 局部变量 | 只在函数或代码块内部有效的变量 | local
+type | | 类型 | 值的种类，决定它能做什么运算，如整数、字符串
+data type | | 数据类型 | 同 type
+primitive type | | 基本类型 | 语言内置的最基础类型，如 int、float、bool、char | primitive
+integer | | 整数；整型 | 没有小数的数 | int
+float | floating-point number | 浮点数 | 带小数点的数，有精度误差 | floating point / floating-point
+double | | 双精度浮点数 | 64 位浮点数
+boolean | | 布尔值；布尔型 | 只有真（true）和假（false）两个值 | bool
+string | | 字符串 | 一串字符组成的文本
+char | character | 字符 | 单个字符 | character
+array | | 数组 | 按下标顺序存放一组同类元素
+list | | 列表 | 有序、长度可变的元素集合
+tuple | | 元组 | 有序、通常不可变的一组值
+dictionary | | 字典 | 键值对集合，按键查值（Python 叫 dict） | dict
+map | | 映射 | 键到值的对应关系；函数式编程里「对每个元素做同一操作」 | hashmap / hash map
+set | | 集合 | 元素不重复的集合
+key-value pair | | 键值对 | 一个键和它对应的值 | key/value
+null | | 空值 | 表示「没有值」，不同语言叫 null、nil、None | nil / None
+undefined | | 未定义 | JavaScript 里变量声明了但还没赋值时的值
+NaN | Not a Number | 非数 | 表示无效数值结果的特殊浮点值，如 0/0
+enum | enumeration | 枚举 | 一组有名字的常量值，如 Color.RED | enumeration
+struct | structure | 结构体 | 把几个字段组合在一起的数据类型 | structure
+union | | 联合体；并集 | C 语言里几个成员共用同一块内存；集合运算里的并集
+field | | 字段 | 结构体、类、数据库表、表单里的一个数据项；界面里的输入框
+attribute | | 属性；特性 | 对象的数据成员；HTML 标签的属性；Python 的装饰类元数据
+property | | 属性 | 对象的特征值；C#、JS 里带读写方法的属性
+member | | 成员 | 类或结构体里的字段和方法
+function | | 函数 | 一段有名字、可重复调用、接收参数并返回结果的代码
+method | | 方法 | 属于类或对象的函数
+procedure | | 过程 | 不返回值的函数（老说法）；也指步骤 | subroutine / routine
+parameter | | 形参；参数 | 函数定义里声明的变量 | param
+argument | | 实参；参数 | 调用函数时实际传进去的值；命令行里跟在命令后的值 | arg / args
+return value | | 返回值 | 函数执行完交回给调用者的结果 | return
+call | | 调用 | 执行一个函数 | invoke / invocation
+signature | | 签名 | 函数的名字、参数类型和返回类型；密码学里指数字签名
+overload | | 重载 | 同名函数有不同参数列表 | overloading
+override | | 重写；覆盖 | 子类重新实现父类的方法 | overriding
+recursion | | 递归 | 函数调用自己来解决问题 | recursive
+iteration | | 迭代；循环一次 | 重复执行一段代码；也指开发中的一轮迭代 | iterate
+loop | | 循环 | 重复执行一段代码的结构，如 for、while
+for loop | | for 循环 | 按计数或遍历集合来重复的循环
+while loop | | while 循环 | 条件为真就一直重复的循环
+break | | 跳出 | 立即结束当前循环
+continue | | 继续 | 跳过本次循环剩下的部分，进入下一次
+conditional | | 条件语句 | 根据条件决定执行哪部分代码，如 if/else | if statement
+branch | | 分支 | 代码里条件不同时走的不同路线；Git 里的分支
+control flow | | 控制流 | 程序执行的先后顺序和跳转
+iterator | | 迭代器 | 一个一个取出集合元素的对象
+generator | | 生成器 | 按需逐个产生值的函数（Python 用 yield）
+yield | | 产出 | 生成器里交出一个值并暂停；也作「让出 CPU」
+class | | 类 | 对象的模板，定义了数据和方法
+object | | 对象 | 类的一个具体实例，包含数据和方法
+instance | | 实例 | 根据类创建出来的具体对象；云里指一台虚拟机 | instantiate / instantiation
+constructor | | 构造函数 | 创建对象时自动调用、负责初始化的方法 | ctor
+destructor | | 析构函数 | 对象销毁时调用、负责清理的方法 | dtor
+OOP | Object-Oriented Programming | 面向对象编程 | 以对象为中心组织代码，核心是封装、继承、多态 | object-oriented
+inheritance | | 继承 | 子类自动获得父类的属性和方法 | inherit
+subclass | | 子类 | 继承自另一个类的类 | derived class / child class
+superclass | | 父类；超类 | 被继承的类 | base class / parent class
+polymorphism | | 多态 | 同一个调用作用在不同类型的对象上产生不同行为
+abstraction | | 抽象 | 只暴露必要的接口、隐藏复杂细节
+abstract class | | 抽象类 | 不能直接实例化、留给子类实现的类
+interface | | 接口 | 只规定有哪些方法、不写实现的类型约定；也泛指模块之间的调用约定
+mixin | | 混入类 | 给其他类提供附加功能、不单独使用的类
+static | | 静态的 | 属于类本身而不是某个实例；编译时就确定的
+dynamic | | 动态的 | 运行时才确定的
+private | | 私有的 | 只能在类内部访问
+public | | 公有的 | 外部都能访问
+protected | | 受保护的 | 类自己和子类可以访问
+access modifier | | 访问修饰符 | public、private、protected 这类控制访问权限的关键字
+getter | | 取值方法 | 读取属性值的方法 | get
+setter | | 赋值方法 | 设置属性值的方法 | set
+this | | 当前对象 | 方法里指向调用它的那个对象（Python 用 self） | self
+namespace | | 命名空间 | 给名字分组、避免重名的机制
+module | | 模块 | 一个可以被导入的代码文件或单元
+package | | 包；软件包 | 一组模块组成的目录；也指可以安装的软件
+library | | 库 | 别人写好、供你调用的代码集合 | lib
+framework | | 框架 | 规定了程序结构、你往里填代码的半成品软件，如 Django、Spring
+import | | 导入 | 把其他模块的代码引入当前文件
+export | | 导出 | 让模块里的内容可以被别处导入；也指把数据保存成文件
+dependency | | 依赖 | 程序运行需要的其他库或模块 | dependencies / deps
+API | Application Programming Interface | 应用程序编程接口 | 程序之间相互调用的约定：有哪些函数、要传什么、返回什么
+SDK | Software Development Kit | 软件开发工具包 | 开发某个平台应用所需的库、工具和文档
+IDE | Integrated Development Environment | 集成开发环境 | 编辑、运行、调试代码的一体化软件，如 VS Code、PyCharm
+editor | | 编辑器 | 写代码的软件
+compiler | | 编译器 | 把源代码一次性翻译成机器码或字节码的程序
+compile | | 编译 | 把源代码翻译成可执行程序 | compilation
+interpreter | | 解释器 | 一边读源代码一边执行的程序，如 Python 解释器
+interpreted language | | 解释型语言 | 由解释器逐行执行的语言
+compiled language | | 编译型语言 | 先编译成机器码再运行的语言，如 C、Go
+linker | | 链接器 | 把多个编译结果和库合成一个可执行文件 | link / linking
+build | | 构建 | 把源代码编译、打包成可运行产物的过程；也指构建出来的版本
+executable | | 可执行文件 | 可以直接运行的程序文件，如 .exe | binary
+binary | | 二进制；二进制文件 | 0 和 1 表示的数；编译出来的程序文件
+bytecode | | 字节码 | 介于源代码和机器码之间、由虚拟机执行的中间代码
+machine code | | 机器码 | CPU 能直接执行的二进制指令
+assembly | assembly language | 汇编语言 | 和机器指令一一对应的低级语言；.NET 里指程序集
+JIT | Just-In-Time compilation | 即时编译 | 运行时把热点代码编译成机器码，提高速度
+AOT | Ahead-Of-Time compilation | 预先编译 | 运行之前就编译成机器码
+runtime | | 运行时 | 程序运行的阶段；也指支撑程序运行的环境，如 Java 运行时 | run time / run-time
+compile time | | 编译时 | 编译阶段 | compile-time
+VM | Virtual Machine | 虚拟机 | 模拟出来的计算机；也指 JVM 这类执行字节码的语言虚拟机 | virtual machine
+JVM | Java Virtual Machine | Java 虚拟机 | 运行 Java 字节码的虚拟机
+CLR | Common Language Runtime | 公共语言运行时 | .NET 程序的运行环境
+static typing | | 静态类型 | 编译时就检查类型的语言，如 Java、Go | statically typed
+dynamic typing | | 动态类型 | 运行时才确定类型的语言，如 Python、JavaScript | dynamically typed
+strongly typed | | 强类型 | 不允许随意隐式转换类型 | strong typing
+weakly typed | | 弱类型 | 允许较多隐式类型转换 | weak typing
+type inference | | 类型推断 | 编译器自动推出变量类型，不用写出来
+type annotation | | 类型注解 | 在代码里写明变量或参数的类型 | type hint
+cast | | 类型转换；强制转换 | 把值转成另一种类型 | casting / type conversion
+generic | | 泛型 | 写一次代码就能用于多种类型，如 List<T> | generics
+template | | 模板 | C++ 的泛型机制；也指网页模板、项目模板
+pointer | | 指针 | 存放内存地址的变量
+reference | | 引用 | 指向另一个对象的别名；也作「参考资料」
+dereference | | 解引用 | 通过指针取出它指向的值
+null pointer | | 空指针 | 不指向任何对象的指针，访问它会出错 | NullPointerException / null reference
+memory | | 内存 | 程序运行时存放数据的地方
+memory leak | | 内存泄漏 | 申请的内存用完不释放，越占越多 | leak
+garbage collection | | 垃圾回收 | 自动释放不再使用的内存 | GC / garbage collector
+allocation | | 分配 | 申请内存等资源 | allocate / malloc
+heap | | 堆 | 动态分配内存的区域；也是一种树形数据结构
+stack | | 栈 | 后进先出的结构；也指函数调用栈
+stack overflow | | 栈溢出 | 递归太深等原因导致调用栈超出容量（也是著名问答网站 Stack Overflow）
+buffer | | 缓冲区 | 临时存放数据的一块内存
+buffer overflow | | 缓冲区溢出 | 写入的数据超出缓冲区大小，覆盖了相邻内存，是常见安全漏洞
+exception | | 异常 | 程序运行中出现的错误事件，可以被捕获处理
+throw | | 抛出 | 引发一个异常 | raise
+catch | | 捕获 | 接住并处理异常 | try/catch / except
+error handling | | 错误处理 | 处理程序出错情况的代码
+stack trace | | 堆栈跟踪 | 出错时打印的函数调用链，告诉你在哪一行出错 | traceback / backtrace
+bug | | 缺陷；程序错误 | 程序里的错误
+debug | | 调试 | 查找并修复程序错误 | debugging
+breakpoint | | 断点 | 调试时让程序停在某一行
+step over | | 单步跳过 | 调试时执行当前行，不进入函数内部
+step into | | 单步进入 | 调试时进入被调用的函数内部
+log | | 日志 | 程序运行时记录的信息；也作动词「记录」 | logging
+assertion | | 断言 | 检查某个条件必须为真，否则报错 | assert
+comment | | 注释 | 写给人看、程序会忽略的说明文字
+docstring | | 文档字符串 | Python 函数开头的说明文字
+indentation | | 缩进 | 行首的空格或制表符；Python 用缩进表示代码块 | indent
+whitespace | | 空白字符 | 空格、制表符、换行等 | white space
+tab | | 制表符；标签页 | Tab 键产生的字符；界面上的选项卡
+newline | | 换行符 | 表示换行的字符，\n | line break / line feed / LF
+carriage return | | 回车符 | \r；Windows 的换行是 \r\n（CRLF） | CR / CRLF
+escape character | | 转义字符 | 改变后面字符含义的符号，如 \n 里的反斜杠 | escape / escaping
+callback | | 回调函数 | 作为参数传给别人、在某件事完成后被调用的函数 | callback function
+closure | | 闭包 | 记住了定义时外部变量的函数
+lambda | | 匿名函数；lambda 表达式 | 没有名字的简短函数（AWS Lambda 是无服务器计算服务） | anonymous function
+higher-order function | | 高阶函数 | 接收函数作参数或返回函数的函数
+functional programming | | 函数式编程 | 以纯函数、不可变数据为核心的编程风格 | FP
+pure function | | 纯函数 | 相同输入总是相同输出、没有副作用的函数
+side effect | | 副作用 | 函数除了返回值以外对外部造成的影响，如修改全局变量、写文件
+immutable | | 不可变的 | 创建后不能修改 | immutability
+mutable | | 可变的 | 创建后可以修改
+decorator | | 装饰器 | 在不改原函数的情况下给它增加功能的包装（Python 的 @ 语法）
+annotation | | 注解 | 给代码附加的元数据，如 Java 的 @Override
+macro | | 宏 | 编译前做文本替换或代码生成的规则
+preprocessor | | 预处理器 | 编译前处理 #include、#define 的程序
+header file | | 头文件 | C/C++ 里存放声明的 .h 文件
+async | asynchronous | 异步 | 发起操作后不等它完成就继续做别的 | asynchronous
+sync | synchronous | 同步 | 必须等上一步完成才做下一步；也指数据同步 | synchronous
+await | | 等待 | 在异步函数里暂停，等异步结果出来
+promise | | Promise 对象 | 代表一个将来才会得到的结果（JavaScript） | future
+coroutine | | 协程 | 可以暂停和恢复的函数，用来写异步代码
+event loop | | 事件循环 | 不断取出事件或任务来执行的循环，JavaScript、asyncio 的核心
+event | | 事件 | 发生了某件事（点击、收到数据）的通知
+event handler | | 事件处理函数 | 事件发生时被调用的函数 | handler / listener
+blocking | | 阻塞 | 调用会一直等到操作完成才返回 | block
+non-blocking | | 非阻塞 | 调用立即返回，不等操作完成
+concurrency | | 并发 | 多个任务交替推进，看起来同时进行 | concurrent
+parallelism | | 并行 | 多个任务真正同时执行，需要多核 | parallel
+thread-safe | | 线程安全的 | 多个线程同时调用也不会出错 | thread safety
+regular expression | | 正则表达式 | 描述文本模式的规则，用来搜索、匹配、替换字符串 | regex / regexp
+pattern | | 模式 | 规律或模板；设计模式；正则表达式的匹配模式
+match | | 匹配 | 符合某个模式；Python 3.10 的模式匹配语句
+wildcard | | 通配符 | 代表任意字符的符号，如 * 和 ?
+glob | | 通配匹配 | 用 *.txt 这类通配符匹配文件名
+hash | | 哈希；散列 | 把任意数据算成固定长度的值；也指哈希表；# 号
+hash function | | 哈希函数 | 把数据映射成哈希值的函数
+encoding | | 编码 | 把字符或数据转换成某种字节格式，如 UTF-8
+decoding | | 解码 | 把编码后的数据还原 | decode
+serialization | | 序列化 | 把对象转换成可存储或传输的格式（如 JSON） | serialize / marshal
+deserialization | | 反序列化 | 把序列化的数据还原成对象 | deserialize / unmarshal
+parse | | 解析 | 按格式分析文本或数据并转换成结构化数据 | parsing
+parser | | 解析器 | 负责解析的程序
+tokenizer | | 分词器；词法分析器 | 把文本切分成一个个记号（token）的程序 | lexer
+token | | 记号；令牌 | 编译里的最小语法单位；安全里的身份令牌；大模型里的文本单元
+AST | Abstract Syntax Tree | 抽象语法树 | 源代码解析后得到的树形结构
+REPL | Read-Eval-Print Loop | 交互式解释器 | 输入一行代码立刻执行并显示结果的环境
+shell | | 命令行解释器；外壳 | 接收命令并执行的程序，如 bash、PowerShell
+command line | | 命令行 | 用文字命令操作电脑的界面 | CLI
+CLI | Command-Line Interface | 命令行界面 | 通过输入命令来使用的程序界面
+GUI | Graphical User Interface | 图形用户界面 | 用窗口、按钮、鼠标操作的界面
+TUI | Text-based User Interface | 文本用户界面 | 在终端里用字符画出的界面
+flag | | 标志；开关参数 | 命令行里以 - 或 -- 开头的选项，如 --verbose；也指布尔标志变量 | option / switch
+environment variable | | 环境变量 | 操作系统里供程序读取的配置变量，如 PATH | env var / env
+config | configuration | 配置 | 控制程序行为的设置 | configuration / settings
+boilerplate | | 样板代码 | 每次都要写、千篇一律的代码
+hardcode | | 硬编码 | 把值直接写死在代码里 | hard-coded / hardcoded
+magic number | | 魔数 | 代码里没有解释的神秘数字常量；文件开头标识格式的固定字节
+spaghetti code | | 面条代码 | 结构混乱、纠缠在一起的代码
+legacy code | | 遗留代码 | 老旧但仍在使用、难以修改的代码
+dead code | | 死代码 | 永远不会被执行的代码
+syntactic sugar | | 语法糖 | 让写法更简洁、但功能上不新增的语法
+idiomatic | | 地道的 | 符合某语言惯用写法的
+Pythonic | | Python 风格的 | 符合 Python 习惯的写法
+camelCase | | 驼峰命名 | 首字母小写、后续单词首字母大写，如 userName | camel case / PascalCase
+snake_case | | 蛇形命名 | 单词之间用下划线连接，如 user_name | snake case / kebab-case
+Python | | Python 语言 | 语法简洁、库丰富的通用编程语言，数据分析和 AI 最常用
+Java | | Java 语言 | 跨平台的面向对象语言，企业后端和安卓常用
+JavaScript | | JavaScript 语言 | 浏览器里运行的脚本语言，也能用 Node.js 写后端 | JS
+TypeScript | | TypeScript 语言 | 带静态类型的 JavaScript 超集 | TS
+C | | C 语言 | 接近硬件的经典系统编程语言
+C++ | | C++ 语言 | 在 C 基础上加了面向对象等特性的高性能语言 | CPP
+C# | | C# 语言 | 微软 .NET 平台的主要语言 | CSharp
+Go | | Go 语言 | Google 开发、并发支持好的编译型语言 | Golang
+Rust | | Rust 语言 | 注重内存安全和性能的系统编程语言
+Kotlin | | Kotlin 语言 | 运行在 JVM 上的现代语言，安卓官方推荐
+Swift | | Swift 语言 | 苹果平台的开发语言
+PHP | Hypertext Preprocessor | PHP 语言 | 常用于网站后端的脚本语言
+Ruby | | Ruby 语言 | 简洁优雅的脚本语言，Rails 框架很有名
+Shell script | | Shell 脚本 | 用 shell 命令写成的脚本 | bash script
+MATLAB | Matrix Laboratory | MATLAB | 数值计算和工程仿真软件及其语言
+SQL | Structured Query Language | 结构化查询语言 | 操作关系型数据库的语言
+Node.js | | Node.js | 让 JavaScript 在服务器上运行的运行时 | Node / NodeJS
+.NET | | .NET 平台 | 微软的开发平台和运行时 | dotnet
+pip | | pip 包管理器 | Python 安装第三方包的工具
+npm | Node Package Manager | npm 包管理器 | JavaScript 的包管理器
+package manager | | 包管理器 | 自动下载、安装、更新软件包及其依赖的工具
+virtual environment | | 虚拟环境 | 给每个项目隔离出一套独立的 Python 包 | venv / virtualenv
+conda | | Conda | Python 数据科学常用的包和环境管理器 | Anaconda
+linter | | 代码检查工具 | 检查代码风格和潜在错误的工具，如 ESLint、Ruff | lint
+formatter | | 代码格式化工具 | 自动统一代码格式的工具，如 Black、Prettier
+transpile | | 转译 | 把一种高级语言的代码转换成另一种，如 TypeScript → JavaScript | transpiler
+polyfill | | 兼容补丁 | 在老环境里补上新功能的代码
+shim | | 垫片 | 夹在中间做兼容转换的一小层代码
+wrapper | | 包装器；封装 | 把另一个接口包一层，提供更方便的用法
+binding | | 绑定 | 让一种语言能调用另一种语言写的库；也指变量和值的绑定 | bindings
+FFI | Foreign Function Interface | 外部函数接口 | 一种语言调用另一种语言（通常是 C）函数的机制
+hello world | | Hello World 程序 | 学一门语言时写的第一个程序，只输出 Hello, World!
+pseudocode | | 伪代码 | 用接近自然语言的方式描述算法

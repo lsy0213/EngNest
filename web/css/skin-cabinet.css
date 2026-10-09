@@ -75,7 +75,7 @@
 
 /* ---------- 侧栏：左缘一条油画，右缘撕开 ---------- */
 [data-skin="cabinet"] .sidebar {
-  position: relative; z-index: 3; width: 258px; padding: 22px 12px 16px 56px;
+  position: relative; z-index: 3; width: 226px; padding: 22px 10px 16px 50px;
   border-right: 0; background: url("skin/paper.svg") 0 0 / 220px 220px, var(--cab-side);
 }
 [data-skin="cabinet"] .sidebar::before {
@@ -253,8 +253,7 @@
 }
 @media (max-width: 1000px) { [data-skin="cabinet"] #view { padding: 26px 24px 40px 30px; } [data-skin="cabinet"] .skin-deco::before { width: 150px; height: 99px; } }
 @media (max-width: 720px) {
-  [data-skin="cabinet"] .sidebar { width: 64px; padding: 14px 8px; }
-  [data-skin="cabinet"] .sidebar::before, [data-skin="cabinet"] .skin-deco { display: none; }
+  [data-skin="cabinet"] .skin-deco { display: none; }
   [data-skin="cabinet"] #view { padding: 20px 18px 32px 24px; }
   [data-skin="cabinet"] .hero { flex-direction: column; align-items: flex-start; padding: 28px 24px 96px; min-height: 0; }
   [data-skin="cabinet"] .hero-copy { margin-right: 0; }

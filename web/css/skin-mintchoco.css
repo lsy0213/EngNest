@@ -239,8 +239,6 @@
   :root[data-skin="mintchoco"] .hero { padding: 26px 20px 32px; flex-wrap: wrap; gap: 14px; }
   :root[data-skin="mintchoco"] .hero-copy { flex-basis: 100%; }
   :root[data-skin="mintchoco"] .hero::before { display: none; }
-  :root[data-skin="mintchoco"] .sidebar::after { display: none; }
-  :root[data-skin="mintchoco"] .nav-item.active { padding-right: 0; clip-path: none; border-radius: 999px; }
   :root[data-skin="mintchoco"] .page-title { font-size: 22px; }
   :root[data-skin="mintchoco"] .page-head::after, :root[data-skin="mintchoco"] .page-title::after { display: none; }
   :root[data-skin="mintchoco"] .card { border-width: 10px; }

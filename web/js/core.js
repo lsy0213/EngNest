@@ -210,6 +210,7 @@ const DEFAULT_PROGRESS = () => ({
     daily_new: 15, daily_goal: 50, auto_speak: true, book: "cet4",
     tts_engine: "neural", neural_voice: "en-US-AriaNeural", tts_voice: "", tts_rate: 0.9,
     shadow_listen: true, // 跟读评测时先听一遍原音再录
+    tech_terms: "auto",  // 查词时显示计算机释义：auto 技术文章里才显示常见词的术语义 / always / off
     companion_visible: false, companion_view: "front",
     skin: "cabinet", theme_mode: "auto", theme_character_positions: {}, // 每套角色主题独立保存悬浮位置
   },
@@ -904,11 +905,21 @@ function applySkin() {
   d.dataset.skin = SKINS.some(([id]) => id === p.skin) ? p.skin : "cabinet";
   if (p.theme_mode === "light" || p.theme_mode === "dark") d.dataset.theme = p.theme_mode;
   else delete d.dataset.theme;
+  syncThemeColor();
 }
+// 手机浏览器顶部状态栏的颜色跟着当前主题的底色走（不然 iPhone 上顶部会是一条灰色或深绿色）
+function syncThemeColor() {
+  const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (bg && meta) meta.setAttribute("content", bg);
+}
+window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener?.("change", () => syncThemeColor());
 
 // 侧边栏收起 / 展开（记在设置里）
+// 手机（窄屏）上侧边栏是抽屉，不用电脑上的「收起成图标」
+const NARROW = window.matchMedia?.("(max-width: 720px)");
 function applyNavCollapsed() {
-  const on = !!Store.prefs.nav_collapsed;
+  const on = !!Store.prefs.nav_collapsed && !NARROW?.matches;
   document.body.classList.toggle("nav-collapsed", on);
   const b = $("#nav-toggle");
   if (b) {
@@ -923,6 +934,20 @@ document.addEventListener("click", (e) => {
   Store.save();
   applyNavCollapsed();
 });
+
+// 手机上的侧边栏抽屉：☰ 打开；点菜单项、点遮罩、按 Esc、换页面都会关上
+function setNavOpen(open) {
+  document.body.classList.toggle("nav-open", open);
+  $("#nav-burger")?.setAttribute("aria-expanded", open ? "true" : "false");
+}
+document.addEventListener("click", (e) => {
+  if (e.target.closest("#nav-burger")) setNavOpen(!document.body.classList.contains("nav-open"));
+  else if (e.target.closest("#nav-fab-search")) { if (Store.data) openDictSearch(); }
+  else if (e.target.closest("#nav-backdrop") || (document.body.classList.contains("nav-open") && e.target.closest(".sidebar a, .sidebar .nav-item, #dict-open"))) setNavOpen(false);
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setNavOpen(false); });
+window.addEventListener("hashchange", () => setNavOpen(false));
+NARROW?.addEventListener("change", (e) => { if (!e.matches) setNavOpen(false); if (Store.data) applyNavCollapsed(); });
 
 function renderSidebarFoot() {
   const el = $("#streak-mini");

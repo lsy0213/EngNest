@@ -1,0 +1,109 @@
+# Web 开发（前端与后端）
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+web | | 万维网；网页 | 通过浏览器访问的网站和网页的总称 | World Wide Web / WWW
+website | | 网站 | 一组相关网页 | site
+web page | | 网页 | 浏览器里显示的一页 | webpage
+web app | web application | 网页应用 | 在浏览器里运行、功能像软件一样的网站 | web application
+browser | | 浏览器 | 打开网页的软件，如 Chrome、Edge、Firefox
+HTML | HyperText Markup Language | 超文本标记语言 | 描述网页结构和内容的语言
+CSS | Cascading Style Sheets | 层叠样式表 | 控制网页外观（颜色、布局、字体）的语言
+DOM | Document Object Model | 文档对象模型 | 浏览器把 HTML 解析成的树形结构，JavaScript 通过它修改页面
+element | | 元素 | HTML 里的一个标签及其内容，如 <p>…</p>；也泛指集合里的一个成员
+tag | | 标签 | HTML 里尖括号包住的标记，如 <div>
+selector | | 选择器 | CSS 里选中要设置样式的元素的规则，如 .btn、#id
+markup | | 标记 | 用标签描述文档结构，如 HTML、XML
+front end | | 前端 | 用户直接看到和操作的部分（页面、界面） | frontend / front-end
+back end | | 后端 | 在服务器上处理数据和业务逻辑的部分 | backend / back-end
+full stack | | 全栈 | 前端后端都做 | full-stack
+request | | 请求 | 客户端发给服务器的消息
+response | | 响应 | 服务器回给客户端的消息
+HTTP method | | HTTP 方法 | 请求的类型：GET 获取、POST 提交、PUT 替换、PATCH 修改、DELETE 删除 | verb
+GET | | GET 请求 | 获取资源的 HTTP 方法
+POST | | POST 请求 | 提交数据的 HTTP 方法
+status code | | 状态码 | 服务器表示请求结果的三位数，如 200 成功、404 找不到、500 服务器错误 | HTTP status code
+404 | | 404 未找到 | 请求的页面或资源不存在 | Not Found
+500 | | 500 服务器内部错误 | 服务器处理时出错了 | Internal Server Error
+HTTP header | | HTTP 头 | 请求或响应开头的键值信息，如 Content-Type、Authorization | headers
+query string | | 查询字符串 | URL 里 ? 后面的参数，如 ?page=2 | query parameter
+path parameter | | 路径参数 | URL 路径中的变量部分，如 /users/42 里的 42
+body | | 正文；请求体 | HTTP 消息里头部之后的数据；HTML 的 <body>
+REST | Representational State Transfer | 表述性状态转移 | 用 URL 表示资源、用 HTTP 方法表示操作的 API 设计风格 | RESTful
+GraphQL | | GraphQL 查询语言 | 让客户端精确指定要哪些字段的 API 查询语言
+RPC | Remote Procedure Call | 远程过程调用 | 像调用本地函数一样调用另一台机器上的函数 | gRPC
+endpoint | | 接口地址；端点 | API 里一个可以调用的 URL，如 /api/users
+route | | 路由 | 把 URL 对应到处理代码的规则
+middleware | | 中间件 | 夹在请求和处理函数之间、做通用处理（登录校验、日志）的代码；也指消息队列等基础软件
+cookie | | Cookie | 服务器让浏览器保存的小段数据，下次请求自动带上，常用于保持登录
+session | | 会话 | 一段时间内同一用户的连续交互；服务器为它保存的状态
+cache | | 缓存 | 把结果先存起来，下次直接用，减少重复请求
+CORS | Cross-Origin Resource Sharing | 跨域资源共享 | 浏览器允许网页访问其他域名接口的规则
+origin | | 源 | 协议 + 域名 + 端口，浏览器安全策略按它判断是否同源
+same-origin policy | | 同源策略 | 浏览器限制网页只能访问同源资源的安全规则
+AJAX | Asynchronous JavaScript and XML | 异步 JavaScript 与 XML | 网页不刷新就向服务器取数据的技术
+fetch | | 获取；取回 | 取数据；浏览器里发 HTTP 请求的 fetch() 函数；Git 里拉取远程更新但不合并
+JSON | JavaScript Object Notation | JSON 数据格式 | 用 {"key": "value"} 表示数据的文本格式，API 最常用
+SPA | Single-Page Application | 单页应用 | 只加载一个页面、靠 JavaScript 切换内容的网站
+SSR | Server-Side Rendering | 服务端渲染 | 在服务器上生成好 HTML 再发给浏览器
+CSR | Client-Side Rendering | 客户端渲染 | 浏览器下载 JavaScript 后自己生成页面
+SSG | Static Site Generation | 静态站点生成 | 构建时就生成所有 HTML 页面
+static site | | 静态网站 | 只有固定文件、不需要后端程序的网站
+render | | 渲染 | 把数据或代码变成最终显示的画面或 HTML | rendering
+component | | 组件 | 可复用的界面或功能单元，如按钮组件
+state | | 状态 | 程序或组件当前的数据；状态机里的状态
+props | properties | 属性参数 | React 里父组件传给子组件的数据
+hook | | 钩子 | 在特定时机插入自己代码的机制，如 React Hooks、Git hooks
+React | | React 框架 | Meta 开发的构建界面的 JavaScript 库
+Vue | | Vue 框架 | 渐进式前端框架 | Vue.js
+Angular | | Angular 框架 | 谷歌的前端框架
+jQuery | | jQuery 库 | 早期流行的简化 DOM 操作的 JavaScript 库
+Django | | Django 框架 | Python 的全功能 Web 框架
+Flask | | Flask 框架 | Python 的轻量 Web 框架
+FastAPI | | FastAPI 框架 | Python 的高性能 API 框架
+Spring | | Spring 框架 | Java 的企业级开发框架 | Spring Boot
+Express | | Express 框架 | Node.js 的 Web 框架 | Express.js
+Nginx | | Nginx 服务器 | 高性能 Web 服务器和反向代理 | nginx
+Apache | | Apache 服务器 | 老牌 Web 服务器；也是 Apache 软件基金会
+web server | | Web 服务器 | 接收 HTTP 请求、返回网页或数据的软件
+application server | | 应用服务器 | 运行后端业务代码的服务器
+template engine | | 模板引擎 | 把数据填进 HTML 模板生成页面的工具
+ORM | Object-Relational Mapping | 对象关系映射 | 用面向对象的代码操作数据库，不用直接写 SQL
+MVC | Model-View-Controller | 模型-视图-控制器 | 把数据、界面、控制逻辑分开的架构
+responsive design | | 响应式设计 | 页面自动适应手机、平板、电脑不同屏幕 | responsive
+viewport | | 视口 | 浏览器里可见的页面区域
+layout | | 布局 | 元素在页面上的排列方式
+flexbox | | 弹性布局 | CSS 里按一行或一列排列元素的布局方式 | flex
+grid | | 网格 | CSS 网格布局；也泛指网格
+UI | User Interface | 用户界面 | 用户看到并操作的界面
+UX | User Experience | 用户体验 | 用户使用产品的整体感受
+favicon | | 网站图标 | 浏览器标签页上的小图标
+accessibility | | 无障碍；可访问性 | 让残障用户也能使用的设计 | a11y
+i18n | internationalization | 国际化 | 让软件支持多种语言和地区（i 和 n 之间有 18 个字母） | internationalization
+l10n | localization | 本地化 | 把软件翻译和适配到某个语言地区 | localization
+SEO | Search Engine Optimization | 搜索引擎优化 | 让网站在搜索结果里排名更靠前
+PWA | Progressive Web App | 渐进式网页应用 | 能像 App 一样安装、离线使用的网站
+service worker | | Service Worker | 浏览器后台运行的脚本，用于离线缓存和推送
+WebAssembly | | WebAssembly | 能在浏览器里高速运行的二进制指令格式 | Wasm
+user agent | | 用户代理 | 发起请求的客户端软件；HTTP 头里说明浏览器类型的字符串 | UA
+DevTools | developer tools | 开发者工具 | 浏览器里按 F12 打开的调试工具
+hot reload | | 热重载 | 改代码后不用重启就自动更新 | HMR / hot module replacement / live reload
+bundler | | 打包工具 | 把很多 JS、CSS 文件合并压缩成少量文件，如 Webpack、Vite | bundle
+minify | | 压缩（代码） | 去掉空格注释、缩短变量名，减小文件体积 | minification / minified
+webhook | | Webhook 回调 | 某事件发生时，服务方主动向你提供的 URL 发 HTTP 请求通知你
+API key | | API 密钥 | 调用接口时证明身份的一串字符
+rate limit | | 速率限制；限流 | 限制单位时间内能调用多少次 | rate limiting / throttling
+pagination | | 分页 | 数据太多时分成一页一页返回 | paginate / paging
+payload | | 请求数据；载荷 | 请求或响应里真正的数据部分
+MIME type | Multipurpose Internet Mail Extensions type | 媒体类型 | 说明内容格式的字符串，如 text/html、application/json | content type / Content-Type
+form | | 表单 | 网页上让用户填写并提交数据的区域
+input | | 输入；输入框 | 程序接收的数据；网页上的输入控件
+button | | 按钮 | 点击执行操作的控件
+link | | 链接 | 点了跳到另一个页面的文字或图片 | hyperlink
+anchor | | 锚点 | HTML 的 <a> 标签；页面内跳转的位置
+iframe | inline frame | 内嵌框架 | 在网页里嵌入另一个网页
+canvas | | 画布 | HTML 里用 JavaScript 画图的元素
+SVG | Scalable Vector Graphics | 可缩放矢量图形 | 用 XML 描述的矢量图，放大不失真
+localStorage | | 本地存储 | 浏览器里按网站保存键值数据的地方 | local storage / sessionStorage
+IndexedDB | | IndexedDB 数据库 | 浏览器内置的本地数据库
+scraping | | 爬取；抓取 | 用程序自动从网页提取数据 | web scraping / crawler / spider
+headless browser | | 无头浏览器 | 没有界面、由程序控制的浏览器 | headless

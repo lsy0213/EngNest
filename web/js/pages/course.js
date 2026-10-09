@@ -88,7 +88,7 @@ App.pages.course = {
       actions.innerHTML = `<a class="btn primary" href="#/course">返回</a>${left ? `<button class="btn" id="rv-more">再来一组（还有 ${left} 条）</button>` : ""}`;
       const more = $("#rv-more", actions);
       if (more) more.onclick = () => Router.render();
-    });
+    }, { exitTo: "#/course" });
   },
 
   // ---------- 场景路径 / 句型专项 / 跟打听写 ----------

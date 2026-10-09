@@ -157,7 +157,6 @@
 [data-skin="yarn"] .nav-item.active:has(.badge)::after { display: none; }
 [data-skin="yarn"] .nav-item.active:has(.badge) .badge { margin-right: 0; }
 [data-skin="yarn"] body.nav-collapsed .nav-item.active::after { right: 0; top: 2px; transform: rotate(-10deg) scale(.75); }
-@media (max-width: 720px) { [data-skin="yarn"] .sidebar .nav-item.active::after { display: none; } }
 [data-skin="yarn"] .sidebar-foot { position: relative; border-top: 1px dashed var(--blush); }
 [data-skin="yarn"] .sidebar-foot::before { content: ""; position: absolute; left: 50%; top: -12px; width: 104px; height: 23px; transform: translateX(-50%); background: var(--surface) url("skin/medallion.svg") no-repeat center / contain; }
 [data-skin="yarn"] body.nav-collapsed .sidebar-foot::before { width: 48px; }

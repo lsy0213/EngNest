@@ -1,0 +1,115 @@
+# 云计算与运维（DevOps）
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+cloud computing | | 云计算 | 通过网络按需租用服务器、存储等计算资源 | cloud
+IaaS | Infrastructure as a Service | 基础设施即服务 | 租用虚拟机、存储、网络，自己装系统和软件
+PaaS | Platform as a Service | 平台即服务 | 平台帮你管好运行环境，你只部署代码
+SaaS | Software as a Service | 软件即服务 | 直接在网上用别人的软件，如在线文档
+FaaS | Function as a Service | 函数即服务 | 只上传函数，有请求时才运行、按次计费
+serverless | | 无服务器 | 不用自己管理服务器，由云平台自动分配资源的架构
+public cloud | | 公有云 | 云服务商向大众提供的云，如 AWS、阿里云
+private cloud | | 私有云 | 企业自己专用的云
+hybrid cloud | | 混合云 | 公有云和私有云结合使用
+AWS | Amazon Web Services | 亚马逊云服务 | 亚马逊的云计算平台
+Azure | | 微软 Azure 云 | 微软的云计算平台
+GCP | Google Cloud Platform | 谷歌云平台 | 谷歌的云计算平台
+region | | 区域；地域 | 云服务商的数据中心所在地区
+availability zone | | 可用区 | 同一区域内相互独立的数据中心 | AZ
+data center | | 数据中心 | 集中放置大量服务器的机房 | datacenter / IDC
+instance | | 实例 | 云上的一台虚拟机或一个服务副本
+VPS | Virtual Private Server | 虚拟专用服务器 | 租来的一台虚拟服务器
+bare metal | | 裸金属（服务器） | 不经过虚拟化、直接使用的物理服务器
+object storage | | 对象存储 | 按「桶 + 键」存放文件的存储服务，如 S3 | S3
+block storage | | 块存储 | 像硬盘一样挂到服务器上的存储
+container | | 容器 | 把应用和它的依赖打包在一起、和系统隔离运行的轻量环境
+Docker | | Docker 容器平台 | 最流行的容器工具（docker 本义是「码头工人」）
+image | | 镜像 | 容器的只读模板，里面有程序和运行环境；也指图像、系统镜像 | container image
+Dockerfile | | Dockerfile 文件 | 描述如何构建镜像的脚本
+docker-compose | | Docker Compose | 用一个 YAML 文件定义和启动多个容器 | Docker Compose
+volume | | 卷 | 容器里挂载的持久化存储；也指音量、磁盘卷
+registry | | 镜像仓库 | 存放和分发容器镜像的服务，如 Docker Hub
+orchestration | | 编排 | 自动管理大量容器的部署、扩缩容和故障恢复
+Kubernetes | | Kubernetes 容器编排平台 | 最主流的容器编排系统，常简写 K8s（K 和 s 之间 8 个字母） | K8s / k8s
+pod | | Pod | Kubernetes 里最小的部署单位，包含一个或几个容器
+cluster | | 集群 | 一组协同工作的服务器
+node | | 节点 | 集群里的一台机器
+namespace | | 命名空间 | Kubernetes 里划分资源的逻辑分组
+deployment | | 部署 | 把软件发布到服务器上运行；Kubernetes 里管理 Pod 副本的对象 | deploy
+service mesh | | 服务网格 | 专门处理微服务之间通信的基础设施层，如 Istio
+Helm | | Helm 包管理器 | Kubernetes 的应用打包和部署工具 | Helm chart
+microservices | | 微服务 | 把应用拆成很多可独立部署的小服务 | microservice
+monolith | | 单体应用 | 所有功能都在一个程序里 | monolithic
+API gateway | | API 网关 | 所有外部请求的统一入口，负责路由、认证、限流
+message queue | | 消息队列 | 在服务之间传递消息的中间件，如 RabbitMQ、Kafka | MQ
+Kafka | | Kafka 消息系统 | 高吞吐的分布式消息流平台
+pub/sub | publish/subscribe | 发布/订阅 | 发布者发消息到主题，订阅者接收 | publish-subscribe
+topic | | 主题 | 消息系统里消息的分类
+DevOps | Development and Operations | 开发运维一体化 | 让开发和运维紧密协作、自动化交付的方法和文化
+SRE | Site Reliability Engineering | 站点可靠性工程 | 用软件工程方法保证系统稳定可靠
+CI | Continuous Integration | 持续集成 | 每次提交代码都自动构建和测试
+CD | Continuous Delivery / Continuous Deployment | 持续交付；持续部署 | 自动把通过测试的代码发布到环境
+CI/CD | | 持续集成/持续交付 | 自动构建、测试、发布的整套流程
+pipeline | | 流水线 | 一串自动执行的步骤，如构建 → 测试 → 部署
+GitHub Actions | | GitHub Actions | GitHub 自带的 CI/CD 服务
+Jenkins | | Jenkins | 开源的 CI/CD 服务器
+artifact | | 构建产物；制品 | 构建生成的文件，如安装包、镜像
+environment | | 环境 | 软件运行的一套配置，如开发、测试、生产环境
+production | | 生产环境 | 真实用户在用的正式环境 | prod
+staging | | 预发布环境 | 上线前和生产环境几乎一样的测试环境
+sandbox environment | | 沙盒环境 | 给开发测试用的隔离环境
+rollback | | 回滚 | 新版本有问题时退回旧版本
+blue-green deployment | | 蓝绿部署 | 同时准备新旧两套环境，切流量来发布
+canary release | | 金丝雀发布；灰度发布 | 先让一小部分用户用新版本 | canary / gray release
+feature flag | | 功能开关 | 不改代码就能打开或关闭某个功能 | feature toggle
+infrastructure as code | | 基础设施即代码 | 用代码文件描述和创建服务器、网络等资源 | IaC
+Terraform | | Terraform | 流行的基础设施即代码工具
+Ansible | | Ansible | 自动化配置管理工具
+provision | | 开通；配置（资源） | 准备好服务器等资源 | provisioning
+scalability | | 可扩展性 | 负载增加时通过加资源保持性能的能力 | scalable
+scale up | | 纵向扩展 | 给一台机器加 CPU、内存 | vertical scaling
+scale out | | 横向扩展 | 加更多机器 | horizontal scaling
+autoscaling | | 自动扩缩容 | 按负载自动增减实例 | auto-scaling
+high availability | | 高可用 | 系统几乎不停机 | HA
+fault tolerance | | 容错 | 部分组件出问题时系统仍能工作 | fault-tolerant
+redundancy | | 冗余 | 准备多余的备份组件，一个坏了另一个顶上 | redundant
+failover | | 故障转移 | 主系统出故障时自动切到备用系统
+disaster recovery | | 灾难恢复 | 大故障后恢复系统和数据 | DR
+single point of failure | | 单点故障 | 一坏就导致整个系统瘫痪的部件 | SPOF
+SLA | Service Level Agreement | 服务等级协议 | 服务商承诺的可用率等指标，如 99.9%
+SLO | Service Level Objective | 服务等级目标 | 团队内部设定的服务质量目标
+SLI | Service Level Indicator | 服务等级指标 | 实际测量的服务质量数值
+nines | | 几个 9 | 可用性的说法，如「四个 9」= 99.99%
+observability | | 可观测性 | 通过日志、指标、链路追踪了解系统内部状态
+monitoring | | 监控 | 持续收集和查看系统运行指标 | monitor
+metrics | | 指标 | 可量化的运行数据，如 CPU 使用率、请求数 | metric
+tracing | | 链路追踪 | 跟踪一个请求经过的所有服务 | distributed tracing / trace
+alerting | | 告警 | 指标异常时发通知 | alert
+dashboard | | 仪表盘 | 把各种指标集中展示的页面
+Prometheus | | Prometheus 监控系统 | 开源的指标监控系统
+Grafana | | Grafana 可视化平台 | 开源的监控数据可视化工具
+log aggregation | | 日志聚合 | 把各台机器的日志集中收集分析 | ELK
+incident | | 事故；故障事件 | 影响服务的意外事件
+postmortem | | 事后复盘 | 故障后分析原因和改进措施的报告 | post-mortem / retrospective
+on-call | | 值班 | 轮流负责处理线上故障 | on call
+downtime | | 停机时间 | 服务不可用的时间
+outage | | 服务中断 | 服务大面积不可用
+maintenance window | | 维护窗口 | 计划停机维护的时间段
+health check | | 健康检查 | 定期检查服务是否正常
+heartbeat | | 心跳 | 定期发送的「我还活着」信号
+p99 | 99th percentile | 第 99 百分位 | 99% 的请求都比这个值快，衡量长尾延迟 | p95 / percentile
+bottleneck | | 瓶颈 | 限制整体性能的那个环节
+throttle | | 限流；节流 | 限制速度或频率 | throttling
+idempotent | | 幂等的 | 同一个操作执行一次和执行多次效果一样，重试才安全 | idempotency
+stateless | | 无状态的 | 服务不保存会话数据，每个请求独立处理
+stateful | | 有状态的 | 服务保存了状态数据
+ephemeral | | 临时的；短暂的 | 用完即弃、重启就消失的
+multi-tenant | | 多租户 | 一套系统同时服务多个客户，数据相互隔离 | multi-tenancy / tenant
+quota | | 配额 | 允许使用的资源上限
+billing | | 计费 | 按使用量收费
+edge computing | | 边缘计算 | 在靠近数据源的地方处理数据，减少延迟
+distributed system | | 分布式系统 | 多台机器通过网络协作完成任务
+consensus | | 共识 | 分布式系统里多个节点对某个值达成一致，如 Raft、Paxos 算法 | Raft / Paxos
+leader election | | 选主 | 分布式节点中选出一个负责协调的主节点
+split brain | | 脑裂 | 集群分裂成两部分、各自以为自己是主
+gossip protocol | | 流言协议 | 节点之间随机互相传消息来扩散信息
+YAML | YAML Ain't Markup Language | YAML 格式 | 用缩进表示层级的配置文件格式，Kubernetes、CI 配置常用 | yml

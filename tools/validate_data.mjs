@@ -105,10 +105,17 @@ for (const sr of G("FILM_SERIES") || []) for (const it of sr.items) {
   if (it.url && !it.url.startsWith("https://")) err(`影视片库 ${it.id} 的视频地址不是 https`);
 }
 
+// ---------- 计算机词典（第一次查词时才加载，不在 index.html 里） ----------
+const tech = loadApp(["data/techdict.js"]).run("TECH_DICT");
+if (!tech?.items?.length) err("data/techdict.js 里没有词条");
+tech?.items?.forEach((r, i) => {
+  if (!Array.isArray(r) || r.length !== 7 || !r[0] || !r[2] || !Array.isArray(r[4]) || !tech.cats[r[5]]) err(`计算机词典第 ${i + 1} 条格式不对：${JSON.stringify(r).slice(0, 80)}`);
+});
+
 // ---------- 结果 ----------
 for (const w of warns.slice(0, 50)) console.log("⚠ " + w);
 if (warns.length > 50) console.log(`⚠ ……还有 ${warns.length - 50} 条提醒`);
 for (const e of errors) console.log("✗ " + e);
-console.log(`\n词书 ${books.length} 本 · 连词成句 ${lessons.length} 课 ${sentenceCount} 句 · 短语单元 ${units.length} 个 · 语法 ${gl.length} 课 · 阅读 ${passages.length} 篇 · 原著 ${(G("BOOK_SHELF") || []).length} 本 · 影视 ${filmIds.size} 个`);
+console.log(`\n词书 ${books.length} 本 · 连词成句 ${lessons.length} 课 ${sentenceCount} 句 · 短语单元 ${units.length} 个 · 语法 ${gl.length} 课 · 阅读 ${passages.length} 篇 · 原著 ${(G("BOOK_SHELF") || []).length} 本 · 影视 ${filmIds.size} 个 · 计算机词典 ${tech?.items?.length || 0} 条`);
 console.log(errors.length ? `✗ ${errors.length} 个错误，${warns.length} 条提醒` : `✓ 没有错误（${warns.length} 条提醒）`);
 process.exit(errors.length ? 1 : 0);

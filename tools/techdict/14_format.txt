@@ -1,0 +1,65 @@
+# 数据格式、编码与多媒体
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+file format | | 文件格式 | 文件里数据的组织方式，通常由扩展名表示 | format
+file extension | | 文件扩展名 | 文件名最后的 .txt、.png 等 | extension
+plain text | | 纯文本 | 只有文字、没有格式信息的文本 | text file
+binary file | | 二进制文件 | 不是纯文本的文件，如图片、程序
+XML | Extensible Markup Language | 可扩展标记语言 | 用标签描述数据的格式
+TOML | Tom's Obvious, Minimal Language | TOML 格式 | 简洁的配置文件格式
+INI | initialization file | INI 配置文件 | 用 [节] 和 键=值 写的简单配置格式
+CSV | Comma-Separated Values | 逗号分隔值 | 用逗号分隔列的表格文本格式
+TSV | Tab-Separated Values | 制表符分隔值 | 用 Tab 分隔列的表格文本
+Markdown | | Markdown 标记语言 | 用 # 标题、**加粗** 等简单符号写格式文本，README 常用 | md
+PDF | Portable Document Format | 便携式文档格式 | 版式固定、到哪都显示一样的文档格式
+Protocol Buffers | | Protocol Buffers | 谷歌的高效二进制序列化格式 | protobuf
+encoding | | 编码 | 字符和字节之间的转换规则
+character set | | 字符集 | 一组字符及其编号 | charset
+ASCII | American Standard Code for Information Interchange | ASCII 码 | 用 0–127 表示英文字母、数字和符号的编码
+Unicode | | 统一码 | 给世界上所有文字统一编号的标准
+UTF-8 | Unicode Transformation Format 8-bit | UTF-8 编码 | 最常用的 Unicode 编码，英文 1 字节、中文通常 3 字节 | utf8
+UTF-16 | | UTF-16 编码 | 用 2 或 4 字节表示字符的 Unicode 编码
+GBK | | GBK 编码 | 中文 Windows 常用的汉字编码 | GB2312 / GB18030
+BOM | Byte Order Mark | 字节顺序标记 | 文件开头标明编码和字节序的特殊字符
+mojibake | | 乱码 | 用错误编码打开文本出现的乱码 | garbled text
+Base64 | | Base64 编码 | 用 64 个可打印字符表示二进制数据
+hexadecimal | | 十六进制 | 用 0–9 和 A–F 表示的数，常写成 0x1F | hex
+octal | | 八进制 | 逢八进一的计数法
+decimal | | 十进制 | 日常用的计数法；小数
+binary | | 二进制 | 只用 0 和 1 的计数法
+UUID | Universally Unique Identifier | 通用唯一标识符 | 128 位、几乎不会重复的 ID | GUID
+timestamp | | 时间戳 | 表示某一时刻的值，常是从 1970-01-01 起的秒数
+Unix time | | Unix 时间 | 从 1970-01-01 00:00:00 UTC 起经过的秒数 | Unix epoch / epoch time / POSIX time
+UTC | Coordinated Universal Time | 协调世界时 | 国际标准时间，北京时间 = UTC+8
+ISO 8601 | | ISO 8601 日期格式 | 国际标准日期时间写法，如 2024-05-01T10:30:00Z
+compression | | 压缩 | 减小数据体积 | compress
+decompression | | 解压 | 把压缩数据还原 | decompress / extract / unzip
+lossless | | 无损的 | 压缩后能完全还原，如 ZIP、PNG、FLAC
+lossy | | 有损的 | 压缩时丢掉部分信息，如 JPEG、MP3
+ZIP | | ZIP 压缩格式 | 最常见的压缩包格式 | zip
+gzip | | gzip 压缩 | Linux 和网页传输常用的压缩格式 | .gz / tar.gz / tarball
+tar | tape archive | tar 归档 | 把多个文件打包成一个文件（不压缩）
+archive | | 归档；压缩包 | 把多个文件打包在一起；也指存档
+codec | coder-decoder | 编解码器 | 压缩和解压音视频的程序或算法
+container format | | 封装格式；容器格式 | 把视频、音频、字幕装在一起的文件格式，如 MP4、MKV
+bitrate | | 码率；比特率 | 每秒的数据量，越高通常质量越好 | bit rate
+frame rate | | 帧率 | 视频每秒的画面数，单位 fps | fps
+sample rate | | 采样率 | 音频每秒采样次数，如 44.1kHz | sampling rate
+H.264 | | H.264 视频编码 | 最常用的视频压缩标准 | AVC
+H.265 | | H.265 视频编码 | 比 H.264 压缩率更高的标准 | HEVC
+MP4 | | MP4 格式 | 最常见的视频文件格式
+MP3 | | MP3 格式 | 常见的有损音频格式
+JPEG | Joint Photographic Experts Group | JPEG 图片格式 | 有损压缩的照片格式 | JPG
+PNG | Portable Network Graphics | PNG 图片格式 | 无损、支持透明的图片格式
+GIF | Graphics Interchange Format | GIF 动图格式 | 支持简单动画的图片格式
+WebP | | WebP 图片格式 | 谷歌的高压缩率图片格式
+raster | | 栅格；位图 | 由像素组成的图像 | bitmap
+vector graphics | | 矢量图 | 用数学形状描述、放大不失真的图像
+RGB | Red, Green, Blue | 红绿蓝 | 屏幕显示颜色的三原色模式；网页里常写成 #RRGGBB
+alpha channel | | 透明通道 | 表示像素透明度的通道 | alpha
+metadata | | 元数据 | 描述数据的数据，如照片的拍摄时间、文件作者
+streaming | | 流式传输 | 边下载边播放或边处理 | stream
+buffering | | 缓冲 | 预先下载一部分数据再播放
+subtitle | | 字幕 | 视频上的文字 | caption / SRT
+font | | 字体 |
+glyph | | 字形 | 一个字符的具体图形

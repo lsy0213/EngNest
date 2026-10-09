@@ -1,0 +1,72 @@
+# 数据库
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+database | | 数据库 | 有组织地存储和管理数据的系统 | DB
+DBMS | Database Management System | 数据库管理系统 | 管理数据库的软件，如 MySQL、PostgreSQL
+RDBMS | Relational Database Management System | 关系型数据库管理系统 | 用表格和 SQL 管理数据的数据库系统
+relational database | | 关系型数据库 | 数据存在行列组成的表里，表之间用键关联
+NoSQL | Not only SQL | 非关系型数据库 | 不用传统表结构的数据库，如文档型、键值型、图数据库
+table | | 表 | 关系型数据库里行和列组成的数据集合；也指表格
+row | | 行 | 表里的一条记录 | record
+column | | 列 | 表里的一个字段 | field
+schema | | 模式；结构定义 | 数据库里表、字段、类型的结构设计；也指 JSON 等数据的格式规范
+primary key | | 主键 | 唯一标识表里每一行的字段 | PK
+foreign key | | 外键 | 引用另一张表主键的字段，用来建立表之间的关系 | FK
+index | | 索引 | 加快查询速度的数据结构，就像书的目录
+query | | 查询 | 向数据库请求数据的语句；也泛指查询请求
+SELECT | | SELECT 查询 | SQL 里读取数据的语句
+INSERT | | INSERT 插入 | SQL 里添加数据的语句
+UPDATE | | UPDATE 更新 | SQL 里修改数据的语句
+DELETE | | DELETE 删除 | SQL 里删除数据的语句
+JOIN | | 连接（查询） | 把几张表按关联字段合并查询，如 INNER JOIN、LEFT JOIN | inner join / left join
+WHERE clause | | WHERE 子句 | SQL 里筛选条件的部分 | WHERE
+GROUP BY | | 分组 | 按某列分组统计
+ORDER BY | | 排序 | 按某列排序结果
+aggregate function | | 聚合函数 | 对一组值求结果的函数，如 COUNT、SUM、AVG、MAX
+view | | 视图 | 保存起来的查询，像虚拟表一样使用；界面里的视图
+stored procedure | | 存储过程 | 保存在数据库里、可以调用的一组 SQL 语句
+trigger | | 触发器 | 表里发生插入、修改、删除时自动执行的操作；也泛指触发
+transaction | | 事务 | 一组要么全部成功、要么全部撤销的数据库操作
+commit | | 提交 | 确认事务的修改；Git 里提交一次修改
+rollback | | 回滚 | 撤销事务的修改；部署里退回旧版本 | roll back
+ACID | Atomicity, Consistency, Isolation, Durability | 原子性、一致性、隔离性、持久性 | 可靠事务必须具备的四个特性
+isolation level | | 隔离级别 | 多个事务同时运行时互相看到对方修改的程度
+consistency | | 一致性 | 数据始终符合规则；分布式系统里各副本数据相同
+normalization | | 范式化；规范化 | 拆分表消除冗余数据的设计方法 | normal form
+denormalization | | 反范式化 | 故意保留冗余来提高查询速度
+CRUD | Create, Read, Update, Delete | 增删改查 | 对数据最基本的四种操作
+DDL | Data Definition Language | 数据定义语言 | 定义结构的 SQL，如 CREATE TABLE
+DML | Data Manipulation Language | 数据操作语言 | 增删改查数据的 SQL
+MySQL | | MySQL 数据库 | 最流行的开源关系型数据库之一
+PostgreSQL | | PostgreSQL 数据库 | 功能强大的开源关系型数据库 | Postgres
+SQLite | | SQLite 数据库 | 存在单个文件里、不需要服务器的轻量数据库
+Oracle Database | | Oracle 数据库 | 甲骨文公司的商业数据库 | Oracle
+SQL Server | | SQL Server 数据库 | 微软的关系型数据库 | MSSQL
+MongoDB | | MongoDB 数据库 | 存 JSON 风格文档的 NoSQL 数据库
+Redis | | Redis 数据库 | 数据放在内存里的高速键值数据库，常用作缓存
+Elasticsearch | | Elasticsearch 搜索引擎 | 分布式全文搜索和分析引擎 | ES
+key-value store | | 键值存储 | 按键存取值的简单数据库 | key-value database
+document database | | 文档数据库 | 按 JSON 等文档格式存数据 | document store
+time-series database | | 时序数据库 | 专门存带时间戳数据（监控、传感器）的数据库 | TSDB
+graph database | | 图数据库 | 用节点和边存储关系数据的数据库
+data warehouse | | 数据仓库 | 汇集各业务数据、用于分析报表的数据库
+data lake | | 数据湖 | 以原始格式存放海量数据的存储
+ETL | Extract, Transform, Load | 抽取、转换、加载 | 把数据从源系统取出、清洗转换、再装入目标库
+OLTP | Online Transaction Processing | 联机事务处理 | 大量小而快的读写，如下单
+OLAP | Online Analytical Processing | 联机分析处理 | 对大量数据做复杂统计分析
+replication | | 复制 | 把数据同步到多个副本 | replica
+replica | | 副本 | 数据或服务的一份拷贝 | read replica
+sharding | | 分片 | 把数据按规则拆分到多台数据库 | shard
+partitioning | | 分区 | 把一张大表拆成多个部分存储
+connection pool | | 连接池 | 预先建好一批数据库连接重复使用
+migration | | 迁移 | 修改数据库结构的脚本；把系统搬到新环境
+backup | | 备份 | 复制一份数据以防丢失
+restore | | 恢复 | 从备份还原数据
+dump | | 转储 | 把数据库或内存内容导出成文件
+SQL injection | | SQL 注入 | 把恶意 SQL 拼进输入里攻击数据库的手段
+prepared statement | | 预编译语句 | 先定义 SQL 结构再传参数，防 SQL 注入 | parameterized query
+NULL | | 空值 | 数据库里表示「没有值」
+constraint | | 约束 | 限制列中数据的规则，如唯一、非空 | UNIQUE / NOT NULL
+cardinality | | 基数 | 一列中不同值的个数；表之间一对多等对应关系
+CAP theorem | | CAP 定理 | 分布式系统无法同时完全满足一致性、可用性、分区容错性
+eventual consistency | | 最终一致性 | 副本暂时不同，但过一段时间会一致

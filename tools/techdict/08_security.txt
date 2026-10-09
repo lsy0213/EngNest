@@ -1,0 +1,131 @@
+# 网络安全与密码学
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+security | | 安全 | 保护系统和数据不被非法访问、篡改、破坏 | cybersecurity / infosec
+encryption | | 加密 | 把明文变成别人看不懂的密文 | encrypt / encrypted
+decryption | | 解密 | 把密文还原成明文 | decrypt
+plaintext | | 明文 | 没加密的原始数据 | cleartext
+ciphertext | | 密文 | 加密后的数据
+cipher | | 密码算法 | 加密和解密所用的算法 | cypher
+cipher suite | | 密码套件 | TLS 握手时商定的一组算法：密钥交换、加密、摘要
+key | | 密钥；键 | 加解密用的秘密值；字典里的键；键盘按键
+symmetric encryption | | 对称加密 | 加密和解密用同一个密钥，如 AES | symmetric
+asymmetric encryption | | 非对称加密 | 用公钥加密、私钥解密的加密方式，如 RSA | asymmetric / public-key cryptography
+public key | | 公钥 | 可以公开给别人的密钥
+private key | | 私钥 | 必须自己保密的密钥
+key pair | | 密钥对 | 一个公钥和对应的私钥
+key exchange | | 密钥交换 | 双方在不安全的网络上协商出共享密钥，如 Diffie-Hellman | Diffie-Hellman / DH / ECDH
+AES | Advanced Encryption Standard | 高级加密标准 | 最常用的对称加密算法
+DES | Data Encryption Standard | 数据加密标准 | 已经不安全的老对称加密算法 | 3DES
+RSA | Rivest–Shamir–Adleman | RSA 算法 | 最常见的非对称加密和签名算法（三位发明者姓氏首字母）
+ECC | Elliptic Curve Cryptography | 椭圆曲线密码学 | 用更短密钥达到同样强度的非对称加密；内存里 ECC 指纠错码 | ECDSA
+hash | | 哈希 | 把任意数据变成固定长度摘要的单向运算，不能反推原文
+digest | | 摘要 | 哈希算法算出的结果 | message digest / hash value
+MD5 | Message-Digest Algorithm 5 | MD5 摘要算法 | 128 位哈希，已不安全，只适合校验文件
+SHA | Secure Hash Algorithm | 安全哈希算法 | 一系列哈希算法，如 SHA-1（已不安全）、SHA-256 | SHA-256 / SHA-1 / SHA256
+salt | | 盐 | 存密码哈希前加的随机值，防止彩虹表破解
+HMAC | Hash-based Message Authentication Code | 基于哈希的消息认证码 | 用密钥加哈希确认消息没被篡改、来自持有密钥的人
+MAC | Message Authentication Code | 消息认证码 | 证明消息完整且来源可信的短代码（网络里 MAC 指 MAC 地址）
+digital signature | | 数字签名 | 用私钥签名、公钥验证，证明内容是谁发的且没被改过 | signature / sign
+certificate | | 证书 | 由 CA 签发、证明某个公钥属于某个网站或机构的电子文件 | cert / digital certificate
+CA | Certificate Authority | 证书颁发机构 | 签发和担保数字证书的可信机构
+X.509 | | X.509 证书标准 | 数字证书的标准格式
+PKI | Public Key Infrastructure | 公钥基础设施 | 管理证书和密钥的整套体系
+root certificate | | 根证书 | 信任链最顶端、预装在系统里的 CA 证书 | root CA
+self-signed certificate | | 自签名证书 | 自己给自己签发的证书，浏览器默认不信任 | self-signed
+certificate chain | | 证书链 | 从网站证书到根证书一级级签发的关系 | chain of trust
+SSL certificate | | SSL 证书 | 网站 HTTPS 用的证书（其实现在用的是 TLS） | TLS certificate
+authentication | | 认证；身份验证 | 确认你是谁，如输入密码 | authenticate / authn
+authorization | | 授权 | 确认你能做什么 | authorize / authz
+credential | | 凭据 | 证明身份的信息，如用户名密码、令牌 | credentials
+password | | 密码；口令 | 登录用的秘密字符串
+passphrase | | 口令短语 | 由多个单词组成的长密码
+2FA | Two-Factor Authentication | 双因素认证 | 登录时除密码外还要第二种验证，如手机验证码 | two-factor authentication
+MFA | Multi-Factor Authentication | 多因素认证 | 用两种以上方式验证身份
+OTP | One-Time Password | 一次性密码 | 只能用一次的验证码 | TOTP
+SSO | Single Sign-On | 单点登录 | 登录一次就能访问多个系统
+OAuth | Open Authorization | 开放授权 | 让第三方应用在你授权下访问你的账户，不用给它密码 | OAuth 2.0
+OpenID Connect | | OpenID Connect 身份认证 | 基于 OAuth 2.0 的登录认证协议 | OIDC
+JWT | JSON Web Token | JSON Web 令牌 | 带签名的 JSON 格式令牌，常用于接口身份认证
+access token | | 访问令牌 | 调用接口时证明有权限的令牌
+refresh token | | 刷新令牌 | 用来换取新访问令牌的长期令牌
+session hijacking | | 会话劫持 | 盗用别人的会话 ID 冒充登录
+RBAC | Role-Based Access Control | 基于角色的访问控制 | 按角色分配权限
+ACL | Access Control List | 访问控制列表 | 规定谁能访问哪些资源的列表
+least privilege | | 最小权限原则 | 只给完成任务所需的最少权限 | principle of least privilege
+vulnerability | | 漏洞 | 系统中可被攻击利用的弱点 | vuln
+exploit | | 漏洞利用（程序） | 利用漏洞进行攻击的代码或方法；也作动词「利用」
+CVE | Common Vulnerabilities and Exposures | 通用漏洞披露 | 公开漏洞的统一编号，如 CVE-2021-44228
+CVSS | Common Vulnerability Scoring System | 通用漏洞评分系统 | 给漏洞严重程度打 0–10 分
+zero-day | | 零日漏洞 | 厂商还不知道或还没修补就被利用的漏洞 | 0day / zero day
+patch | | 补丁 | 修复漏洞的更新
+attack surface | | 攻击面 | 系统可能被攻击的所有入口
+threat | | 威胁 | 可能造成损害的潜在危险
+risk | | 风险 | 威胁发生的可能性和后果
+attacker | | 攻击者 | 发起攻击的人 | adversary / threat actor
+hacker | | 黑客 | 精通计算机的人，常指入侵系统的人
+penetration testing | | 渗透测试 | 经授权模拟攻击来找安全问题 | pentest / pen test
+red team | | 红队 | 扮演攻击者的一方
+blue team | | 蓝队 | 负责防守的一方
+malware | malicious software | 恶意软件 | 病毒、木马、勒索软件等有害程序的统称
+virus | | 病毒 | 能自我复制、感染其他文件的恶意程序
+worm | | 蠕虫 | 能通过网络自动传播的恶意程序
+trojan | Trojan horse | 木马 | 伪装成正常软件的恶意程序 | Trojan
+ransomware | | 勒索软件 | 加密你的文件再要求付赎金的恶意软件
+spyware | | 间谍软件 | 偷偷收集用户信息的软件
+adware | | 广告软件 | 强行弹广告的软件
+rootkit | | rootkit 后门工具 | 隐藏自己、长期控制系统的恶意程序
+backdoor | | 后门 | 绕过正常认证进入系统的秘密通道
+botnet | | 僵尸网络 | 被黑客控制的大量受感染设备
+C2 | Command and Control | 命令与控制（服务器） | 攻击者远程控制受感染机器的服务器 | C&C
+payload | | 攻击载荷 | 漏洞利用成功后真正执行的恶意代码
+phishing | | 网络钓鱼 | 冒充可信方骗取账号密码等信息
+spear phishing | | 鱼叉式钓鱼 | 针对特定人员精心定制的钓鱼攻击
+social engineering | | 社会工程学 | 利用人的心理弱点骗取信息或权限
+spoofing | | 欺骗；伪造 | 伪造 IP 地址、邮箱、来电号码等冒充别人 | spoof
+DoS | Denial of Service | 拒绝服务攻击 | 让服务忙到无法响应正常用户
+DDoS | Distributed Denial of Service | 分布式拒绝服务攻击 | 大量机器同时发起的拒绝服务攻击
+MITM | Man-in-the-Middle | 中间人攻击 | 攻击者夹在通信双方之间偷看或篡改数据 | man-in-the-middle / on-path attack
+replay attack | | 重放攻击 | 截获合法数据包再原样发送来冒充
+brute-force attack | | 暴力破解 | 把所有可能的密码挨个试 | brute force
+dictionary attack | | 字典攻击 | 用常见密码列表尝试登录
+rainbow table | | 彩虹表 | 预先算好的哈希反查表，用来破解未加盐的密码
+XSS | Cross-Site Scripting | 跨站脚本攻击 | 把恶意脚本注入网页，在别人浏览器里执行
+CSRF | Cross-Site Request Forgery | 跨站请求伪造 | 诱导已登录的用户在不知情时发出请求 | XSRF
+SSRF | Server-Side Request Forgery | 服务端请求伪造 | 让服务器替攻击者去访问内部资源
+injection | | 注入 | 把恶意代码混进输入里执行，如 SQL 注入、命令注入 | code injection / command injection
+RCE | Remote Code Execution | 远程代码执行 | 攻击者能在目标机器上运行任意代码，最严重的漏洞之一
+privilege escalation | | 权限提升；提权 | 从普通权限获取到更高权限
+lateral movement | | 横向移动 | 攻入一台机器后再去攻击内网其他机器
+firewall | | 防火墙 | 按规则过滤网络流量
+WAF | Web Application Firewall | Web 应用防火墙 | 专门拦截针对网站的攻击
+IDS | Intrusion Detection System | 入侵检测系统 | 监控流量、发现可疑行为并报警
+IPS | Intrusion Prevention System | 入侵防御系统 | 发现攻击后直接拦截
+SIEM | Security Information and Event Management | 安全信息和事件管理 | 集中收集分析安全日志的平台
+SOC | Security Operations Center | 安全运营中心 | 7×24 监控和响应安全事件的团队
+EDR | Endpoint Detection and Response | 端点检测与响应 | 在电脑终端上检测和处置威胁的安全软件
+antivirus | | 杀毒软件 | 检测和清除恶意软件的程序 | AV
+honeypot | | 蜜罐 | 故意设置的诱饵系统，用来吸引和研究攻击者
+sandbox | | 沙箱 | 隔离运行可疑程序的环境
+zero trust | | 零信任 | 不默认信任任何人或设备，每次访问都要验证
+defense in depth | | 纵深防御 | 设置多层防护
+hardening | | 加固 | 关闭不需要的服务、收紧配置来提高安全性
+audit | | 审计 | 检查和记录系统活动，看是否合规 | audit log
+compliance | | 合规 | 符合法律法规和行业标准
+GDPR | General Data Protection Regulation | 通用数据保护条例 | 欧盟的个人数据保护法规
+PII | Personally Identifiable Information | 个人身份信息 | 能识别个人身份的信息，如姓名、身份证号
+data breach | | 数据泄露 | 敏感数据被未经授权地获取
+leak | | 泄露 | 数据或内存泄露
+integrity | | 完整性 | 数据没被篡改
+confidentiality | | 机密性 | 数据不被无关的人看到
+availability | | 可用性 | 系统在需要时能正常使用
+CIA triad | | CIA 三要素 | 信息安全的三个目标：机密性、完整性、可用性
+non-repudiation | | 不可否认性 | 发送方不能否认自己发过的消息
+end-to-end encryption | | 端到端加密 | 只有通信双方能解密，中间的服务器也看不到 | E2EE
+forward secrecy | | 前向保密 | 长期密钥泄露也解不开以前的通信 | perfect forward secrecy / PFS
+nonce | number used once | 一次性随机数 | 只用一次的随机数，防止重放
+entropy | | 熵 | 随机性的程度
+obfuscation | | 混淆 | 把代码或数据变得难以理解 | obfuscate
+reverse engineering | | 逆向工程 | 分析程序或设备来弄清它的工作原理
+CTF | Capture The Flag | 夺旗赛 | 网络安全竞赛，解题找出隐藏的 flag
+OWASP | Open Worldwide Application Security Project | 开放式 Web 应用安全项目 | 发布 Web 十大安全风险（OWASP Top 10）的组织

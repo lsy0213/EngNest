@@ -11,7 +11,8 @@ App.pages.words = {
     const due = dueWords().length;
     root.innerHTML = pageHead("单词", "",
       tabsHtml([["new", "学新词"], ["review", `复习${due ? ` (${due})` : ""}`], ["practice", "练习"], ["list", "词库"], ["roots", "词根词缀"]], tab))
-      + (tab === "roots" ? "" : this.bookBar()) + `<div id="words-body"></div>`;
+      // 手机上「开始学习」放在词书列表上面（words-main 里用 CSS 调换顺序），不用先翻过十几本词书
+      + `<div class="words-main">${tab === "roots" ? "" : `<div class="book-picker"><div class="book-picker-title">📚 选择词书</div>${this.bookBar()}</div>`}<div id="words-body"></div></div>`;
     $$(".tab", root).forEach((b) => (b.onclick = () => Router.go("words/" + b.dataset.tab)));
     $$("[data-book]", root).forEach((c) => (c.onclick = () => {
       Store.prefs.book = c.dataset.book;
@@ -22,6 +23,11 @@ App.pages.words = {
       else location.hash = target;
     }));
     $$("[data-exam]", root).forEach((b) => (b.onclick = () => this.setExam(b.dataset.exam)));
+    // 手机上每组词书是一行左右滑：把当前词书滑到看得见的地方
+    $$(".book-bar", root).forEach((bar) => {
+      const c = $(".book-chip.active", bar);
+      if (c && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = c.offsetLeft - bar.offsetLeft - (bar.clientWidth - c.offsetWidth) / 2;
+    });
     const body = $("#words-body", root);
     ({ new: this.learnNew, review: this.review, practice: this.practice, list: this.list, roots: this.roots })[tab].call(this, body, signal, unit);
   },
@@ -215,8 +221,15 @@ App.pages.words = {
       const btn = $("[data-more]", actions);
       if (btn) btn.onclick = () => Router.render();
     };
-    if (spell) runSpelling(box, queue, signal, onFinish);
-    else runFlashcards(box, queue, "review", signal, onFinish);
+    // 先显示开始卡片（和学新词一样），点了才进入卡片；卡片上的 ← 回到这里
+    box.innerHTML = `<div class="card" style="max-width:620px;margin:0 auto">
+      <div class="card-title">📅 有 ${due.length} 个词到了复习时间</div>
+      <p class="muted">${spell ? `这一组 ${queue.length} 个：看中文和例句，拼出单词。` : `这一组 ${queue.length} 个：先看单词回忆意思，再翻开对答案。记住了往${knownDir() < 0 ? "左" : "右"}滑，没记住往另一边。`}</p>
+      <div class="row mt"><button class="btn primary lg" data-start>开始复习</button></div></div>`;
+    $("[data-start]", box).onclick = () => {
+      if (spell) runSpelling(box, queue, signal, onFinish);
+      else runFlashcards(box, queue, "review", signal, onFinish);
+    };
   },
 
   quiz(root, pageSignal) {

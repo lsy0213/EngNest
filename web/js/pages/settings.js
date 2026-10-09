@@ -132,6 +132,17 @@ App.pages.settings = {
           <p><b>系统语音</b>：使用 Windows 自带的语音，完全离线，但音色比较机械。如果列表里没有英文发音人：打开 Windows「设置 → 时间和语言 → 语音」，在「管理语音」里添加「English (United States)」，然后重启 EngNest。</p></details>
       </div>
 
+      <div class="card">
+        <div class="card-title">💻 计算机词典</div>
+        <p class="small muted" style="margin-top:-4px">读技术文档、协议手册、GitHub 时用：<span id="tech-count">两千多</span>条计算机术语和缩写（网络协议、工业控制、编程、操作系统、数据库、安全、云与运维、AI、硬件），每条有英文全称、中文和一句话解释，还收了文档里常见的 optionally、deprecated、respectively 这类词。查词浮层和「查单词」（Ctrl+K）里都能查到。</p>
+        <div class="form-grid">
+          <div class="field"><label>查词时显示计算机释义</label>
+            <select class="select" id="tech-terms">${[["auto", "智能（推荐）"], ["always", "总是显示"], ["off", "不显示"]].map(([v, t]) => `<option value="${v}" ${(p.tech_terms || "auto") === v ? "selected" : ""}>${t}</option>`).join("")}</select>
+            <span class="help">智能：TCP、encapsulation 这类专业词总会显示；set、frame、port 这类日常也常见的词，只在技术文章里才显示计算机义，读小说时不打扰。</span></div>
+        </div>
+        <div class="row mt"><button class="btn soft" id="tech-browse">📚 浏览计算机词典</button></div>
+      </div>
+
       ${Store.bridge && !Store.remote ? `<div class="card" id="piper-card"></div><div class="card" id="dict-card"></div><div class="card" id="stt-card"></div><div class="card" id="net-card"></div>` : ""}
 
       ${Store.bridge && !Store.remote ? `<div class="card" id="dav-card"></div>` : ""}
@@ -194,6 +205,9 @@ App.pages.settings = {
     $("#daily-goal", root).onchange = (e) => { p.daily_goal = +e.target.value; Store.save(); toast("已保存", "good"); };
     $("#retention", root).onchange = (e) => { p.retention = +e.target.value; Store.save(); toast("已保存，之后的复习按新的目标安排", "good"); };
     $("#swipe-dir", root).onchange = (e) => { p.swipe_right_known = e.target.value === "right"; Store.save(); toast("已保存", "good"); };
+    $("#tech-terms", root).onchange = (e) => { p.tech_terms = e.target.value; Store.save(); toast("已保存", "good"); };
+    $("#tech-browse", root).onclick = () => openDictSearch("", { tech: true });
+    TechDict.load().then((ok) => { if (ok && $("#tech-count", root)) $("#tech-count", root).textContent = TechDict.items.length.toLocaleString() + " "; });
 
     // 发音
     const vs = $("#voice", root);

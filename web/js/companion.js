@@ -1,3 +1,7 @@
+// 手机和电脑屏幕差别太大，拖动后的位置分开记：电脑上拖到屏幕中间的角色，到手机上会挡住内容
+const narrowScreen = () => innerWidth <= 720;
+const posKey = (k) => (narrowScreen() ? `${k}@m` : k);
+
 // 三视角 2D 陪伴角色。视角资源同高，动画只作用于整张立绘。
 const FlowerCat = {
   views: ["front", "side", "back"],
@@ -74,7 +78,7 @@ const FlowerCat = {
     figure.addEventListener("pointerup", () => {
       if (!drag) return;
       if (drag.moved) {
-        Store.prefs.companion_position = { x: parseInt(root.style.left, 10), y: parseInt(root.style.top, 10) };
+        Store.prefs[posKey("companion_position")] = { x: parseInt(root.style.left, 10), y: parseInt(root.style.top, 10) };
         Store.save();
       } else this.turn();
       drag = null;
@@ -85,8 +89,9 @@ const FlowerCat = {
   },
   place() {
     const root = document.querySelector("#flower-cat-float");
-    const pos = Store.prefs.companion_position;
-    if (!root || !pos) return;
+    if (!root) return;
+    const pos = Store.prefs[posKey("companion_position")];
+    if (!pos) { root.style.left = root.style.top = root.style.right = root.style.bottom = ""; return; } // 用样式表里的默认位置（右下角）
     root.style.left = `${Math.max(0, Math.min(innerWidth - root.offsetWidth, pos.x))}px`;
     root.style.top = `${Math.max(0, Math.min(innerHeight - root.offsetHeight, pos.y))}px`;
     root.style.right = "auto";
@@ -159,7 +164,7 @@ const PartnerFigures = {
       if (!drag || e.pointerId !== drag.id) return;
       if (moved) {
         Store.prefs.partner_figure_positions ||= {};
-        Store.prefs.partner_figure_positions[id] = { x: parseInt(root.style.left, 10), y: parseInt(root.style.top, 10) };
+        Store.prefs.partner_figure_positions[posKey(id)] = { x: parseInt(root.style.left, 10), y: parseInt(root.style.top, 10) };
         Store.save();
       }
       drag = null;
@@ -174,7 +179,7 @@ const PartnerFigures = {
   place() {
     const root = document.querySelector("#partner-figure-float");
     if (!root) return;
-    const pos = Store.prefs.partner_figure_positions?.[root.dataset.figure];
+    const pos = Store.prefs.partner_figure_positions?.[posKey(root.dataset.figure)];
     root.style.left = `${Math.max(0, Math.min(innerWidth - root.offsetWidth, pos?.x ?? innerWidth - root.offsetWidth - 18))}px`;
     root.style.top = `${Math.max(0, Math.min(innerHeight - root.offsetHeight, pos?.y ?? 12))}px`;
   },
@@ -193,7 +198,7 @@ const ThemeCharacter = {
     this.refresh();
   },
   position() {
-    return Store.prefs.theme_character_positions?.[Store.prefs.skin];
+    return Store.prefs.theme_character_positions?.[posKey(Store.prefs.skin)];
   },
   place() {
     const root = document.querySelector("#theme-character-float");
@@ -208,7 +213,7 @@ const ThemeCharacter = {
     const root = document.querySelector("#theme-character-float");
     if (!root) return;
     Store.prefs.theme_character_positions ||= {};
-    Store.prefs.theme_character_positions[Store.prefs.skin] = {
+    Store.prefs.theme_character_positions[posKey(Store.prefs.skin)] = {
       x: parseInt(root.style.left, 10), y: parseInt(root.style.top, 10),
     };
     Store.save();

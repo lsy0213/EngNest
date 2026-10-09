@@ -1,0 +1,92 @@
+# 版本控制与开源协作
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+version control | | 版本控制 | 记录文件的每次修改，可以随时回到以前的版本 | VCS / source control
+Git | | Git 版本控制系统 | 最流行的分布式版本控制工具
+GitHub | | GitHub | 最大的代码托管和开源协作平台
+GitLab | | GitLab | 代码托管和 CI/CD 平台，可自己部署
+Gitee | | 码云 | 国内的代码托管平台
+SVN | Subversion | SVN 版本控制 | 集中式版本控制工具
+repository | | 仓库 | 存放项目代码和全部修改历史的地方 | repo
+remote | | 远程仓库 | 在服务器上的仓库，默认叫 origin | remote repository / origin
+local repository | | 本地仓库 | 你电脑上的仓库
+clone | | 克隆 | 把远程仓库完整复制到本地
+commit | | 提交 | 把一组修改保存为一个版本，附带说明信息
+commit message | | 提交说明 | 描述这次提交改了什么的文字
+staging area | | 暂存区 | git add 之后、commit 之前修改所在的区域 | index / stage
+working tree | | 工作区 | 你正在编辑的文件 | working directory / working copy
+branch | | 分支 | 从主线分出的独立开发线
+main branch | | 主分支 | 仓库的默认分支，通常叫 main 或 master | main / master
+checkout | | 检出；切换 | 切换到某个分支或版本
+switch | | 切换（分支） | git switch，切换分支
+merge | | 合并 | 把一个分支的修改合到另一个分支
+merge conflict | | 合并冲突 | 两边改了同一处，Git 无法自动合并，需要手动解决 | conflict
+rebase | | 变基 | 把自己的提交「挪到」另一个分支最新提交之后，让历史成一条直线
+cherry-pick | | 挑选提交 | 把某一个提交单独复制到当前分支
+squash | | 压缩提交 | 把多个提交合并成一个
+fast-forward | | 快进合并 | 目标分支没有新提交时，直接把指针移过去 | ff
+push | | 推送 | 把本地提交上传到远程仓库
+pull | | 拉取 | 从远程下载并合并到本地（= fetch + merge）
+fetch | | 获取 | 从远程下载最新提交但不合并
+HEAD | | HEAD 指针 | 指向你当前所在提交的指针
+detached HEAD | | 游离 HEAD | HEAD 直接指向某个提交而不是分支
+stash | | 储藏 | 把没提交的修改临时收起来
+reset | | 重置 | 把分支指针移回之前的提交 | git reset
+revert | | 撤销（提交） | 新建一个提交来抵消某个旧提交
+diff | | 差异 | 两个版本之间的不同之处
+patch | | 补丁 | 记录修改内容的差异文件
+blame | | 逐行追溯 | 查看每一行代码是谁、在哪次提交改的
+log | | 提交历史 | git log 查看提交记录
+tag | | 标签 | 给某个提交起的名字，通常标记发布版本，如 v1.0.0
+release | | 发布版本 | 正式发布的版本；GitHub 上附带安装包的发布页
+version | | 版本 | 软件的某个发布状态，用版本号标识
+semantic versioning | | 语义化版本 | 主版本.次版本.修订号，如 2.1.3 | SemVer / semver
+changelog | | 更新日志 | 列出每个版本改了什么的文档 | release notes
+.gitignore | | 忽略文件列表 | 告诉 Git 哪些文件不要纳入版本控制 | gitignore
+fork | | 复刻；派生 | 在 GitHub 上把别人的仓库复制一份到自己账号下
+pull request | | 拉取请求；合并请求 | 请求项目维护者把你的分支合并进来，大家可以在里面评审讨论 | PR / merge request / MR
+code review | | 代码评审 | 别人检查你的代码再合并
+reviewer | | 评审人 | 负责审查代码的人
+approve | | 批准 | 评审通过
+issue | | 议题；问题 | 仓库里记录 bug、需求、讨论的条目
+label | | 标签 | 给 issue 分类的标记
+milestone | | 里程碑 | 一组计划在某个时间完成的 issue
+maintainer | | 维护者 | 负责管理开源项目、合并代码的人
+contributor | | 贡献者 | 给项目提交过代码或文档的人 | contribute / contribution
+upstream | | 上游 | 你 fork 来源的原始仓库；依赖链中更靠近源头的项目
+downstream | | 下游 | 基于某项目再开发的项目
+open source | | 开源 | 源代码公开、允许他人使用和修改 | open-source / OSS
+license | | 许可证 | 规定别人可以怎样使用、修改、分发软件的条款 | licence
+MIT License | | MIT 许可证 | 很宽松的开源许可证：保留版权声明就能随便用 | MIT
+GPL | GNU General Public License | GNU 通用公共许可证 | 「传染性」开源许可证：基于它修改分发的程序也要开源
+Apache License | | Apache 许可证 | 宽松的开源许可证，附带专利授权 | Apache 2.0
+copyleft | | 著佐权 | 要求衍生作品也用同样许可证开源
+README | | 说明文件 | 项目根目录介绍项目和用法的文件
+star | | 星标 | GitHub 上给仓库点的「赞」/收藏
+watch | | 关注 | 关注仓库的动态通知
+gist | | 代码片段分享 | GitHub 上分享单个代码片段的服务
+monorepo | | 单一仓库 | 多个项目放在同一个仓库里管理
+submodule | | 子模块 | 在一个仓库里嵌入另一个仓库
+CONTRIBUTING | | 贡献指南 | 说明如何参与项目贡献的文档
+CI badge | | 状态徽章 | README 上显示构建是否通过的小图标 | badge
+WIP | Work In Progress | 进行中 | 还没完成的工作，常加在 PR 标题前
+LGTM | Looks Good To Me | 我觉得没问题 | 代码评审时表示同意
+PTAL | Please Take A Look | 请看一下 | 请别人评审
+TL;DR | Too Long; Didn't Read | 太长不看（摘要） | 一段长文的简短总结 | TLDR
+FYI | For Your Information | 供参考 | 告诉你一声
+AFAIK | As Far As I Know | 据我所知 |
+IIRC | If I Recall Correctly | 如果我没记错 |
+IMO | In My Opinion | 我认为 | | IMHO
+RTFM | Read The Fine Manual | 先看手册 | 提醒别人先查文档（语气不太客气）
+nit | nitpick | 小问题；吹毛求疵 | 代码评审里的小建议，不改也行 | nitpick
+bump | | 升级（版本号） | 把依赖或版本号调高一点，如 bump version
+deprecate | | 弃用 | 标记某功能将来会删除，建议别再用 | deprecated / deprecation
+breaking change | | 破坏性变更 | 和旧版本不兼容、会让旧代码出错的修改
+backport | | 向后移植 | 把新版本的修复移植到旧版本分支
+hotfix | | 热修复 | 紧急修复线上问题的小更新
+regression | | 回归（问题） | 以前正常、改了代码后又坏了的问题
+reproduce | | 复现 | 按步骤让问题再次出现 | repro
+workaround | | 变通方法；临时解决办法 | 暂时绕过问题的办法，不是根本修复
+duplicate | | 重复 | 和已有 issue 重复 | dup
+stale | | 过期的；陈旧的 | 很久没有动静的 issue 或 PR；缓存里过期的数据
+upvote | | 点赞 | 表示支持（如 issue 下的 👍）

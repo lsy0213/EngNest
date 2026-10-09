@@ -1,0 +1,107 @@
+# 软件工程与测试
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+software engineering | | 软件工程 | 用工程化方法开发和维护软件
+requirement | | 需求 | 软件必须实现的功能或满足的条件 | requirements
+specification | | 规格说明；规范 | 详细描述系统应该怎样工作的文档 | spec
+user story | | 用户故事 | 从用户角度描述的需求：作为……我想要……以便……
+use case | | 用例 | 描述用户如何使用系统完成某个目标；也泛指使用场景
+architecture | | 架构 | 系统的整体结构和组件关系 | software architecture
+design pattern | | 设计模式 | 常见设计问题的成熟解决方案，如单例、工厂、观察者
+singleton | | 单例模式 | 保证一个类只有一个实例
+factory | | 工厂模式 | 用专门的方法或类来创建对象 | factory pattern
+observer pattern | | 观察者模式 | 对象状态变化时自动通知所有订阅者 | observer
+adapter | | 适配器 | 把一个接口转换成另一个期望的接口；也指硬件适配器、电源适配器
+facade | | 外观模式 | 给复杂子系统提供一个简单的统一入口 | façade
+proxy pattern | | 代理模式 | 用一个代理对象控制对另一个对象的访问
+dependency injection | | 依赖注入 | 把对象需要的依赖从外部传进去，而不是在内部自己创建 | DI
+inversion of control | | 控制反转 | 由框架来调用你的代码，而不是你调用框架 | IoC
+coupling | | 耦合 | 模块之间相互依赖的程度，低耦合更好 | loose coupling / tight coupling
+cohesion | | 内聚 | 模块内部各部分关联的紧密程度，高内聚更好
+separation of concerns | | 关注点分离 | 不同功能放在不同模块
+SOLID | | SOLID 原则 | 面向对象设计五原则：单一职责、开闭、里氏替换、接口隔离、依赖倒置
+DRY | Don't Repeat Yourself | 不要重复自己 | 避免重复代码的原则
+KISS | Keep It Simple, Stupid | 保持简单 | 设计尽量简单的原则
+YAGNI | You Aren't Gonna Need It | 你不会需要它 | 不要提前实现用不上的功能
+refactoring | | 重构 | 不改变外部行为、只改善代码结构 | refactor
+technical debt | | 技术债 | 为了快而留下的粗糙实现，以后要花更多代价偿还 | tech debt
+code smell | | 代码坏味道 | 暗示代码设计有问题的迹象
+clean code | | 整洁代码 | 易读、易维护的代码
+readability | | 可读性 | 代码容易被人看懂的程度
+maintainability | | 可维护性 | 代码容易修改和扩展的程度
+modular | | 模块化的 | 拆成相对独立的模块 | modularity
+reusable | | 可复用的 | 可以在别处再次使用 | reusability / reuse
+extensible | | 可扩展的 | 方便增加新功能 | extensibility
+portability | | 可移植性 | 能在不同平台上运行
+performance | | 性能 | 运行速度和资源消耗
+optimization | | 优化 | 改进以提高性能或效率 | optimize / optimise
+premature optimization | | 过早优化 | 还没确定瓶颈就费力优化
+profiling | | 性能分析 | 测量程序各部分耗时和资源占用 | profiler
+SDLC | Software Development Life Cycle | 软件开发生命周期 | 需求、设计、开发、测试、部署、维护的全过程
+waterfall | | 瀑布模型 | 按阶段顺序进行的开发模式
+agile | | 敏捷开发 | 小步快跑、频繁交付、拥抱变化的开发方法
+Scrum | | Scrum 框架 | 敏捷开发的一种框架，按冲刺迭代
+sprint | | 冲刺 | Scrum 里固定时长（通常 2 周）的一轮迭代
+backlog | | 待办列表 | 计划要做但还没做的需求和任务
+stand-up meeting | | 站会 | 每天快速同步进度的短会 | daily stand-up / standup
+kanban | | 看板 | 用卡片和列可视化任务流程的方法
+roadmap | | 路线图 | 产品未来的计划
+milestone | | 里程碑 | 项目中的重要节点
+MVP | Minimum Viable Product | 最小可行产品 | 用最少功能先推出、验证想法的产品版本
+prototype | | 原型 | 用来验证想法的早期简化版本 | prototyping
+proof of concept | | 概念验证 | 证明某个技术方案可行的小实验 | PoC
+deliverable | | 交付物 | 需要交付的成果
+stakeholder | | 利益相关者 | 和项目有关的各方，如客户、用户、管理层
+PM | Product Manager / Project Manager | 产品经理；项目经理 |
+QA | Quality Assurance | 质量保证；测试 | 确保软件质量的工作，也常指测试人员
+testing | | 测试 | 检查软件是否按预期工作 | test
+unit test | | 单元测试 | 测试单个函数或类 | unit testing
+integration test | | 集成测试 | 测试几个模块组合起来是否正常 | integration testing
+end-to-end test | | 端到端测试 | 模拟真实用户走完整流程的测试 | E2E / e2e test
+regression test | | 回归测试 | 改代码后重新测试，确保原有功能没坏 | regression testing
+smoke test | | 冒烟测试 | 快速检查最基本功能能否运行
+load test | | 负载测试 | 模拟大量用户测试系统承受能力 | stress test / performance test
+test case | | 测试用例 | 一组输入和期望结果
+test suite | | 测试套件 | 一组测试用例
+test coverage | | 测试覆盖率 | 测试执行到的代码比例 | code coverage / coverage
+mock | | 模拟对象 | 测试时用来替代真实依赖的假对象 | mocking / stub / fake
+fixture | | 测试夹具 | 测试前准备好的固定数据或环境
+assertion | | 断言 | 测试里检查结果是否符合预期
+TDD | Test-Driven Development | 测试驱动开发 | 先写测试再写实现
+BDD | Behavior-Driven Development | 行为驱动开发 | 用接近自然语言的场景描述来驱动开发
+pass | | 通过 | 测试成功
+fail | | 失败 | 测试没通过 | failure
+flaky test | | 不稳定测试 | 时而通过时而失败的测试 | flaky
+false positive | | 误报 | 实际没问题却报告有问题
+false negative | | 漏报 | 实际有问题却没报告
+bug report | | 缺陷报告 | 描述问题现象、复现步骤和期望结果的报告
+severity | | 严重程度 | 问题影响有多大
+root cause | | 根本原因 | 问题的真正源头 | root cause analysis / RCA
+troubleshooting | | 故障排查 | 一步步查找和解决问题 | troubleshoot
+documentation | | 文档 | 说明软件用法和设计的文字 | docs
+API documentation | | API 文档 | 说明接口用法的文档 | API reference
+UML | Unified Modeling Language | 统一建模语言 | 画类图、时序图等软件设计图的标准
+sequence diagram | | 时序图 | 按时间顺序画出对象之间交互的图
+flowchart | | 流程图 | 用图形表示步骤和判断的图
+ER diagram | Entity-Relationship diagram | 实体关系图 | 数据库设计用的图 | ERD
+state machine | | 状态机 | 系统在有限个状态之间按规则切换的模型 | finite state machine / FSM
+open source | | 开源 | 源代码公开
+proprietary | | 专有的；闭源的 | 不公开源代码的商业软件
+vendor | | 供应商；厂商 | 提供产品的公司；也指放第三方代码的 vendor 目录
+third-party | | 第三方 | 不是自己也不是平台官方的
+in-house | | 内部的；自研的 | 公司自己开发的
+outsourcing | | 外包 | 把工作交给外部公司
+end user | | 最终用户 | 实际使用产品的人 | end-user
+usability | | 可用性；易用性 | 产品好不好用
+wireframe | | 线框图 | 页面布局的草图
+mockup | | 效果图；模型 | 界面设计的静态效果图
+B2B | Business to Business | 企业对企业 | 面向企业客户的业务
+B2C | Business to Consumer | 企业对消费者 | 面向个人用户的业务
+EOL | End Of Life | 停止支持 | 产品不再更新维护；文本里 EOL 也指行尾（end of line）
+LTS | Long-Term Support | 长期支持（版本） | 会提供较长时间维护更新的版本
+beta | | 测试版 | 功能基本完成、还在测试的版本
+alpha | | 内测版 | 早期测试版本
+stable | | 稳定版 | 可以正式使用的版本
+nightly build | | 每夜构建版 | 每天自动构建的最新开发版 | nightly
+RC | Release Candidate | 候选发布版 | 如果没问题就会作为正式版发布的版本
+GA | General Availability | 正式发布 | 面向所有用户正式可用

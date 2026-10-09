@@ -1,0 +1,135 @@
+# 工业控制与嵌入式
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+PLC | Programmable Logic Controller | 可编程逻辑控制器 | 工厂里控制机器和生产线的专用工业计算机，读传感器输入、按程序控制电机阀门等输出
+Modbus | | Modbus 协议 | 最常用的工业通信协议之一，主站读写从站的寄存器和线圈
+Modbus TCP | | Modbus TCP 协议 | 跑在以太网 TCP 上的 Modbus，默认端口 502 | Modbus/TCP
+Modbus RTU | Modbus Remote Terminal Unit | Modbus RTU 协议 | 跑在 RS-485/RS-232 串口上的二进制 Modbus，帧尾有 CRC 校验
+Modbus ASCII | | Modbus ASCII 协议 | 用 ASCII 字符传输的串口 Modbus，帧尾用 LRC 校验
+MBAP | Modbus Application Protocol header | Modbus 应用协议头 | Modbus TCP 每帧前面 7 字节的头：事务号、协议号、长度、单元标识符 | MBAP header
+transaction identifier | | 事务标识符 | Modbus TCP 头里的编号，用来把响应和请求对上 | transaction ID
+unit identifier | | 单元标识符 | Modbus TCP 头里的从站地址，网关转串口时用来区分后面的设备 | unit ID / slave ID
+function code | | 功能码 | Modbus 帧里说明要做什么操作的编号，如 03 读保持寄存器、06 写单个寄存器、16 写多个寄存器 | FC
+exception code | | 异常码 | 从站处理失败时返回的错误编号，如 02 表示非法数据地址
+coil | | 线圈 | Modbus 里可读写的 1 位开关量输出（来自继电器线圈的叫法），功能码 01/05/15
+discrete input | | 离散输入 | Modbus 里只读的 1 位开关量输入，功能码 02
+holding register | | 保持寄存器 | Modbus 里可读写的 16 位寄存器，存参数、设定值，功能码 03/06/16
+input register | | 输入寄存器 | Modbus 里只读的 16 位寄存器，通常是测量值，功能码 04
+register | | 寄存器 | CPU 里存放数据的高速小存储单元；工业设备里按地址读写的数据单元
+master | | 主站；主设备 | 主动发起请求的一方（新文档里常改叫 client） | primary
+slave | | 从站；从设备 | 被动响应请求的一方（新文档里常改叫 server） | secondary
+polling | | 轮询 | 主站按顺序反复询问每个从站的数据 | poll
+OPC UA | Open Platform Communications Unified Architecture | OPC 统一架构 | 跨平台、带安全机制的工业数据交换标准，用信息模型描述设备数据 | OPC-UA
+OPC | Open Platform Communications | OPC 标准 | 工业软件读取设备数据的标准接口，经典 OPC 基于 Windows COM/DCOM
+PROFINET | Process Field Net | PROFINET 工业以太网 | 西门子主推的基于以太网的工业通信标准 | Profinet
+PROFIBUS | Process Field Bus | PROFIBUS 现场总线 | 西门子主推的老一代现场总线 | Profibus
+EtherCAT | Ethernet for Control Automation Technology | EtherCAT 工业以太网 | 倍福推出的高速实时工业以太网，常用于运动控制
+EtherNet/IP | Ethernet Industrial Protocol | EtherNet/IP 协议 | 罗克韦尔主推的工业以太网协议（这里的 IP 指 Industrial Protocol）
+CIP | Common Industrial Protocol | 通用工业协议 | EtherNet/IP、DeviceNet 的应用层协议
+CAN | Controller Area Network | 控制器局域网 | 汽车和工业设备常用的总线，抗干扰强 | CAN bus
+CANopen | | CANopen 协议 | 基于 CAN 总线的高层通信协议
+DeviceNet | | DeviceNet 总线 | 基于 CAN 的工业设备网络
+fieldbus | | 现场总线 | 连接现场传感器、执行器和控制器的数字通信网络
+industrial Ethernet | | 工业以太网 | 适应工厂环境、有实时性要求的以太网技术
+HART | Highway Addressable Remote Transducer | HART 协议 | 在 4–20mA 模拟信号上叠加数字信号的仪表通信协议
+4-20mA | | 4–20 毫安电流信号 | 工业仪表最常用的模拟信号，4mA 代表量程起点，20mA 代表满量程 | 4–20 mA
+IEC 61131-3 | | IEC 61131-3 标准 | PLC 编程语言国际标准，规定了梯形图、结构化文本等 5 种语言
+ladder logic | | 梯形图 | 像电气继电器图一样的 PLC 图形编程语言 | ladder diagram / LD
+structured text | | 结构化文本 | 类似 Pascal 的 PLC 文本编程语言 | ST
+function block diagram | | 功能块图 | 用方块连线编程的 PLC 语言 | FBD
+function block | | 功能块 | PLC 里带内部状态、可重复调用的程序块 | FB
+scan cycle | | 扫描周期 | PLC 反复执行「读输入→执行程序→写输出」一轮所用的时间 | scan time
+I/O | Input/Output | 输入/输出 | 设备和外界交换数据的通道，如数字量 I/O、模拟量 I/O | IO
+digital input | | 数字量输入 | 只有开和关两种状态的输入信号 | DI
+digital output | | 数字量输出 | 只有开和关两种状态的输出信号 | DO
+analog input | | 模拟量输入 | 连续变化的输入信号，如温度、压力 | AI
+analog output | | 模拟量输出 | 连续变化的输出信号，如阀门开度 | AO
+SCADA | Supervisory Control and Data Acquisition | 数据采集与监视控制系统 | 远程监控整个工厂或管网的上位机系统
+HMI | Human-Machine Interface | 人机界面 | 操作员查看状态、下发指令的触摸屏或软件
+DCS | Distributed Control System | 集散控制系统；分布式控制系统 | 化工、电厂等流程工业里的大型控制系统
+RTU | Remote Terminal Unit | 远程终端单元 | 装在野外站点采集数据并上传的设备（注意和 Modbus RTU 的含义不同）
+MES | Manufacturing Execution System | 制造执行系统 | 管理车间生产过程的软件
+ERP | Enterprise Resource Planning | 企业资源计划 | 管理企业财务、采购、库存的软件
+SIS | Safety Instrumented System | 安全仪表系统 | 出现危险时自动让装置停到安全状态的系统
+PID | Proportional-Integral-Derivative | 比例-积分-微分（控制） | 最常用的闭环控制算法，按偏差自动调节输出（在操作系统里 PID 是进程号）| PID controller
+setpoint | | 设定值 | 控制系统希望达到的目标值 | set point / SP
+process variable | | 过程变量 | 实际测到的值，如当前温度 | PV
+closed loop | | 闭环 | 根据测量结果反馈调节的控制方式 | closed-loop
+open loop | | 开环 | 不看反馈、直接按设定输出的控制方式 | open-loop
+actuator | | 执行器 | 把控制信号变成动作的装置，如电机、阀门、气缸
+sensor | | 传感器 | 把温度、压力、位置等物理量变成电信号的器件
+transducer | | 变送器；换能器 | 把一种物理量转换成另一种信号的装置
+transmitter | | 变送器；发射器 | 把传感器信号转换成标准信号（如 4–20mA）发出去的仪表
+encoder | | 编码器 | 测量电机转角或位置的传感器；软件里也指编码器
+servo | | 伺服 | 能精确控制位置、速度的电机系统 | servo motor
+VFD | Variable Frequency Drive | 变频器 | 通过改变电源频率调节电机转速的设备 | inverter
+relay | | 继电器 | 用小电流控制大电流通断的开关
+contactor | | 接触器 | 用于频繁通断大电流负载的电磁开关
+interlock | | 联锁 | 满足安全条件才允许动作的逻辑
+E-stop | Emergency stop | 急停 | 紧急停止按钮或功能 | emergency stop
+tag | | 标签；位号；变量 | SCADA/PLC 里一个有名字的数据点；HTML 里是标签；Git 里是版本标签
+data point | | 数据点 | 一个被采集或控制的变量
+historian | | 历史数据库 | 专门存工业过程数据（带时间戳）的数据库
+alarm | | 报警 | 数值越限或故障时发出的提示
+OT | Operational Technology | 运营技术 | 控制物理设备的技术（PLC、SCADA 等），和 IT 相对
+ICS | Industrial Control System | 工业控制系统 | 各类工业自动化控制系统的统称
+IIoT | Industrial Internet of Things | 工业物联网 | 把工业设备连接到网络、采集分析数据
+edge gateway | | 边缘网关 | 在设备旁边做协议转换、数据预处理再上传云端的设备
+serial port | | 串口 | 一位一位顺序传数据的接口，如 COM1 | COM port / serial
+RS-232 | Recommended Standard 232 | RS-232 串口标准 | 老式点对点串口标准，距离短（约 15 米） | RS232
+RS-485 | Recommended Standard 485 | RS-485 串口标准 | 差分信号、可多点连接、传得远（约 1200 米）的串口标准，工业常用 | RS485
+RS-422 | | RS-422 串口标准 | 差分信号的点对多点串口标准 | RS422
+UART | Universal Asynchronous Receiver/Transmitter | 通用异步收发器 | 芯片里实现串口通信的硬件模块
+USART | Universal Synchronous/Asynchronous Receiver/Transmitter | 通用同步/异步收发器 | 也支持同步模式的 UART
+SPI | Serial Peripheral Interface | 串行外设接口 | 芯片之间高速通信的四线同步总线（SCLK、MOSI、MISO、CS）
+I2C | Inter-Integrated Circuit | I²C 总线 | 芯片之间两根线（SDA、SCL）的通信总线 | I²C / IIC
+1-Wire | | 单总线 | 只用一根数据线通信的总线，如 DS18B20 温度传感器
+GPIO | General-Purpose Input/Output | 通用输入输出引脚 | 芯片上可以用软件设为输入或输出的引脚
+PWM | Pulse-Width Modulation | 脉冲宽度调制 | 通过调节高电平所占比例（占空比）来控制亮度、转速等
+duty cycle | | 占空比 | 一个周期里高电平所占的时间比例
+ADC | Analog-to-Digital Converter | 模数转换器 | 把模拟电压变成数字值
+DAC | Digital-to-Analog Converter | 数模转换器 | 把数字值变成模拟电压
+MCU | Microcontroller Unit | 微控制器；单片机 | 把 CPU、内存、外设集成在一块芯片上，如 STM32、ESP32 | microcontroller
+SoC | System on a Chip | 片上系统 | 把整个系统集成在一颗芯片上，如手机处理器
+FPGA | Field-Programmable Gate Array | 现场可编程门阵列 | 可以通过编程改变内部电路的芯片
+ASIC | Application-Specific Integrated Circuit | 专用集成电路 | 为特定用途定制的芯片
+DSP | Digital Signal Processor | 数字信号处理器 | 专门做信号处理运算的芯片；也指数字信号处理
+embedded system | | 嵌入式系统 | 嵌在设备里、完成特定功能的计算机系统 | embedded
+firmware | | 固件 | 写在设备闪存里、直接控制硬件的软件
+bootloader | | 引导加载程序 | 上电后最先运行、负责加载主程序或操作系统的小程序
+flash | | 闪存；烧录 | 断电不丢数据的存储器；也指把程序写进芯片（动词，「烧录」）
+EEPROM | Electrically Erasable Programmable Read-Only Memory | 电可擦除可编程只读存储器 | 可以按字节擦写、断电保存的小容量存储器，常存配置参数
+RTOS | Real-Time Operating System | 实时操作系统 | 保证任务在规定时间内完成的操作系统，如 FreeRTOS
+real-time | | 实时 | 必须在确定的时间限制内做出响应 | realtime
+hard real-time | | 硬实时 | 超时就算失败、可能造成严重后果的实时要求
+soft real-time | | 软实时 | 偶尔超时可以接受的实时要求
+deterministic | | 确定性的 | 同样的输入总是在可预测的时间给出同样的结果
+watchdog | | 看门狗 | 程序卡死不再「喂狗」时自动复位系统的定时器 | watchdog timer / WDT
+interrupt | | 中断 | 硬件或软件事件打断 CPU 当前工作、先去处理紧急事情 | IRQ
+ISR | Interrupt Service Routine | 中断服务程序 | 发生中断时执行的处理函数 | interrupt handler
+DMA | Direct Memory Access | 直接内存访问 | 外设不经过 CPU 直接读写内存，减轻 CPU 负担
+timer | | 定时器 | 计时、定时触发事件的硬件或软件模块
+JTAG | Joint Test Action Group | JTAG 调试接口 | 芯片调试和烧录的标准接口
+SWD | Serial Wire Debug | 串行线调试 | ARM 芯片的两线调试接口
+debugger | | 调试器 | 单步执行、查看变量来找程序错误的工具；硬件调试器如 J-Link、ST-Link
+peripheral | | 外设 | CPU 以外的功能模块或设备，如串口、定时器、打印机
+pin | | 引脚；固定 | 芯片的管脚；软件里指固定（如把版本 pin 住）
+pull-up resistor | | 上拉电阻 | 把引脚默认拉到高电平的电阻 | pull-up
+pull-down resistor | | 下拉电阻 | 把引脚默认拉到低电平的电阻 | pull-down
+debounce | | 消抖 | 消除按键机械抖动造成的多次误触发 | debouncing
+datasheet | | 数据手册 | 芯片或器件的官方技术说明书 | data sheet
+oscilloscope | | 示波器 | 显示电信号波形的仪器
+logic analyzer | | 逻辑分析仪 | 采集多路数字信号、解析总线协议的仪器
+PCB | Printed Circuit Board | 印制电路板 | 装元器件、用铜线连接电路的板子
+schematic | | 原理图 | 用符号画出的电路连接图
+BOM | Bill of Materials | 物料清单 | 产品需要的全部元器件列表（文本编码里 BOM 指字节顺序标记）
+TSN | Time-Sensitive Networking | 时间敏感网络 | 让标准以太网具备确定性低延迟的一组 IEEE 标准
+digital twin | | 数字孪生 | 在计算机里建一个和真实设备同步的虚拟模型
+Industry 4.0 | | 工业 4.0 | 用物联网、大数据、自动化实现智能制造的概念
+robot arm | | 机械臂 | 多关节、可编程的工业机器人 | robotic arm
+CNC | Computer Numerical Control | 计算机数控 | 用程序控制机床加工的技术
+G-code | | G 代码 | 数控机床和 3D 打印机使用的指令语言
+motion control | | 运动控制 | 精确控制电机的位置、速度和加速度
+linear | | 线性的 | 输出和输入成正比的
+calibration | | 校准；标定 | 调整仪器使读数准确 | calibrate
+tolerance | | 容差；公差 | 允许的误差范围

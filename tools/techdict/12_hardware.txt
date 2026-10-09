@@ -1,0 +1,87 @@
+# 计算机硬件与体系结构
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+hardware | | 硬件 | 计算机的物理部件
+software | | 软件 | 程序和相关数据
+CPU | Central Processing Unit | 中央处理器 | 计算机的「大脑」，执行指令和运算 | processor
+core | | 核心 | CPU 里能独立执行指令的单元，如 8 核 | multi-core
+clock speed | | 时钟频率；主频 | CPU 每秒的时钟周期数，单位 GHz | clock rate / frequency
+clock cycle | | 时钟周期 | CPU 最基本的时间单位 | cycle
+instruction | | 指令 | CPU 能执行的一条基本操作
+instruction set | | 指令集 | CPU 支持的全部指令，如 x86、ARM | ISA / instruction set architecture
+x86 | | x86 架构 | 英特尔和 AMD 电脑 CPU 的指令集 | x86-64 / x64 / amd64
+ARM | Advanced RISC Machine | ARM 架构 | 低功耗的处理器架构，手机和苹果 M 系列芯片使用 | arm64 / AArch64
+RISC | Reduced Instruction Set Computer | 精简指令集计算机 | 指令少而简单的 CPU 设计
+CISC | Complex Instruction Set Computer | 复杂指令集计算机 | 指令多而复杂的 CPU 设计
+RISC-V | | RISC-V 架构 | 开源免费的精简指令集
+ALU | Arithmetic Logic Unit | 算术逻辑单元 | CPU 里做加减和逻辑运算的部分
+register | | 寄存器 | CPU 内部最快的存储单元
+pipeline | | 流水线 | CPU 把指令执行分成几个阶段同时处理多条指令
+cache | | 高速缓存 | CPU 和内存之间的高速小容量存储，分 L1、L2、L3 | L1 cache / L2 cache / L3 cache
+cache hit | | 缓存命中 | 要找的数据正好在缓存里
+cache miss | | 缓存未命中 | 数据不在缓存里，要去更慢的地方取
+RAM | Random Access Memory | 随机存取存储器；内存 | 运行程序时临时存放数据，断电丢失
+ROM | Read-Only Memory | 只读存储器 | 断电不丢失、通常只读的存储器
+DRAM | Dynamic RAM | 动态随机存储器 | 电脑内存条使用的存储器 | DDR / DDR4 / DDR5
+SRAM | Static RAM | 静态随机存储器 | 速度快、做 CPU 缓存的存储器
+storage | | 存储；存储设备 | 长期保存数据的设备，如硬盘
+HDD | Hard Disk Drive | 机械硬盘 | 用旋转磁盘存数据的硬盘
+SSD | Solid State Drive | 固态硬盘 | 用闪存存数据的硬盘，比机械硬盘快很多
+NVMe | Non-Volatile Memory Express | NVMe 协议 | 通过 PCIe 连接的高速固态硬盘接口协议
+SATA | Serial ATA | SATA 接口 | 连接硬盘的常用接口
+RAID | Redundant Array of Independent Disks | 磁盘阵列 | 多块硬盘组合提高速度或容错，如 RAID 1 镜像
+motherboard | | 主板 | 连接 CPU、内存、显卡等所有部件的电路板 | mainboard
+chipset | | 芯片组 | 主板上协调各部件通信的芯片
+bus | | 总线 | 部件之间传输数据的公共通道
+PCIe | Peripheral Component Interconnect Express | PCIe 总线 | 连接显卡、固态硬盘等的高速扩展总线 | PCI Express / PCI-E
+USB | Universal Serial Bus | 通用串行总线 | 最常见的外设接口，如 USB-C | USB-C / Type-C
+HDMI | High-Definition Multimedia Interface | 高清多媒体接口 | 传输音视频的接口
+DisplayPort | | DP 接口 | 显示器接口 | DP
+Thunderbolt | | 雷电接口 | 英特尔和苹果的高速接口
+graphics card | | 显卡 | 负责图形输出和并行计算的硬件 | video card / GPU
+integrated graphics | | 集成显卡；核显 | 集成在 CPU 里的显卡
+PSU | Power Supply Unit | 电源 | 给电脑各部件供电的设备 | power supply
+heat sink | | 散热器 | 帮芯片散热的金属片 | heatsink
+fan | | 风扇 | 散热风扇
+thermal throttling | | 过热降频 | 温度太高时 CPU 自动降低频率
+overclocking | | 超频 | 让 CPU 或 GPU 超过默认频率运行 | overclock
+peripheral | | 外设 | 键盘、鼠标、打印机等外部设备
+monitor | | 显示器 | 显示画面的屏幕；也指监控
+resolution | | 分辨率 | 屏幕横竖的像素数，如 1920×1080
+pixel | | 像素 | 图像的最小单位 | px
+refresh rate | | 刷新率 | 屏幕每秒刷新的次数，单位 Hz
+DPI | Dots Per Inch | 每英寸点数 | 打印或屏幕的精细程度；鼠标灵敏度 | PPI
+keyboard | | 键盘 |
+mouse | | 鼠标 |
+touchscreen | | 触摸屏 | | touch screen
+laptop | | 笔记本电脑 | | notebook
+desktop | | 台式机；桌面 | 台式电脑；操作系统的桌面
+workstation | | 工作站 | 高性能的专业电脑
+mainframe | | 大型机 | 银行等机构使用的大型计算机
+supercomputer | | 超级计算机 | 计算能力极强的计算机
+Raspberry Pi | | 树莓派 | 信用卡大小的单板电脑
+Arduino | | Arduino 开发板 | 流行的开源单片机开发板
+single-board computer | | 单板计算机 | 整个电脑做在一块电路板上 | SBC
+32-bit | | 32 位 | CPU 一次处理 32 位数据，最多支持 4GB 内存寻址
+64-bit | | 64 位 | CPU 一次处理 64 位数据，现代电脑的主流
+von Neumann architecture | | 冯·诺依曼结构 | 程序和数据存放在同一个存储器里的计算机结构
+Moore's law | | 摩尔定律 | 芯片上的晶体管数量大约每两年翻一番
+transistor | | 晶体管 | 芯片的基本开关元件
+semiconductor | | 半导体 | 导电性介于导体和绝缘体之间的材料，芯片的基础
+chip | | 芯片 | 集成电路 | IC / integrated circuit
+nanometer | | 纳米（制程） | 芯片制造工艺的尺寸，如 5nm | nm / process node
+volatile | | 易失性的 | 断电后数据丢失（如内存）；编程里 volatile 关键字表示变量可能被外部修改
+non-volatile | | 非易失性的 | 断电后数据不丢失（如硬盘、闪存）
+benchmark | | 跑分；基准测试 | 测试硬件或软件性能的标准程序
+FLOPS | Floating-Point Operations Per Second | 每秒浮点运算次数 | 衡量计算性能的单位，如 TFLOPS | TFLOPS
+IOPS | Input/Output Operations Per Second | 每秒读写次数 | 衡量存储性能的指标
+kilobyte | | 千字节 | KB，1000 或 1024 字节 | KB / KiB
+megabyte | | 兆字节 | MB，约 100 万字节 | MB / MiB
+gigabyte | | 吉字节 | GB，约 10 亿字节 | GB / GiB
+terabyte | | 太字节 | TB，约 1000 GB | TB / TiB
+hertz | | 赫兹 | 频率单位，每秒一次 | Hz / GHz / MHz
+UPS | Uninterruptible Power Supply | 不间断电源 | 停电时临时供电的设备
+NAS | Network Attached Storage | 网络附加存储 | 接在网络上的共享存储设备
+SAN | Storage Area Network | 存储区域网络 | 专门连接服务器和存储设备的高速网络
+rack | | 机柜 | 放服务器的标准机架，高度以 U 计算 | rack unit / 1U / 2U
+blade server | | 刀片服务器 | 插在机箱里的薄型服务器

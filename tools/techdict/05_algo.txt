@@ -1,0 +1,88 @@
+# 数据结构与算法
+# 格式：术语 | 英文全称（缩写才写） | 中文 | 一句话解释 | 别名（用 / 分隔，可省略）
+
+algorithm | | 算法 | 解决问题的明确步骤
+data structure | | 数据结构 | 组织和存储数据的方式，如数组、链表、树
+complexity | | 复杂度 | 算法需要的时间或空间随输入规模增长的速度
+time complexity | | 时间复杂度 | 运行时间随输入规模的增长趋势，用大 O 表示
+space complexity | | 空间复杂度 | 占用内存随输入规模的增长趋势
+Big O notation | | 大 O 表示法 | 描述复杂度上界的写法，如 O(n)、O(log n)、O(n²) | Big-O / big O
+linked list | | 链表 | 每个节点存数据和指向下一个节点的指针
+doubly linked list | | 双向链表 | 节点同时指向前一个和后一个节点
+queue | | 队列 | 先进先出（FIFO）的数据结构；也指消息队列、任务队列
+FIFO | First In, First Out | 先进先出 | 先放进去的先取出来
+LIFO | Last In, First Out | 后进先出 | 最后放进去的最先取出来，栈就是 LIFO
+deque | double-ended queue | 双端队列 | 两头都能进出的队列
+priority queue | | 优先队列 | 每次取出优先级最高元素的队列，常用堆实现
+push | | 压入；推送 | 放进栈或队列；也指 git push 推送代码、服务器推送消息
+pop | | 弹出 | 从栈顶或队列取出元素
+enqueue | | 入队 | 加到队尾
+dequeue | | 出队 | 从队头取出
+tree | | 树 | 有一个根节点、分层分支的数据结构
+binary tree | | 二叉树 | 每个节点最多两个子节点的树
+binary search tree | | 二叉搜索树 | 左子树都比根小、右子树都比根大的二叉树 | BST
+balanced tree | | 平衡树 | 各分支高度差不多的树，查找效率稳定，如 AVL 树、红黑树 | red-black tree / AVL tree
+B-tree | | B 树 | 多路平衡搜索树，数据库和文件系统的索引常用 | B+ tree
+trie | | 字典树；前缀树 | 按字符逐层存储字符串的树，用于前缀搜索
+root node | | 根节点 | 树最顶上的节点
+leaf | | 叶子节点 | 没有子节点的节点 | leaf node
+depth | | 深度 | 节点到根的距离
+height | | 高度 | 从节点到最远叶子的距离
+graph | | 图 | 由顶点和边组成的结构，表示事物之间的关系；也指图表
+vertex | | 顶点 | 图里的点 | vertices
+edge | | 边 | 图里连接两个顶点的线；也作「边缘」
+directed graph | | 有向图 | 边有方向的图 | digraph
+DAG | Directed Acyclic Graph | 有向无环图 | 有方向且没有环的图，常用来表示任务依赖
+adjacency matrix | | 邻接矩阵 | 用二维数组表示图里哪些点相连
+adjacency list | | 邻接表 | 给每个顶点存一份相邻顶点列表
+hash table | | 哈希表；散列表 | 用哈希函数把键映射到位置，查找平均 O(1) | hashtable
+collision | | 冲突；碰撞 | 两个不同的键算出相同哈希值
+bucket | | 桶 | 哈希表里的一个槽位；对象存储里的存储空间
+index | | 索引；下标 | 数组里元素的位置编号；数据库里加快查找的结构 | indices / indexes
+sort | | 排序 | 按大小顺序排列 | sorting
+bubble sort | | 冒泡排序 | 反复交换相邻逆序元素的简单排序
+quicksort | | 快速排序 | 选一个基准、分成两边递归排序 | quick sort
+merge sort | | 归并排序 | 拆成两半分别排序再合并
+heapsort | | 堆排序 | 用堆结构实现的排序 | heap sort
+stable sort | | 稳定排序 | 相等元素排完后保持原来先后顺序的排序
+search | | 搜索；查找 | 在数据里找目标
+linear search | | 线性查找 | 从头到尾一个个找
+binary search | | 二分查找 | 在有序数组里每次排除一半来查找
+BFS | Breadth-First Search | 广度优先搜索 | 一层一层向外搜索
+DFS | Depth-First Search | 深度优先搜索 | 一条路走到底再回头
+shortest path | | 最短路径 | 两点之间代价最小的路线
+Dijkstra's algorithm | | 迪杰斯特拉算法 | 求单源最短路径的经典算法 | Dijkstra
+dynamic programming | | 动态规划 | 把问题拆成重叠子问题、保存结果避免重复计算 | DP
+greedy algorithm | | 贪心算法 | 每一步都选当前看起来最好的 | greedy
+divide and conquer | | 分治法 | 把问题分成小问题分别解决再合并
+backtracking | | 回溯 | 试探着走，走不通就退回重试
+brute force | | 暴力法；穷举 | 把所有可能都试一遍
+heuristic | | 启发式（方法） | 凭经验规则快速找到够好的解
+memoization | | 记忆化 | 缓存函数结果，相同输入不再重算
+traverse | | 遍历 | 按某种顺序访问每个元素 | traversal
+permutation | | 排列 | 元素的所有不同顺序
+combination | | 组合 | 不考虑顺序的选取方式
+matrix | | 矩阵 | 按行列排列的数表 | matrices
+vector | | 向量 | 有大小和方向的量；一维数组；C++ 里的动态数组
+modulo | | 取模；求余 | 除法的余数，写作 % | mod / modulus
+bitwise | | 按位的 | 对二进制每一位进行运算，如与、或、异或、取反 | bitwise operation
+bit | binary digit | 位；比特 | 二进制的一位，0 或 1
+byte | | 字节 | 8 个比特，存储的基本单位
+nibble | | 半字节 | 4 个比特
+word | | 字 | CPU 一次处理的数据长度，如 32 位、64 位
+overflow | | 溢出 | 数值超过类型能表示的最大值
+underflow | | 下溢 | 数值小于类型能表示的最小值
+precision | | 精度 | 数值能表示的有效数字位数
+round | | 四舍五入；轮次 | 取整；一轮
+truncate | | 截断 | 直接去掉多余部分 | truncation
+random | | 随机 | 无法预测的
+seed | | 种子 | 随机数生成器的初始值，相同种子产生相同序列
+pseudo-random | | 伪随机 | 算法生成、看起来随机的数 | pseudorandom / PRNG
+amortized | | 均摊的 | 多次操作平均下来的代价
+invariant | | 不变式 | 程序执行中始终保持为真的条件
+edge case | | 边界情况；极端情况 | 输入处于极限值或特殊情况时（空列表、0、最大值）
+corner case | | 极端情况 | 几个边界条件同时出现的少见情况
+off-by-one error | | 差一错误 | 循环或下标多算或少算一次的常见错误 | off-by-one
+sentinel | | 哨兵（值） | 放在数据末尾标记结束的特殊值
+pointer arithmetic | | 指针运算 | 对指针加减来移动到相邻内存
+cursor | | 游标；光标 | 数据库里逐行读取结果的指针；屏幕上的光标

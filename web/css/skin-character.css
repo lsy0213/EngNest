@@ -391,8 +391,6 @@
   :root[data-skin="garden"] .hero { padding: 26px 22px 30px; }
   :root[data-skin="garden"] .hero::before { display: none; }
   #theme-character-float[data-figure="garden"] { width: 108px; height: 135px; }
-  :root[data-skin="garden"] .sidebar::before { display: none; }
-  :root[data-skin="garden"] .nav-item.active { padding-right: 0; clip-path: none; border-radius: 999px; }
 }
 
 /* 夜间：烛光下的旧档案，纸面转深、拼贴退到背景 */
