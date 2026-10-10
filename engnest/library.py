@@ -1,13 +1,13 @@
 """「我的读物」：用户自己导入的文章和书（txt / epub / html 文件，或者粘贴的文字）。
 
-导入后按章节切好，保存在数据目录的 library/：
-    index.json      书目 [{id, title, author, words, chapters: [[章节标题, 词数], ...], added, source}]
+导入后按章节切好，保存在数据目录的 library/（局域网和服务器上的其他人各自一份：profiles/<id>/library/）：
+    index.json      书目 [{id, title, author, words, chapters: [[章节标题, 词数], ...], added, source, url（从网址导入的才有）}]
     <id>.json       正文 [[章节标题, [段落, ...]], ...]
 内容只保存在本机，阅读页用和原著全文一样的阅读器打开。
 """
 
 import html
-import json
+import io
 import re
 import time
 import zipfile
@@ -18,12 +18,6 @@ from .storage import load_json, save_json
 
 CHUNK_WORDS = 1500  # 没有章节标题的长文，按大约这么多词分成几部分
 HEADING = re.compile(r"^\s*(?:(?:CHAPTER|Chapter|PART|Part)\s+(?:[IVXLC]+|\d+|[A-Z][a-z]+)\b.{0,60}|第[0-9一二三四五六七八九十百零]+[章节回篇].{0,30})\s*$")
-
-
-def _dir() -> Path:
-    d = data_dir() / "library"
-    d.mkdir(parents=True, exist_ok=True)
-    return d
 
 
 def _words(paras: list) -> int:
@@ -100,9 +94,9 @@ def _html_title(doc: str) -> str:
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", m.group(1)))).strip() if m else ""
 
 
-def read_epub(path: Path) -> tuple:
-    """返回 (书名, 作者, [[章节标题, 段落], ...])，按 epub 的阅读顺序（spine）"""
-    with zipfile.ZipFile(path) as z:
+def read_epub(src) -> tuple:
+    """返回 (书名, 作者, [[章节标题, 段落], ...])，按 epub 的阅读顺序（spine）；src 是路径或文件对象"""
+    with zipfile.ZipFile(src) as z:
         container = z.read("META-INF/container.xml").decode("utf-8", "replace")
         opf_path = re.search(r'full-path="([^"]+)"', container).group(1)
         opf = z.read(opf_path).decode("utf-8", "replace")
@@ -138,11 +132,11 @@ def read_epub(path: Path) -> tuple:
     return clean(title), clean(author), out
 
 
-def read_file(path: Path) -> tuple:
-    suffix = path.suffix.lower()
+def read_data(name: str, raw: bytes) -> tuple:
+    """文件名 + 内容 → (书名, 作者, 章节)；从电脑上选的文件和网页里上传的文件都走这里"""
+    suffix, stem = PurePosixPath(name).suffix.lower(), PurePosixPath(name).stem
     if suffix == ".epub":
-        return read_epub(path)
-    raw = path.read_bytes()
+        return read_epub(io.BytesIO(raw))
     for enc in ("utf-8-sig", "gb18030", "latin-1"):  # 中文 Windows 上的 txt 常常是 GBK
         try:
             text = raw.decode(enc)
@@ -150,27 +144,43 @@ def read_file(path: Path) -> tuple:
         except UnicodeDecodeError:
             continue
     if suffix in (".html", ".htm", ".xhtml"):
-        return _html_title(text) or path.stem, "", _chunk(_html_paragraphs(text))
-    return path.stem, "", split_text(text)
+        return _html_title(text) or stem, "", _chunk(_html_paragraphs(text))
+    return stem, "", split_text(text)
+
+
+def read_file(path: Path) -> tuple:
+    return read_data(path.name, path.read_bytes())
 
 
 # ---------- 书目 ----------
 class Library:
-    def index(self) -> list:
-        return load_json(_dir() / "index.json", [])
+    def __init__(self, root: Path = None):
+        self._root = root  # 默认是数据目录下的 library/（主人的）
 
-    def _save(self, title: str, author: str, chapters: list, source: str) -> dict:
+    def _dir(self) -> Path:
+        d = self._root or data_dir() / "library"
+        d.mkdir(parents=True, exist_ok=True)
+        return d
+
+    def index(self) -> list:
+        return load_json(self._dir() / "index.json", [])
+
+    def _save(self, title: str, author: str, chapters: list, source: str, url: str = "") -> dict:
         chapters = [[t or (f"Part {i + 1}" if len(chapters) > 1 else ""), ps] for i, (t, ps) in enumerate(chapters) if ps]
         if not chapters:
             raise ValueError("没有读到正文内容")
         if sum(_words(ps) for _, ps in chapters) < 20:
             raise ValueError("英文内容太少了")
         bid = f"imp-{int(time.time() * 1000)}"
-        save_json(_dir() / f"{bid}.json", chapters)
+        while (self._dir() / f"{bid}.json").exists():  # 一次导入好几个文件，同一毫秒里也不重名
+            bid = f"imp-{int(bid[4:]) + 1}"
+        save_json(self._dir() / f"{bid}.json", chapters)
         meta = {"id": bid, "title": title.strip()[:120] or "未命名", "author": author.strip()[:80], "source": source,
                 "added": time.strftime("%Y-%m-%d"), "words": sum(_words(ps) for _, ps in chapters),
                 "chapters": [[t, _words(ps)] for t, ps in chapters]}
-        save_json(_dir() / "index.json", [meta] + self.index())
+        if url:
+            meta["url"] = url
+        save_json(self._dir() / "index.json", [meta] + self.index())
         return meta
 
     def import_path(self, path: str) -> dict:
@@ -178,17 +188,25 @@ class Library:
         title, author, chapters = read_file(p)
         return self._save(title or p.stem, author, chapters, p.name)
 
-    def import_text(self, title: str, text: str) -> dict:
-        return self._save(title or (text.strip().split("\n")[0][:60]), "", split_text(text), "粘贴")
+    def import_data(self, name: str, raw: bytes) -> dict:
+        title, author, chapters = read_data(name, raw)
+        return self._save(title or PurePosixPath(name).stem, author, chapters, PurePosixPath(name).name)
+
+    def import_doc(self, title: str, author: str, chapters: list, source: str, url: str = "") -> dict:
+        """已经分好章的内容（从网址导入的网页文章）"""
+        return self._save(title, author, chapters, source, url)
+
+    def import_text(self, title: str, text: str, source: str = "粘贴") -> dict:
+        return self._save(title or (text.strip().split("\n")[0][:60]), "", split_text(text), source or "粘贴")
 
     def load(self, bid: str) -> list:
         if not re.fullmatch(r"imp-\d+", bid or ""):
             return []
-        return load_json(_dir() / f"{bid}.json", [])
+        return load_json(self._dir() / f"{bid}.json", [])
 
     def delete(self, bid: str) -> bool:
         if not re.fullmatch(r"imp-\d+", bid or ""):
             return False
-        (_dir() / f"{bid}.json").unlink(missing_ok=True)
-        save_json(_dir() / "index.json", [m for m in self.index() if m["id"] != bid])
+        (self._dir() / f"{bid}.json").unlink(missing_ok=True)
+        save_json(self._dir() / "index.json", [m for m in self.index() if m["id"] != bid])
         return True

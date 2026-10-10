@@ -1,5 +1,5 @@
 // 长篇阅读器：原著全文、我的读物（导入的）、VOA 慢速英语、维基百科都用它，按章节阅读
-// 路由：#/book/<id> 介绍和目录（只有一篇的直接打开正文）· #/book/<id>/<章> 读某一章（从 1 开始）
+// 路由：#/book/<id> 介绍和目录（只有一篇的直接打开正文）· #/book/<id>/<章> 读某一章（从 1 开始）· #/book/<id>/notes 读书笔记
 // id：原著用书的 id（oz）· 导入的 imp-123 · VOA 的 voa-123 · 内置维基 wiki-<slug> · 在线打开的维基 wikilive-<标题>
 // 书目都在启动时加载的小文件里；正文在打开时才加载（data/books/<id>.js、data/voa_text.js、data/wiki_text.js，导入的从 Python 端取）
 const BOOK_LEVEL_BADGE = { 较易: "good", 中等: "info", 较难: "warn" };
@@ -127,7 +127,7 @@ function bookCardHtml(b) {
       <div class="row">${levelBadge({ ...b, kind: b.kind || "book" })}
         <span class="small faint">${many ? `${b.chapters.length} 章 · ` : ""}${b.words.toLocaleString()} 词 · ${readTime(b.words)}</span>
         <span class="spacer"></span>${!many && done ? `<span class="badge good">✓ 读过</span>` : ""}
-        ${b.kind === "import" ? `<button class="btn sm ghost" data-del-doc="${b.id}" title="删除">✕</button>` : ""}</div>
+        ${b.kind === "import" ? `<button class="btn sm ghost" data-del-doc="${b.id}" title="删除">✕</button>` : Shelf.btnHtml(b)}</div>
       <h3 class="mt-s" style="font-family:var(--font-en)">${esc(b.title)}</h3>
       <div class="small muted">${sub}</div>
       ${many && done ? `<div class="bar mt-s" style="height:4px"><i style="width:${(done / b.chapters.length) * 100}%"></i></div><div class="small faint mt-s">已读 ${done} / ${b.chapters.length} 章</div>` : ""}
@@ -139,6 +139,7 @@ App.pages.book = {
     const meta = await Docs.meta(params[0] || "");
     if (signal.aborted) return;
     if (!meta) { toast("没有找到这篇读物"); Router.go("reading"); return; }
+    if (params[1] === "notes") return this.notes(root, meta, signal);
     const n = +params[1];
     // 只有一篇（VOA、维基、没分章的导入文章）就直接打开正文
     if (meta.chapters.length === 1) return this.chapter(root, meta, 1, signal);
@@ -155,19 +156,21 @@ App.pages.book = {
     root.innerHTML = `
       <a class="back-link" href="${back}">‹ 返回阅读</a>
       <div class="card book-head">
-        ${img ? `<div class="book-cover big"><img src="${img.src}" alt=""></div>` : `<div class="book-cover plain big"><span>${esc(b.title)}</span></div>`}
+        ${img ? `<div class="book-cover big"><img src="${img.src}" alt=""></div>` : `<div class="book-cover plain big" style="background:${Shelf.color(b)[0]};color:${Shelf.color(b)[1]}"><span>${esc(b.title)}</span></div>`}
         <div class="book-meta">
           <div class="row">${levelBadge({ ...b, kind: b.kind || "book" })}<span class="badge">${DOC_KIND[b.kind].badge}</span></div>
           <div class="page-title mt-s" style="font-family:var(--font-en)">${esc(b.title)}</div>
           <div class="muted">${b.kind === "book" ? `${esc(b.zh)} · ${esc(b.author)} · ${b.year}` : `${b.author ? esc(b.author) + " · " : ""}${esc(b.source || "")}${b.added ? ` · ${b.added} 导入` : ""}`}</div>
           ${b.intro ? `<p class="mt-s">${esc(b.intro)}</p>` : ""}
-          <div class="small faint">${b.chapters.length} 章 · ${b.words.toLocaleString()} 词 · ${readTime(b.words)}${docImages(b.id).length ? ` · 🖼️ ${docImages(b.id).length} 幅原版插画` : ""}</div>
+          <div class="small faint">${b.chapters.length} 章 · ${b.words.toLocaleString()} 词 · ${readTime(b.words)}${r.sec ? ` · 已经读了 ${Shelf.dur(r.sec)}` : ""}${docImages(b.id).length ? ` · 🖼️ ${docImages(b.id).length} 幅原版插画` : ""}</div>
           <div class="row mt">
             <a class="btn primary lg" href="#/book/${b.id}/${next}">${r.last ? `继续阅读第 ${next} 章` : "开始阅读"}</a>
+            ${b.kind === "import" ? "" : Shelf.btnHtml(b, "btn soft")}
+            <a class="btn ghost" href="#/book/${encodeURIComponent(b.id)}/notes">📒 读书笔记</a>
             ${simple ? `<a class="btn soft" href="#/reading/${simple.id}">先读中英对照的简读版</a>` : ""}
-            ${b.kind === "import" && Store.bridge && !Store.remote ? `<span class="spacer"></span><button class="btn ghost" id="del-doc">🗑️ 删除</button>` : ""}
+            ${b.kind === "import" && Store.bridge ? `<span class="spacer"></span><button class="btn ghost" id="del-doc">🗑️ 删除</button>` : ""}
           </div>
-          ${done ? `<div class="bar mt" style="height:6px"><i style="width:${(done / b.chapters.length) * 100}%"></i></div><div class="small faint mt-s">已读 ${done} / ${b.chapters.length} 章</div>` : ""}
+          ${done || r.last ? `<div class="bar mt" style="height:6px"><i style="width:${Shelf.pct(b) * 100}%"></i></div><div class="small faint mt-s">读到 ${Math.round(Shelf.pct(b) * 100)}% · 已读完 ${done} / ${b.chapters.length} 章</div>` : ""}
         </div>
       </div>
       <div class="card"><div class="card-title">📑 目录</div>
@@ -181,13 +184,14 @@ App.pages.book = {
   },
 
   async remove(b) {
-    if (!(await confirmBox("删除读物", `确定从「我的读物」里删除《${b.title}》吗？`, "删除", true))) return;
+    if (!(await confirmBox("删除读物", `确定删除导入的《${esc(b.title)}》吗？它会从书架上拿掉，内容也会删掉。`, "删除", true))) return;
     await pywebview.api.library_delete(b.id);
     delete (Store.data.books || {})[b.id];
     Store.save();
     await Docs.library(true);
     toast("已删除");
-    Router.go("reading/cat/mine");
+    if (location.hash === "#/reading/cat/mine") Router.render(); // 已经在书架上了：hash 不变，手动刷新
+    else Router.go("reading/cat/mine");
   },
 
   async chapter(root, b, n, signal) {
@@ -199,6 +203,7 @@ App.pages.book = {
     const [title, paras] = text[n - 1];
     const r = bookRec(b.id);
     r.last = n;
+    Shelf.touch(b, n, (r.pos[n] || 0) / paras.length); // 最近读过、读到的比例；第一次读就放上书架
     Store.save();
     const P = Store.prefs;
     P.book_font ||= 18;
@@ -217,6 +222,7 @@ App.pages.book = {
           ${switchHtml("zh-switch", "中文译文", P.read_zh && AI.enabled, AI.enabled ? "滚到哪段翻译哪段，译过的会存在本机" : "需要先在设置里接入 AI")}
           <button class="btn soft" id="read-all">🔊 朗读${single ? "全文" : "本章"}</button>
           <button class="btn" id="vocab">📝 ${single ? "生词" : "本章生词"}</button>
+          ${single && b.kind !== "import" && (Store.bridge || !b.id.startsWith("wikilive-")) ? Shelf.btnHtml(b, "btn") : ""}
           <span class="font-btns"><button class="btn sm ghost" data-font="-1" title="字小一点">A-</button><button class="btn sm ghost" data-font="1" title="字大一点">A+</button></span>
         </div></div>
       ${b.audio ? `<div class="card doc-audio"><span class="small muted">🎧 VOA 原声朗读（需要联网）</span><audio controls preload="none" src="${esc(b.audio)}"></audio></div>` : ""}
@@ -232,7 +238,8 @@ App.pages.book = {
         ${glossary.map(([w, d]) => `<div class="row vocab-item"><b class="en">${esc(w)}</b><span class="muted small" style="flex:1">${esc(d)}</span>${speakBtn(w, "sm")}
           <button class="star ${inNotebook(w) ? "on" : ""}" data-gw="${esc(w)}" data-gd="${esc(d)}" title="加入生词本">★</button></div>`).join("")}</div>` : ""}
       <div class="card" id="hl-card"></div>
-      ${b.url ? `<p class="small faint doc-source">来源：${esc(b.source)}${b.kind === "wiki" ? `「${esc(b.title)}」，作者见页面编辑历史` : ""} · ${esc(b.license)} ·
+      ${b.url && b.kind === "import" ? `<p class="small faint doc-source">来源：${esc(b.source)} · <a href="${esc(b.url)}" target="_blank" rel="noopener">查看原网页</a></p>`
+        : b.url ? `<p class="small faint doc-source">来源：${esc(b.source)}${b.kind === "wiki" ? `「${esc(b.title)}」，作者见页面编辑历史` : ""} · ${esc(b.license)} ·
         <a href="${esc(b.url)}" target="_blank" rel="noopener">查看原文</a>${b.kind === "voa" ? " · 文字为美国之音制作，图片未收录" : ""}</p>` : ""}
       <div class="row book-nav">
         ${n > 1 ? `<a class="btn ghost" href="#/book/${b.id}/${n - 1}">‹ 上一章</a>` : "<span></span>"}
@@ -248,6 +255,12 @@ App.pages.book = {
     const reader = $("#reader", root);
     bindWordMark(root, reader);
     bindWordClicks(reader);
+    // 点过的词记到这本书的读书笔记里；阅读时长按真正在读的时间算（见 Shelf.track）
+    reader.addEventListener("click", (e) => {
+      const w = e.target.closest(".w");
+      if (w) Shelf.noteWord(b, n, +w.closest(".para")?.dataset.i || 0, w.textContent);
+    });
+    Shelf.track(b, signal);
     // 高亮沿用阅读页的实现：每章当成一篇「文章」存
     App.pages.reading.highlights(root, reader, { id: `book-${b.id}-${n}`, paragraphs: paras.map((p) => [p, ""]) });
 
@@ -261,17 +274,19 @@ App.pages.book = {
       t = setTimeout(() => {
         const top = view.getBoundingClientRect().top;
         const first = $$(".para", reader).find((p) => p.getBoundingClientRect().bottom > top + 60);
-        if (first) { r.pos[n] = +first.dataset.i; Store.save(); }
+        if (first) { r.pos[n] = +first.dataset.i; r.pf = r.pos[n] / paras.length; Store.save(); }
       }, 400);
     }, { signal });
 
     $("#done", root).onclick = () => {
       if (!r.done[n]) { r.done[n] = today(); addXP(Math.min(20, 5 + Math.round(b.chapters[n - 1][1] / 400))); }
       delete r.pos[n];
+      r.pf = 0;
       Store.save();
       if (single) { Router.go(listHref.slice(2)); return; }
       Router.go(n < total ? `book/${b.id}/${n + 1}` : `book/${b.id}`);
-      if (n === total) toast(`🎉 读完了《${b.zh || b.title}》！`, "good", 4000);
+      if (n === total && Shelf.status(b) === "done") setTimeout(() => Shelf.finished(b), 300); // 整本读完：看看用了多久、推荐下一本
+      else if (n === total) toast("到最后一章了，目录里还有没标「读完」的章节", "", 4000);
     };
 
     $$("[data-font]", root).forEach((btn) => (btn.onclick = () => {
@@ -341,6 +356,92 @@ App.pages.book = {
     readAloud(reader, $("#read-all", root), signal, () => r.pos[n] || 0);
 
     $("#vocab", root).onclick = () => this.vocab(paras, title);
+  },
+
+  // ---------- 读书笔记：这本书所有章节的高亮和读的时候点过的词，可以导出、一键收进生词本 ----------
+  async notes(root, b, signal) {
+    root.innerHTML = `<div class="card empty"><div class="big">📒</div>正在整理《${esc(b.zh || b.title)}》的笔记…</div>`;
+    let text;
+    try { text = await Docs.text(b); } catch (e) { root.innerHTML = `<div class="card empty"><div class="big">😕</div>${esc(e.message)}</div>`; return; }
+    if (signal.aborted) return;
+    const r = bookRec(b.id), HL = Store.data.highlights || {}, id = encodeURIComponent(b.id), single = b.chapters.length === 1;
+    const paraOf = (n, p) => text[n - 1]?.[1]?.[p] || "";
+    const chTitle = (n) => (single ? "" : text[n - 1]?.[0] || `第 ${n} 章`);
+    const hls = b.chapters.flatMap((_, i) => (HL[`book-${b.id}-${i + 1}`] || []).map((h) => ({ ...h, n: i + 1, text: paraOf(i + 1, h.p).slice(h.s, h.e) })))
+      .filter((h) => h.text).sort((x, y) => x.n - y.n || x.p - y.p || x.s - y.s);
+    // 点过的词：配上它在书里第一次出现的那句话
+    const sentence = (para, w) => {
+      const re = new RegExp(`\\b${w.replace(/[^a-z'-]/g, "")}`, "i");
+      return para.split(/(?<=[.!?…”"])\s+/).find((x) => re.test(x)) || para.slice(0, 160);
+    };
+    const words = Object.entries(r.lk || {}).map(([w, [n, p, c]]) => ({ w, n, p, c, d: lookupWord(w), ctx: sentence(paraOf(n, p), w) }))
+      .sort((x, y) => y.c - x.c || x.n - y.n || x.p - y.p);
+    const tab = this.notesTab || (hls.length || !words.length ? "hl" : "words");
+    const go = (n, p) => `data-goto="${n}:${p}"`;
+    const mark = (ctx, w) => esc(ctx).replace(new RegExp(`\\b(${w.replace(/[^a-z'-]/g, "")}\\w*)`, "i"), "<b>$1</b>");
+    let lastN = 0;
+    const hlHtml = hls.length ? hls.map((h) => {
+      const head = h.n !== lastN && !single ? `<div class="note-ch">${esc(chTitle(h.n))}</div>` : "";
+      lastN = h.n;
+      return `${head}<div class="hl-item note-hl"><span class="hl-bar hl-${h.c}"></span><span class="hl-text">${esc(h.text)}</span>
+        ${speakBtn(h.text, "sm")}<button class="btn sm ghost" ${go(h.n, h.p)} title="回到书里这一段">↗</button></div>`;
+    }).join("") : `<div class="small faint">读的时候选中句子就能高亮，高亮过的句子都会出现在这里。</div>`;
+    const wordHtml = words.length ? `<div class="row" style="margin-bottom:8px"><span class="small muted">按点的次数排，词书里有的可以收进生词本。</span><span class="spacer"></span>
+        <button class="btn sm soft" id="nb-all">全部加入生词本</button></div>`
+      + words.map((x) => `<div class="row vocab-item note-word"><b class="en">${esc(x.d?.w || x.w)}</b>
+        <span class="note-word-body">${x.d ? `<span class="muted small"><span class="faint">${esc(x.d.ph || "")}</span> ${esc(shortMeaning(x.d))}</span>` : ""}<span class="note-ctx">${mark(x.ctx, x.w)}</span></span>
+        <span class="small faint" title="点过几次">×${x.c}</span>${speakBtn(x.d?.w || x.w, "sm")}
+        ${x.d ? `<button class="star ${inNotebook(x.d.w) ? "on" : ""}" data-nw="${esc(x.d.w)}" title="加入生词本">★</button>` : ""}
+        <button class="btn sm ghost" ${go(x.n, x.p)} title="回到书里这一段">↗</button></div>`).join("")
+      : `<div class="small faint">读的时候点过的单词会记在这里，配上它在书里的那句话。</div>`;
+
+    root.innerHTML = `
+      <a class="back-link" href="#/book/${id}">‹ ${esc(b.title)}${single ? "" : " · 目录"}</a>
+      <div class="page-head"><div>
+        <div class="small muted">📒 读书笔记</div>
+        <div class="page-title" style="font-family:var(--font-en)">${esc(b.title)}</div>
+        <div class="page-sub">读到 ${Math.round(Shelf.pct(b) * 100)}% · 读了 ${r.sec ? Shelf.dur(r.sec) : "—"} · 高亮 ${hls.length} 处 · 点过 ${words.length} 个词</div></div>
+        <div class="row"><button class="btn" id="notes-export">⬇️ 导出笔记</button><a class="btn primary" href="${Shelf.href(b)}">${r.last ? "继续读" : "开始读"}</a></div></div>
+      <div class="tabs" style="margin-bottom:14px">${[["hl", `🖍 高亮 ${hls.length}`], ["words", `🔤 点过的词 ${words.length}`]]
+        .map(([t, l]) => `<button class="tab ${t === tab ? "active" : ""}" data-ntab="${t}">${l}</button>`).join("")}</div>
+      <div class="card notes-card">${tab === "hl" ? hlHtml : wordHtml}</div>`;
+
+    root.addEventListener("click", (e) => {
+      const t = e.target.closest("[data-ntab]");
+      if (t) { this.notesTab = t.dataset.ntab; this.notes(root, b, signal); return; }
+      const g = e.target.closest("[data-goto]");
+      if (g) { // 回到书里那一段：阅读器打开时会滚到 pos 记的段落
+        const [n, p] = g.dataset.goto.split(":").map(Number);
+        r.pos[n] = p;
+        Store.save();
+        Router.go(single ? `book/${id}` : `book/${id}/${n}`);
+        return;
+      }
+      const s = e.target.closest("[data-nw]");
+      if (s) s.classList.toggle("on", toggleNotebook(lookupWord(s.dataset.nw) || { w: s.dataset.nw }));
+    }, { signal: freshSignal(this, signal) }); // 切换标签时整页重画，先注销上一次的监听
+    const all = $("#nb-all", root);
+    if (all) all.onclick = () => {
+      const add = words.filter((x) => x.d && !inNotebook(x.d.w));
+      add.forEach((x) => {
+        const rec = { w: x.d.w, ph: x.d.ph || "", m: x.d.m || "", ex: x.ctx, zh: "", added: today() };
+        Store.data.notebook.unshift(markAdded("notebook", RECORD_ID.notebook(rec), rec));
+      });
+      Store.save();
+      renderNav();
+      $$("[data-nw]", root).forEach((x) => x.classList.add("on"));
+      toast(add.length ? `已加入 ${add.length} 个词 ⭐ 例句用的是书里的原句` : "这些词都已经在生词本里了", "good");
+    };
+    $("#notes-export", root).onclick = () => {
+      const md = [`# ${b.title} · 读书笔记`, "",
+        [b.zh, b.author || Shelf.byline(b), `读到 ${Math.round(Shelf.pct(b) * 100)}%`, r.sec ? `读了 ${Shelf.dur(r.sec)}` : "", `导出于 ${today()}`].filter(Boolean).join(" · "), "",
+        `## 高亮（${hls.length}）`, ""];
+      lastN = 0;
+      hls.forEach((h) => { if (h.n !== lastN && !single) md.push(`### ${chTitle(h.n)}`, ""); lastN = h.n; md.push(`> ${h.text}`, ""); });
+      md.push(`## 点过的词（${words.length}）`, "");
+      words.forEach((x) => md.push(`- **${x.d?.w || x.w}** ${x.d?.ph ? `${x.d.ph} ` : ""}${x.d ? shortMeaning(x.d) : ""}${x.c > 1 ? `（${x.c} 次）` : ""}`, `  - ${x.ctx}`));
+      WordIO.save(`${b.title.replace(/[\\/:*?"<>|]/g, " ").slice(0, 60)} 读书笔记.md`, md.join("\n"));
+    };
   },
 
   // 本章生词：出现在四六级、雅思、托福词书里、还没学过的词，按在本章出现的次数排

@@ -10,7 +10,7 @@ import shutil
 import threading
 import time
 
-from . import VERSION, ai_client, ai_usage, dictionary, ext, films, kvcache, lan, library, net, offline_tts, packs, paths, progress, settings, stt, tts, webdav, wiki
+from . import VERSION, ai_client, ai_usage, dictionary, ext, films, kvcache, lan, library, net, offline_tts, packs, paths, progress, settings, stt, tts, webdav, webimport, wiki
 from .log import log_file
 from .paths import data_dir
 
@@ -559,34 +559,56 @@ class Api:
         return self._dict.remove_full()
 
     # ---------- 我的读物（导入的文章和书） ----------
-    def library_list(self):
-        return self._lib.index()
+    LIB_MAX_DOCS = 200            # 其他人（局域网 / 服务器账号）每人最多导入这么多份
+    LIB_MAX_UPLOAD = 15 * 1024 * 1024  # 网页上传的单个文件（base64 之后还要能装进请求体）
 
-    def library_load(self, bid):
-        return self._lib.load(bid)
+    def _library(self) -> library.Library:
+        """当前请求的人自己的书库：主人是 library/，其他人是 profiles/<id>/library/"""
+        user = self._user()
+        return library.Library(self._profile_dir(user["id"]) / "library") if user else self._lib
 
-    def library_delete(self, bid):
-        return self._lib.delete(bid)
-
-    def library_import_file(self):
-        """弹出选择文件的对话框，导入 txt / epub / html。取消返回 None，出错返回 {"error": ...}"""
-        import webview
-
-        kind = getattr(getattr(webview, "FileDialog", None), "OPEN", None) or webview.OPEN_DIALOG
-        paths = self._window.create_file_dialog(kind, allow_multiple=False,
-                                                file_types=("文本和电子书 (*.txt;*.epub;*.html;*.htm)", "所有文件 (*.*)"))
-        if not paths:
-            return None
+    def _library_add(self, do):
+        lib = self._library()
+        if self._user() and len(lib.index()) >= self.LIB_MAX_DOCS:
+            return {"error": f"书架上导入的读物已经有 {self.LIB_MAX_DOCS} 份了，删掉一些不读的再导入吧"}
         try:
-            return self._lib.import_path(paths[0] if isinstance(paths, (list, tuple)) else paths)
+            return do(lib)
         except Exception as e:  # noqa: BLE001 — 格式不对、编码问题等直接告诉用户
             return {"error": f"导入失败：{e}"}
 
-    def library_import_text(self, title, text):
+    def library_list(self):
+        return self._library().index()
+
+    def library_load(self, bid):
+        return self._library().load(bid)
+
+    def library_delete(self, bid):
+        return self._library().delete(bid)
+
+    def library_import_upload(self, name, b64):
+        """网页里选的文件（txt / epub / html），内容是 base64。电脑上、手机上、服务器上都走这里"""
+        import base64
+
         try:
-            return self._lib.import_text(title, text)
-        except Exception as e:  # noqa: BLE001
-            return {"error": f"导入失败：{e}"}
+            raw = base64.b64decode(b64 or "", validate=True)
+        except ValueError:
+            return {"error": "文件内容没有传完整，请再试一次"}
+        if len(raw) > self.LIB_MAX_UPLOAD:
+            return {"error": f"文件太大了（超过 {self.LIB_MAX_UPLOAD // 1024 // 1024} MB）"}
+        return self._library_add(lambda lib: lib.import_data(str(name or "未命名.txt"), raw))
+
+    def library_import_url(self, url):
+        """从网址导入网页文章（只能是公网地址，见 webimport）"""
+        def do(lib):
+            a = webimport.fetch_article(str(url or "").strip())
+            return lib.import_doc(a["title"], a["author"], a["chapters"], a["site"], a["url"])
+        r = self._library_add(do)
+        if "error" in r:
+            r["error"] = r["error"].removeprefix("导入失败：")  # 网址的错误本身已经说清楚了
+        return r
+
+    def library_import_text(self, title, text, source="粘贴"):
+        return self._library_add(lambda lib: lib.import_text(title, text, source))
 
     # ---------- 简明英文维基百科（联网） ----------
     WIKI_HINT = "维基百科在中国大陆通常无法直接访问：需要在「设置 → 网络」里填写代理，或者先读内置的维基精选文章。"

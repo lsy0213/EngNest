@@ -1,8 +1,8 @@
 // 阅读：文章列表 → 点词查义、逐段翻译、全文朗读、阅读理解；可让 AI 生成新文章
-// 长篇和外部来源（原著全文、我的读物、VOA、维基百科）用 book.js 的阅读器打开
+// 长篇和外部来源（原著全文、我的读物、VOA、维基百科）用 book.js 的阅读器打开；「我的书架」在 shelf.js
 // 路由：#/reading 列表 · #/reading/cat/<分类> 打开某个分类 · #/reading/<文章 id> 短文
 const READING_CATS = [
-  ["all", "全部"], ["books", "📖 原著全文"], ["mine", "📥 我的读物"], ["voa", "📰 VOA 慢速英语"], ["wiki", "🌐 维基百科"],
+  ["mine", "📚 我的书架"], ["all", "全部"], ["books", "📖 原著全文"], ["voa", "📰 VOA 慢速英语"], ["wiki", "🌐 维基百科"],
   ["classics", "📚 名著简读"], ["romance", "💕 言情小说"], ["scifi", "🚀 科幻小说"],
   ["knowledge", "💡 常识"], ["pro", "🔬 专业知识"], ["news", "📰 新闻回顾"], ["culture", "🎎 文化风俗"],
   ["geography", "🌋 地理"], ["animals", "🐾 动物"], ["history", "🏛️ 历史"], ["life", "🏡 生活"], ["ai", "🤖 AI 文章"],
@@ -30,7 +30,7 @@ const READING_SUB = {
 };
 
 App.pages.reading = {
-  cat: "all",
+  cat: null, // 第一次打开时：书架上有书就先看书架，没有就看全部
   all() {
     return [
       ...READING_EXTRA,
@@ -47,6 +47,7 @@ App.pages.reading = {
     const p = this.all().find((x) => x.id === params[0]);
     if (p) return this.reader(root, p, signal);
     await Docs.library(); // 「我的读物」的书目在 Python 端
+    this.cat ||= Shelf.items().length ? "mine" : "all";
     if (!signal.aborted) this.list(root, signal);
   },
 
@@ -104,11 +105,11 @@ App.pages.reading = {
     const fit = (x) => this.fits(x);
     if (this.q) return this.searchResults(body, signal);
     const books = BOOK_SHELF.map((b) => ({ ...b, kind: "book" })).filter(fit);
-    const ext = { books: books.length, mine: (Docs.lib || []).length, voa: VOA_INDEX.map((a) => Docs.voaMeta(a)).filter(fit).length,
+    const ext = { books: books.length, mine: Shelf.items().length, voa: VOA_INDEX.map((a) => Docs.voaMeta(a)).filter(fit).length,
       wiki: WIKI_INDEX.map((a) => Docs.wikiMeta(a)).filter(fit).length };
     const count = (c) => (c === "all" ? all.filter(fit).length : c in ext ? ext[c] : all.filter((p) => p.category === c && fit(p)).length);
-    // 「我的读物」没有内容时也显示（要从这里导入）
-    const cats = READING_CATS.filter(([c]) => count(c) > 0 || (c === "mine" && Store.bridge));
+    // 「我的书架」空着也显示（要从这里导入、看推荐）
+    const cats = READING_CATS.filter(([c]) => count(c) > 0 || c === "mine");
     if (!cats.some(([c]) => c === this.cat)) this.cat = "all";
     let shown = (this.cat === "all" ? all : all.filter((p) => p.category === this.cat)).filter(fit);
     // 地理、文化风俗、常识、专业知识文章多，再按地区 / 类别 / 学科细分
@@ -125,17 +126,18 @@ App.pages.reading = {
     }
     body.innerHTML = `<div class="chips" style="margin-bottom:16px">${cats.map(([c, label]) => `<button class="chip ${c === this.cat ? "active" : ""}" data-cat="${c}">${label} <span class="faint">${count(c)}</span></button>`).join("")}</div>`
       + (this.cat === "books" ? this.shelfHtml(books)
-        : this.cat === "mine" ? this.mineHtml()
+        : this.cat === "mine" ? `<div id="shelf-root"></div>`
         : this.cat === "voa" ? this.voaHtml()
         : this.cat === "wiki" ? this.wikiHtml()
         : (this.cat === "all" ? `<a class="card shelf-banner" href="javascript:void 0" data-cat="books"><span style="font-size:28px">📖</span>
              <div><b>原著全文书架</b><div class="small muted">${BOOK_SHELF.length} 本名著的完整原文：${BOOK_SHELF.slice(0, 6).map((b) => b.zh).join("、")}……</div></div><span class="spacer"></span><span class="btn soft sm">去看看 →</span></a>` : "")
           + subChips + `<div class="grid grid-2">${shown.map(card).join("")}</div>`)
-      + (AI.enabled ? "" : `<p class="small faint mt">💡 开启 AI 后，可以按你感兴趣的话题生成新文章，读不完的。</p>`)
-      + `<p class="small faint mt">配图来自 Wikimedia Commons 和名著的原版插画（公有领域或 CC 授权），作者和授权信息见每张图的说明。</p>`;
+      + (this.cat === "mine" ? "" : (AI.enabled ? "" : `<p class="small faint mt">💡 开启 AI 后，可以按你感兴趣的话题生成新文章，读不完的。</p>`)
+        + `<p class="small faint mt">配图来自 Wikimedia Commons 和名著的原版插画（公有领域或 CC 授权），作者和授权信息见每张图的说明。</p>`);
     $$("[data-cat]", body).forEach((b) => (b.onclick = () => { this.cat = b.dataset.cat; this.drawBody(root, signal); }));
     $$("[data-sub]", body).forEach((b) => (b.onclick = () => { this.sub[this.cat] = b.dataset.sub; this.drawBody(root, signal); }));
-    if (this.cat === "mine") this.bindMine(body, signal);
+    if (this.cat === "mine") Shelf.mount($("#shelf-root", body), freshSignal(Shelf, signal));
+    else Shelf._ctl?.abort();
     if (this.cat === "wiki") this.bindWiki(body);
   },
 
@@ -150,7 +152,7 @@ App.pages.reading = {
     if (cur === "modern") {
       const lv = ["较易", "中等", "较难"];
       const catName = Object.fromEntries(BOOK_CATS);
-      return chips + `<p class="small muted">这些是英语学习书单里推荐最多的现代名著，还在版权期内，软件里不能放全文。买正版电子书（epub）后，可以在「📥 我的读物」里导入，同样能点词查义、高亮、朗读、AI 翻译。</p>`
+      return chips + `<p class="small muted">这些是英语学习书单里推荐最多的现代名著，还在版权期内，软件里不能放全文。买正版电子书（epub）后，可以在「📚 我的书架」右上角的 ＋ 导入，同样能点词查义、高亮、朗读、AI 翻译。</p>`
         + lv.map((l) => `<div class="card-title mt">${{ 较易: "🌱 入门（A2–B1）", 中等: "🌿 中级（B1–B2）", 较难: "🌳 进阶（B2–C1）" }[l]}</div>
           <div class="grid grid-2">${MODERN_BOOKS.filter((b) => b.level === l).map((b) => `<div class="card modern-book">
             <div class="row"><span class="badge">${esc(catName[b.cat] || "")}</span><span class="small faint">${b.author} · ${b.year}</span></div>
@@ -179,50 +181,6 @@ App.pages.reading = {
     body.innerHTML = `<div class="small muted" style="margin-bottom:12px">搜索「${esc(this.q)}」：${n} 条结果${Store.prefs.read_fit ? "（只显示适合你难度的）" : ""}</div>`
       + (n ? `<div class="grid grid-2">${longs.slice(0, 60).map(bookCardHtml).join("")}${shorts.map(this._card).join("")}</div>`
         : `<div class="card empty"><div class="big">🔍</div>没有找到，换个词试试${WIKI_INDEX.length ? "，或者在「维基百科」里在线搜索" : ""}</div>`);
-  },
-
-  // ---------- 我的读物：导入自己的文章和书 ----------
-  mineHtml() {
-    const lib = Docs.lib || [];
-    const canImport = Store.bridge && !Store.remote;
-    return `<div class="card import-bar">
-        <div><b>导入你自己的读物</b><div class="small muted">支持 txt、epub、html 文件，或者直接粘贴文字。会自动分章，用和原著全文一样的阅读器打开：查词、高亮、生词、朗读、AI 翻译。
-          只保存在你的电脑上；PDF 请先复制里面的文字再粘贴。请导入你有权使用的内容（比如自己订阅的外刊文章、买的电子书）。</div></div>
-        ${canImport ? `<div class="row"><button class="btn primary" id="imp-file">📂 打开文件</button><button class="btn soft" id="imp-paste">📋 粘贴文字</button></div>`
-          : `<div class="small faint">${Store.remote ? "在电脑上导入后，这里就能看到。" : "导入需要在桌面版中使用。"}</div>`}
-      </div>
-      ${lib.length ? `<div class="grid grid-2 mt">${lib.map((m) => bookCardHtml({ ...m, kind: "import" })).join("")}</div>`
-        : `<div class="card empty mt"><div class="big">📥</div>还没有导入任何读物</div>`}`;
-  },
-
-  bindMine(root, signal) {
-    const done = (m) => {
-      if (!m) return;
-      if (m.error) { toast(m.error, "bad", 5000); return; }
-      toast(`已导入《${m.title}》：${m.chapters.length} 章、${m.words.toLocaleString()} 词`, "good", 4000);
-      Docs.library(true).then(() => Router.go(`book/${m.id}`));
-    };
-    const f = $("#imp-file", root);
-    if (f) f.onclick = async () => {
-      f.disabled = true;
-      try { done(await pywebview.api.library_import_file()); } finally { f.disabled = false; }
-    };
-    const p = $("#imp-paste", root);
-    if (p) p.onclick = () => {
-      const m = modal(`<h3>📋 粘贴文字</h3>
-        <div class="field"><label>标题</label><input class="input" id="imp-title" placeholder="可以不填，默认用第一行"></div>
-        <div class="field mt-s"><label>正文（英文）</label><textarea class="input" id="imp-text" rows="12" placeholder="把文章粘贴到这里。空行分段；有 Chapter 1、Chapter 2 这样的标题会自动分章。"></textarea></div>
-        <div class="modal-actions"><button class="btn" data-close>取消</button><button class="btn primary" id="imp-go">导入</button></div>`);
-      $(".modal", m.root).classList.add("paste-modal");
-      $("#imp-text", m.root).focus();
-      $("#imp-go", m.root).onclick = async () => {
-        const text = $("#imp-text", m.root).value;
-        if (!text.trim()) { toast("先粘贴一些文字"); return; }
-        const r = await pywebview.api.library_import_text($("#imp-title", m.root).value.trim(), text);
-        if (!r?.error) m.close();
-        done(r);
-      };
-    };
   },
 
   // ---------- VOA 慢速英语（存档） ----------

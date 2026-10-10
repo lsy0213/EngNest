@@ -42,7 +42,9 @@ App.pages.stats = {
     ].map(([k, v]) => [k, v == null ? null : Math.round(v * 100)]);
   },
 
-  render(root) {
+  async render(root, params, signal) {
+    await Docs.library(); // 读完的书里可能有导入的读物
+    if (signal?.aborted) return;
     const ret = this.retention(), fc = this.forecast(), sk = this.skills(), lv = Store.data.level;
     const words = Object.values(Store.data.words);
     const mastered = words.filter((s) => s.box >= MASTERED_BOX).length;
@@ -61,6 +63,8 @@ App.pages.stats = {
           <p class="small muted">单词和短语句子加在一起。今天的包括之前没复习完的。</p></div>
         <div class="card"><div class="card-title">🧭 各项能力</div>${this.radar(sk)}
           <p class="small muted">按各个练习的成绩估算，没练过的项目显示为空。词汇看掌握比例和学过的词数，听力看听写全对的比例，口语看跟读评测的最好成绩。</p></div>
+        <div class="card"><div class="card-title">📖 阅读 <span class="spacer"></span><a class="small" href="#/reading/cat/mine">我的书架 ›</a></div>${this.readChart()}
+          <p class="small muted">${this.readSummary()}</p></div>
         <div class="card"><div class="card-title">🔥 最近半年</div><div class="heat heat-long">${this.heat(26)}</div>
           <p class="small muted">颜色越深当天经验值越多。共学习 ${Object.values(Store.data.days).filter((x) => x.xp > 0).length} 天，近 30 天复习 ${reviews30} 次。</p></div>
       </div>`;
@@ -93,6 +97,27 @@ App.pages.stats = {
           <text x="${X + (bw - 12) / 2}" y="${H - pad - h - 4}" class="val">${x.n}</text>
           <text x="${X + (bw - 12) / 2}" y="${H - 6}" class="axis" text-anchor="middle">${i === 0 ? "今天" : "周" + wd[new Date(x.d).getDay()]}</text>`; }).join("")}
     </svg>`;
+  },
+
+  // 最近 14 天每天读了几分钟，虚线是每天的阅读目标
+  readChart() {
+    const days = Array.from({ length: 14 }, (_, i) => { const d = addDays(today(), i - 13); return { d, m: Math.round(Shelf.daySec(d) / 60) }; });
+    const goal = Shelf.goal(), W = 320, H = 140, pad = 22, max = Math.max(goal * 1.2, ...days.map((x) => x.m)), bw = (W - pad * 2) / days.length;
+    const Y = (m) => H - pad - (m / max) * (H - pad * 2);
+    if (!days.some((x) => x.m)) return `<div class="empty small muted" style="padding:30px">还没有阅读记录。在阅读器里读书、读文章的时间会记在这里。</div>`;
+    return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="最近 14 天每天的阅读分钟数">
+      <line x1="${pad}" x2="${W - pad}" y1="${Y(goal)}" y2="${Y(goal)}" class="target-line"/><text x="${pad}" y="${Y(goal) - 4}" class="axis">目标 ${goal} 分钟</text>
+      ${days.map((x, i) => { const X = pad + i * bw + 3, h = Math.max(1, H - pad - Y(x.m));
+        return `<rect x="${X}" y="${H - pad - h}" width="${bw - 6}" height="${h}" rx="3" class="bar-rect ${x.m >= goal ? "met" : ""}"><title>${x.d}：${x.m} 分钟</title></rect>
+          ${i % 2 === 1 ? `<text x="${X + (bw - 6) / 2}" y="${H - 6}" class="axis" text-anchor="middle">${i === 13 ? "今天" : x.d.slice(8)}</text>` : ""}`; }).join("")}
+    </svg>`;
+  },
+  readSummary() {
+    const books = Store.data.books || {};
+    const total = Object.values(books).reduce((s, r) => s + (r.sec || 0), 0);
+    const done = Object.keys(books).map((id) => Docs.metaSync(id)).filter((m) => m && m.chapters.length > 1 && Shelf.status(m) === "done").length;
+    const st = Shelf.streak();
+    return `一共读了 ${total ? Shelf.dur(total) : "0 分钟"}，读完 ${done} 本书${st ? `，连续 ${st} 天读够目标 🔥` : ""}。只算在阅读器里真正在读的时间（翻页、点词或者朗读）。`;
   },
 
   radar(sk) {

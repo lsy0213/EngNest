@@ -33,7 +33,7 @@ ADMIN_ALLOWED = {
     "offline_tts_install", "offline_tts_remove", "tts_clear_cache",
     "stt_download", "stt_remove",
     "net_get", "net_set", "net_test",
-    "library_import_text", "library_delete", "pack_install", "pack_remove",
+    "pack_install", "pack_remove",
     "app_info", "update_check",
     "admin_users", "admin_user_ai", "admin_user_reset", "admin_user_remove",
     "admin_invites", "admin_invite_new", "admin_invite_revoke",

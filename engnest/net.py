@@ -39,10 +39,11 @@ def proxy() -> str:
     return sys_p.get("https") or sys_p.get("http") or ""
 
 
-def opener() -> urllib.request.OpenerDirector:
+def opener(*handlers) -> urllib.request.OpenerDirector:
+    """handlers：额外的处理器（比如从网址导入时检查每次跳转的 webimport._SafeRedirect）"""
     if _proxy:
-        return urllib.request.build_opener(urllib.request.ProxyHandler({"http": _proxy, "https": _proxy}))
-    return urllib.request.build_opener()  # 默认的 ProxyHandler 会用系统代理
+        return urllib.request.build_opener(urllib.request.ProxyHandler({"http": _proxy, "https": _proxy}), *handlers)
+    return urllib.request.build_opener(*handlers)  # 默认的 ProxyHandler 会用系统代理
 
 
 def urlopen(req, timeout=30):

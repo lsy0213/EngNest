@@ -43,7 +43,8 @@ ALLOWED = {
     "save_ai_settings", "ai_models",  # 只有其他人能改，改的是 TA 自己的 AI 设置；主人的只能在电脑上改（api 里会拒绝）
     "ai_chat", "ai_stream_start", "ai_stream_poll", "test_ai", "tts", "tts_offline", "offline_tts_status", "tts_voices", "tts_cache_info",
     "dict_lookup", "dict_search", "dict_status",
-    "library_list", "library_load", "wiki_search", "wiki_article",  # 局域网设备只能看，不能导入和删除
+    "library_list", "library_load", "library_import_upload", "library_import_text", "library_import_url", "library_delete",  # 每人一个自己的书库
+    "wiki_search", "wiki_article",
     "kv_get", "kv_all", "kv_set", "kv_set_many", "pack_status",
     "stt_status", "stt_transcribe", "stt_assess",  # 手机上通过 HTTPS 录音后，识别在电脑上做
 }

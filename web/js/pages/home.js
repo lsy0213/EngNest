@@ -135,11 +135,15 @@ App.pages.home = {
         </div>
       </div>
 
+      <div id="home-shelf"></div>
       <div class="card mt">
         <div class="card-title">💬 每日一句</div>
         <div class="row"><span class="daily-sentence">${esc(en)}</span>${speakBtn(en)}</div>
         <div class="muted mt-s">${esc(zh)}</div>
       </div>`;
+
+    // 继续阅读：导入的读物的书目要先从 Python 端取
+    Docs.library().then(() => { const el = $("#home-shelf", root); if (el) el.innerHTML = Shelf.homeHtml(); });
 
     // 新手引导和学习目标
     root.onclick = (e) => {
