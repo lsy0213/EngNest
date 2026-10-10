@@ -232,6 +232,11 @@ class Progress:
                 log.error("进度字段 %s 损坏，已跳过", k)
         return data
 
+    def fields(self, keys) -> dict:
+        """只读几个字段（好友排行用：days、prefs）"""
+        with self._lock:
+            return {k: self._get(k) for k in keys}
+
     def _get(self, key):
         r = self._db.execute("SELECT value FROM kv WHERE key=?", (key,)).fetchone()
         return json.loads(r[0]) if r else None

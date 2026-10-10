@@ -47,6 +47,9 @@ ALLOWED = {
     "wiki_search", "wiki_article",
     "kv_get", "kv_all", "kv_set", "kv_set_many", "pack_status",
     "stt_status", "stt_transcribe", "stt_assess",  # 手机上通过 HTTPS 录音后，识别在电脑上做
+    "phoneme_status", "stt_phonemes",  # 音素级发音评测，同样在电脑上做
+    "board_get",  # 好友排行（只列出自己打开了「参加排行」的人）
+    "push_status", "push_key", "push_subscribe", "push_unsubscribe",  # 学习提醒推送（只在服务器模式下真正可用）
 }
 
 

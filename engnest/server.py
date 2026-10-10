@@ -31,7 +31,7 @@ ADMIN_ALLOWED = {
     "ai_models", "ai_usage", "ai_set_limit", "test_ai",
     "dict_download_full", "dict_remove_full",
     "offline_tts_install", "offline_tts_remove", "tts_clear_cache",
-    "stt_download", "stt_remove",
+    "stt_download", "stt_remove", "phoneme_download", "phoneme_remove",
     "net_get", "net_set", "net_test",
     "pack_install", "pack_remove",
     "app_info", "update_check",
@@ -143,6 +143,7 @@ def run(port: int = lan.DEFAULT_PORT, https: bool = True, extra_hosts=(), host: 
 
     api = Api()
     srv = AccountServer(api)
+    api._accounts = srv.accounts  # 好友排行要知道有哪些账号
     srv.host = host
     srv.extra_hosts = [h for h in extra_hosts if h]
     if not srv.accounts.has_admin():
@@ -162,6 +163,17 @@ def run(port: int = lan.DEFAULT_PORT, https: bool = True, extra_hosts=(), host: 
             api.backup_all([u["id"] for u in srv.accounts.users() if not u["admin"]])
 
     threading.Thread(target=backups, daemon=True, name="backups").start()
+
+    def reminders():  # 学习提醒推送：每 5 分钟看一眼谁到了提醒时间还没学
+        while not stop.wait(300):
+            try:
+                n = api.push_check()
+                if n:
+                    log.info("发了 %d 条学习提醒", n)
+            except Exception:  # noqa: BLE001
+                log.exception("学习提醒推送出错")
+
+    threading.Thread(target=reminders, daemon=True, name="reminders").start()
     api.backup_all([u["id"] for u in srv.accounts.users() if not u["admin"]])
 
     def quit_(*_):

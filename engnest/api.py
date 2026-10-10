@@ -3,6 +3,7 @@
 pywebview 会在独立线程里执行这些方法，所以 AI 请求阻塞也不会卡住界面。
 """
 
+import datetime
 import logging
 import os
 import secrets
@@ -10,7 +11,7 @@ import shutil
 import threading
 import time
 
-from . import VERSION, ai_client, ai_usage, dictionary, ext, films, kvcache, lan, library, net, offline_tts, packs, paths, progress, settings, stt, tts, webdav, webimport, wiki
+from . import VERSION, ai_client, ai_usage, dictionary, ext, films, kvcache, lan, library, net, notify, offline_tts, packs, paths, phoneme, progress, push, settings, stt, tts, webdav, webimport, wiki
 from .log import log_file
 from .paths import data_dir
 
@@ -35,9 +36,11 @@ class Api:
         self._dict = dictionary.Dictionary()
         self._lib = library.Library()
         self._stt = stt.Stt()
+        self._phoneme = phoneme.Phoneme()
         self._piper = offline_tts.OfflineTTS()
         self._films = films.Films()
         self._ext = ext.Ext()
+        self._anki_jobs = {}
         self._packs = packs.Packs(self._dict.phonetic)
         self._window = None  # main.py 创建窗口后设置，用来弹出选择文件的对话框
         self._streams = {}  # 正在流式生成的 AI 回复
@@ -80,19 +83,91 @@ class Api:
     def _prog(self) -> progress.Progress:
         """当前请求该读写的进度：主人（电脑上、或用主人访问码进来的）是 progress.db，其他人各自一份"""
         user = self._user()
-        if not user:
-            return self._progress
+        return self._prog_for(user["id"]) if user else self._progress
+
+    def _prog_for(self, uid: str) -> progress.Progress:
         with self._profiles_lock:
-            p = self._profiles.get(user["id"])
+            p = self._profiles.get(uid)
             if p is None:
-                d = self._profile_dir(user["id"])
+                d = self._profile_dir(uid)
                 d.mkdir(parents=True, exist_ok=True)
-                p = self._profiles[user["id"]] = progress.Progress(d / "progress.db", backup_dir=d / "backups")
+                p = self._profiles[uid] = progress.Progress(d / "progress.db", backup_dir=d / "backups")
                 try:
                     p.backup()  # 每天第一次用的时候备份一份
                 except Exception:  # noqa: BLE001
-                    log.exception("备份 %s 的进度失败", user["id"])
+                    log.exception("备份 %s 的进度失败", uid)
             return p
+
+    # ---------- 好友排行：局域网里的其他人 / 服务器上的账号，只列出自己打开了「参加排行」（prefs.board）的人 ----------
+    def _board_people(self) -> list:
+        """[(id, 默认名字)]：id 为 None 的是主人（服务器上是管理员）"""
+        acc = getattr(self, "_accounts", None)  # 服务器模式由 server.run 设置
+        if acc:
+            users = acc.users()
+            admin = next((u for u in users if u["admin"]), None)
+            return [(None, admin["username"] if admin else "管理员")] + [(u["id"], u["username"]) for u in users if not u["admin"]]
+        return [(None, "电脑主人")] + [(u["id"], u.get("name") or "朋友") for u in self._lan.users if u.get("id")]
+
+    # ---------- 学习提醒：电脑上弹系统通知；服务器上用 Web Push（engnest/push.py） ----------
+    def notify(self, title, body):
+        if self._user() or getattr(self._ctx, "lan", False):
+            return False  # 只给电脑上的自己弹
+        return notify.toast(title, body)
+
+    def push_status(self):
+        st = push.status((self._user() or {}).get("id"))
+        st["server"] = bool(getattr(self, "_accounts", None))
+        return st
+
+    def push_key(self):
+        if not getattr(self, "_accounts", None):
+            return {"ok": False, "error": "手机推送只在服务器模式下可用"}
+        if not push.available():
+            return {"ok": False, "error": "服务器上没装 pywebpush（pip install -r requirements-server.txt）"}
+        return {"ok": True, "key": push.public_key()}
+
+    def push_subscribe(self, sub, remind="21:00", tz=0):
+        if not getattr(self, "_accounts", None) or not push.available():
+            return {"ok": False, "error": "手机推送只在服务器模式下可用"}
+        return push.subscribe((self._user() or {}).get("id"), sub, remind, tz)
+
+    def push_unsubscribe(self):
+        return push.unsubscribe((self._user() or {}).get("id"))
+
+    def push_check(self):
+        """server.run 每 5 分钟调一次"""
+        return push.check(lambda uid: (self._prog_for(uid) if uid else self._progress).fields(["days"]).get("days"))
+
+    def board_get(self):
+        """本周（周一起）的经验值、学习天数、连续天数，按本周经验值排。自己总在里面（没参加时标出来）"""
+        me = (self._user() or {}).get("id")
+        today = datetime.date.today()
+        week = [today - datetime.timedelta(days=i) for i in range(today.weekday() + 1)]
+        out = []
+        for uid, name in self._board_people():
+            try:
+                f = (self._prog_for(uid) if uid else self._progress).fields(["days", "prefs"])
+            except Exception:  # noqa: BLE001
+                log.exception("读取 %s 的进度失败", uid)
+                continue
+            days, prefs = f.get("days") or {}, f.get("prefs") or {}
+            on = bool(prefs.get("board"))
+            if not on and uid != me:
+                continue
+            rec = lambda d: days.get(d.isoformat()) or {}  # noqa: E731
+            streak, d = 0, today
+            if not (rec(d).get("xp", 0) > 0 or rec(d).get("frozen")):
+                d -= datetime.timedelta(days=1)
+            while rec(d).get("xp", 0) > 0 or rec(d).get("frozen"):
+                streak += 1
+                d -= datetime.timedelta(days=1)
+            out.append({
+                "name": str(prefs.get("board_name") or name)[:20], "me": uid == me, "on": on,
+                "xp": sum(int(rec(x).get("xp", 0) or 0) for x in week), "days": sum(1 for x in week if rec(x).get("xp", 0) > 0),
+                "today": int(rec(today).get("xp", 0) or 0), "streak": streak,
+            })
+        out.sort(key=lambda r: (-r["xp"], -r["streak"], r["name"]))
+        return out
 
     def _user_settings(self, uid: str) -> settings.Settings:
         with self._profiles_lock:
@@ -649,6 +724,24 @@ class Api:
         except Exception as e:  # noqa: BLE001
             return {"ok": False, "error": f"识别失败：{e}"}
 
+    # ---------- 音素级发音评测（engnest/phoneme.py） ----------
+    def phoneme_status(self):
+        return self._phoneme.status()
+
+    def phoneme_download(self):
+        return self._phoneme.download()
+
+    def phoneme_remove(self):
+        return self._phoneme.remove()
+
+    def stt_phonemes(self, pcm_b64, text):
+        """每个音读对了没有、读成了什么"""
+        try:
+            return self._phoneme.assess(pcm_b64, text)
+        except Exception as e:  # noqa: BLE001
+            log.exception("音素评测失败")
+            return {"ok": False, "error": f"音素评测失败：{e}"}
+
     # ---------- 影视精听片库 ----------
     def film_status(self):
         return self._films.status()
@@ -824,6 +917,44 @@ class Api:
             (new / "migrate_from.txt").write_text(str(self._dir), encoding="utf-8")
         return {"ok": True, "dir": str(new)}
 
+    # ---------- 带发音的 Anki 卡片：zip 里是 notes.txt（制表符分隔，[sound:] 引用音频）和 media/*.mp3 ----------
+    ANKI_README = (
+        "EngNest 导出的 Anki 卡片（带发音）\n\n"
+        "1. 把 media 文件夹里的所有 mp3 复制到 Anki 的媒体文件夹：\n"
+        "   Anki 里点「工具 → 检查媒体」可以看到位置，一般是 %APPDATA%\\Anki2\\<用户名>\\collection.media\n"
+        "2. Anki 里「文件 → 导入」，选 notes.txt（分隔符、HTML、标签都已经写在文件开头，直接导入就行）。\n"
+        "3. 卡片上的 [sound:...] 会自动播放发音。\n"
+    )
+
+    def anki_audio_start(self, name, rows, voice="", rate=0.9):
+        """rows：[{front, back, audio, tag}]，front / back 里的 {audio} 换成 [sound:文件名]。
+        弹出保存对话框，在后台生成，返回 {id, n}；取消返回 None"""
+        import webview
+
+        rows = [r for r in (rows or []) if isinstance(r, dict)][:3000]
+        if not rows:
+            return {"error": "没有可以导出的卡片"}
+        kind = getattr(getattr(webview, "FileDialog", None), "SAVE", None) or webview.SAVE_DIALOG
+        path = self._window.create_file_dialog(kind, save_filename=name, file_types=("ZIP 压缩包 (*.zip)",))
+        if not path:
+            return None
+        path = path[0] if isinstance(path, (list, tuple)) else path
+        jid = secrets.token_hex(6)
+        job = self._anki_jobs[jid] = {"done": False, "i": 0, "n": len(rows), "failed": 0, "path": str(path), "error": ""}
+        threading.Thread(target=self._anki_audio_run, args=(job, path, rows, voice, rate), daemon=True, name="anki-export").start()
+        return {"id": jid, "n": len(rows)}
+
+    def _anki_audio_run(self, job, path, rows, voice, rate):
+        try:
+            write_anki_zip(path, rows, voice, rate, job)
+        except Exception as e:  # noqa: BLE001
+            log.exception("导出 Anki 卡片失败")
+            job["error"] = str(e)
+        job["done"] = True
+
+    def anki_audio_poll(self, jid):
+        return self._anki_jobs.get(jid) or {"done": True, "error": "没有这个导出任务"}
+
     def save_text_file(self, name, content):
         """弹出保存对话框，把文字存成文件（导出单词表等）。取消返回 None"""
         import webview
@@ -904,3 +1035,40 @@ def _enabled(cfg: dict) -> bool:
     if ai_client.provider_type(cfg.get("provider", "none")) == "none":
         return False
     return bool(cfg.get("api_key") and cfg.get("model"))
+
+
+def _tsv(s) -> str:
+    return " ".join(str(s or "").replace("\t", " ").split())
+
+
+def write_anki_zip(path, rows, voice="", rate=0.9, job=None, synth=None):
+    """生成 Anki 卡片包：notes.txt + media/*.mp3 + 怎么导入.txt。同一句只合成一次；某句合成失败（断网）就不带声音。
+    synth(text, voice, rate) 返回 data:audio/mpeg;base64,…（默认用神经语音，测试时可以换掉）"""
+    import base64
+    import hashlib
+    import zipfile
+
+    synth = synth or tts.synthesize
+    job = job if job is not None else {"i": 0, "failed": 0}
+    lines, files = ["#separator:tab", "#html:true", "#tags column:3"], {}
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+        for r in rows:
+            text, snd = str(r.get("audio") or "").strip(), ""
+            if text:
+                fn = files.get(text)
+                if fn is None:
+                    try:
+                        data = synth(text, voice or tts.DEFAULT_VOICE, float(rate or 0.9))
+                        fn = "engnest_" + hashlib.sha1(text.encode("utf-8")).hexdigest()[:16] + ".mp3"
+                        z.writestr("media/" + fn, base64.b64decode(data.split(",", 1)[1]))
+                    except Exception:  # noqa: BLE001
+                        fn = ""
+                        job["failed"] = job.get("failed", 0) + 1
+                    files[text] = fn
+                snd = f"[sound:{fn}]" if fn else ""
+            cols = [_tsv(r.get("front")).replace("{audio}", snd), _tsv(r.get("back")).replace("{audio}", snd), _tsv(r.get("tag") or "EngNest")]
+            lines.append("\t".join(cols))
+            job["i"] = job.get("i", 0) + 1
+        z.writestr("notes.txt", "\n".join(lines) + "\n")
+        z.writestr("怎么导入.txt", Api.ANKI_README)
+    return job

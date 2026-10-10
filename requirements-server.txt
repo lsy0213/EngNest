@@ -7,3 +7,4 @@ onnxruntime==1.30.0
 numpy==2.4.6
 qrcode==8.2
 cryptography==50.0.2
+pywebpush==2.4.0  # 学习提醒推送（engnest/push.py），没装的话网页上不显示「手机推送」

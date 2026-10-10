@@ -125,3 +125,22 @@ def test_codes_unique_and_remove(api, data_dir):
     assert not (data_dir / "profiles" / friend["id"]).exists()
     assert api._kv.get_all(f"tutor@{friend['id']}") == {}
     assert api.progress_load()["data"].get("xp") != 3  # 主人的进度从头到尾没被碰过
+
+
+def test_board_only_lists_people_who_opted_in(api):
+    import datetime
+
+    d = datetime.date.today()
+    week = [(d - datetime.timedelta(days=i)).isoformat() for i in range(d.weekday() + 1)]
+    friend, _ = add_user(api, "小明")
+    shy, _ = add_user(api, "小红")
+    api.progress_save({"days": {week[0]: {"xp": 30}}, "prefs": {"board": True, "board_name": "老大"}})
+    api.lan_call(friend, "progress_save", [{"days": {w: {"xp": 50} for w in week}, "prefs": {"board": True}}])
+    api.lan_call(shy, "progress_save", [{"days": {week[0]: {"xp": 999}}, "prefs": {}}])  # 没参加
+    rows = api.lan_call(friend, "board_get", [])
+    assert [r["name"] for r in rows] == ["小明", "老大"]
+    assert rows[0]["me"] and rows[0]["xp"] == 50 * len(week) and rows[0]["streak"] == len(week)
+    assert rows[1]["xp"] == 30 and not rows[1]["me"]
+    # 没参加的人自己也能看到排行，自己那一行标出来没参加
+    mine = api.lan_call(shy, "board_get", [])
+    assert any(r["me"] and not r["on"] and r["xp"] == 999 for r in mine) and len(mine) == 3
