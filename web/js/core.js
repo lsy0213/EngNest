@@ -1082,6 +1082,18 @@ function syncThemeColor() {
   const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
   const meta = document.querySelector('meta[name="theme-color"]');
   if (bg && meta) meta.setAttribute("content", bg);
+  syncAppIcon(bg);
+}
+// 页面底色是深色时（深色模式、星河这类深色皮肤），标签页图标和「添加到主屏幕」用夜晚版图标
+function syncAppIcon(bg) {
+  const m = bg.match(/^#([0-9a-f]{6})$/i);
+  const rgb = m ? [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16)) : (bg.match(/\d+/g) || []).slice(0, 3).map(Number);
+  if (rgb.length < 3) return;
+  const dark = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2] < 128;
+  const set = (sel, href) => { const el = document.querySelector(sel); if (el && el.getAttribute("href") !== href) el.setAttribute("href", href); };
+  set('link[rel="icon"]', dark ? "img/icon-dark-192.png" : "img/icon-192.png");
+  set('link[rel="apple-touch-icon"]', dark ? "img/apple-touch-icon-dark.png" : "img/apple-touch-icon.png");
+  set('link[rel="manifest"]', dark ? "manifest-dark.webmanifest" : "manifest.webmanifest");
 }
 window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener?.("change", () => syncThemeColor());
 
