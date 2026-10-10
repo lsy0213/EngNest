@@ -213,12 +213,13 @@ App.pages.book = {
 
     root.innerHTML = `
       <a class="back-link" href="${single ? listHref : `#/book/${b.id}`}">‹ ${single ? `返回${DOC_KIND[b.kind].badge}` : `${esc(b.title)} · 目录`}</a>
-      <div class="page-head"><div>
-        <div class="small muted">${single ? `${b.level ? b.level + " · " : ""}${esc(b.intro || b.source || "")}` : `${esc(b.zh || b.title)} · 第 ${n} / ${total} 章`}</div>
+      <div class="page-head reader-head"><div>
+        <div class="small muted rh-kicker">${single ? `${b.level ? b.level + " · " : ""}${esc(b.intro || b.source || "")}` : `${esc(b.zh || b.title)} · 第 ${n} / ${total} 章`}</div>
         <div class="page-title" style="font-family:var(--font-en)">${esc(title || b.title)}</div>
-        <div class="page-sub">${b.chapters[n - 1][1].toLocaleString()} 词 · ${readTime(b.chapters[n - 1][1])} · 点单词查释义，选中文字可以高亮、收藏</div>
+        <div class="page-sub">${b.chapters[n - 1][1].toLocaleString()} 词 · ${readTime(b.chapters[n - 1][1])}<span class="read-hint"> · 点单词查释义，选中文字可以高亮、收藏</span></div>
         <div class="row small mark-row">${wordMarkHtml(textWordStats(paras))}</div></div>
-        <div class="row">
+        <div class="row reader-tools">
+          ${markSwitchHtml()}
           ${switchHtml("zh-switch", "中文译文", P.read_zh && AI.enabled, AI.enabled ? "滚到哪段翻译哪段，译过的会存在本机" : "需要先在设置里接入 AI")}
           <button class="btn soft" id="read-all">🔊 朗读${single ? "全文" : "本章"}</button>
           <button class="btn" id="vocab">📝 ${single ? "生词" : "本章生词"}</button>

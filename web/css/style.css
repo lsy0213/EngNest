@@ -835,6 +835,36 @@ mark.hl.flash { animation: hlFlash 1.2s; }
 .doc-audio audio { flex: 1; height: 36px; }
 .doc-source { margin: -6px 2px 14px; }
 .book-reader .para-zh:empty { display: none; }
+/* 阅读器头部（短文 reading.js、长篇 book.js）：标出生词、中文译文、朗读这些开关和按钮排成一排 */
+@media (max-width: 720px) {
+  .reader-head { gap: 12px; margin-bottom: 14px; }
+  #view .reader-head .page-title { font-size: 24px; line-height: 1.25; }
+  .read-hint, .mark-n { display: none; } /* 单词下面有虚线，一看就知道能点；手机上省掉这行说明 */
+  .reader-head .mark-row { margin-top: 4px; }
+  /* 开关变成能点的小胶囊，和按钮一样大小，开着的是绿色 */
+  .reader-tools { width: 100%; gap: 6px; }
+  #view .reader-tools .switch { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 13px; }
+  .reader-tools .switch .slider { display: none; }
+  #view .reader-tools .switch:has(input:checked) { background: color-mix(in srgb, var(--brand) 14%, var(--surface)); border-color: var(--brand); color: var(--brand-deep); }
+  #view .reader-tools > .btn { padding: 6px 12px; font-size: 13px; border-radius: 999px; }
+  .reader-tools .font-btns { margin-left: auto; }
+  /* 正文：卡片边距小一点，一行能放更多字 */
+  #view .card.reader { padding: 12px 16px; }
+  .reader .para { padding: 8px 10px; margin: 0 -10px; }
+  /* 每段的 🔊 / 译：不再浮在第一行把字挤窄，放到这段末尾的右下角 */
+  .reader .para { display: flex; flex-direction: column; }
+  .reader .para-en { order: 1; }
+  .reader .para-tools { order: 2; float: none; align-self: flex-end; display: flex; margin: -4px -8px -6px 0; opacity: .75; }
+  .reader .para-tools .btn { padding: 3px 9px; }
+  .reader .para-zh { order: 3; }
+  .hero-img img { max-height: 210px; }
+  .read-next .btn { width: 100%; justify-content: flex-start; white-space: normal; text-align: left; line-height: 1.4; }
+  /* 朗读控制条：一行放下，按钮只留图标 */
+  .readbar { flex-wrap: nowrap; gap: 4px; padding: 6px 8px 6px 12px; }
+  .readbar .rb-txt { display: none; }
+  .readbar .btn.sm { min-width: 36px; min-height: 34px; padding: 4px 8px; }
+  .readbar-state { margin-right: 2px; white-space: nowrap; }
+}
 .book-nav { margin: 8px 0 30px; }
 .font-btns { display: inline-flex; }
 .vocab-modal { max-width: 620px; }

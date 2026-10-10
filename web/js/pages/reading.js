@@ -310,7 +310,7 @@ Return JSON exactly in this shape:
     const same = all.filter((x) => x.category === p.category && (!p.series || x.series === p.series));
     const next = same[same.findIndex((x) => x.id === p.id) + 1];
     if (!next) return p.series ? `<div class="center muted mt">— 全文完 —</div>` : "";
-    return `<div class="row mt" style="justify-content:flex-end"><a class="btn soft lg" href="#/reading/${next.id}">${p.series ? "下一章" : "下一篇"}：${esc(next.title.replace(/^.*?·\s*/, ""))} →</a></div>`;
+    return `<div class="row mt read-next" style="justify-content:flex-end"><a class="btn soft lg" href="#/reading/${next.id}">${p.series ? "下一章" : "下一篇"}：${esc(next.title.replace(/^.*?·\s*/, ""))} →</a></div>`;
   },
 
   // ---------- 高亮：选中文字后在浮层里挑颜色；按「段落序号 + 字符位置」保存，重新打开文章时还原 ----------
@@ -407,11 +407,12 @@ Return JSON exactly in this shape:
   reader(root, p, signal) {
     root.innerHTML = `
       <a class="back-link" href="#/reading">‹ 返回文章列表</a>
-      <div class="page-head"><div>
+      <div class="page-head reader-head"><div>
         <div class="page-title" style="font-family:var(--font-en)">${esc(p.title)}</div>
-        <div class="page-sub">${esc(p.level)} · ${esc(p.topic || "")} · 点击单词查释义 · 选中文字可以高亮、收进生词本</div>
+        <div class="page-sub">${esc(p.level)} · ${esc(p.topic || "")}<span class="read-hint"> · 点击单词查释义 · 选中文字可以高亮、收进生词本</span></div>
         <div class="row small mark-row">${wordMarkHtml(textWordStats(p.paragraphs.map(([en]) => en)))}</div></div>
-        <div class="row">
+        <div class="row reader-tools">
+          ${markSwitchHtml()}
           ${switchHtml("zh-switch", "中文译文", Store.prefs.read_zh)}
           <button class="btn soft" id="read-all">🔊 朗读全文</button>
           ${p.ai ? `<button class="btn ghost" id="del" title="删除这篇 AI 文章">🗑️</button>` : ""}

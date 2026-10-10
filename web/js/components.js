@@ -195,7 +195,7 @@ function readAloud(reader, btn, signal, startAt = () => 0) {
     <button class="btn sm primary" data-rb="toggle" title="暂停 / 继续（空格键）">⏸ 暂停</button>
     <button class="btn sm ghost" data-rb="next" title="下一段">⏭</button>
     <select class="select" data-rb="rate" title="语速">${READ_RATES.map(([v, l]) => `<option value="${v}" ${v === rate() ? "selected" : ""}>${l}</option>`).join("")}</select>
-    <button class="btn sm ghost" data-rb="close" title="关闭朗读">✕ 关闭</button></div>`);
+    <button class="btn sm ghost" data-rb="close" title="关闭朗读">✕<span class="rb-txt"> 关闭</span></button></div>`);
   reader.after(bar);
   let idx = 0, run = 0, active = false;
   const paras = () => $$(".para", reader);
@@ -203,8 +203,9 @@ function readAloud(reader, btn, signal, startAt = () => 0) {
     bar.classList.toggle("hidden", !active);
     bar.classList.toggle("paused", TTS.paused);
     btn.textContent = active ? "⏹ 停止朗读" : label;
-    $(".rb-pos", bar).textContent = `${TTS.paused ? "已暂停" : "正在朗读"} · 第 ${idx + 1} / ${paras().length} 段`;
-    $('[data-rb="toggle"]', bar).textContent = TTS.paused ? "▶ 继续" : "⏸ 暂停";
+    // 手机上一行放不下：.rb-txt 里的字只在宽屏显示（只留「第 1 / 4 段」和图标）
+    $(".rb-pos", bar).innerHTML = `<span class="rb-txt">${TTS.paused ? "已暂停" : "正在朗读"} · </span>第 ${idx + 1} / ${paras().length} 段`;
+    $('[data-rb="toggle"]', bar).innerHTML = TTS.paused ? `▶<span class="rb-txt"> 继续</span>` : `⏸<span class="rb-txt"> 暂停</span>`;
     paras().forEach((p, i) => p.classList.toggle("reading-now", active && i === idx));
   };
   const close = () => { run++; active = false; TTS.stop(); update(); };
@@ -1072,11 +1073,13 @@ function textWordStats(texts) {
   const rate = total ? fresh / total : 0;
   return { total, fresh, unique: freshSet.size, learning, rate, verdict: rate <= 0.02 ? "轻松" : rate <= 0.05 ? "合适" : "偏难" };
 }
-// 阅读页头部：生词率 + 「标出生词」开关
+// 阅读页头部：生词率；「标出生词」开关和其他开关、按钮放在一排（markSwitchHtml）
 function wordMarkHtml(stats) {
   const pct = (stats.rate * 100).toFixed(1);
-  return `<span class="mark-info" title="词书里还没学过的词占全文的比例：2% 以下轻松，2–5% 正合适，5% 以上偏难">生词率 ${pct}% · ${stats.verdict}（${stats.unique} 个没学过的词）</span>
-    ${switchHtml("mark-switch", "标出生词", Store.prefs.mark_words, "浅色底 = 词书里还没学过的词，虚线 = 正在学的词")}`;
+  return `<span class="mark-info" title="词书里还没学过的词占全文的比例：2% 以下轻松，2–5% 正合适，5% 以上偏难">生词率 ${pct}% · ${stats.verdict}<span class="mark-n">（${stats.unique} 个没学过的词）</span></span>`;
+}
+function markSwitchHtml() {
+  return switchHtml("mark-switch", "标出生词", Store.prefs.mark_words, "浅色底 = 词书里还没学过的词，虚线 = 正在学的词");
 }
 function bindWordMark(root, reader) {
   reader.classList.toggle("mark-words", !!Store.prefs.mark_words);
