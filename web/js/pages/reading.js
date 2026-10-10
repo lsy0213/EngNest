@@ -69,18 +69,22 @@ App.pages.reading = {
     const total = all.length + BOOK_SHELF.length + VOA_INDEX.length + WIKI_INDEX.length + (Docs.lib || []).length;
     root.innerHTML = pageHead("阅读", "",
       AI.enabled ? `<button class="btn primary" id="gen">🤖 AI 生成新文章</button>` : "")
-      + `<div class="row read-tools">
-          <input class="input" id="read-q" placeholder="🔍 搜文章、书名或主题（英文或中文）" value="${esc(this.q || "")}" autocomplete="off">
-          <label class="row fit-toggle"><input type="checkbox" id="read-fit" ${P.read_fit ? "checked" : ""}> 只看适合我的难度</label>
-          <select class="select" id="read-lv" title="你现在的阅读水平">${[1, 2, 3, 4].map((n) => `<option value="${n}" ${n === P.read_level ? "selected" : ""}>我的水平：${CEFR[n]}</option>`).join("")}</select>
+      + `<div class="read-tools">
+          <input class="input" id="read-q" type="search" placeholder="🔍 搜文章、书名或主题" value="${esc(this.q || "")}" autocomplete="off">
+          <button class="lv-btn" id="read-lv" title="我的水平和难度筛选"></button>
         </div>
         <div id="read-body"></div>`;
     const gen = $("#gen", root);
     if (gen) gen.onclick = () => this.generate();
     let timer = 0;
     $("#read-q", root).oninput = (e) => { clearTimeout(timer); timer = setTimeout(() => { this.q = e.target.value.trim(); this.drawBody(root, signal); }, 200); };
-    $("#read-fit", root).onchange = (e) => { P.read_fit = e.target.checked; Store.save(); this.drawBody(root, signal); };
-    $("#read-lv", root).onchange = (e) => { P.read_level = +e.target.value; Store.save(); if (P.read_fit) this.drawBody(root, signal); };
+    const lvBtn = $("#read-lv", root);
+    const drawLv = () => {
+      lvBtn.classList.toggle("on", !!P.read_fit);
+      lvBtn.innerHTML = `<b>${CEFR[P.read_level]}</b><span class="lv-mode">${P.read_fit ? "只看适合的" : "全部难度"}</span><span class="lv-caret" aria-hidden="true">▾</span>`;
+    };
+    drawLv();
+    lvBtn.onclick = () => this.levelPicker(() => { drawLv(); this.drawBody(root, signal); });
     // 删除导入的读物（卡片上的 ✕，在分类页和搜索结果里都有）
     root.addEventListener("click", (e) => {
       const d = e.target.closest("[data-del-doc]");
@@ -91,6 +95,26 @@ App.pages.reading = {
       if (meta) App.pages.book.remove({ ...meta, kind: "import" });
     }, { signal });
     this.drawBody(root, signal);
+  },
+
+  // 我的水平 + 只看适合的：两个设置放在一个小弹窗里（以前是复选框加下拉框，手机上要占两行）
+  levelPicker(changed) {
+    const P = Store.prefs;
+    const m = modal(`<h3>阅读难度</h3>
+      <div class="field"><label>我的水平</label><div class="chips">${[1, 2, 3, 4].map((n) => `<button class="chip ${n === P.read_level ? "active" : ""}" data-lv="${n}">${CEFR[n]}</button>`).join("")}</div></div>
+      <div class="mt">${switchHtml("lv-fit", "只看适合我的难度", P.read_fit)}</div>
+      <p class="small muted">适合的 = 你的水平和低一级的；导入的读物不分难度，总是显示。不确定自己的水平？<a href="#/level" data-close>做个水平测试</a></p>
+      <div class="modal-actions"><button class="btn primary" data-close>好的</button></div>`);
+    $(".modal", m.root).classList.add("lv-modal");
+    m.root.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-lv]");
+      if (!b) return;
+      P.read_level = +b.dataset.lv;
+      Store.save();
+      $$("[data-lv]", m.root).forEach((x) => x.classList.toggle("active", x === b));
+      changed();
+    });
+    $("#lv-fit", m.root).onchange = (e) => { P.read_fit = e.target.checked; Store.save(); changed(); };
   },
 
   // 「适合我的难度」：自己的水平和低一级的（导入的读物不分难度，总是显示）
@@ -120,11 +144,11 @@ App.pages.reading = {
       shown.forEach((p) => { const k = subOf(p); (groups[k] ||= []).push(p); });
       const keys = Object.keys(groups).sort((a, b) => groups[b].length - groups[a].length);
       const cur = keys.includes(this.sub[this.cat]) ? this.sub[this.cat] : "all";
-      subChips = `<div class="chips sub-chips" style="margin:-6px 0 14px">${[["all", "全部", shown.length], ...keys.map((k) => [k, k, groups[k].length])]
+      subChips = `<div class="chips sub-chips read-chips" style="margin:-6px 0 14px">${[["all", "全部", shown.length], ...keys.map((k) => [k, k, groups[k].length])]
         .map(([v, l, n]) => `<button class="chip ${v === cur ? "active" : ""}" data-sub="${esc(v)}">${esc(l)} <span class="faint">${n}</span></button>`).join("")}</div>`;
       if (cur !== "all") shown = groups[cur];
     }
-    body.innerHTML = `<div class="chips" style="margin-bottom:16px">${cats.map(([c, label]) => `<button class="chip ${c === this.cat ? "active" : ""}" data-cat="${c}">${label} <span class="faint">${count(c)}</span></button>`).join("")}</div>`
+    body.innerHTML = `<div class="chips read-chips cat-chips" style="margin-bottom:16px">${cats.map(([c, label]) => `<button class="chip ${c === this.cat ? "active" : ""}" data-cat="${c}">${label} <span class="faint">${count(c)}</span></button>`).join("")}</div>`
       + (this.cat === "books" ? this.shelfHtml(books)
         : this.cat === "mine" ? `<div id="shelf-root"></div>`
         : this.cat === "voa" ? this.voaHtml()
@@ -136,6 +160,11 @@ App.pages.reading = {
         + `<p class="small faint mt">配图来自 Wikimedia Commons 和名著的原版插画（公有领域或 CC 授权），作者和授权信息见每张图的说明。</p>`);
     $$("[data-cat]", body).forEach((b) => (b.onclick = () => { this.cat = b.dataset.cat; this.drawBody(root, signal); }));
     $$("[data-sub]", body).forEach((b) => (b.onclick = () => { this.sub[this.cat] = b.dataset.sub; this.drawBody(root, signal); }));
+    // 手机上分类是一行左右滑：把选中的那个滑到看得见的地方（只横着滑，不动页面）
+    $$(".read-chips", body).forEach((row) => {
+      const a = $(".chip.active", row);
+      if (a && row.scrollWidth > row.clientWidth) row.scrollLeft = a.offsetLeft - (row.clientWidth - a.offsetWidth) / 2;
+    });
     if (this.cat === "mine") Shelf.mount($("#shelf-root", body), freshSignal(Shelf, signal));
     else Shelf._ctl?.abort();
     if (this.cat === "wiki") this.bindWiki(body);
@@ -147,7 +176,7 @@ App.pages.reading = {
     const cats = [["pick", "⭐ 新手先读"], ["all", "全部"], ...BOOK_CATS, ["modern", "📋 现代名著书单"]];
     const count = (c) => c === "all" ? books.length : c === "pick" ? books.filter((b) => b.pick).length
       : c === "modern" ? MODERN_BOOKS.length : books.filter((b) => b.cat === c).length;
-    const chips = `<div class="chips sub-chips" style="margin:-6px 0 12px">${cats.filter(([c]) => count(c)).map(([c, l]) =>
+    const chips = `<div class="chips sub-chips read-chips" style="margin:-6px 0 12px">${cats.filter(([c]) => count(c)).map(([c, l]) =>
       `<button class="chip ${c === cur ? "active" : ""}" data-sub="${c}">${l} <span class="faint">${count(c)}</span></button>`).join("")}</div>`;
     if (cur === "modern") {
       const lv = ["较易", "中等", "较难"];
@@ -190,7 +219,7 @@ App.pages.reading = {
     const shown = (cur === "all" ? VOA_INDEX : VOA_INDEX.filter((a) => a.section === cur)).filter((a) => this.fits(Docs.voaMeta(a)));
     return `<p class="small muted" style="margin-top:-6px">美国之音为英语学习者写的文章，用词简单、句子短，大多数配有原声朗读（播放需要联网）。
         VOA 于 2025 年 3 月停止更新，这里收录的是 2016–2025 年的存档；文字属于公有领域。</p>
-      <div class="chips" style="margin-bottom:14px">${[["all", `全部 ${VOA_INDEX.length}`], ...secs.map((s) => [s, `${s} ${VOA_INDEX.filter((a) => a.section === s).length}`])]
+      <div class="chips read-chips" style="margin-bottom:14px">${[["all", `全部 ${VOA_INDEX.length}`], ...secs.map((s) => [s, `${s} ${VOA_INDEX.filter((a) => a.section === s).length}`])]
         .map(([v, l]) => `<button class="chip ${v === cur ? "active" : ""}" data-sub="${esc(v)}">${esc(l)}</button>`).join("")}</div>
       <div class="grid grid-2">${shown.map((a) => bookCardHtml(Docs.voaMeta(a))).join("")}</div>`;
   },
@@ -204,7 +233,7 @@ App.pages.reading = {
         文字采用 CC BY-SA 4.0 协议，出处见每篇文章末尾。</p>
       ${Store.bridge ? `<div class="row wiki-search"><input class="input" id="wiki-q" placeholder="🔍 在线搜索维基百科，比如 volcano、Beijing、coffee（英文）"><button class="btn primary" id="wiki-go">搜索</button></div>
         <div id="wiki-results"></div>` : ""}
-      <div class="chips" style="margin:14px 0">${[["all", `全部 ${WIKI_INDEX.length}`], ...topics.map((t) => [t, t])]
+      <div class="chips read-chips" style="margin:14px 0">${[["all", `全部 ${WIKI_INDEX.length}`], ...topics.map((t) => [t, t])]
         .map(([v, l]) => `<button class="chip ${v === cur ? "active" : ""}" data-sub="${esc(v)}">${esc(l)}</button>`).join("")}</div>
       <div class="grid grid-2">${shown.map((a) => bookCardHtml(Docs.wikiMeta(a))).join("")}</div>`;
   },
