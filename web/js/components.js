@@ -3,7 +3,7 @@
 // ============================================================
 
 // 触屏设备（手机、平板）：没有实体键盘，打字要靠点输入框弹出系统键盘
-const TOUCH = matchMedia("(hover: none) and (pointer: coarse)").matches;
+const TOUCH = typeof matchMedia === "function" && matchMedia("(hover: none) and (pointer: coarse)").matches;
 
 function el(html) {
   const t = document.createElement("template");
