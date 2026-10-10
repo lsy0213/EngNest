@@ -831,10 +831,10 @@ function openDictSearch(initial = "", { tech = false } = {}) {
   const setMode = () => {
     modeBtn.classList.toggle("primary", techMode);
     modeBtn.classList.toggle("ghost", !techMode);
-    inp.placeholder = techMode ? "搜索计算机术语，比如 PDU、Modbus、deprecated、协议" : "输入英文或中文，比如 happy、look forward、苹果";
+    inp.placeholder = techMode ? "搜索计算机术语，比如 PDU、Modbus、deprecated、协议" : "查词：happy、苹果；找功能：听写、雅思口语、日记";
     $("#ds-foot", root).textContent = techMode
       ? "↑ ↓ 选择 · Enter 朗读 · Esc 关闭 · 计算机词典由 EngNest 编写，另收 computerese-cross-references（MIT 协议）的术语对照"
-      : "↑ ↓ 选择 · Enter 朗读 · Esc 关闭 · 英汉词典数据来自 ECDICT（MIT 协议）";
+      : "↑ ↓ 选择 · Enter 朗读（选中功能时打开它）· Esc 关闭 · 英汉词典数据来自 ECDICT（MIT 协议）";
   };
   const techRow = (it) => ({ word: it.w, trans: it.zh, tech: true, phonetic: "", tag: "" });
 
@@ -844,7 +844,7 @@ function openDictSearch(initial = "", { tech = false } = {}) {
       return;
     }
     const back = techMode && browseCat !== null && !inp.value.trim() ? `<div class="ds-row ds-back" data-back>← ${esc(TechDict.cats[browseCat])}</div>` : "";
-    list.innerHTML = back + (results.map((r, i) => `<div class="ds-row ${i === active ? "active" : ""}" data-i="${i}">
+    list.innerHTML = back + (results.map((r, i) => r.cmd ? `<div class="ds-row ds-cmd ${i === active ? "active" : ""}" data-i="${i}"><div class="row" style="gap:6px"><span>${r.ico}</span><b>${esc(r.word)}</b><span class="spacer"></span><span class="small faint">功能 ↵</span></div></div>` : `<div class="ds-row ${i === active ? "active" : ""}" data-i="${i}">
       <div class="row" style="gap:6px"><b class="ds-w">${esc(r.word)}</b>${inNotebook(r.word) ? `<span class="ds-star">★</span>` : ""}<span class="spacer"></span>${!techMode && (r.tech || TechDict.senses(r.word).length) ? `<span class="ds-tech" title="计算机词典里有">💻</span>` : ""}${Dict.tagsHtml(r, 2)}</div>
       <div class="ds-t">${esc(r.trans.split("\n")[0])}</div></div>`).join("")
       || (inp.value.trim() ? `<div class="ds-none small muted">没有找到「${esc(inp.value.trim())}」</div>` : ""));
@@ -865,6 +865,10 @@ function openDictSearch(initial = "", { tech = false } = {}) {
     if (!r) return;
     $(".ds-row.active", list)?.scrollIntoView({ block: "nearest" });
     const my = ++seq;
+    if (r.cmd) { // 功能：右边显示说明，Enter 或点按钮打开
+      detail.innerHTML = `<div class="ds-empty"><div class="big">${r.ico}</div><b>${esc(r.word)}</b><div class="mt"><a class="btn primary" href="${r.href}" data-close>打开 ↵</a></div></div>`;
+      return;
+    }
     await techLoaded;
     await sdLoaded;
     const found = await Dict.lookup(r.word);
@@ -920,6 +924,11 @@ function openDictSearch(initial = "", { tech = false } = {}) {
       const tech = TechDict.search(q, 12).filter((it) => !have.has(it.w.toLowerCase()));
       const exact = tech.filter((it) => [it.w, ...it.alias].some((k) => k.toLowerCase() === q.toLowerCase()));
       results = [...exact.map(techRow), ...res, ...tech.filter((it) => !exact.includes(it)).slice(0, 8).map(techRow)];
+      // 功能名：输入中文时排最前面（多半是在找功能），英文时放在最匹配的词后面
+      if (typeof Palette !== "undefined") {
+        const cmds = Palette.search(q).map((c) => ({ cmd: true, word: c.name, trans: "", ico: c.ico, href: c.href }));
+        if (cmds.length) results.splice(/[一-鿿]/.test(q) ? 0 : Math.min(1, results.length), 0, ...cmds);
+      }
     }
     active = -1;
     if (results.length) show(0);
@@ -930,10 +939,12 @@ function openDictSearch(initial = "", { tech = false } = {}) {
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
       if (results.length) show((active + (e.key === "ArrowDown" ? 1 : results.length - 1)) % results.length);
-    } else if (e.key === "Enter" && results[active]) TTS.speak(results[active].word);
+    } else if (e.key === "Enter" && results[active]?.cmd) { location.hash = results[active].href; close(); }
+    else if (e.key === "Enter" && results[active]) TTS.speak(results[active].word);
   });
   list.onclick = (e) => {
     const c = e.target.closest("[data-cat]"), b = e.target.closest("[data-back]"), r = e.target.closest("[data-i]");
+    if (r && results[+r.dataset.i]?.cmd) { location.hash = results[+r.dataset.i].href; close(); return; }
     if (c) { browseCat = +c.dataset.cat; run(); } else if (b) { browseCat = null; run(); } else if (r) show(+r.dataset.i);
     inp.focus();
   };
@@ -992,6 +1003,7 @@ async function showWordPopup(rawWord, anchor, context = "", extra = null) {
       ${!fromAI && Store.prefs.en_def !== "off" && SimpleDef.get(item.w) ? `<div class="pop-sd">📘 ${esc(SimpleDef.get(item.w)[0][1])}</div>` : ""}
       ${fromAI ? "" : TechDict.popupHtml(tech)}
       ${typeof morphHtml === "function" ? morphHtml(item.w) : ""}
+    ${typeof collocHtml === "function" ? collocHtml(item.w) : ""}
       ${item.ex ? `<div class="pop-ex"><div class="en">${esc(item.ex)}</div><div class="zh">${esc(item.zh || "")}</div></div>` : ""}
       ${fromAI ? `<div class="small faint mt-s">由 AI 解释</div>` : ""}
       <div class="row mt-s"><a href="#" class="small" data-more>🔍 在词典里看详细</a></div>
@@ -1287,6 +1299,7 @@ function runFlashcards(container, queue, mode, signal, onFinish, { exitTo } = {}
   const retry = {};            // 答错的词回到队尾再来一次（最多 2 次）
   const stats = { known: 0, fuzzy: 0, unknown: 0 };
   let cur = null, revealed = false, done = 0;
+  const session = Session.start();
   const history = []; // 每次评分前的状态，撤销时恢复
   const K = knownDir(), L = K < 0 ? "←" : "→", R = K < 0 ? "→" : "←";
 
@@ -1395,14 +1408,10 @@ function runFlashcards(container, queue, mode, signal, onFinish, { exitTo } = {}
 
   const finish = () => {
     renderNav();
-    container.innerHTML = `
-      <div class="flash-wrap"><div class="flash-progress">${STUDY_EXIT_BTN}</div><div class="card center fc-done" style="padding:40px">
-        <div style="font-size:48px">🎉</div>
-        <h2 class="mt-s">这一组完成啦！</h2>
-        <p class="muted">共 ${total} 个词：认识 ${stats.known} · 模糊 ${stats.fuzzy} · 不认识 ${stats.unknown}</p>
-        <p class="small faint">不认识和模糊的词会按记忆曲线安排在之后复习。</p>
-        <div class="row" style="justify-content:center;margin-top:18px" data-finish-actions></div>
-      </div></div>`;
+    container.innerHTML = Session.finishHtml(session, {
+      title: "这一组完成啦！", lines: `共 ${total} 个词：认识 ${stats.known} · 模糊 ${stats.fuzzy} · 不认识 ${stats.unknown}`,
+      note: "不认识和模糊的词会按记忆曲线安排在之后复习。",
+    });
     onFinish && onFinish($("[data-finish-actions]", container), stats);
   };
 
@@ -1448,6 +1457,7 @@ function runSpelling(container, queue, signal, onFinish, opt = {}) {
   const retry = {};
   const stats = { known: 0, fuzzy: 0, unknown: 0 };
   let cur = null, st = null, done = 0;
+  const session = Session.start();
 
   const next = () => {
     cur = q.shift();
@@ -1564,14 +1574,11 @@ function runSpelling(container, queue, signal, onFinish, opt = {}) {
 
   const finish = () => {
     renderNav();
-    container.innerHTML = `
-      <div class="flash-wrap"><div class="card center" style="padding:40px">
-        <div style="font-size:48px">⌨️</div>
-        <h2 class="mt-s">这一组拼完啦！</h2>
-        <p class="muted">共 ${total} 个词：一次拼对 ${stats.known} · 提示后拼对 ${stats.fuzzy} · 没拼出来 ${stats.unknown}</p>
-        <p class="small faint">${opt.grade === false ? "这是练习，不改变复习安排。" : "没拼出来和提示后才拼对的词，会按记忆曲线更早安排复习。"}</p>
-        <div class="row" style="justify-content:center;margin-top:18px" data-finish-actions></div>
-      </div></div>`;
+    container.innerHTML = Session.finishHtml(session, {
+      emoji: "⌨️", title: "这一组拼完啦！", exit: false,
+      lines: `共 ${total} 个词：一次拼对 ${stats.known} · 提示后拼对 ${stats.fuzzy} · 没拼出来 ${stats.unknown}`,
+      note: opt.grade === false ? "这是练习，不改变复习安排。" : "没拼出来和提示后才拼对的词，会按记忆曲线更早安排复习。",
+    });
     onFinish && onFinish($("[data-finish-actions]", container), stats);
   };
 

@@ -223,7 +223,8 @@ Then output another line containing only "###", then "done:" followed by the num
       s.history.push({ role: "assistant", content: clean });
       s.view.push({ role: "ai", text: clean });
       Store.data.stats.chat = (Store.data.stats.chat || 0) + 1;
-      addXP(2);
+      addXP(2, "c_chat");
+      weakFromFeedback(mine.text, mine.fb, sc ? `场景口语 · ${sc.title}` : "AI 语伴");
       this.saveSession(sc, s);
       draw();
       await say(clean);
@@ -340,6 +341,7 @@ Evaluate the learner's English. Return JSON:
     if (!box) return;
     if (!r.ok) { box.innerHTML = aiError(r.error); return; }
     const d = r.data, score = Math.max(1, Math.min(10, +d.score || 6));
+    (d.fix || []).forEach((x) => { if (x?.better && x.said) Weak.add("fix", x.better, { en: x.better, said: x.said, note: x.why || "", src: `场景点评 · ${sc.title}` }); });
     (Store.data.scenes ||= {})[sc.id] = { score: Math.max(score, Store.data.scenes[sc.id]?.score || 0), date: today(), tasks: s.done.length };
     addXP(8 + score);
     Store.save();

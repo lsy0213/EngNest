@@ -355,6 +355,18 @@ function askLogin(call, message = "") {
   });
 }
 
+// 连不上电脑或服务器：显示提示，联网或者点「重试」再连
+function waitOnline() {
+  return new Promise((resolve) => {
+    $("#view").innerHTML = `<div class="page"><div class="card lan-login"><div style="font-size:44px">📡</div><h2>现在连不上小窝</h2>
+      <p class="muted">检查一下网络，连上以后会自动打开。用局域网访问的话，看看手机和电脑是不是连着同一个 Wi-Fi、电脑上的 EngNest 有没有打开。</p>
+      <button class="btn primary lg" id="net-retry" style="width:100%;margin-top:12px">重试</button></div></div>`;
+    const done = () => { window.removeEventListener("online", done); setTimeout(resolve, 500); };
+    window.addEventListener("online", done);
+    $("#net-retry").onclick = done;
+  });
+}
+
 async function tryHttpBridge() {
   const url = new URL(location.href);
   let key = url.searchParams.get("key");
@@ -396,6 +408,8 @@ async function tryHttpBridge() {
         continue;
       }
       if (e.status === 429) { key = await askLanCode(e.message); continue; } // 输错太多次被锁住了
+      // 连不上（断网、电脑上的 EngNest 关了；页面是 Service Worker 从缓存里拿的）：等联网再试，不要换成浏览器里另一份空白进度
+      if (e.status === undefined && navigator.serviceWorker?.controller) { await waitOnline(); continue; }
       if (e.status !== 401) return false; // 不是 EngNest 的局域网服务（比如开发用的静态服务器）
       key = await askLanCode(wrong || !!key);
       wrong = true;
@@ -472,6 +486,7 @@ const Store = {
   },
   // 换成一份新读到的进度（补上默认值；默认值算「没保存过」，下次保存时写进去）
   _adopt(saved) {
+    if (typeof Fsrs !== "undefined") Fsrs._load = null; // 换了一份进度：复习量统计重新算
     this._sent = {};
     for (const k in saved) this._sent[k] = JSON.stringify(saved[k]);
     this.data = fillDefaults(saved, DEFAULT_PROGRESS());
@@ -616,6 +631,7 @@ function addXP(n, kind, evt) {
   Store.data.xp += n;
   Store.save();
   renderSidebarFoot();
+  if (typeof Motivation !== "undefined") Motivation.changed(); // 每日任务、连胜保护、成就（motivation.js）
   if (evt && evt.clientX) {
     const el = document.createElement("div");
     el.className = "xp-float";
@@ -637,11 +653,12 @@ function takeXP(n, kind) {
 }
 // 卡片滑动方向：默认 ← 记住了；设置里可以改成 → 记住了。返回「记住了」的方向（-1 左 / 1 右）
 const knownDir = () => (Store.prefs.swipe_right_known ? 1 : -1);
+// 连续学习天数：用连胜保护补上的那天（frozen）也算
 function streak() {
-  const days = Store.data.days;
+  const days = Store.data.days, on = (d) => days[d]?.xp > 0 || days[d]?.frozen;
   let d = today(), n = 0;
-  if (!(days[d]?.xp > 0)) d = addDays(d, -1);
-  while (days[d]?.xp > 0) { n++; d = addDays(d, -1); }
+  if (!on(d)) d = addDays(d, -1);
+  while (on(d)) { n++; d = addDays(d, -1); }
   return n;
 }
 
@@ -657,13 +674,37 @@ const Fsrs = {
   f() {
     if (!window.FSRS) return null;
     const retention = Store.prefs.retention || 0.9;
-    const key = String(retention);
+    const w = Array.isArray(Store.prefs.fsrs_w) && Store.prefs.fsrs_w.length === 21 ? Store.prefs.fsrs_w : null; // 用自己的复习记录优化过的参数（fsrs_opt.js）
+    const key = String(retention) + (w ? w.join(",") : "");
     if (!this._f || this._key !== key) {
       // 这个软件按「天」安排复习，不用 FSRS 的分钟级短期学习步骤
-      this._f = FSRS.fsrs(FSRS.generatorParameters({ request_retention: retention, enable_fuzz: true, enable_short_term: false, maximum_interval: 3650 }));
+      this._f = FSRS.fsrs(FSRS.generatorParameters({ request_retention: retention, enable_fuzz: true, enable_short_term: false, maximum_interval: 3650, ...(w ? { w } : {}) }));
       this._key = key;
     }
     return this._f;
+  },
+  // 复习量均衡：算出的间隔 ≥ 3 天时，在前后几天里挑已经排得最少的那天（「周末少复习」时周末算得更满）
+  // 和 Anki 的 Load Balancer 一个思路；单词、短语句子、薄弱点一起算
+  _load: null,
+  load() {
+    if (!this._load) {
+      const m = {};
+      for (const r of [...Object.values(Store.data.words), ...Object.values(Store.data.sent_srs || {}), ...Object.values(Store.data.weak || {})]) if (r?.due) m[r.due] = (m[r.due] || 0) + 1;
+      this._load = m;
+    }
+    return this._load;
+  },
+  balance(days) {
+    const P = Store.prefs;
+    if (days < 3 || P.load_balance === false) return days;
+    const span = Math.max(1, Math.round(days * 0.06)), m = this.load();
+    let best = days, bestCost = Infinity;
+    for (let x = Math.max(2, days - span); x <= days + span; x++) {
+      const date = addDays(today(), x), wd = new Date(date + "T00:00:00").getDay();
+      const cost = (m[date] || 0) * (P.easy_weekend && (wd === 0 || wd === 6) ? 3 : 1) + Math.abs(x - days) * 0.3;
+      if (cost < bestCost) { bestCost = cost; best = x; }
+    }
+    return best;
   },
   // 记录 → ts-fsrs 的卡片。旧版的 Leitner 记录按当时的间隔换算成记忆稳定度
   toCard(rec, now) {
@@ -691,8 +732,11 @@ const Fsrs = {
     const F = window.FSRS, now = new Date();
     const rating = [F.Rating.Again, F.Rating.Hard, F.Rating.Good, F.Rating.Easy][grade] ?? F.Rating.Good;
     const { card } = f.next(this.toCard(rec, now), now, rating);
-    const days = grade === 0 ? 0 : Math.max(1, Math.round(card.scheduled_days));
+    const days = grade === 0 ? 0 : this.balance(Math.max(1, Math.round(card.scheduled_days)));
+    const m = this.load();
+    if (rec.due && m[rec.due]) m[rec.due]--;
     rec.due = addDays(today(), days);
+    m[rec.due] = (m[rec.due] || 0) + 1;
     rec.f = { s: Math.round(card.stability * 1000) / 1000, d: Math.round(card.difficulty * 1000) / 1000, st: card.state,
       r: card.reps, l: card.lapses, lr: today(), sd: days };
     let box = 0;
@@ -1031,8 +1075,10 @@ const NAV = [
   { id: "ielts", ico: "🎓", label: "雅思" },
   { id: "tutor", ico: "🤖", label: "AI 语伴" },
   { id: "life", ico: "🎭", label: "人生剧场" },
+  { id: "games", ico: "🎲", label: "单词游戏" },
   { sep: true },
   { id: "notebook", ico: "⭐", label: "生词本" },
+  { id: "weak", ico: "🩹", label: "薄弱点本" },
   { id: "settings", ico: "⚙️", label: "设置", foot: true }, // 放在侧边栏最底部，和收起按钮同一行
 ];
 
@@ -1040,7 +1086,7 @@ function renderNav() {
   const nav = $("#nav");
   if (!nav || !Store.data) return;
   // 连词成句、句子跟打听写并入了短语与句子，主题词汇和单词打字并入了单词
-  const cur = { about: "settings", stats: "home", level: "home", sitcom: "life", builder: "course", topics: "words", book: "reading", ireading: "ielts", ilisten: "ielts", ispeak: "ielts", iwrite: "ielts" }[Router.current().page] || Router.current().page;
+  const cur = { about: "settings", stats: "home", achv: "home", level: "home", sitcom: "life", builder: "course", topics: "words", book: "reading", ireading: "ielts", ilisten: "ielts", ispeak: "ielts", iwrite: "ielts" }[Router.current().page] || Router.current().page;
   const due = dueWords().length;
   const item = (n) => {
     if (n.sep) return `<div class="nav-sep"></div>`;
@@ -1050,14 +1096,17 @@ function renderNav() {
     if (sdue) badge = `<span class="badge brand" title="短语和句子待复习">${sdue}</span>`;
     const nbN = Store.data.notebook.length + (Store.data.sentence_nb || []).length;
     if (n.id === "notebook" && nbN) badge = `<span class="badge">${nbN}</span>`;
+    const wdue = n.id === "weak" && typeof Weak !== "undefined" ? Weak.count() : 0;
+    if (wdue) badge = `<span class="badge brand" title="薄弱点待复习">${wdue}</span>`;
     if (n.id === "tutor" && !AI.enabled) badge = `<span class="badge" title="未配置 AI">未开启</span>`;
     return `<a class="nav-item ${cur === n.id ? "active" : ""}" href="#/${n.id}" title="${n.label}"><span class="ico">${n.ico}</span><span class="label">${n.label}</span>${badge}</a>`;
   };
-  nav.innerHTML = NAV.filter((n) => !n.foot).map(item).join("");
+  nav.innerHTML = NAV.filter((n) => !n.foot && (!n.id || App.pages[n.id])).map(item).join("");
   const foot = $("#nav-foot");
   // 局域网里用自己访问码进来的人：侧栏底部显示是谁（点了去设置，可以换访问码）
   const who = Store.who ? `<a class="nav-item who-item" href="#/settings" title="你的学习记录单独保存在电脑上，和电脑主人的分开"><span class="ico">👤</span><span class="label">${esc(Store.who.name)}</span></a>` : "";
   if (foot) foot.innerHTML = who + NAV.filter((n) => n.foot).map(item).join("");
+  if (typeof renderBottomNav === "function") renderBottomNav();
 }
 
 // 界面风格和深浅色（记在设置里）
@@ -1157,6 +1206,7 @@ const Router = {
   },
   go(path) { location.hash = "#/" + path; },
   async render() {
+    if (!Store.data) return; // 还在启动（进度没读完）时地址变了：启动完会渲染
     if (await AppUpdate.apply()) return;
     const { page, params } = this.current();
     if (App.abort) App.abort.abort();

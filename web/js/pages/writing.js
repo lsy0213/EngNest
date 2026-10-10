@@ -3,11 +3,12 @@ App.pages.writing = {
   render(root, params, signal) {
     const tab = params[0] || "translate";
     root.innerHTML = pageHead("写作", "",
-      tabsHtml([["translate", "中译英"], ["essay", "作文批改"], ["history", "批改记录"]], tab)) + `<div id="w-body"></div>`;
+      tabsHtml([["translate", "中译英"], ["diary", "📔 英语日记"], ["essay", "作文批改"], ["history", "批改记录"]], tab)) + `<div id="w-body"></div>`;
     $$(".tab", root).forEach((b) => (b.onclick = () => Router.go("writing/" + b.dataset.tab)));
     const body = $("#w-body", root);
     this._page = signal;
-    ({ translate: this.translate, essay: this.essay, history: this.history })[tab].call(this, body);
+    if (tab === "diary") return Diary.render(body, signal);
+    (({ translate: this.translate, essay: this.essay, history: this.history })[tab] || this.translate).call(this, body);
   },
 
   translate(body) {
@@ -50,7 +51,8 @@ App.pages.writing = {
       const sim = Math.max(simOf(item.en), item.alt ? simOf(item.alt) : 0);
       if (item.k !== undefined) { P.w100_i = item.k + 1; Store.save(); }
       Store.data.stats.translate++;
-      addXP(sim >= 80 ? 5 : 3, null, evt);
+      addXP(sim >= 80 ? 5 : 3, "c_write", evt);
+      if (sim < 50) Weak.add("phrase", item.en, { en: item.en, zh: item.zh, said: text, note: item.alt ? `也可以说：${item.alt}` : "", src: "中译英" });
       $("#submit", body).textContent = "下一句 ›";
       $("#res", body).innerHTML = `
         <div class="row"><span class="score-pill ${sim >= 80 ? "high" : sim >= 50 ? "mid" : "low"}">与参考答案相似度 ${sim}%</span>
@@ -129,7 +131,8 @@ Review it and return JSON:
       Store.data.stats.essay++;
       Store.data.essays.unshift({ date: today(), topic: topic ? topic.title : "自由写作", text, result: d });
       Store.data.essays = Store.data.essays.slice(0, 30);
-      addXP(8, null, evt);
+      addXP(8, "c_write", evt);
+      (d.errors || []).slice(0, 5).forEach((x) => { if (x?.corrected && x.original) Weak.add("fix", x.corrected, { en: x.corrected, said: x.original, note: x.explain || "", src: "作文批改" }); });
       res.innerHTML = this.resultHtml(d);
     };
   },
@@ -148,7 +151,7 @@ Review it and return JSON:
 
   history(body) {
     const list = Store.data.essays;
-    if (!list.length) { body.innerHTML = `<div class="card empty"><div class="big">📝</div>还没有批改记录</div>`; return; }
+    if (!list.length) { body.innerHTML = `<div class="card">${emptyGuide("📝", "还没有批改记录", "写一篇作文让 AI 批改，或者每天写几句英语日记，改过的句子会自动收进薄弱点本。", [["#/writing/essay", "📝 写作文"], ["#/writing/diary", "📔 写日记"]])}</div>`; return; }
     body.innerHTML = list.map((e, i) => `<div class="card">
       <div class="row"><b>${esc(e.topic)}</b><span class="badge">${e.date}</span><span class="badge brand">${esc(e.result.score)} 分</span><span class="spacer"></span><button class="btn sm ghost" data-i="${i}">展开</button></div>
       <div class="small muted mt-s" style="font-family:var(--font-en)">${esc(e.text.slice(0, 160))}${e.text.length > 160 ? "…" : ""}</div>

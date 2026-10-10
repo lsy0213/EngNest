@@ -130,10 +130,33 @@ for (const [w, senses] of sdWords) {
     err(`英文释义「${w}」格式不对：${JSON.stringify(senses).slice(0, 80)}`);
 }
 
+// ---------- 常见搭配：每行 5 项（说明可省略），有 ___，正确答案不能混在错误选项里 ----------
+let collocCount = 0;
+for (const [g, grp] of Object.entries(G("COLLOCATIONS") || {})) {
+  grp.items.split("\n").filter((l) => l.trim()).forEach((line, i) => {
+    const [pat, ans, wrong, zh] = line.split("|").map((s) => (s || "").trim());
+    const where = `搭配 ${g} 第 ${i + 1} 条（${pat}）`;
+    collocCount++;
+    if (!pat?.includes("___") || !ans || !wrong || !zh) return err(`${where}：应为「搭配（含 ___）|正确|错误1,错误2|中文|说明」`);
+    const ws = wrong.split(",").map((s) => s.trim());
+    if (ws.length < 2 || ws.includes(ans)) err(`${where}：至少两个错误选项，而且不能包含正确答案`);
+  });
+}
+
+// ---------- 听力侦探：证词的角色都在 cast 里，题目答案在选项范围内 ----------
+const cases = G("DETECTIVE_CASES") || [];
+const caseIds = new Set();
+for (const c of cases) {
+  if (caseIds.has(c.id)) err(`听力侦探案子 id 重复：${c.id}`);
+  caseIds.add(c.id);
+  c.clips?.forEach(([who, en, zh], i) => { if (!c.cast?.[who] || !en || !zh) err(`听力侦探 ${c.id} 第 ${i + 1} 段证词格式不对或角色不在 cast 里`); });
+  [...(c.questions || []), c.verdict].forEach((q, i) => { if (!q?.q || !Array.isArray(q.o) || !(q.a >= 0 && q.a < q.o.length) || !q.why) err(`听力侦探 ${c.id} 第 ${i + 1} 题格式不对`); });
+}
+
 // ---------- 结果 ----------
 for (const w of warns.slice(0, 50)) console.log("⚠ " + w);
 if (warns.length > 50) console.log(`⚠ ……还有 ${warns.length - 50} 条提醒`);
 for (const e of errors) console.log("✗ " + e);
-console.log(`\n词书 ${books.length} 本 · 连词成句 ${lessons.length} 课 ${sentenceCount} 句 · 短语单元 ${units.length} 个 · 语法 ${gl.length} 课 · 阅读 ${passages.length} 篇 · 原著 ${(G("BOOK_SHELF") || []).length} 本 · 影视 ${filmIds.size} 个 · 计算机词典 ${tech?.items?.length || 0} 条 · 英文释义 ${sdWords.length} 词`);
+console.log(`\n词书 ${books.length} 本 · 连词成句 ${lessons.length} 课 ${sentenceCount} 句 · 短语单元 ${units.length} 个 · 语法 ${gl.length} 课 · 阅读 ${passages.length} 篇 · 原著 ${(G("BOOK_SHELF") || []).length} 本 · 影视 ${filmIds.size} 个 · 计算机词典 ${tech?.items?.length || 0} 条 · 英文释义 ${sdWords.length} 词 · 搭配 ${collocCount} 条 · 侦探案子 ${cases.length} 个`);
 console.log(errors.length ? `✗ ${errors.length} 个错误，${warns.length} 条提醒` : `✓ 没有错误（${warns.length} 条提醒）`);
 process.exit(errors.length ? 1 : 0);

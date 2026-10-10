@@ -56,7 +56,10 @@ function runSentenceCards(container, queue, signal, onFinish, { exitTo } = {}) {
   const total = queue.length, q = [...queue], retry = {};
   const stats = { known: 0, fuzzy: 0, unknown: 0 };
   let cur = null, revealed = false, done = 0, busy = false;
-  const zh2en = () => !!cur.zh;
+  const session = Session.start();
+  // 听音模式（卡片上方的 🎧 切换）：正面只放声音，听完想意思；平时有中文就看中文说英文
+  const listen = () => !!Store.prefs.sent_listen;
+  const zh2en = () => !!cur.zh && !listen();
   const history = [];
   const K = knownDir(), L = K < 0 ? "←" : "→", R = K < 0 ? "→" : "←";
   const undo = () => {
@@ -88,6 +91,7 @@ function runSentenceCards(container, queue, signal, onFinish, { exitTo } = {}) {
     const pct = Math.round((done / total) * 100);
     const front = zh2en()
       ? `<div class="sc-front-ask small muted">用英语怎么说？</div><div class="sc-front-zh">${esc(cur.zh)}</div>`
+      : listen() && !revealed ? `<div class="sc-front-ask small muted">🎧 听一听，是什么意思？</div><div class="row" style="justify-content:center;gap:10px;margin:14px 0">${speakBtn(cur.en, "lg")}<button class="speak" data-say="${esc(cur.en)}" data-rate="0.6" title="慢速">🐢</button></div>`
       : `<div class="sc-front-ask small muted">是什么意思？</div><div class="sc-front-en en">${esc(cur.en)}</div>`;
     const back = `<div class="fc-back ${enter ? "" : "reveal"}">
         ${zh2en() ? `<div class="sc-front-en en" data-text="${esc(cur.en)}">${wrapWords(cur.en)}</div>` : `<div class="sc-front-zh">${esc(cur.zh || "（还没有翻译）")}</div>`}
@@ -95,6 +99,7 @@ function runSentenceCards(container, queue, signal, onFinish, { exitTo } = {}) {
     container.innerHTML = `
       <div class="flash-wrap">
         <div class="flash-progress">${STUDY_EXIT_BTN}<span>${done} / ${total}</span><div class="bar"><i style="width:${pct}%"></i></div><span>短语句子复习</span>
+          <button class="btn sm ${listen() ? "primary" : "ghost"}" data-listen title="听音模式：正面只放声音，听完想意思">🎧</button>
           ${history.length ? `<button class="btn sm ghost" data-undo title="撤销上一次评分（Ctrl+Z）">↶ 撤销</button>` : ""}</div>
         <div class="fc-stack ${enter ? (PageCurl.justTurned() ? "turned" : "enter") : ""} ${q.length ? "" : "last"} ${K > 0 ? "swap-dir" : ""}">
         <div class="card flashcard sent-card" id="fc">
@@ -110,6 +115,13 @@ function runSentenceCards(container, queue, signal, onFinish, { exitTo } = {}) {
         <div class="kbd-hint">${zh2en() ? "先试着把英文说出来（可以按 Ctrl+M 跟读评测），" : ""}空格看答案 · ${L} 记住了 · ${R} 没记住 · ↓ 有点模糊 · R 听发音 · Ctrl+Z 撤销</div>
       </div>`;
     bindWordClicks(container);
+    $("[data-listen]", container).onclick = () => {
+      Store.prefs.sent_listen = !listen();
+      Store.save();
+      draw(false);
+      toast(listen() ? "🎧 听音模式：先听，再想意思" : "看中文说英文", "", 1800);
+      if (listen() && !revealed) TTS.speak(cur.en);
+    };
     const ub = $("[data-undo]", container);
     if (ub) ub.onclick = undo;
     const rv = $("[data-reveal]", container);
@@ -133,18 +145,17 @@ function runSentenceCards(container, queue, signal, onFinish, { exitTo } = {}) {
     const h = { cur, q: [...q], stats: { ...stats }, retry: { ...retry }, done, xp: 0 };
     history.push(h);
     SentSRS.grade(cur, g);
-    if (!retry[cur.en]) { stats[["unknown", "fuzzy", "known"][g]]++; addXP(1, undefined, evt); h.xp = 1; }
+    if (!retry[cur.en]) { stats[["unknown", "fuzzy", "known"][g]]++; addXP(1, "c_sent", evt); h.xp = 1; }
     if (g === 0 && !retry[cur.en]) { retry[cur.en] = 1; q.push(cur); } else done++;
     next();
   };
   const finish = () => {
     App.shadowTarget = null;
     renderNav();
-    container.innerHTML = `<div class="flash-wrap"><div class="flash-progress">${STUDY_EXIT_BTN}</div><div class="card center fc-done" style="padding:40px">
-        <div style="font-size:48px">🎉</div><h2 class="mt-s">复习完啦！</h2>
-        <p class="muted">共 ${total} 条：记住了 ${stats.known} · 模糊 ${stats.fuzzy} · 没记住 ${stats.unknown}</p>
-        <p class="small faint">没记住的明天还会出现；记住的会隔得越来越久再复习。</p>
-        <div class="row" style="justify-content:center;margin-top:18px" data-finish-actions></div></div></div>`;
+    container.innerHTML = Session.finishHtml(session, {
+      title: "复习完啦！", lines: `共 ${total} 条：记住了 ${stats.known} · 模糊 ${stats.fuzzy} · 没记住 ${stats.unknown}`,
+      note: "没记住的明天还会出现；记住的会隔得越来越久再复习。",
+    });
     onFinish && onFinish($("[data-finish-actions]", container), stats);
   };
   onKey(signal, (e) => {

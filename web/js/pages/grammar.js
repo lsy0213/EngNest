@@ -137,13 +137,13 @@ App.pages.grammar = {
         btns[q.a].classList.add("right");
         const ok = picks[qi] === q.a;
         if (ok) right++;
-        else btns[picks[qi]].classList.add("wrong");
+        else { btns[picks[qi]].classList.add("wrong"); Weak.add("gram", q.q, { q, en: q.q, note: q.e, src: `语法 · ${l.title}` }); }
         $(".explain-slot", item).innerHTML = `<div class="explain ${ok ? "good" : "bad"}">${ok ? "✅" : "❌"} ${esc(q.e)}</div>`;
       });
       const prev = Store.data.grammar[l.id];
       Store.data.grammar[l.id] = { best: Math.max(right, prev?.best || 0), last: right, date: today() };
-      addXP(prev ? right : 10 + right, null, evt);
-      $("#score", root).innerHTML = `得分 <b>${right} / ${l.quiz.length}</b> ${right === l.quiz.length ? "🎉 全对！" : "，看看解析吧"}`;
+      addXP(prev ? right : 10 + right, "c_gram", evt);
+      $("#score", root).innerHTML = `得分 <b>${right} / ${l.quiz.length}</b> ${right === l.quiz.length ? "🎉 全对！" : `，看看解析吧 · <a href="#/weak">做错的 ${l.quiz.length - right} 题已收进薄弱点本</a>`}`;
       const sb = $("#submit", root);
       sb.textContent = "再做一次";
       sb.onclick = () => this.lesson(root, l);

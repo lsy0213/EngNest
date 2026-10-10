@@ -420,7 +420,7 @@ App.pages.video = {
         if (recUrl) URL.revokeObjectURL(recUrl);
         recUrl = URL.createObjectURL(new Blob(chunks));
         Store.data.stats.speaking++;
-        addXP(2);
+        addXP(2, "c_video");
         drawShadow();
         // 先放原声，再放自己的录音
         playLine(cur, true);

@@ -77,6 +77,8 @@ App.pages.listening = {
       st.dictation++;
       if (acc === 100) { st.dictation_ok++; addXP(3, null, evt); }
       else if (acc >= 60) addXP(1, null, evt);
+      bump("c_dict");
+      if (acc < 100) Weak.add("sent", en, { en, zh, src: "听写句子", note: reveal ? "直接看了答案" : `没写对：${target.filter((w, i) => !hitT[i]).join(" ")}` });
       Store.save();
       $("#result", body).innerHTML = `
         <div class="row"><span class="score-pill ${cls}">${reveal ? "已查看答案" : `准确率 ${acc}%`}</span>
@@ -373,6 +375,8 @@ Use exactly 3 questions. For a talk, every line uses speaker "A".`);
         Store.data.stats.dictation++;
         if (d.score === 1) Store.data.stats.dictation_ok++;
         if (first && d.score >= 0.8) addXP(2);
+        bump("c_dict");
+        if (d.score < 1 && s.en.split(/\s+/).length <= 30) Weak.add("sent", s.en, { en: s.en, zh: s.zh || "", src: "逐句听写", note: `没写对：${d.ops.filter((o) => o.t === "miss" || o.t === "wrong").map((o) => o.w).join(" ")}` });
         Store.save();
       }
       const op = (o) => o.t === "ok" ? `<span class="d-ok">${esc(o.w)}</span>`

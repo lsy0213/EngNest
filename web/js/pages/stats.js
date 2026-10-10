@@ -49,7 +49,7 @@ App.pages.stats = {
     const words = Object.values(Store.data.words);
     const mastered = words.filter((s) => s.box >= MASTERED_BOX).length;
     const reviews30 = ret.days.reduce((s, x) => s + x.n, 0);
-    root.innerHTML = pageHead("学习统计", "复习安排用 FSRS 记忆算法；这里的数据都只在你的电脑上。") + `
+    root.innerHTML = pageHead("学习统计", "复习安排用 FSRS 记忆算法；这里的数据都只在你的电脑上。", `<a class="btn ghost sm" href="#/achv">🏆 成就 ${ACHIEVEMENTS.filter((a) => Achv.level(a) > 0).length}/${ACHIEVEMENTS.length}</a>`) + `
       <div class="grid grid-4 stats-tiles">
         <div class="card stat"><b>${words.length}</b><span>学过的单词</span></div>
         <div class="card stat"><b>${mastered}</b><span>已掌握（复习间隔 ≥ 7 天）</span></div>
@@ -65,9 +65,70 @@ App.pages.stats = {
           <p class="small muted">按各个练习的成绩估算，没练过的项目显示为空。词汇看掌握比例和学过的词数，听力看听写全对的比例，口语看跟读评测的最好成绩。</p></div>
         <div class="card"><div class="card-title">📖 阅读 <span class="spacer"></span><a class="small" href="#/reading/cat/mine">我的书架 ›</a></div>${this.readChart()}
           <p class="small muted">${this.readSummary()}</p></div>
+        <div class="card"><div class="card-title">📚 词汇增长 <span class="spacer"></span><span class="small muted">近 180 天</span></div>${this.growthChart()}
+          <p class="small muted">${this.growthSummary()}</p></div>
+        <div class="card"><div class="card-title">⏳ 一共投入了多少</div>${this.totalsHtml()}</div>
+        <div id="wk-slot">${Weekly.html(addDays(weekStart(), -7), { nav: true })}</div>
+        <div id="board-slot"></div>
         <div class="card"><div class="card-title">🔥 最近半年</div><div class="heat heat-long">${this.heat(26)}</div>
-          <p class="small muted">颜色越深当天经验值越多。共学习 ${Object.values(Store.data.days).filter((x) => x.xp > 0).length} 天，近 30 天复习 ${reviews30} 次。</p></div>
+          <p class="small muted">颜色越深当天经验值越多，蓝色是用连胜保护补上的。共学习 ${Object.values(Store.data.days).filter((x) => x.xp > 0).length} 天，近 30 天复习 ${reviews30} 次。</p></div>
       </div>`;
+    const slot = $("#wk-slot", root);
+    Weekly.bind(slot, (start) => { slot.innerHTML = Weekly.html(start, { nav: true }); });
+    const bs = $("#board-slot", root), drawBoard = async () => { const h = await Board.html(); if (bs.isConnected) { bs.innerHTML = h; bs.style.display = h ? "" : "none"; } };
+    Board.bind(bs, drawBoard);
+    drawBoard();
+  },
+
+  // 学过的词随时间累计（按每个词第一次学的日期），加上水平测试估算的词汇量
+  growth(days = 180) {
+    const firsts = Object.values(Store.data.words).map((w) => w.first).filter(Boolean).sort();
+    const start = addDays(today(), -(days - 1));
+    let i = 0, n = 0;
+    while (i < firsts.length && firsts[i] < start) { i++; n++; }
+    const out = [];
+    for (let k = 0; k < days; k++) {
+      const d = addDays(start, k);
+      while (i < firsts.length && firsts[i] <= d) { i++; n++; }
+      out.push({ d, n });
+    }
+    return out;
+  },
+  growthChart() {
+    const pts = this.growth(), W = 320, H = 140, pad = 26;
+    const tests = Object.entries(Store.data.level_hist || {}).filter(([d]) => d >= pts[0].d).sort();
+    const max = Math.max(10, ...pts.map((p) => p.n), ...tests.map(([, t]) => t.vocab || 0));
+    if (!pts[pts.length - 1].n) return `<div class="empty small muted" style="padding:30px">还没有学过单词，学了以后这里会画出词汇量的增长。</div>`;
+    const X = (i) => pad + (i * (W - pad * 2)) / (pts.length - 1), Y = (v) => H - pad - (v / max) * (H - pad * 2);
+    const line = pts.map((p, i) => `${X(i).toFixed(1)},${Y(p.n).toFixed(1)}`).join(" ");
+    const fmt = (v) => (v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1) + "k" : v);
+    return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="近 180 天学过的单词累计数量">
+      ${[0, 0.5, 1].map((f) => `<line x1="${pad}" x2="${W - pad}" y1="${Y(max * f)}" y2="${Y(max * f)}" class="grid-line"/><text x="0" y="${Y(max * f) + 4}" class="axis">${fmt(Math.round(max * f))}</text>`).join("")}
+      <polygon points="${X(0)},${Y(0)} ${line} ${X(pts.length - 1)},${Y(0)}" class="area"/>
+      <polyline points="${line}" class="line"/>
+      ${tests.map(([d, t]) => { const i = pts.findIndex((p) => p.d === d); return i < 0 ? "" : `<circle cx="${X(i)}" cy="${Y(t.vocab)}" r="4" class="dot test-dot"><title>${d} 水平测试：${t.cefr}，词汇量约 ${t.vocab}</title></circle>`; }).join("")}
+      <text x="${pad}" y="${H - 6}" class="axis">${pts[0].d.slice(5)}</text><text x="${W - pad}" y="${H - 6}" class="axis" text-anchor="end">今天</text>
+    </svg>`;
+  },
+  growthSummary() {
+    const g = this.growth(), now = g[g.length - 1].n, m30 = now - g[g.length - 31].n, lv = Store.data.level;
+    return `学过 ${now} 个词，最近 30 天新增 ${m30} 个${m30 ? `（平均每天 ${(m30 / 30).toFixed(1)} 个）` : ""}。${lv ? `圆点是水平测试估算的词汇量（最近一次约 ${lv.vocab} 词）。` : "做一次水平测试，可以在图上看到估算的词汇量。"}`;
+  },
+  // 各项练习的累计数量
+  totalsHtml() {
+    const D = Store.data, days = Object.values(D.days), sum = (k) => days.reduce((s, x) => s + (x?.[k] || 0), 0), st = D.stats || {};
+    const rows = [
+      ["📅", "学习天数", days.filter((x) => x.xp > 0).length, "天"],
+      ["⏳", "阅读", Math.round(sum("rs") / 60), "分钟"],
+      ["🔁", "复习", (D.revlog || []).length, "次"],
+      ["🎧", "听写", st.dictation || 0, "句"],
+      ["🎙️", "跟读评测", Object.values(D.pron || {}).reduce((s, x) => s + (x.n || 1), 0), "次"],
+      ["🤖", "和 AI 说话", st.chat || 0, "句"],
+      ["🩹", "攻克薄弱点", Weak.list().filter((r) => r.done).length, "条"],
+      ["🎲", "单词游戏", Object.values(D.games || {}).reduce((s, g) => s + (g?.played || 0), 0), "局"],
+      ["📔", "英语日记", Object.keys(D.diary || {}).length, "篇"],
+    ];
+    return `<div class="totals">${rows.map(([ico, k, v, u]) => `<div class="total-row"><span>${ico} ${k}</span><b>${v.toLocaleString()}</b><small>${u}</small></div>`).join("")}</div>`;
   },
 
   lineChart(days) {
@@ -136,9 +197,9 @@ App.pages.stats = {
   heat(weeks) {
     const goal = Store.prefs.daily_goal, cells = [];
     for (let i = weeks * 7 - 1; i >= 0; i--) {
-      const date = addDays(today(), -i), xp = Store.data.days[date]?.xp || 0;
-      const lv = xp === 0 ? "" : xp < goal / 2 ? "l1" : xp < goal ? "l2" : "l3";
-      cells.push(`<i class="${lv} ${i === 0 ? "today" : ""}" title="${date}：${xp} XP"></i>`);
+      const date = addDays(today(), -i), xp = Store.data.days[date]?.xp || 0, fz = !xp && Store.data.days[date]?.frozen;
+      const lv = fz ? "frozen" : xp === 0 ? "" : xp < goal / 2 ? "l1" : xp < goal ? "l2" : "l3";
+      cells.push(`<i class="${lv} ${i === 0 ? "today" : ""}" title="${date}：${fz ? "用了连胜保护 🧊" : `${xp} XP`}"></i>`);
     }
     return cells.join("");
   },

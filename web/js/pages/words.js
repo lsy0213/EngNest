@@ -5,8 +5,10 @@ const EXAM_NAME = { ielts: "雅思", toefl: "托福", cet4: "大学英语四级"
 // 路由：#/words/<tab>[/<单元>]；旧的 #/words/quiz 当作「练习 → 测验」
 App.pages.words = {
   render(root, params, signal) {
-    let tab = ["new", "review", "practice", "list", "roots"].includes(params[0]) ? params[0] : params[0] === "quiz" ? "practice" : "new";
-    if (params[0] === "quiz") Store.prefs.word_practice = "quiz";
+    // 旧的 #/words/quiz 和每日任务里的 #/words/use、#/words/colloc 都是「练习」里的一种
+    const alias = ["quiz", "use", "colloc"].includes(params[0]) ? params[0] : "";
+    let tab = ["new", "review", "practice", "list", "roots"].includes(params[0]) ? params[0] : alias ? "practice" : "new";
+    if (alias) Store.prefs.word_practice = alias;
     const unit = params[1] !== undefined ? (tab === "roots" ? params[1] : +params[1]) : undefined;
     const due = dueWords().length;
     root.innerHTML = pageHead("单词", "",
@@ -34,14 +36,25 @@ App.pages.words = {
 
   // 练习：不影响复习安排的自由练习（测验答错的词会重新加入复习）。测验 = 选择题 + 拼写；打字 = 打单词或例句，计速度和正确率
   practice(body, signal) {
-    const m = ["typing", "cloze", "fillin"].includes(Store.prefs.word_practice) ? Store.prefs.word_practice : "quiz";
-    body.innerHTML = this.modeBar("word_practice", [["quiz", "📝 测验"], ["cloze", "✏️ 选词填空"], ["fillin", "🧩 挖词填空"], ["typing", "⌨️ 打字"]], m, "练习方式") + `<div id="pr-body"></div>`;
+    const m = ["typing", "cloze", "fillin", "colloc", "use"].includes(Store.prefs.word_practice) ? Store.prefs.word_practice : "quiz";
+    body.innerHTML = this.modeBar("word_practice", [["quiz", "📝 测验"], ["cloze", "✏️ 选词填空"], ["fillin", "🧩 挖词填空"], ["colloc", "🔗 搭配"], ["use", "💬 造句"], ["typing", "⌨️ 打字"]], m, "练习方式") + `<div id="pr-body"></div>`;
     this.bindModeBar(body);
     const box = $("#pr-body", body);
     if (m === "typing") App.pages.typing.embed(box, signal, "words");
+    else if (m === "colloc") this.collocPractice(box, signal);
+    else if (m === "use") runUseWords(box, signal);
     else if (m === "cloze") this.cloze(box, signal);
     else if (m === "fillin") this.fillin(box, signal);
     else this.quiz(box, signal);
+  },
+
+  // 常见搭配：先选一类（或者混合），10 道选择题
+  collocPractice(box, signal) {
+    const g = ["v", "a", "p"].includes(Store.prefs.colloc_group) ? Store.prefs.colloc_group : "";
+    box.innerHTML = `<div class="chips mb-s" style="justify-content:center">${[["", "混合"], ...Object.entries(COLLOCATIONS).map(([k, v]) => [k, v.title])].map(([k, l]) => `<button class="chip ${k === g ? "active" : ""}" data-cg="${k}">${l}</button>`).join("")}</div>
+      <p class="small muted center">「大雨」不是 big rain，「吃药」不是 eat medicine：这些是中文直译最容易出错的搭配。答错的会收进薄弱点本。</p><div id="cq-box"></div>`;
+    $$("[data-cg]", box).forEach((b) => (b.onclick = () => { Store.prefs.colloc_group = b.dataset.cg; Store.save(); this.collocPractice(box, signal); }));
+    runCollocQuiz($("#cq-box", box), signal, { group: g });
   },
 
   // 词汇填空：例句里挖掉一个词，从四个词里选。优先用当前词书里学过的词，不够就用当前词书第一个例句够多的单元
@@ -185,7 +198,9 @@ App.pages.words = {
     $$("[data-mode-key]", root).forEach((b) => (b.onclick = () => {
       Store.prefs[b.dataset.modeKey] = b.dataset.mode;
       Store.save();
-      Router.render();
+      // 从 #/words/use 这类地址进来的：换方式时回到 #/words/practice，不然地址又把方式改回去
+      if (/^#\/words\/(quiz|use|colloc)/.test(location.hash)) location.hash = "#/words/practice";
+      else Router.render();
     }));
   },
 
@@ -204,7 +219,9 @@ App.pages.words = {
         <p>${next ? `下一批复习在 ${next}。` : "先去学几个新词吧。"}</p>
         <div class="row" style="justify-content:center">
           ${learned.length ? `<button class="btn primary" data-practice>⌨️ 练练拼写（${Math.min(20, learned.length)} 个学过的词，不影响复习安排）</button>` : ""}
-          <a class="btn ${learned.length ? "" : "primary"}" href="#/words/new">学新词</a></div></div>`;
+          <a class="btn ${learned.length ? "" : "primary"}" href="#/words/new">学新词</a>
+          ${Weak.count() ? `<a class="btn" href="#/weak/review">🩹 复习薄弱点（${Weak.count()}）</a>` : ""}
+          ${learned.length >= 12 ? `<a class="btn ghost" href="#/games">🎲 玩一局单词游戏</a>` : ""}</div></div>`;
       const pb = $("[data-practice]", box);
       // 挑记得最不牢的词来练
       if (pb) pb.onclick = () => runSpelling(box, shuffle([...learned].sort((a, b) => Store.data.words[a.w].box - Store.data.words[b.w].box).slice(0, 20)), signal,

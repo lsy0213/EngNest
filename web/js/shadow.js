@@ -95,10 +95,40 @@ function pronTip(target, heard) {
   return "听起来像别的词，点 🔊 和 🐢 多听几遍原音，注意元音的长短和重音位置。";
 }
 
+// ---------- 音素级评测（engnest/phoneme.py，模型在设置里下载）----------
+// 模型输出美式音素；显示时换成发音课用的音标（英式写法），讲解和辨音练习都从发音课的 SOUNDS 里取
+const PH_TO_SOUND = { i: "iː", ɪ: "ɪ", ɛ: "e", æ: "æ", ɑ: "ɑː", ə: "ə", ɝ: "ɜː", u: "uː", ʊ: "ʊ", eɪ: "eɪ", aɪ: "aɪ", ɔɪ: "ɔɪ", aʊ: "aʊ", oʊ: "əʊ", ʧ: "tʃ", ʤ: "dʒ", ɹ: "r", ɾ: "t" };
+const phSym = (p) => PH_TO_SOUND[p] || p;
+const phSound = (p) => (window.SOUNDS || []).find((s) => s[0] === phSym(p));
+const PH_VOWELS = new Set("i ɪ ɛ æ ɑ ə ɝ u ʊ eɪ aɪ ɔɪ aʊ oʊ".split(" "));
+// 一种错误（标准音 p → 读成 heard）的说明
+function phIssueTip(x) {
+  if (!x.p) return { title: `多读了 /${phSym(x.heard)}/`, tip: "辅音后面别加「呃」：中文的字都以元音结尾，读英语时容易在词尾的辅音后面多带一个音（book 读成 booka）。辅音收住就好。" };
+  const s = phSound(x.p);
+  if (!x.heard) {
+    return { title: `/${phSym(x.p)}/ 没读出来`, tip: PH_VOWELS.has(x.p) ? `元音要读饱满。${s ? s[2] : ""}` : `辅音别吞掉：中文没有辅音结尾，词尾的 /${phSym(x.p)}/ 很容易省掉，轻轻地读出来。${s ? s[2] : ""}`, pair: s?.[6] };
+  }
+  return { title: `/${phSym(x.p)}/ 读成了 /${phSym(x.heard)}/`, tip: s ? `${s[3]} 怎么发：${s[2]}` : "", pair: s?.[6] || phSound(x.heard)?.[6] };
+}
+function phonemeHtml(r) {
+  if (!r?.ok) return "";
+  const words = r.words.filter((w) => w.known && w.phones.length);
+  const cls = (s) => (s == null ? "" : s >= 90 ? "good" : s >= 70 ? "warn" : "bad");
+  return `<div class="sh-ph">
+    <div class="small muted">🔬 每个音 <span class="faint">（按美式发音评测，红色是读得不对的音）</span>${r.score != null ? ` · 音素得分 <b class="${cls(r.score)}-text">${r.score}</b>` : ""}</div>
+    <div class="sh-ph-words">${r.words.map((w) => !w.known ? `<span class="ph-word unknown" title="词典里没有这个词，没有评分"><b class="en">${esc(w.w)}</b></span>`
+      : `<span class="ph-word ${cls(w.score)}" data-say="${esc(w.w)}" title="点一下听原音"><b class="en">${esc(w.w)}</b><span class="ph-row">${w.phones.map((x) => `<i class="${x.ok ? "ok" : x.weak ? "soft" : "bad"}" title="${x.ok ? "读对了" : x.heard ? `读成了 /${phSym(x.heard)}/` : "没读出来"}">${esc(phSym(x.p))}${!x.ok && x.heard ? `<sub>${esc(phSym(x.heard))}</sub>` : ""}</i>`).join("")}${w.inserted.length ? `<i class="bad" title="多读了">+${esc(w.inserted.map(phSym).join(""))}</i>` : ""}</span></span>`).join("")}</div>
+    ${r.issues.length ? `<div class="sh-ph-issues">${r.issues.map((x) => { const t = phIssueTip(x); return `<div class="sh-issue"><b>${esc(t.title)}</b> <span class="small faint">（${esc(x.words.join("、"))}）</span>
+      <div class="small">${esc(t.tip)}</div>${t.pair ? `<a class="small" href="#/speaking/pairs/${esc(t.pair)}" data-close>👂 去做辨音训练 ›</a>` : ""}</div>`; }).join("")}</div>`
+      : words.length ? `<div class="small good-text mt-s">每个音都读对了 👍</div>` : ""}
+  </div>`;
+}
+
 // ---------- 面板 ----------
 const Shadow = {
   isOpen: false,
   run: 0,
+  phReady: null, // 音素评测模型下载了没有（打开面板时看一次）
 
   // 按 Ctrl+M 或点「跟读当前」时：选中的英文 → 鼠标所在的行 → 页面登记的当前内容
   openFor() {
@@ -151,6 +181,7 @@ const Shadow = {
     });
     m.root.querySelector(".modal").classList.add("sh-modal");
     const q = (s) => $(s, m.root);
+    if (Store.bridge) pywebview.api.phoneme_status().then((s) => { this.phReady = !!(s?.available && s.model); }).catch(() => { this.phReady = false; });
 
     const best = () => (Store.data.pron ||= {})[selNorm(it.en)];
     const drawTarget = () => {
@@ -237,9 +268,25 @@ const Shadow = {
       const key = selNorm(it.en), old = (Store.data.pron ||= {})[key];
       Store.data.pron[key] = { best: Math.max(result.score, old?.best || 0), last: result.score, n: (old?.n || 0) + 1, date: today(), t: Date.now() };
       Store.data.stats.speaking++;
-      addXP(result.score >= 80 ? 3 : 2);
+      addXP(result.score >= 80 ? 3 : 2, "c_shadow");
       state = "done"; msg = ""; drawState(); drawTarget();
       drawResult();
+      // 下载了音素评测模型：再听一遍每个音读成了什么
+      if (this.phReady) {
+        const slot = q("#sh-ph-slot");
+        slot.innerHTML = `<div class="small faint">🔬 正在分析每个音…</div>`;
+        let ph;
+        try { ph = await pywebview.api.stt_phonemes(rec.pcm, it.en); } catch (e) { ph = { ok: false, error: String(e) }; }
+        if (my !== this.run) return;
+        result.ph = ph?.ok ? ph : null;
+        slot.innerHTML = ph?.ok ? phonemeHtml(ph) : `<div class="small faint">每个音的分析没做成：${esc(ph?.error || "")}</div>`;
+      }
+      // 读得不清楚的句子收进薄弱点本（有音素分析时写上是哪个音）
+      if (result.score < 60 || (result.ph?.score != null && result.ph.score < 70)) {
+        const bad = result.words.filter((x) => x.state !== "good").map((x) => x.w.replace(/^[^\w']+|[^\w']+$/g, "")).filter(Boolean);
+        const phNote = (result.ph?.issues || []).slice(0, 3).map((x) => phIssueTip(x).title).join("；");
+        Weak.add("sound", it.en, { en: it.en, zh: it.zh || "", src: "跟读评测", note: `${result.score} 分${phNote ? `，${phNote}` : bad.length ? `，不太清楚：${bad.slice(0, 6).join(" ")}` : ""}` });
+      }
       feedback(my);
     };
 
@@ -269,7 +316,8 @@ const Shadow = {
             ].filter(Boolean).join(" · ")}</div>
           </div></div>
         <div class="sh-legend small faint"><span class="sh-w good">清楚</span><span class="sh-w weak">不太清楚</span><span class="sh-w bad">没听清</span><span class="sh-w miss">漏读</span> 点词可以听原音
-          <details class="sh-about"><summary>这个分数是怎么算的？</summary>离线语音识别（Whisper）把你的录音转成文字，看每个词有没有被认出来、认得有多确定，再加上语速和停顿。它反映的是「别人能不能听懂你」，<b>不是</b>逐个音素的发音打分：读成了相近的音、重音或语调不对，有时也会被判为清楚。开了 AI 时，AI 会再根据识别结果指出可能读错的音。</details></div>
+          <details class="sh-about"><summary>这个分数是怎么算的？</summary>离线语音识别（Whisper）把你的录音转成文字，看每个词有没有被认出来、认得有多确定，再加上语速和停顿。它反映的是「别人能不能听懂你」。${this.phReady ? "下面「每个音」那一栏是另一个模型（wav2vec2 音素识别）逐个音听出来的结果，按美式发音和 CMU 发音词典比对；英式读法（比如 /ɒ/、不卷舌的 r）可能会被标成读错。" : "想知道每个音读得对不对，可以在「设置」里下载「音素级发音评测」模型。"}开了 AI 时，AI 会再根据识别结果指出可能读错的音。</details></div>
+        <div id="sh-ph-slot"></div>
         <div id="sh-ai"></div>`;
     };
 
@@ -278,6 +326,7 @@ const Shadow = {
       const box = q("#sh-ai"), r = result;
       const probs = r.words.filter((x) => x.state !== "good");
       const ipaOf = (w) => lookupWord(w)?.ph || "";
+      if (!AI.enabled && r.ph) { box.innerHTML = r.ph.issues.length ? `<div class="small faint mt-s">开启 AI 后可以得到更具体的纠音建议。</div>` : ""; return; }
       if (!AI.enabled) {
         box.innerHTML = probs.length ? `<div class="explain">${probs.slice(0, 4).map((x) => {
           const w = x.w.replace(/^[^\w']+|[^\w']+$/g, "");
@@ -294,7 +343,7 @@ const Shadow = {
 An offline speech recognizer (Whisper) transcribed the recording as: "${r.text}"
 Word-by-word alignment (target word → result, recognizer confidence 0-1):
 ${align}
-${r.extra.length ? `Extra words heard: ${r.extra.join(" ")}\n` : ""}${r.secs ? `Speaking time: ${r.secs.toFixed(1)} s for ${r.words.length} words, ${r.pauses || 0} pauses longer than 0.6 s.\n` : ""}
+${r.extra.length ? `Extra words heard: ${r.extra.join(" ")}\n` : ""}${r.ph ? `A phoneme recognizer (American English) heard the phones: /${r.ph.heard}/. Mismatches against the dictionary pronunciation: ${r.ph.issues.map((x) => `${x.p ? `/${x.p}/` : "(extra sound)"} → ${x.heard ? `/${x.heard}/` : "(missing)"} in ${x.words.join(", ")}`).join("; ") || "none"}. Use this as strong evidence about which sounds were wrong.\n` : ""}${r.secs ? `Speaking time: ${r.secs.toFixed(1)} s for ${r.words.length} words, ${r.pauses || 0} pauses longer than 0.6 s.\n` : ""}
 The recognizer cannot hear phonemes directly: a word heard as a different word, or with confidence below about 0.6, was probably pronounced unclearly. Infer the most likely cause from what it was heard as and from typical problems of Chinese speakers (th, v/w, l/n, r/l, dropped final consonants, added vowels after final consonants, short/long vowels, word stress). Numbers written as digits, contractions and spelling variants are not errors. If everything matched with high confidence, praise briefly and give at most one tip about stress, linking or intonation for this text.
 Return JSON: {"summary": "一句中文总评，鼓励为主，不超过40字", "issues": [{"word": "target word", "ipa": "American IPA of the word, like /θɪŋk/", "problem": "中文：可能哪里读得不对", "fix": "中文：具体怎么改（舌位、嘴型、对比词）"}], "tips": ["中文：这句话的连读、重音、语调或节奏提示"]}
 At most 4 issues (most important first, empty list if none) and at most 2 tips.`);

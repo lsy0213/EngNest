@@ -81,7 +81,8 @@ App.pages.course = {
     if (!due.length) {
       const next = Object.values(SentSRS.data()).map((x) => x.due).sort()[0];
       box.innerHTML = `<div class="card empty"><div class="big">🎉</div><h3>今天没有要复习的</h3>
-        <p>${next ? `下一次复习在 ${esc(next)}。` : "学完短语课，或者在生词本里收藏句子，就会出现在这里。"}</p><a class="btn primary" href="#/course">去学新短语</a></div>`;
+        <p>${next ? `下一次复习在 ${esc(next)}。` : "学完短语课，或者在生词本里收藏句子，就会出现在这里。"}</p>
+        <div class="row" style="justify-content:center;flex-wrap:wrap"><a class="btn primary" href="#/course">去学新短语</a>${Weak.count() ? `<a class="btn" href="#/weak/review">🩹 复习薄弱点（${Weak.count()}）</a>` : ""}<a class="btn ghost" href="#/words/colloc">🔗 练练搭配</a></div></div>`;
       return;
     }
     const batch = due.slice(0, 30);
@@ -255,6 +256,7 @@ App.pages.course = {
     sample(items, Math.min(6, items.length)).forEach((p) => steps.push({ type: qType(p), p }));
 
     const st = { i: 0, right: 0, total: 0 };
+    const session = Session.start();
     let answered = false, current = null;
     // Ctrl+M 跟读：新短语介绍页和答完题之后可以跟读（答题时会泄露答案，不行）
     App.shadowTarget = () => (answered && current?.p ? [{ en: current.p.en, zh: current.p.zh, label: "短语" }] : null);
@@ -361,6 +363,7 @@ App.pages.course = {
       rec.last = today();
       if (ok) { st.right++; rec.right++; addXP(1); }
       else if (!current.retry) steps.push({ ...current, retry: true }); // 答错的题最后再来一次（只重来一次）
+      if (!ok && !current.retry) Weak.add("phrase", p.en, { en: p.en, zh: p.zh, note: p.tip || "", src: "场景短语" });
       if (btn) {
         const answer = { listen: p.zh, zh2en: p.en, fill: current.ans }[current.type];
         $$(".option", stage).forEach((b) => {
@@ -383,7 +386,7 @@ App.pages.course = {
     const finish = () => {
       const acc = st.total ? st.right / st.total : 1;
       const stars = acc >= 0.9 ? 3 : acc >= 0.7 ? 2 : 1;
-      addXP(5 + stars * 2);
+      addXP(5 + stars * 2, "c_course");
       if (opt.kind === "lesson") {
         const old = this.rec(opt.ui, opt.li);
         Store.data.course[this.key(opt.ui, opt.li)] = { stars: Math.max(stars, old?.stars || 0), date: today(), count: (old?.count || 0) + 1 };
@@ -403,6 +406,7 @@ App.pages.course = {
         <div class="stars-big">${"★".repeat(stars)}<span class="faint">${"☆".repeat(3 - stars)}</span></div>
         <h2 class="mt-s">${stars === 3 ? "完美通关！" : stars === 2 ? "做得不错！" : "完成了，再练一次会更好！"}</h2>
         <p class="muted">正确率 ${Math.round(acc * 100)}% · 学习了 ${items.length} 个短语</p>
+        ${Session.stripHtml(session)}
         <div class="row mt" style="justify-content:center">
           ${nextBtn}
           <a class="btn lg" href="#/course">返回路径</a></div></div>`;

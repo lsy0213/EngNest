@@ -17,6 +17,9 @@ App.pages.home = {
     const items = [];
     if (due) items.push({ href: "#/words/review", ico: "🔁", title: "复习单词", sub: `有 ${due} 个词快忘了，先复习`, min: Math.ceil(due / 6), done: false });
     if (sdue) items.push({ href: "#/course/review", ico: "🔁", title: "复习短语句子", sub: `${sdue} 条`, min: Math.ceil(sdue / 4), done: false });
+    const wdue = Weak.count();
+    if (wdue) items.push({ href: "#/weak/review", ico: "🩹", title: "复习薄弱点", sub: `${wdue} 条以前做错的，再练一次`, min: Math.ceil(wdue / 3), done: false });
+    if (due >= 5) items.push({ href: "#/story", ico: "📜", title: "今日故事", sub: "用今天要复习的词写的小故事，在语境里再见一次", min: 5, done: !!dayRec().c_story });
     items.push({ href: "#/words/new", ico: "🆕", title: "学新词", sub: newLeft ? `今天还能学 ${newLeft} 个（${curBook().title}）` : "今天的新词学完了", min: Math.ceil(newLeft / 3), done: !newLeft });
     const daily = { href: "#/course/daily", ico: "☀️", title: "每日一课", sub: "场景短语，约 5 分钟", min: 5, done: !!(d.course_daily || {})[t] };
     const grammar = { href: `#/grammar/${nextLesson.id}`, ico: "🧩", title: "语法一课", sub: nextLesson.title, min: 8, done: didToday(d.grammar) };
@@ -97,7 +100,7 @@ App.pages.home = {
         <div class="hero-copy">
           <div class="hero-kicker">英语小窝 · 今日手札</div>
           <h1>${hello}！欢迎回到小窝</h1>
-          <div class="muted">${st > 0 ? `已经连续学习 <b>${st}</b> 天，继续保持！` : "今天是重新出发的好日子，从几个单词开始吧。"}
+          <div class="muted">${st > 0 ? `已经连续学习 <b>${st}</b> 天${Freeze.rec.n ? `（还有 ${Freeze.rec.n} 张 🧊 连胜保护）` : ""}，继续保持！` : "今天是重新出发的好日子，从几个单词开始吧。"}
             ${pct >= 1 ? " 🎯 今日目标已完成！" : ""}</div>
         </div>
         <div class="hero-art" aria-hidden="true">
@@ -108,6 +111,8 @@ App.pages.home = {
       </div>
 
       ${!Store.prefs.onboarded && !Store.data.level ? this.onboarding() : ""}
+      ${Weekly.homeHtml()}
+      ${discoverHtml()}
       ${(() => { const a = this.advice(); return a ? `<div class="explain row" style="margin-bottom:14px"><span style="flex:1">💡 ${esc(a.text)}</span><a class="btn sm soft" href="${a.href}">${a.btn}</a></div>` : ""; })()}
       <div class="grid grid-2">
         <div class="card">
@@ -119,8 +124,9 @@ App.pages.home = {
           </div>
         </div>
         <div class="stack">
+          ${questCardHtml()}
           <div class="card">
-            <div class="card-title">📊 学习统计 <span class="spacer"></span><a class="small" href="#/stats">更多统计 ›</a></div>
+            <div class="card-title">📊 学习统计 <span class="spacer"></span><a class="small" href="#/achv">🏆 成就 ${ACHIEVEMENTS.filter((a) => Achv.level(a) > 0).length}/${ACHIEVEMENTS.length}</a><a class="small" href="#/stats">更多统计 ›</a></div>
             <div class="grid grid-2" style="gap:10px">
               <div class="stat"><b>${bookLearned}<small class="faint" style="font-size:14px"> / ${curBook().count}</small></b><span>${curBook().title} · 共学过 ${learned} 词</span></div>
               <div class="stat"><b>${mastered}</b><span>已掌握单词</span></div>
@@ -145,6 +151,7 @@ App.pages.home = {
     // 继续阅读：导入的读物的书目要先从 Python 端取
     Docs.library().then(() => { const el = $("#home-shelf", root); if (el) el.innerHTML = Shelf.homeHtml(); });
 
+    Weekly.bind(root, () => {});
     // 新手引导和学习目标
     root.onclick = (e) => {
       const g = e.target.closest("[data-goal]");
@@ -169,9 +176,9 @@ App.pages.home = {
       const cells = [];
       for (let i = 34; i >= 0; i--) {
         const date = addDays(today(), -i);
-        const xp = d.days[date]?.xp || 0;
-        const lv = xp === 0 ? "" : xp < goal / 2 ? "l1" : xp < goal ? "l2" : "l3";
-        cells.push(`<i class="${lv} ${i === 0 ? "today" : ""}" title="${date}：${xp} XP"></i>`);
+        const xp = d.days[date]?.xp || 0, fz = !xp && d.days[date]?.frozen;
+        const lv = fz ? "frozen" : xp === 0 ? "" : xp < goal / 2 ? "l1" : xp < goal ? "l2" : "l3";
+        cells.push(`<i class="${lv} ${i === 0 ? "today" : ""}" title="${date}：${fz ? "用了连胜保护 🧊" : `${xp} XP`}"></i>`);
       }
       return cells.join("");
     }

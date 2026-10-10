@@ -142,11 +142,13 @@ App.pages.level = {
     const idx = Math.round((vIdx * 2 + gIdx + lIdx) / 4); // 词汇量权重大一些
     const level = { cefr: CEFR_NAMES[idx], idx, vocab, date: today(), parts: { vocab: CEFR_NAMES[vIdx], grammar: Math.round(g * 100), listen: Math.round(l * 100) } };
     Store.data.level = level;
+    (Store.data.level_hist ||= {})[today()] = { cefr: level.cefr, vocab, t: Date.now() }; // 统计页画词汇量变化用
     Store.prefs.read_level = Math.min(4, Math.max(1, idx));
     Store.save();
     addXP(10);
     const book = BOOK_MAP[LEVEL_BOOK[idx]];
     const wrongs = qs.map((q, k) => (!ans[k] && q.part === "grammar" ? q : null)).filter(Boolean);
+    wrongs.forEach((q) => Weak.add("gram", q.prompt, { q: { q: q.prompt, o: q.opts, a: q.a, e: q.explain || "" }, en: q.prompt, note: q.explain || "", src: "水平测试" }));
     root.innerHTML = pageHead("测试结果", "") + `
       <div class="card center">
         <div class="level-badge">${level.cefr}</div>

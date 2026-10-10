@@ -2,6 +2,68 @@
 const DAILY_NEW_PRESETS = [5, 10, 15, 20, 30, 50];
 
 App.pages.settings = {
+  // 服务器模式：手机推送（关掉网页也能收到学习提醒）
+  async pushField(box) {
+    if (!Store.server || !box) return;
+    const st = await pywebview.api.push_status().catch(() => null);
+    if (!box.isConnected || !st?.available) return;
+    const can = "serviceWorker" in navigator && "PushManager" in window;
+    const ios = /iPhone|iPad/.test(navigator.userAgent) && !window.matchMedia?.("(display-mode: standalone)").matches;
+    box.innerHTML = `<label>📲 手机推送</label>
+      <div class="row" style="gap:8px;flex-wrap:wrap">${st.on ? `<span class="badge good">已开启 · ${esc(st.remind)}</span><button class="btn sm ghost" data-push="off">关掉</button>`
+        : `<button class="btn sm primary" data-push="on" ${can && !ios ? "" : "disabled"}>开启推送</button>`}</div>
+      <span class="help">${ios ? "iPhone 要先在 Safari 里「分享 → 添加到主屏幕」，再从主屏幕打开小窝，才能开启推送。" : can ? "关掉网页也能收到：按上面选的时间，今天还没学就推一条。" : "这个浏览器不支持网页推送。"}</span>`;
+    box.onclick = async (e) => {
+      const b = e.target.closest("[data-push]");
+      if (!b) return;
+      b.disabled = true;
+      try {
+        if (b.dataset.push === "on") { if (!Store.prefs.remind) { Store.prefs.remind = "21:00"; Store.save(); } await Reminder.subscribe(); toast("已开启手机推送", "good"); }
+        else { await Reminder.unsubscribe(); toast("已关闭手机推送"); }
+      } catch (err) { toast(err.message || String(err), "bad", 5000); }
+      this.pushField(box);
+    };
+  },
+
+  // FSRS 参数优化：状态和按钮
+  fsrsOptHtml() {
+    const p = Store.prefs, info = p.fsrs_w_info, n = FsrsOpt.sequences(Store.data.revlog).reduce((s, q) => s + q.filter(([t], i) => i > 0 && t > 0).length, 0);
+    return `<div class="small muted">FSRS 默认参数来自几亿条别人的复习记录。复习得够多以后，可以用你自己的记录重新拟合，间隔会更贴合你的记忆。全部在本机计算。</div>
+      <div class="row mt-s" style="gap:8px;flex-wrap:wrap">
+        <button class="btn sm" data-fsrs-run ${n < FsrsOpt.MIN_REVIEWS ? "disabled" : ""}>⚙️ 开始优化</button>
+        ${p.fsrs_w ? `<button class="btn sm ghost" data-fsrs-reset>恢复默认参数</button>` : ""}
+        <span class="small ${p.fsrs_w ? "good-text" : "faint"}">${p.fsrs_w && info ? `正在用你的参数（${esc(info.date)} 优化，预测误差 ${(info.before * 100).toFixed(1)}% → ${(info.after * 100).toFixed(1)}%）` : n < FsrsOpt.MIN_REVIEWS ? `现在有 ${n} 次复习，攒够 ${FsrsOpt.MIN_REVIEWS} 次就可以优化` : `有 ${n} 次复习，可以优化了`}</span></div>
+      <div id="fsrs-prog" class="mt-s"></div>`;
+  },
+  bindFsrsOpt(box) {
+    box.onclick = async (e) => {
+      if (e.target.closest("[data-fsrs-reset]")) { delete Store.prefs.fsrs_w; delete Store.prefs.fsrs_w_info; Store.save(); box.innerHTML = this.fsrsOptHtml(); toast("已恢复默认参数", "good"); return; }
+      if (!e.target.closest("[data-fsrs-run]")) return;
+      const btn = e.target.closest("[data-fsrs-run]"), prog = $("#fsrs-prog", box);
+      btn.disabled = true;
+      prog.innerHTML = `<div class="bar"><i style="width:0%"></i></div><div class="small faint">正在计算，大约需要几秒到半分钟……</div>`;
+      const r = await FsrsOpt.optimize(Store.data.revlog, { onProgress: (f) => { const i = $("i", prog); if (i) i.style.width = `${Math.round(f * 100)}%`; } });
+      if (!box.isConnected) return;
+      if (!r.ok) { prog.innerHTML = `<div class="small bad-text">复习记录还不够（${r.reviews} / ${r.need}）。</div>`; btn.disabled = false; return; }
+      const pct = (x) => `${(x * 100).toFixed(1)}%`;
+      if (!r.better) { prog.innerHTML = `<div class="explain">用你的记录算出来的参数，预测并没有比默认的更准（${pct(r.before.rmse)} → ${pct(r.after.rmse)}），继续用默认参数就好。复习得更多以后可以再试。</div>`; btn.disabled = false; return; }
+      const m = modal(`<h3>⚙️ 优化完成</h3><p>用 ${r.cards} 个词、${r.reviews} 次复习算出了你的参数。拿一部分没参与计算的记录检验：</p>
+        <ul><li>预测误差（RMSE）：${pct(r.before.rmse)} → <b>${pct(r.after.rmse)}</b></li><li>对数损失：${r.before.logLoss.toFixed(4)} → <b>${r.after.logLoss.toFixed(4)}</b></li></ul>
+        <p class="small muted">换成新参数后，之后每次评分都按新参数安排；已经排好的日子不变。随时可以恢复默认。</p>
+        <div class="modal-actions"><button class="btn" data-close>先不用</button><button class="btn primary" data-use>用我的参数</button></div>`);
+      $("[data-use]", m.root).onclick = () => {
+        Store.prefs.fsrs_w = r.w;
+        Store.prefs.fsrs_w_info = { date: today(), before: r.before.rmse, after: r.after.rmse, reviews: r.reviews };
+        Store.save();
+        m.close();
+        box.innerHTML = this.fsrsOptHtml();
+        toast("已换成你的参数", "good");
+      };
+      prog.innerHTML = "";
+      btn.disabled = false;
+    };
+  },
+
   // 英汉词典：内置精简版；可以下载完整版（在本机生成，下载和生成期间每秒刷新一次进度）
   async dictCard(box) {
     const s = await pywebview.api.dict_status();
@@ -57,6 +119,26 @@ App.pages.settings = {
   },
 
   // 离线语音识别：AI 语伴「点击说话」用的 Whisper 模型
+  async phonemeCard(box) {
+    const s = await pywebview.api.phoneme_status();
+    const pct = Math.round(s.progress * 100);
+    box.innerHTML = `<div class="card-title">🔬 音素级发音评测 <span class="badge ${s.model ? "good" : ""}">${s.model ? "已就绪" : "未下载"}</span></div>
+      <p class="small muted" style="margin-top:-4px">跟读评测时听出你每个音读成了什么（比如 think 的 /θ/ 读成了 /s/），告诉你该练哪个音。用开源的 wav2vec2 音素识别模型和 CMU 发音词典（美式发音），只在你的电脑上运行。</p>
+      ${!s.available ? `<div class="small faint">这个版本没有带需要的组件。</div>`
+        : s.running ? `<div class="small">下载中 ${pct}%</div><div class="bar mt-s"><i style="width:${pct}%"></i></div>`
+        : s.model ? `<div class="row"><span class="small muted">模型已下载（约 ${s.size_mb} MB）。跟读评测的结果里会多出「每个音」一栏。</span><span class="spacer"></span><button class="btn sm" id="ph-rm">删除模型</button></div>`
+        : `<div class="row"><span class="small muted">需要下载模型，约 ${s.size_mb} MB（Hugging Face 连不上时自动换镜像）。</span><span class="spacer"></span><button class="btn soft" id="ph-dl">⬇ 下载模型</button></div>`}
+      ${s.stage === "error" ? `<div class="explain bad">下载失败：${esc(s.error)}</div>` : ""}`;
+    const dl = $("#ph-dl", box), rm = $("#ph-rm", box);
+    if (dl) dl.onclick = async () => { await pywebview.api.phoneme_download(); this.phonemeCard(box); };
+    if (rm) rm.onclick = async () => {
+      if (!(await confirmBox("删除发音评测模型", "删除后跟读评测只显示整词的结果，以后可以再下载。"))) return;
+      await pywebview.api.phoneme_remove();
+      this.phonemeCard(box);
+    };
+    if (s.running) setTimeout(() => { if (box.isConnected) this.phonemeCard(box); }, 1000);
+  },
+
   async sttCard(box) {
     const s = await pywebview.api.stt_status();
     const pct = Math.round(s.progress * 100);
@@ -121,6 +203,11 @@ App.pages.settings = {
           <div class="field"><label>复习时希望记得多少</label>
             <select class="select" id="retention">${[[0.85, "85%（复习少一些）"], [0.9, "90%（推荐）"], [0.95, "95%（记得更牢，复习更多）"]].map(([n, t]) => `<option value="${n}" ${n === (p.retention || 0.9) ? "selected" : ""}>${t}</option>`).join("")}</select>
             <span class="help">复习安排用 FSRS 记忆算法：按每个词你记得牢不牢，算出它快要忘掉的那天再让你复习。</span></div>
+          <div class="field"><label>复习量均衡</label>
+            <select class="select" id="load-bal">${[["on", "开：把复习摊匀，不会某天特别多（推荐）"], ["weekend", "开，而且周末少排一点"], ["off", "关：完全按算法的日子"]].map(([v, t]) => `<option value="${v}" ${(p.load_balance === false ? "off" : p.easy_weekend ? "weekend" : "on") === v ? "selected" : ""}>${t}</option>`).join("")}</select>
+            <span class="help">间隔 3 天以上的词，在算出来的日子前后一两天里挑复习最少的那天。只影响以后的安排。</span></div>
+          <div class="field" style="grid-column:1/-1"><label>用我自己的记录优化复习算法</label>
+            <div id="fsrs-opt">${this.fsrsOptHtml()}</div></div>
           <div class="field"><label>英文释义（英英）</label>
             <select class="select" id="en-def">${[["auto", "自动：看得懂就先显示英文（推荐）"], ["zh", "总是先中文，英文放下面"], ["en", "总是先英文（挑战）"], ["off", "不显示"]].map(([v, t]) => `<option value="${v}" ${(p.en_def || "auto") === v ? "selected" : ""}>${t}</option>`).join("")}</select>
             <span class="help">用简单英语写的释义（来自 Simple English Wiktionary）。自动：释义里你不认识的词不超过 1 个才先显示英文，不然先显示中文，学的词越多，英文出现得越多。</span></div>
@@ -130,6 +217,17 @@ App.pages.settings = {
             <select class="select" id="card-anim"><option value="page" ${p.card_anim === "slide" ? "" : "selected"}>📖 像翻书一样翻页</option><option value="slide" ${p.card_anim === "slide" ? "selected" : ""}>🃏 滑出去</option></select>
             <span class="help">手机比较卡的话可以换成「滑出去」。</span></div>
         </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⏰ 学习提醒</div>
+        <div class="form-grid">
+          <div class="field"><label>每天几点提醒</label>
+            <select class="select" id="remind">${[["", "不提醒"], ["08:00", "早上 8:00"], ["12:30", "中午 12:30"], ["19:00", "晚上 7:00"], ["20:00", "晚上 8:00"], ["21:00", "晚上 9:00"], ["22:00", "晚上 10:00"]].map(([v, t]) => `<option value="${v}" ${(p.remind || "") === v ? "selected" : ""}>${t}</option>`).join("")}</select>
+            <span class="help">${Store.bridge && !Store.remote ? "到了这个时间今天还没学，就弹一条 Windows 通知（软件要开着，最小化也行）。" : "到了这个时间今天还没学，网页开着时会提醒。"}</span></div>
+          <div class="field" id="push-field"></div>
+        </div>
+        <div class="row mt"><button class="btn soft sm" id="remind-try">试一下提醒</button></div>
       </div>
 
       <div class="card">
@@ -165,7 +263,7 @@ App.pages.settings = {
         <div class="row mt"><button class="btn soft" id="tech-browse">📚 浏览计算机词典</button></div>
       </div>
 
-      ${Store.bridge && (!Store.remote || Store.who?.admin) ? `<div class="card" id="piper-card"></div><div class="card" id="dict-card"></div><div class="card" id="stt-card"></div><div class="card" id="net-card"></div>` : ""}
+      ${Store.bridge && (!Store.remote || Store.who?.admin) ? `<div class="card" id="piper-card"></div><div class="card" id="dict-card"></div><div class="card" id="stt-card"></div><div class="card" id="phoneme-card"></div><div class="card" id="net-card"></div>` : ""}
 
       ${Store.bridge && !Store.remote ? `<div class="card" id="dav-card"></div>` : ""}
       <div class="card" id="data-card">
@@ -185,6 +283,7 @@ App.pages.settings = {
 
     if ($("#dict-card", root)) this.dictCard($("#dict-card", root));
     if ($("#stt-card", root)) this.sttCard($("#stt-card", root));
+    if ($("#phoneme-card", root)) this.phonemeCard($("#phoneme-card", root));
     if ($("#net-card", root)) this.netCard($("#net-card", root));
     if ($("#piper-card", root)) this.piperCard($("#piper-card", root));
     if ($("#dav-card", root)) this.davCard($("#dav-card", root));
@@ -244,6 +343,20 @@ App.pages.settings = {
     $("#retention", root).onchange = (e) => { p.retention = +e.target.value; Store.save(); toast("已保存，之后的复习按新的目标安排", "good"); };
     $("#swipe-dir", root).onchange = (e) => { p.swipe_right_known = e.target.value === "right"; Store.save(); toast("已保存", "good"); };
     $("#card-anim", root).onchange = (e) => { p.card_anim = e.target.value; Store.save(); toast("已保存", "good"); };
+    $("#load-bal", root).onchange = (e) => { p.load_balance = e.target.value !== "off"; p.easy_weekend = e.target.value === "weekend"; Store.save(); toast("已保存，之后的复习按这个安排", "good"); };
+    this.bindFsrsOpt($("#fsrs-opt", root));
+    $("#remind", root).onchange = async (e) => {
+      p.remind = e.target.value;
+      Store.save();
+      try { localStorage.removeItem(Reminder.KEY); } catch { /* 无所谓 */ }
+      // 订阅了推送的话，把新时间告诉服务器
+      if (p.remind && Store.server) { const st = await pywebview.api.push_status().catch(() => null); if (st?.on) Reminder.subscribe().catch(() => {}); }
+      // 网页里提醒需要通知权限（电脑上用系统通知，不用问）
+      if (p.remind && Store.remote && "Notification" in window && Notification.permission === "default") Notification.requestPermission().catch(() => {});
+      toast(p.remind ? `每天 ${p.remind} 提醒` : "已关闭学习提醒", "good");
+    };
+    $("#remind-try", root).onclick = () => Reminder.notify(Reminder.text());
+    this.pushField($("#push-field", root));
     if ($("#acc-card", root)) this.accountCard(root);
     if ($("#admin-card", root)) this.adminCard($("#admin-card", root));
     const lo = $("#lan-logout", root);

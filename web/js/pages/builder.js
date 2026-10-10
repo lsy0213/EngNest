@@ -474,6 +474,7 @@ App.pages.builder = {
       const s = cur_();
       const perfect = stepErr === 0 && stepHints === 0;
       card.classList.add("ok");
+      if (s.last) bump("c_build");
       if (perfect) {
         st.combo++;
         st.perfects++;

@@ -32,6 +32,8 @@ const ABOUT_SOURCES = [
   ["可选下载（不随软件分发）", [
     ["雅思阅读练习题库", "sallowayma-git/IELTS-practice", "https://github.com/sallowayma-git/IELTS-practice", "代码 GPL-3.0；题源版权归原权利人，仅供个人学习"],
     ["雅思资料包（词汇真经、179、538、写作 100 句、语法讲义）", "hefengxian/my-ielts", "https://github.com/hefengxian/my-ielts", "个人备考笔记，未声明协议：在软件里下载到本机，仅供个人学习，请勿再分发"],
+    ["音素级发音评测模型", "robg/speako-phoneme-recognizer（vitouphy/wav2vec2-xls-r-300m-timit-phoneme 的 ONNX 版）", "https://huggingface.co/robg/speako-phoneme-recognizer", "Apache-2.0"],
+    ["美式发音词典（发音评测用）", "cmusphinx/cmudict", "https://github.com/cmusphinx/cmudict", "BSD 风格（© Carnegie Mellon University）"],
   ]],
   ["软件组件", [
     ["桌面窗口", "r0x0r/pywebview", "https://github.com/r0x0r/pywebview", "BSD-3-Clause"],
@@ -45,7 +47,7 @@ App.pages.about = {
   render(root) {
     root.innerHTML = `<a class="back-link" href="#/settings">‹ 返回设置</a>` + pageHead("内容来源与开源许可", "EngNest 里的内容和组件来自下面这些地方，感谢它们的作者。") + `
       <div class="card"><p class="small muted" style="margin:0">语法、短语、连词成句、主题词汇、发音课、辨音训练、连读与语调、流利度话题、词根词缀、场景口语、
-        常识 / 专业 / 新闻 / 文化 / 地理 / 历史短文、原创小说、合租日记和人生剧场的剧本、雅思口语和写作模考题，都是本项目编写的。
+        常识 / 专业 / 新闻 / 文化 / 地理 / 历史短文、原创小说、合租日记和人生剧场的剧本、雅思口语和写作模考题、常见搭配、听力侦探的案子、日记题目，都是本项目编写的。
         「正版剧集与频道」只提供链接和介绍，不提供任何受版权保护的视频。</p></div>
       ${ABOUT_SOURCES.map(([group, items]) => `<div class="card"><div class="card-title">${esc(group)}</div>
         <table class="word-table about-table" style="margin-top:0">${items.map(([what, who, url, lic]) => `<tr>

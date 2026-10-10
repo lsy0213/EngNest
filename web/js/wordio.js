@@ -128,7 +128,10 @@ const WordIO = {
     const m = modal(`<h3>导入 / 导出</h3>
       <div class="field"><label>导出到 Anki</label>
         <div class="row" style="flex-wrap:wrap"><button class="btn" data-x="anki-w">生词本单词</button><button class="btn" data-x="anki-s">短语和句子</button></div>
-        <span class="help">导出的 .txt 在 Anki 里用「文件 → 导入」打开就行（已经写好了分隔符和标签）。</span></div>
+        <span class="help">导出的 .txt 在 Anki 里用「文件 → 导入」打开就行（已经写好了分隔符和标签）。</span>
+        ${Store.bridge && !Store.remote ? `<div class="row mt-s" style="flex-wrap:wrap"><button class="btn" data-x="anki-wa">🔊 单词（带发音）</button><button class="btn" data-x="anki-sa">🎧 句子听力卡（带发音）</button></div>
+        <span class="help">带发音的是一个 zip：mp3 放进 Anki 的媒体文件夹，再导入 notes.txt（压缩包里有说明）。句子听力卡正面只放声音：先听，再想意思。每句要联网合成一次发音，句子多的话要等一会儿。</span>
+        <div id="anki-prog" class="mt-s"></div>` : ""}</div>
       <div class="field mt"><label>导出到 Excel</label>
         <div class="row"><button class="btn" data-x="csv">学过的全部单词（CSV，带复习记录）</button></div></div>
       <div class="field mt"><label>导入</label>
@@ -142,7 +145,36 @@ const WordIO = {
       if (x === "imp") { m.close(); this.importFile(); }
       else if (x === "anki-w") this.exportNotebookAnki();
       else if (x === "anki-s") this.exportSentencesAnki();
+      else if (x === "anki-wa" || x === "anki-sa") this.exportAnkiAudio(x === "anki-wa" ? "words" : "sentences", $("#anki-prog", m.root), b);
       else if (x === "csv") this.exportLearnedCsv();
     });
+  },
+
+  // 带发音的 Anki 卡片（只在电脑上）：Python 端合成发音、打包成 zip，这里显示进度
+  async exportAnkiAudio(kind, prog, btn) {
+    const rows = kind === "words"
+      ? Store.data.notebook.map((x) => {
+        const it = WORD_MAP[x.w.toLowerCase()] || x;
+        const back = [it.ph, it.m, it.ex ? `<i>${esc(it.ex)}</i>` : "", it.zh].filter(Boolean).map((s) => esc(String(s)).replace(/&lt;(\/?i)&gt;/g, "<$1>")).join("<br>");
+        return { front: `<b>${esc(x.w)}</b> {audio}`, back, audio: x.w, tag: "EngNest 生词本" };
+      })
+      : sentNb().map((x) => ({ front: `{audio}<br><span style="color:#888">听一听，是什么意思？</span>`, back: `<b>${esc(x.en)}</b><br>${esc(x.zh || "")}`, audio: x.en, tag: "EngNest 句子听力" }));
+    if (!rows.length) return toast(kind === "words" ? "生词本里还没有单词" : "生词本里还没有短语和句子");
+    btn.disabled = true;
+    try {
+      const r = await pywebview.api.anki_audio_start(`EngNest-${kind === "words" ? "单词" : "句子听力卡"}-${today()}.zip`, rows, Store.prefs.neural_voice || "", Store.prefs.tts_rate || 0.9);
+      if (!r) return;
+      if (r.error) return toast(r.error, "bad");
+      for (;;) {
+        const s = await pywebview.api.anki_audio_poll(r.id);
+        if (prog?.isConnected) prog.innerHTML = `<div class="bar"><i style="width:${Math.round((s.i / Math.max(1, s.n)) * 100)}%"></i></div><div class="small faint">${s.i} / ${s.n}${s.failed ? ` · ${s.failed} 句没合成出声音` : ""}</div>`;
+        if (s.done) {
+          if (s.error) toast("导出失败：" + s.error, "bad", 5000);
+          else toast(`已导出 ${s.n} 张卡片${s.failed ? `（${s.failed} 张没有声音，可能是没联网）` : ""}：${s.path}`, "good", 6000);
+          break;
+        }
+        await new Promise((res) => setTimeout(res, 500));
+      }
+    } finally { btn.disabled = false; }
   },
 };

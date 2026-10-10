@@ -239,7 +239,7 @@ App.pages.typing = {
       if (st.errs === 0) {
         st.combo++;
         st.maxCombo = Math.max(st.maxCombo, st.combo);
-        addXP(isWord ? 1 : 2);
+        addXP(isWord ? 1 : 2, "c_type");
         if (st.combo % 10 === 0) { addXP(5); toast(`🔥 ${st.combo} 连击！额外 +5 XP`, "good"); }
       } else {
         st.combo = 0;
