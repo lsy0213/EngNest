@@ -183,7 +183,7 @@ App.pages.settings = {
 
       <div class="card">
         <div class="card-title">🎨 界面风格</div>
-        <div class="skin-opts" id="skins">${SKINS.map(([id, name, desc, dots, portrait]) => `<button class="skin-opt ${(p.skin || "cabinet") === id ? "active" : ""} ${portrait ? "has-portrait" : ""}" data-sk="${id}">
+        <div class="skin-opts" id="skins">${SKINS.map(([id, name, desc, dots, portrait]) => `<button class="skin-opt ${(p.skin || "porcelain") === id ? "active" : ""} ${portrait ? "has-portrait" : ""}" data-sk="${id}">
           ${portrait ? `<span class="skin-portrait"><img src="${portrait}" alt=""></span>` : ""}<span class="skin-opt-copy"><span class="skin-dots">${dots.map((c) => `<i style="background:${c}"></i>`).join("")}</span><b>${name}</b><span class="small muted">${desc}</span></span></button>`).join("")}</div>
         <div class="row mt" style="gap:10px;flex-wrap:wrap"><span class="small muted">深浅色</span>
           <div class="tabs" id="theme-mode">${[["auto", "跟随系统"], ["light", "☀️ 浅色"], ["dark", "🌙 深色"]].map(([v, l]) => `<button class="tab ${(p.theme_mode || "auto") === v ? "active" : ""}" data-mode="${v}">${l}</button>`).join("")}</div></div>

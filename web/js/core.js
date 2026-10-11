@@ -280,7 +280,7 @@ const DEFAULT_PROGRESS = () => ({
     tech_terms: "auto",
     en_def: "auto",      // 单词卡片的英文释义：auto 看得懂就先英文 / zh 总是先中文 / en 总是先英文 / off 不显示  // 查词时显示计算机释义：auto 技术文章里才显示常见词的术语义 / always / off
     companion_visible: false, companion_view: "front",
-    skin: "cabinet", theme_mode: "auto", theme_character_positions: {}, // 每套角色主题独立保存悬浮位置
+    skin: "porcelain", theme_mode: "auto", theme_character_positions: {}, // 每套角色主题独立保存悬浮位置
   },
 });
 
@@ -1126,7 +1126,7 @@ const SKINS = [
 ];
 function applySkin() {
   const d = document.documentElement, p = Store.prefs;
-  d.dataset.skin = SKINS.some(([id]) => id === p.skin) ? p.skin : "cabinet";
+  d.dataset.skin = SKINS.some(([id]) => id === p.skin) ? p.skin : "porcelain";
   if (p.theme_mode === "light" || p.theme_mode === "dark") d.dataset.theme = p.theme_mode;
   else delete d.dataset.theme;
   syncThemeColor();
