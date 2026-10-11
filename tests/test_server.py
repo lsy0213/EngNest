@@ -140,6 +140,39 @@ def test_admin_manages_accounts(srv, data_dir):
     assert call(srv, "admin_user_remove", [boss_id], token=boss)[0] == 403
 
 
+def test_admin_usage(srv):
+    import datetime
+    boss = register(srv, "boss", admin=True)
+    alice = register(srv, "alice")
+    register(srv, "bob")
+    t = datetime.date.today()
+    d = lambda n: (t - datetime.timedelta(days=n)).isoformat()  # noqa: E731
+    call(srv, "progress_save", [{"xp": 90, "days": {d(0): {"xp": 30, "new": 5, "c_game": 2}, d(1): {"xp": 40, "review": 12}, d(10): {"xp": 20}},
+                                 "words": {"apple": {"box": 5, "due": d(-3)}, "pear": {"box": 1, "due": d(1)}},
+                                 "essays": [{"text": "我的秘密作文"}], "prefs": {"book": "cet4"}}], token=alice)
+    assert call(srv, "admin_usage", token=alice)[0] == 403  # 普通账号看不了
+    st, res = call(srv, "admin_usage", token=boss)
+    assert st == 200
+    rows = {r["username"]: r for r in res["result"]}
+    a = rows["alice"]
+    assert (a["today"], a["xp7"], a["xp30"], a["active7"], a["active30"], a["streak"]) == (30, 70, 90, 2, 3, 2)
+    assert (a["words"], a["mastered"], a["due"], a["essays"], a["book"]) == (2, 1, 1, 1, "cet4")
+    assert a["mods"]["c_game"] == 2 and a["mods"]["review"] == 12 and len(a["spark"]) == 14 and a["spark"][-1] == 30
+    assert "秘密" not in repr(res)  # 只有数字，不带内容
+    assert rows["boss"]["admin"] and rows["boss"]["id"] is None and rows["bob"]["words"] == 0
+    assert res["result"][0]["username"] == "alice"  # 最近学过的排前面
+
+
+def test_lan_usage_only_for_owner(srv):
+    assert srv.api.lan_usage()["ok"]
+    assert "lan_usage" not in lan.ALLOWED
+    srv.api._ctx.lan = True
+    try:
+        assert not srv.api.lan_usage()["ok"]
+    finally:
+        srv.api._ctx.lan = False
+
+
 def test_login_lockout(srv):
     register(srv, "alice")
     for _ in range(lan.MAX_FAIL_PER_IP):

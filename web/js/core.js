@@ -1081,6 +1081,7 @@ const NAV = [
   { sep: true, group: "我的" },
   { id: "notebook", ico: "⭐", label: "生词本" },
   { id: "weak", ico: "🩹", label: "薄弱点本" },
+  { id: "admin", ico: "👥", label: "使用情况", when: () => Store.server && !!Store.who?.admin }, // 只有服务器上的管理员能看到
   { id: "settings", ico: "⚙️", label: "设置", foot: true }, // 放在侧边栏最底部，和收起按钮同一行
 ];
 
@@ -1105,7 +1106,7 @@ function renderNav() {
     if (n.id === "tutor" && !AI.enabled) badge = `<span class="badge" title="未配置 AI">未开启</span>`;
     return `<a class="nav-item ${cur === n.id ? "active" : ""}" href="#/${n.id}" title="${n.label}"><span class="ico">${n.ico}</span><span class="label">${n.label}</span>${badge}</a>`;
   };
-  nav.innerHTML = NAV.filter((n) => !n.foot && (!n.id || App.pages[n.id])).map(item).join("");
+  nav.innerHTML = NAV.filter((n) => !n.foot && (!n.id || App.pages[n.id]) && (!n.when || n.when())).map(item).join("");
   const foot = $("#nav-foot");
   // 局域网里用自己访问码进来的人：侧栏底部显示是谁（点了去设置，可以换访问码）
   const who = Store.who ? `<a class="nav-item who-item" href="#/settings" title="你的学习记录单独保存在电脑上，和电脑主人的分开"><span class="ico">👤</span><span class="label">${esc(Store.who.name)}</span></a>` : "";

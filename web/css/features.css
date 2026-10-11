@@ -332,3 +332,55 @@ a.btn.disabled { pointer-events: none; opacity: .5; }
   .nav-fab button { width: 42px; height: 42px; border-radius: 50%; }
   body.fab-away .nav-fab { transform: translateY(-64px); opacity: 0; pointer-events: none; }
 }
+
+/* ---------- 使用情况（管理员 / 电脑主人看每个人） ---------- */
+.usage-tiles .stat b { font-size: 26px; }
+@media (max-width: 720px) { .usage-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
+.usage-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px; }
+.usage-bar .input { flex: 1 1 160px; max-width: 240px; }
+.usage-bar .select { width: auto; margin-left: auto; }
+.usage-list { display: flex; flex-direction: column; }
+.usage-user { border-bottom: 1px solid var(--line); }
+.usage-user:last-child { border-bottom: 0; }
+.usage-head { display: flex; align-items: center; gap: 14px; padding: 12px 6px; cursor: pointer; list-style: none; border-radius: 10px; }
+.usage-head::-webkit-details-marker { display: none; }
+.usage-head:hover { background: var(--surface-2); }
+.usage-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+.usage-dot.today { background: var(--good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 20%, transparent); }
+.usage-dot.week { background: color-mix(in srgb, var(--good) 55%, var(--surface)); }
+.usage-dot.away { background: color-mix(in srgb, var(--warn) 60%, var(--surface)); }
+.usage-name { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.usage-name small { flex-basis: 100%; font-size: 12px; color: var(--ink-3); }
+.usage-name .badge { font-size: 11px; }
+.usage-spark { flex: none; display: flex; align-items: flex-end; gap: 2px; width: 98px; height: 26px; }
+.usage-spark i { flex: 1; border-radius: 2px; background: var(--surface-3); }
+.usage-spark i.on { background: var(--brand); opacity: .75; }
+[data-skin="porcelain"] .usage-spark i.on { background: var(--pc-gold); opacity: 1; }
+.usage-num { flex: none; width: 64px; text-align: right; display: flex; flex-direction: column; line-height: 1.15; }
+.usage-num b { font-size: 17px; }
+.usage-num small { font-size: 11px; color: var(--ink-3); }
+.usage-detail { padding: 4px 6px 16px 29px; }
+.usage-kv { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 16px; }
+.usage-kv div { display: flex; flex-direction: column; font-size: 13px; }
+.usage-kv span { color: var(--ink-3); font-size: 12px; }
+.usage-kv b { font-weight: 600; }
+.usage-sub { margin: 14px 0 6px; }
+.usage-mods { display: flex; flex-wrap: wrap; gap: 6px; }
+.usage-mod { font-size: 12.5px; padding: 3px 10px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); }
+.usage-mod b { color: var(--ink); }
+@media (max-width: 720px) {
+  .usage-head { gap: 10px; padding: 12px 2px; }
+  .usage-spark { width: 64px; }
+  .usage-num { width: 50px; }
+  .usage-num.hide-narrow { display: none; }
+  .usage-detail { padding-left: 21px; }
+  .usage-bar .select { margin-left: 0; }
+}
+/* 很窄的屏幕：名字单独一行，小图和数字放第二行 */
+@media (max-width: 480px) {
+  .usage-head { flex-wrap: wrap; row-gap: 6px; }
+  .usage-name { flex: 1 1 calc(100% - 24px); }
+  .usage-spark { margin-left: 19px; flex: 1 1 auto; max-width: 140px; }
+  .usage-spark + .usage-num { margin-left: auto; }
+  .usage-kv { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

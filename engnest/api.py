@@ -20,6 +20,57 @@ log = logging.getLogger(__name__)
 DEFAULT_AI = {"provider": "none", "base_url": "", "model": "", "api_key": ""}
 PERSONAL_KV = {"tutor"}  # 每个人自己的（AI 语伴聊天记录）；其他命名空间是翻译、精讲的缓存，大家共用
 NO_AI = "你还没有可用的 AI：可以在「设置 → AI 接入」填你自己的 API Key，或者请电脑主人在电脑的「设置 → 局域网访问」里给你开启。"
+# 使用情况统计要读的进度字段（只取数量，作文、聊天、笔记的内容不出这个文件）
+USAGE_KEYS = ["days", "words", "xp", "prefs", "grammar", "reading", "notebook", "sentence_nb", "sent_srs", "weak", "essays", "achv", "level"]
+MASTERED_BOX = 4  # 和前端 core.js 的 MASTERED_BOX 一样：复习间隔到了 7 天算掌握
+
+
+def _num(v):
+    return v if isinstance(v, (int, float)) and not isinstance(v, bool) else 0
+
+
+def _streak(days: dict, today: datetime.date) -> int:
+    """连续学习天数：今天还没学的话从昨天往前数；用了连胜保护的那天也算"""
+    on = lambda d: _num((days.get(d.isoformat()) or {}).get("xp")) > 0 or (days.get(d.isoformat()) or {}).get("frozen")  # noqa: E731
+    n, d = 0, today
+    if not on(d):
+        d -= datetime.timedelta(days=1)
+    while on(d):
+        n += 1
+        d -= datetime.timedelta(days=1)
+    return n
+
+
+def _usage_stats(f: dict, today: datetime.date) -> dict:
+    """一个人的学习统计：最近 7 / 30 天的经验值和活跃天数、最近 14 天每天的经验值、词汇量、各项练习近 30 天做了多少"""
+    days = {k: v for k, v in (f.get("days") or {}).items() if isinstance(v, dict)}
+    span = lambda n: [(today - datetime.timedelta(days=i)).isoformat() for i in range(n)]  # noqa: E731
+    xp = lambda d: _num(days.get(d, {}).get("xp"))  # noqa: E731
+    active = sorted(d for d in days if xp(d) > 0)
+    mods = {}
+    for d in span(30):
+        for k, v in days.get(d, {}).items():
+            if k in ("new", "review", "rs") or k.startswith("c_"):
+                mods[k] = mods.get(k, 0) + _num(v)
+    words = [w for w in (f.get("words") or {}).values() if isinstance(w, dict)]
+    t = today.isoformat()
+    prefs, level, weak, achv = (f.get(k) if isinstance(f.get(k), dict) else {} for k in ("prefs", "level", "weak", "achv"))
+    size = lambda k: len(f.get(k) or ())  # noqa: E731
+    return {
+        "xp": _num(f.get("xp")), "today": xp(t),
+        "xp7": sum(xp(d) for d in span(7)), "xp30": sum(xp(d) for d in span(30)),
+        "active7": sum(1 for d in span(7) if xp(d) > 0), "active30": sum(1 for d in span(30) if xp(d) > 0),
+        "active_total": len(active), "first_day": active[0] if active else None, "last_day": active[-1] if active else None,
+        "streak": _streak(days, today), "spark": [xp(d) for d in reversed(span(14))],
+        "words": len(words), "mastered": sum(1 for w in words if _num(w.get("box")) >= MASTERED_BOX),
+        "due": sum(1 for w in words if isinstance(w.get("due"), str) and w["due"] <= t),
+        "sentences": size("sent_srs"), "grammar": size("grammar"), "reading": size("reading"),
+        "notebook": size("notebook") + size("sentence_nb"), "essays": size("essays"),
+        "weak": sum(1 for w in weak.values() if isinstance(w, dict) and not w.get("done")),
+        "achv": sum(1 for v in achv.values() if v), "mods": mods,
+        "book": str(prefs.get("book") or ""), "goal": str(prefs.get("goal") or ""), "daily_goal": _num(prefs.get("daily_goal")),
+        "cefr": str(level.get("cefr") or "") or None,
+    }
 
 
 class Api:
@@ -155,19 +206,40 @@ class Api:
             if not on and uid != me:
                 continue
             rec = lambda d: days.get(d.isoformat()) or {}  # noqa: E731
-            streak, d = 0, today
-            if not (rec(d).get("xp", 0) > 0 or rec(d).get("frozen")):
-                d -= datetime.timedelta(days=1)
-            while rec(d).get("xp", 0) > 0 or rec(d).get("frozen"):
-                streak += 1
-                d -= datetime.timedelta(days=1)
             out.append({
                 "name": str(prefs.get("board_name") or name)[:20], "me": uid == me, "on": on,
                 "xp": sum(int(rec(x).get("xp", 0) or 0) for x in week), "days": sum(1 for x in week if rec(x).get("xp", 0) > 0),
-                "today": int(rec(today).get("xp", 0) or 0), "streak": streak,
+                "today": int(rec(today).get("xp", 0) or 0), "streak": _streak(days, today),
             })
         out.sort(key=lambda r: (-r["xp"], -r["streak"], r["name"]))
         return out
+
+    # ---------- 使用情况：服务器管理员看每个账号、电脑主人看局域网里的每个人（只统计数字，不看作文、聊天这些内容） ----------
+    def _usage_report(self, people) -> list:
+        """people：[{id, username, admin, ...}]，id 为 None 的是主人（服务器上是管理员）。每人加上学习统计，最近学过的排前面"""
+        today = datetime.date.today()
+        out = []
+        for person in people:
+            uid = person.get("id")
+            try:
+                prog = self._prog_for(uid) if uid else self._progress
+                stats = _usage_stats(prog.fields(USAGE_KEYS), today)
+                stats["size"] = sum(p.stat().st_size for p in [prog.path, prog.path.with_name(prog.path.name + "-wal")] if p.exists())
+            except Exception:  # noqa: BLE001
+                log.exception("读取 %s 的进度失败", uid)
+                stats = {"error": "读取学习记录失败"}
+            out.append({**person, **stats})
+        out.sort(key=lambda r: (r.get("last_day") or "", r.get("last_seen") or 0), reverse=True)
+        return out
+
+    def lan_usage(self):
+        """电脑上的主人看局域网里每个人的使用情况（局域网里的人调用不了：不在 lan.ALLOWED 里，这里也再挡一次）"""
+        if getattr(self._ctx, "lan", False):
+            return {"ok": False, "error": "只有电脑主人能看"}
+        people = [{"id": None, "username": "我（电脑主人）", "admin": True}] + [
+            {"id": u["id"], "username": u.get("name") or "朋友", "admin": False, "created": u.get("created", ""), "ai": bool(u.get("ai"))}
+            for u in self._lan_cfg().get("users", []) if u.get("id")]
+        return {"ok": True, "users": self._usage_report(people)}
 
     def _user_settings(self, uid: str) -> settings.Settings:
         with self._profiles_lock:

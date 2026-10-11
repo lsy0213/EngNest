@@ -638,7 +638,7 @@ App.pages.settings = {
     const draw = async () => {
       const [users, invites] = await Promise.all([pywebview.api.admin_users(), pywebview.api.admin_invites()]);
       const unused = invites.filter((i) => !i.used_by && !i.admin);
-      box.innerHTML = `<div class="card-title">👥 账号和邀请码</div>
+      box.innerHTML = `<div class="card-title">👥 账号和邀请码 <span class="spacer"></span><a class="small" href="#/admin">📊 每个人的使用情况 ›</a></div>
         <p class="small muted" style="margin-top:-4px">别人要注册，必须先有你发的邀请码（一个码只能注册一个账号）。每个账号的学习进度、设置和 AI Key 互不影响。</p>
         <div class="row" style="flex-wrap:wrap;gap:8px"><input class="input" id="inv-note" maxlength="40" placeholder="备注，比如：给小明" style="max-width:220px"><button class="btn soft" id="inv-new">＋ 生成邀请码</button></div>
         ${unused.length ? `<div class="small muted mt">还没用的邀请码：</div>${unused.map((i) => `<div class="row acc-inv"><span class="lan-code sm">${esc(i.code.slice(0, 4))} ${esc(i.code.slice(4))}</span>
@@ -714,7 +714,7 @@ App.pages.settings = {
             </div>
           </div>
           <div class="lan-users mt">
-            <div class="card-title" style="font-size:15px">👥 给其他人用</div>
+            <div class="card-title" style="font-size:15px">👥 给其他人用 <span class="spacer"></span>${(s.users || []).length ? `<a class="small" href="#/admin">📊 每个人的使用情况 ›</a>` : ""}</div>
             <p class="small muted" style="margin-top:-6px">上面的访问码是<b>你自己的</b>，进来用的是你的学习进度。给朋友、家人单独加一个人，TA 会拿到自己的访问码：学习进度、生词本、设置和 AI 语伴聊天记录都单独保存，不会影响你的。AI：TA 可以在自己的设置里填自己的 Key（不算你的用量）；没填的话，可以在这里给 TA 开「可以用我的 AI」（用你的 Key，默认关闭）。</p>
             ${(s.users || []).map((u) => `<div class="lan-user" data-uid="${esc(u.id)}">
               <div class="lan-user-name"><b>${esc(u.name)}</b><span class="small faint">${esc(u.created || "")} 添加${u.own_ai ? " · 🔑 用自己的 AI Key" : ""}</span></div>

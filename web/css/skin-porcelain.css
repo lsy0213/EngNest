@@ -136,6 +136,8 @@
 [data-skin="porcelain"] .stat { background: none; border-radius: 0; box-shadow: none; border-top: 1px solid var(--line); padding: 12px 2px 2px; }
 [data-skin="porcelain"] .stat b { font: 600 30px/1.2 var(--pc-serif); color: var(--ink); }
 [data-skin="porcelain"] .stat span { color: var(--ink-3); }
+/* 单独成卡片的统计数字（学习统计页、使用情况页的第一排）：还是一张完整的卡片 */
+[data-skin="porcelain"] .card.stat { padding: 16px 18px; border-radius: var(--radius); border: 1px solid color-mix(in srgb, var(--line) 70%, #fff); background: color-mix(in srgb, var(--surface) 88%, transparent); box-shadow: 0 1px 2px rgba(40, 38, 34, .04), 0 14px 32px -22px rgba(40, 38, 34, .28); }
 /* 学习计划：一张清单，序号 + 标题 + 时长，轻分隔线；下一项浅金底 + 「开始」按钮，没有一排图标底座 */
 [data-skin="porcelain"] .plan-list { gap: 0 !important; }
 [data-skin="porcelain"] .plan-list .task { align-items: center; gap: 16px; padding: 14px 14px 14px 12px; border: 0; border-bottom: 1px solid var(--line); border-radius: 12px; background: none; }

@@ -36,7 +36,7 @@ ADMIN_ALLOWED = {
     "pack_install", "pack_remove",
     "app_info", "update_check",
     "admin_users", "admin_user_ai", "admin_user_reset", "admin_user_remove",
-    "admin_invites", "admin_invite_new", "admin_invite_revoke",
+    "admin_invites", "admin_invite_new", "admin_invite_revoke", "admin_usage",
 }
 
 
@@ -127,6 +127,14 @@ class AccountServer(lan.LanServer):
             A.remove(u["id"])
             self.api._delete_profile(u["id"])
             return 200, {"result": True}
+        if name == "admin_usage":  # 每个账号的使用情况（只有数字，不含作文、聊天这些内容）
+            people = [{k: u[k] for k in ("id", "username", "admin", "ai", "created", "last_seen")} for u in A.users()]
+            for u in people:
+                if u["admin"]:
+                    u["id"] = None  # 管理员用的是主人的那一份进度
+                else:
+                    u["own_ai"] = self.api._own_ai(u["id"])
+            return 200, {"result": self.api._usage_report(people)}
         if name == "admin_invites":
             return 200, {"result": A.invites()}
         if name == "admin_invite_new":
