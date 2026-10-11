@@ -627,20 +627,27 @@ App.pages.weak = {
           <div class="small faint">${esc(r.src || "")} · 错过 ${r.n || 1} 次 · ${r.done ? `${r.done} 攻克` : r.due <= today() ? "今天复习" : `${r.due} 复习`}</div></div>
         ${r.en && r.k !== "gram" ? speakBtn(r.en, "sm") : ""}<button class="btn sm ghost" data-del="${esc(r.id)}" title="不用再练这条了" aria-label="删除">✕</button></div>`;
     };
-    root.innerHTML = pageHead("🩹 薄弱点本", "各个练习里做错的语法题、没写对的听写、读不准的句子、被 AI 纠正过的说法，都收在这里，按记忆曲线安排复习。能隔三周还记得就算攻克。") + `
-      <div class="grid grid-4 stats-tiles">
-        <div class="card stat"><b>${due.length}</b><span>今天要复习</span></div>
-        <div class="card stat"><b>${active.length}</b><span>还没攻克</span></div>
-        <div class="card stat"><b>${done.length}</b><span>已经攻克 💪</span></div>
-        <div class="card stat"><b>${Weak.list().reduce((s, r) => s + (r.n || 1), 0)}</b><span>一共记下的错误</span></div>
+    // 一张概览卡：左边是今天要复习几条和开始按钮，右边三个小数字；下面按类型筛选（只列有内容的类型）
+    const kinds = Object.entries(WEAK_KINDS).filter(([k]) => all.some((r) => r.k === k));
+    root.innerHTML = pageHead("薄弱点本", "做错的语法题、没写对的听写、读不准的句子、被 AI 纠正的说法都收在这里，按记忆曲线复习，隔三周还记得就算攻克。") + `
+      <div class="card weak-hero">
+        <div class="wh-main">
+          <div class="wh-num"><b>${due.length}</b><span>${due.length ? "条今天要复习" : all.length ? "今天没有要复习的" : "还没有要复习的"}</span></div>
+          <div class="wh-actions">
+            <a class="btn primary ${due.length ? "" : "disabled"}" href="#/weak/review">开始复习</a>
+            <a class="btn ghost ${active.length ? "" : "disabled"}" href="#/weak/all" title="不管有没有到复习时间，随机抽 30 条练一遍">全部练一遍</a>
+          </div>
+        </div>
+        <div class="wh-stats">
+          <div><b>${active.length}</b><span>还没攻克</span></div>
+          <div><b>${done.length}</b><span>已经攻克</span></div>
+          <div><b>${all.reduce((s, r) => s + (r.n || 1), 0)}</b><span>一共错过</span></div>
+        </div>
       </div>
-      <div class="row mt" style="flex-wrap:wrap;gap:8px">
-        <a class="btn primary ${due.length ? "" : "disabled"}" href="#/weak/review">开始复习（${due.length}）</a>
-        <a class="btn ${active.length ? "" : "disabled"}" href="#/weak/all" title="不管有没有到复习时间，随机抽 30 条练一遍">全部练一遍</a>
-      </div>
-      <div class="mt">${tabsHtml([["all", `全部 ${all.length}`], ...Object.entries(WEAK_KINDS).map(([k, [ico, l]]) => [k, `${ico} ${l} ${all.filter((r) => r.k === k).length}`])], tab)}</div>
-      <div class="card mt weak-list">${shown.length ? shown.slice(0, 300).map(row).join("") : emptyGuide("🩹", "这里还是空的", "做练习时答错的题、听写没写对的句子、跟读低于 60 分的句子、AI 语伴纠正过的说法，都会自动收进来。", [["#/grammar", "🧩 做一课语法"], ["#/listening/dictation", "🎧 听写几句"]])}</div>`;
-    root.querySelector(".tabs").onclick = (e) => { const b = e.target.closest("[data-tab]"); if (b) Router.go("weak/" + (b.dataset.tab === "all" ? "" : b.dataset.tab)); };
+      ${kinds.length ? `<div class="mt">${tabsHtml([["all", `全部 ${all.length}`], ...kinds.map(([k, [ico, l]]) => [k, `${ico} ${l} ${all.filter((r) => r.k === k).length}`])], tab)}</div>` : ""}
+      <div class="card mt weak-list">${shown.length ? shown.slice(0, 300).map(row).join("") : emptyGuide("🎯", "这里还是空的", "做练习时答错的题、听写没写对的句子、跟读低于 60 分的句子、AI 语伴纠正过的说法，都会自动收进来。", [["#/grammar", "🧩 做一课语法"], ["#/listening/dictation", "🎧 听写几句"]])}</div>`;
+    const tabs = root.querySelector(".tabs");
+    if (tabs) tabs.onclick = (e) => { const b = e.target.closest("[data-tab]"); if (b) Router.go("weak/" + (b.dataset.tab === "all" ? "" : b.dataset.tab)); };
     root.addEventListener("click", async (e) => {
       const d = e.target.closest("[data-del]");
       if (!d) return;

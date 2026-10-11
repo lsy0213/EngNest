@@ -46,12 +46,13 @@ const EMOJI_ICON = {
   "☀️": "sun", "🌅": "sunrise", "🌙": "moon", "🌗": "moon", "⛅": "cloud-sun", "☁️": "cloud", "🌫️": "cloud-fog", "🌀": "tornado",
   "❤️": "heart", "🤍": "heart", "💕": "heart", "♥": "heart",
   "🗞️": "newspaper", "📰": "newspaper",
+  "↗": "arrow-up-right", "↗️": "arrow-up-right",
   "⌨️": "keyboard", "🧭": "compass", "⚖️": "scale", "ℹ️": "info", "〰️": "spline", "🗽": "landmark",
 };
 
 const Icons = {
   // 要换掉的：emoji 区段的字符（带变体选择符、零宽连接符的组合），加上几个在 iPhone 上会显示成彩色的 BMP 字符
-  RE: /(?:\p{Emoji_Presentation}|\p{Extended_Pictographic}\uFE0F|[\u25B6\u23F8\u23F9\u23EE\u23ED\u2665\u2764\u2630\u2328\u270D\u270F\u2702\u2708\u2709\u2600\u2601\u26A0\u2699\u2696\u267E\u2B07\u2B06\u2194])(?:\uFE0F|\u200D\p{Extended_Pictographic}\uFE0F?|[\u{1F3FB}-\u{1F3FF}])*/gu,
+  RE: /(?:\p{Emoji_Presentation}|\p{Extended_Pictographic}\uFE0F|[\u25B6\u23F8\u23F9\u23EE\u23ED\u2665\u2764\u2630\u2328\u270D\u270F\u2702\u2708\u2709\u2600\u2601\u26A0\u2699\u2696\u267E\u2B07\u2B06\u2194\u2197])(?:\uFE0F|\u200D\p{Extended_Pictographic}\uFE0F?|[\u{1F3FB}-\u{1F3FF}])*/gu,
   SKIP: new Set(["SCRIPT", "STYLE", "TEXTAREA", "OPTION", "SELECT", "INPUT", "TITLE", "svg", "SVG", "CODE", "PRE"]),
   svg(name, e) {
     return `<svg class="ei" data-e="${e}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${window.LUCIDE[name]}</svg>`;

@@ -16,15 +16,38 @@ App.pages.notebook = {
       body.innerHTML = `<div class="card empty"><div class="big">⭐</div><h3>还没有收藏单词</h3><p>遇到记不住的词，点一下 ★，或者用鼠标选中它。也可以从文件导入单词表（右上角「导入 / 导出」）。</p><a class="btn primary" href="#/reading">去阅读找生词</a></div>`;
       return;
     }
-    body.innerHTML = `<div class="row" style="margin-bottom:12px"><button class="btn primary" id="study">🃏 过一遍</button>
-        <button class="btn soft" id="spell">⌨️ 拼写练习</button><a class="btn" href="#/typing/words/notebook">打字练习</a></div>
-      <div class="card"><table class="word-table" style="margin-top:0">${nb.map((x, i) => `
-      <tr><td class="w">${esc(x.w)}</td><td class="ipa">${esc(x.ph)}</td><td>${esc(x.m)}${x.ex ? `<div class="small faint" style="font-family:var(--font-en)">${esc(x.ex)}</div>` : ""}</td>
-        <td class="small faint" style="white-space:nowrap">${x.added || ""}</td>
-        <td style="width:80px;text-align:right">${speakBtn(x.w, "sm")}<button class="btn sm ghost" data-del="${i}" title="移除">✕</button></td></tr>`).join("")}</table></div>`;
+    // 每个词一张小卡：单词和音标一行（右边朗读、移除），下面释义和例句；最近收藏的在前面，可以搜、可以遮住释义自测
+    const order = nb.map((x, i) => i).reverse();
+    body.innerHTML = `<div class="nb-actions"><button class="btn primary" id="study">🃏 过一遍</button>
+        <button class="btn soft" id="spell">⌨️ 拼写练习</button><a class="btn soft" href="#/typing/words/notebook">打字练习</a></div>
+      <div class="card nb-card">
+        <div class="nb-bar"><input class="input" id="nb-q" type="search" placeholder="在 ${nb.length} 个词里找" aria-label="搜索生词">
+          <label class="small nb-hide"><input type="checkbox" id="nb-hide"> 遮住释义（自测）</label></div>
+        <div class="nb-list" id="nb-list">${order.map((i) => { const x = nb[i]; return `
+          <div class="nb-item" data-q="${esc((x.w + " " + (x.m || "")).toLowerCase())}">
+            <div class="nb-head"><b class="nb-w">${esc(x.w)}</b>${x.ph ? `<span class="nb-ipa">${esc(x.ph)}</span>` : ""}
+              <span class="nb-ops">${speakBtn(x.w, "sm")}<button class="btn sm ghost" data-del="${i}" title="移除" aria-label="移除">✕</button></span></div>
+            ${x.m ? `<div class="nb-m">${esc(x.m)}</div>` : ""}
+            ${x.ex ? `<div class="nb-ex">${esc(x.ex)}</div>` : ""}
+            ${x.added ? `<div class="nb-date">${esc(x.added)} 收藏</div>` : ""}
+          </div>`; }).join("")}</div>
+        <div class="small muted nb-none" hidden>没找到</div>
+      </div>`;
+    $("#nb-q", body).oninput = (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      let n = 0;
+      $$(".nb-item", body).forEach((it) => { const on = !q || it.dataset.q.includes(q); it.hidden = !on; n += on; });
+      $(".nb-none", body).hidden = n > 0;
+    };
+    $("#nb-hide", body).onchange = (e) => $("#nb-list", body).classList.toggle("hide-m", e.target.checked);
     body.onclick = (e) => {
       const d = e.target.closest("[data-del]");
-      if (!d) return;
+      if (!d) {
+        // 遮住释义的时候：点一下这个词看答案
+        const it = !e.target.closest("button") && e.target.closest(".hide-m .nb-item");
+        if (it) it.classList.toggle("show");
+        return;
+      }
       markDeleted("notebook", RECORD_ID.notebook(nb[+d.dataset.del]));
       nb.splice(+d.dataset.del, 1);
       Store.save();

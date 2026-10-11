@@ -13,7 +13,7 @@
 """
 
 import collections
-import re
+import hashlib
 import sys
 import tempfile
 from pathlib import Path
@@ -70,8 +70,10 @@ def ranges(cps):
 def main(src):
     font = TTFont(src)
     cmap = set(font.getBestCmap())
-    # 拉丁字母、常用符号、中文标点、全角字符
-    base = [c for r in [(0x20, 0x7E), (0xA0, 0xFF), (0x2010, 0x2027), (0x2030, 0x205E), (0x2190, 0x2193), (0x3000, 0x303F), (0xFF01, 0xFF5E)]
+    # 拉丁字母、常用符号、中文标点、全角字符；箭头、①②、▲●、★♥、✓ 这些符号也带上
+    # （字体里没有的话 iPhone 会拿彩色表情字体来显示，比如 ↗ 变成一个蓝色方块）
+    base = [c for r in [(0x20, 0x7E), (0xA0, 0xFF), (0x2010, 0x2027), (0x2030, 0x205E), (0x2100, 0x218F), (0x2190, 0x21FF), (0x2200, 0x22FF),
+                        (0x2460, 0x24FF), (0x25A0, 0x25FF), (0x2600, 0x26FF), (0x2700, 0x27BF), (0x2B00, 0x2BFF), (0x3000, 0x303F), (0xFF01, 0xFF5E)]
             for c in range(r[0], r[1] + 1) if c in cmap]
     freq = project_freq()
     order = {c: i for i, c in enumerate(gb2312())}
@@ -109,6 +111,7 @@ def main(src):
         f.save(OUT / name)
         faces.append(f'@font-face {{ font-family: "{FAMILY}"; font-style: normal; font-weight: {WGHT[0]} {WGHT[1]}; font-display: swap;\n'
                      f'  src: url("../fonts/serif-sc/{name}") format("woff2"); unicode-range: {ranges(cps)}; }}')
+        faces[-1] = faces[-1].replace(f'{name}")', f'{name}?v={hashlib.md5((OUT / name).read_bytes()).hexdigest()[:8]}")')  # 内容变了网址就变，不会用到缓存里的旧字体
         print(f"  {name}  {len(cps)} 字  {(OUT / name).stat().st_size // 1024} KB")
     CSS.write_text(
         "/* 思源宋体（Noto Serif SC，SIL OFL 1.1，许可见 fonts/serif-sc/LICENSE.txt）按字频切成的小块，tools/build_fonts.py 生成。\n"
