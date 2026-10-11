@@ -14,6 +14,7 @@
   applyNavCollapsed();
   if (!location.hash) history.replaceState(null, "", "#/home");
   Motivation.dayStart(); // 连胜保护、今天的每日任务、成就
+  Icons.observe(); // 页面上的表情换成细线图标（icons.js）
   Router.render();
   FlowerCat.init();
   PartnerFigures.init();

@@ -1064,19 +1064,21 @@ const KV = {
 // ---------- 导航 & 路由 ----------
 const NAV = [
   { id: "home", ico: "🏠", label: "首页" },
+  { group: "学习" },
   { id: "words", ico: "📚", label: "单词" },
   { id: "course", ico: "🧭", label: "短语与句子" },
-  { id: "grammar", ico: "🧩", label: "语法" },
+  { id: "grammar", ico: "🔠", label: "语法" },
   { id: "listening", ico: "🎧", label: "听力" },
   { id: "speaking", ico: "🎙️", label: "口语" },
   { id: "reading", ico: "📖", label: "阅读" },
   { id: "video", ico: "🎬", label: "影视精听" },
   { id: "writing", ico: "✍️", label: "写作" },
   { id: "ielts", ico: "🎓", label: "雅思" },
-  { id: "tutor", ico: "🤖", label: "AI 语伴" },
+  { group: "探索" },
+  { id: "tutor", ico: "💬", label: "AI 语伴" },
   { id: "life", ico: "🎭", label: "人生剧场" },
   { id: "games", ico: "🎲", label: "单词游戏" },
-  { sep: true },
+  { sep: true, group: "我的" },
   { id: "notebook", ico: "⭐", label: "生词本" },
   { id: "weak", ico: "🩹", label: "薄弱点本" },
   { id: "settings", ico: "⚙️", label: "设置", foot: true }, // 放在侧边栏最底部，和收起按钮同一行
@@ -1089,6 +1091,8 @@ function renderNav() {
   const cur = { about: "settings", stats: "home", achv: "home", level: "home", sitcom: "life", builder: "course", topics: "words", book: "reading", ireading: "ielts", ilisten: "ielts", ispeak: "ielts", iwrite: "ielts" }[Router.current().page] || Router.current().page;
   const due = dueWords().length;
   const item = (n) => {
+    // 分组小标题（只有白瓷主题显示，其他主题里是隐藏的）；分隔线
+    if (n.group) return `${n.sep ? `<div class="nav-sep"></div>` : ""}<div class="nav-group">${n.group}</div>`;
     if (n.sep) return `<div class="nav-sep"></div>`;
     let badge = "";
     if (n.id === "words" && due) badge = `<span class="badge brand" title="待复习">${due}</span>`;
@@ -1116,6 +1120,7 @@ const SKINS = [
   ["glass", "🤍 银雾流光", "白纸手账 · 尤加利与洋甘菊 · 浅蓝蝴蝶 · 虹彩光碟", ["#F4F4F1", "#A9BEB6", "#B6DCE2"], "img/skin/glass-character.png"],
   ["starry", "✦ 星河晚歌", "蕾丝珍珠 · 新月星坠 · 丁香格纹 · 叶星", ["#294C4C", "#A88D9F", "#9CC0A8"], "img/skin/star-character.png"],
   ["mintchoco", "🍫 薄荷可可", "薄荷可可配色 · 波点蝴蝶结 · 蕾丝马卡龙 · 猫耳少女", ["#B6D5C0", "#8E7F72", "#A9CEDA"], "img/skin/mintchoco-character.jpg"],
+  ["porcelain", "🤍 白瓷星轨", "Solys 白瓷黏土字 · 金色星轨 · 透明天使 · 极简衬线", ["#EFEEEC", "#FFFFFF", "#B59A62"], "css/skin/porcelain-solys.webp"],
   ["cabinet", "🏛️ 珍藏手稿", "象牙纸 · 油画撕边 · 洛可可卷草 · 酒红批注", ["#ECE6DB", "#6E7C6B", "#8A2232"], "css/skin/cabinet-landscape.svg"],
   ["classic", "🍂 暖橙经典", "原来的米白配暖橙", ["#FBF7F0", "#F8E7D6", "#C2702C"]],
 ];

@@ -117,18 +117,103 @@ document.addEventListener("click", (e) => {
 });
 
 // ---------- 手机底部导航 ----------
+// 底栏图标：自己画的细线图标（参考 SF Symbols 的粗细和圆角），不用彩色表情。.f 是选中时铺一层浅色的面
+const NAV_ICONS = {
+  home: `<path class="f" d="M4 10.4 12 4.2l8 6.2V19a1.4 1.4 0 0 1-1.4 1.4H15v-5.6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5.6H5.4A1.4 1.4 0 0 1 4 19z"/>`,
+  words: `<rect x="8.2" y="2.9" width="11" height="14.6" rx="2.4" transform="rotate(8 13.7 10.2)" opacity=".55"/><rect class="f" x="4.8" y="5.4" width="11" height="15.2" rx="2.4"/><path d="M8 16.2 10.3 9.6l2.3 6.6M8.8 14h3"/>`,
+  reading: `<path class="f" d="M12 6.6C10 5 7.1 4.4 3.6 4.8v13.6c3.5-.4 6.4.2 8.4 1.8 2-1.6 4.9-2.2 8.4-1.8V4.8C16.9 4.4 14 5 12 6.6z"/><path d="M12 6.6v13.6"/>`,
+  games: `<path class="f" d="M7.4 7.6h9.2a4.2 4.2 0 0 1 4.1 5.1l-.9 4.2a2.3 2.3 0 0 1-3.9 1.1L14 16h-4l-1.9 2a2.3 2.3 0 0 1-3.9-1.1l-.9-4.2a4.2 4.2 0 0 1 4.1-5.1z"/><path d="M8 10.6v3.2M6.4 12.2h3.2"/><circle cx="15.6" cy="11.2" r=".55" fill="currentColor"/><circle cx="17.4" cy="13" r=".55" fill="currentColor"/>`,
+  more: `<circle cx="5.5" cy="12" r="1.35" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none"/><circle cx="18.5" cy="12" r="1.35" fill="currentColor" stroke="none"/>`,
+  menu: `<path d="M4.5 7.5h15M4.5 12h15M4.5 16.5h10"/>`,
+  search: `<circle cx="10.6" cy="10.6" r="6.1"/><path d="m15.2 15.2 4.6 4.6"/>`,
+};
+const navIcon = (k) => `<svg class="ln-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${NAV_ICONS[k]}</svg>`;
 const BOTTOM_NAV = [
-  ["home", "🏠", "首页", ["home", "stats", "achv", "level"]],
-  ["words", "📚", "单词", ["words", "topics", "weak", "notebook"]],
-  ["reading", "📖", "阅读", ["reading", "book", "story"]],
-  ["games", "🎲", "游戏", ["games"]],
+  ["home", "首页", ["home", "stats", "achv", "level"]],
+  ["words", "单词", ["words", "topics", "weak", "notebook"]],
+  ["reading", "阅读", ["reading", "book", "story"]],
+  ["games", "游戏", ["games"]],
 ];
+// 左上角的 ☰ 和 🔍 也换成同一套细线图标
+for (const [id, k] of [["nav-burger", "menu"], ["nav-fab-search", "search"]]) { const b = document.getElementById(id); if (b) b.innerHTML = navIcon(k); }
 function renderBottomNav() {
   const bar = $("#bottom-nav");
   if (!bar || !Store.data) return;
+  // 只在第一次建好里面的按钮，之后只改选中项和角标：整个重建会把液态玻璃的 canvas（在底栏里面）一起扔掉，
+  // 快速切换页面时一直重建，iPhone 上会因为内存不够把网页关掉（「重复出现问题」）
+  if (!$(".bn-item", bar)) {
+    bar.insertAdjacentHTML("beforeend", `<span class="bn-lens" aria-hidden="true"></span>`
+      + BOTTOM_NAV.map(([id, label]) => `<a class="bn-item" href="#/${id}" data-bn="${id}"><span class="bn-ico">${navIcon(id)}</span><span class="bn-label">${label}</span></a>`).join("")
+      + `<button class="bn-item" id="bn-more" aria-label="更多功能"><span class="bn-ico">${navIcon("more")}</span><span class="bn-label">更多</span></button>`);
+  }
   const page = Router.current().page;
+  for (const [id, , pages] of BOTTOM_NAV) $(`[data-bn="${id}"]`, bar)?.classList.toggle("active", pages.includes(page));
   const due = dueWords().length + (typeof Weak !== "undefined" ? Weak.count() : 0);
-  bar.innerHTML = BOTTOM_NAV.map(([id, ico, label, pages]) => `<a class="bn-item ${pages.includes(page) ? "active" : ""}" href="#/${id}"><span class="bn-ico">${ico}${id === "words" && due ? `<i class="bn-badge">${due > 99 ? "99+" : due}</i>` : ""}</span><span>${label}</span></a>`).join("")
-    + `<button class="bn-item" id="bn-more" aria-label="更多功能"><span class="bn-ico">☰</span><span>更多</span></button>`;
+  const ico = $('[data-bn="words"] .bn-ico', bar);
+  let badge = $(".bn-badge", ico);
+  if (due && !badge) badge = ico.appendChild(el(`<i class="bn-badge"></i>`));
+  if (badge) { if (due) badge.textContent = due > 99 ? "99+" : due; else badge.remove(); }
+  placeLens();
+  RealGlass.start();
 }
+// 镜片移到选中的那一项下面（没有选中的就藏起来）
+function placeLens() {
+  const bar = $("#bottom-nav"), lens = $(".bn-lens", bar || document), act = bar && $(".bn-item.active", bar);
+  if (!lens) return;
+  if (!act || !act.offsetWidth) { lens.classList.remove("on"); return; }
+  const w = Math.min(act.offsetWidth - 4, 76);
+  lens.style.width = `${w}px`;
+  lens.style.transform = `translateX(${act.offsetLeft + (act.offsetWidth - w) / 2}px)`;
+  lens.classList.add("on");
+}
+window.addEventListener("resize", () => placeLens());
+
+// 真正的液态玻璃（会折射后面的内容）：apple-liquid-glass-webgl 用 WebGL2 把底栏后面的页面重画一遍再弯折
+// 只在手机宽度、通过网址打开（局域网 / 服务器）时加载：桌面版是本地文件，WebGL 读不了本地图片；底栏也只在手机上出现
+// 加载失败或不支持 WebGL2 时，CSS 的毛玻璃照样在（.liquid-glass）
+const RealGlass = {
+  started: false,
+  // 玻璃后面画什么：页面的底色和一层柔光（不去扫描整个页面的内容）。
+  // 库默认会把底栏后面的页面元素一个个重新画出来，滚动和换页面时都要重画，手机上会卡、内存也吃紧
+  backdrop(ctx, r) {
+    const css = getComputedStyle(document.documentElement);
+    const bg = css.getPropertyValue("--bg").trim() || "#eee", surf = css.getPropertyValue("--surface").trim() || bg;
+    ctx.fillStyle = bg;
+    ctx.fillRect(r.x, r.y, r.width, r.height);
+    const g = ctx.createLinearGradient(0, r.y, 0, r.y + r.height);
+    g.addColorStop(0, surf);
+    g.addColorStop(1, bg);
+    ctx.globalAlpha = 0.7;
+    ctx.fillStyle = g;
+    ctx.fillRect(r.x, r.y, r.width, r.height);
+    ctx.globalAlpha = 1;
+  },
+  start() {
+    if (this.started || !/^https?:$/.test(location.protocol) || !NARROW?.matches || matchMedia("(prefers-reduced-transparency: reduce)").matches) return;
+    this.started = true;
+    loadScript("js/vendor/liquid-glass.min.js").then(() => {
+      const LG = window.LiquidGlass;
+      if (!LG?.isSupported?.()) return;
+      for (const sel of ["#bottom-nav", ".nav-fab"]) {
+        try {
+          new LG(sel, { backdrop: (ctx, r) => this.backdrop(ctx, r), tintTone: "auto", maxDpr: 2, fallback: "none",
+            material: { backdropBlur: 4, tint: 0.3, dispersion: 1.2 } });
+        } catch (e) { console.info("液态玻璃没开成：", e.message); }
+      }
+    }).catch(() => { /* 没加载到就用 CSS 的毛玻璃 */ });
+  },
+};
 document.addEventListener("click", (e) => { if (e.target.closest("#bn-more")) setNavOpen(true); });
+// 手机上左上角的搜索按钮：往下滚就收起来（不压在内容上），往上滚一点或回到顶部再出来
+(() => {
+  let last = 0;
+  const onScroll = (e) => {
+    const y = e.target === document ? window.scrollY : e.target.scrollTop;
+    if (Math.abs(y - last) < 6) return;
+    document.body.classList.toggle("fab-away", y > 40 && y > last);
+    last = y;
+  };
+  document.getElementById("view")?.addEventListener("scroll", onScroll, { passive: true });
+  document.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("hashchange", () => { last = 0; document.body.classList.remove("fab-away"); });
+})();

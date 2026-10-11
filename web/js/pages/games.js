@@ -140,7 +140,9 @@ App.pages.games = {
       const rows = [];
       for (let r = 0; r < 6; r++) {
         const g = state.guesses[r], c = g ? colors(g) : null, typing = !g && r === state.guesses.length && !state.done;
-        rows.push(`<div class="wd-row">${Array.from({ length: 5 }, (_, i) => `<div class="wd-cell ${c ? c[i] : typing && cur[i] ? "filled" : ""}">${esc((g || (typing ? cur : ""))[i] || "")}</div>`).join("")}</div>`);
+        // 揭示过的字母：在正在输入的那一行用浅色先显示出来
+        const ghost = (i) => typing && !cur[i] && (state.rev || []).includes(i);
+        rows.push(`<div class="wd-row">${Array.from({ length: 5 }, (_, i) => `<div class="wd-cell ${c ? c[i] : typing && cur[i] ? "filled" : ghost(i) ? "ghost" : ""}">${esc((g || (typing ? cur : ""))[i] || (ghost(i) ? answer[i] : ""))}</div>`).join("")}</div>`);
       }
       const kb = ["qwertyuiop", "asdfghjkl", "zxcvbnm"].map((row, ri) => `<div class="wd-krow">${ri === 2 ? `<button class="wd-key wide" data-k="enter">Enter</button>` : ""}${[...row].map((ch) => `<button class="wd-key ${ks[ch] || ""}" data-k="${ch}">${ch}</button>`).join("")}${ri === 2 ? `<button class="wd-key wide" data-k="back" aria-label="删除">⌫</button>` : ""}</div>`).join("");
       box.innerHTML = `<div class="wordle">
@@ -150,10 +152,15 @@ App.pages.games = {
           <span>连胜 ${rec.streak || 0} · 赢 ${rec.wins || 0} / ${rec.played || 0}</span></div>
         <div class="wd-grid">${rows.join("")}</div>
         <div class="center small" id="wd-msg">${state.hint ? `💡 提示：<span data-gmean-hint>${esc(GameWords.item(answer) ? shortMeaning(GameWords.item(answer)) : "")}</span>` : ""}</div>
-        ${state.done ? `<div class="card wd-end">${state.win ? `<b>🎉 ${state.guesses.length} 次猜中！</b>` : `<b>答案是</b>`}${gameWordCard(answer)}
+        ${(state.rev || []).length && !state.done ? `<div class="center small wd-rev">🔤 已揭示：<span class="en">${[...answer].map((ch, i) => (state.rev.includes(i) ? ch : "_")).join(" ")}</span></div>` : ""}
+        ${state.done ? `<div class="card wd-end">${state.win ? `<b>🎉 ${state.guesses.length} 次猜中！</b>` : `<b>${state.gaveUp ? "答案是" : "这次没猜出来，答案是"}</b>`}${gameWordCard(answer)}
           ${daily ? `<div class="small faint mt-s">明天还有新题。也可以去<a href="#/games/wordle/free">无限练习</a>。</div>` : `<div class="row mt-s" style="justify-content:center"><button class="btn primary" data-again>再来一个</button></div>`}
           ${this.wdDist(rec, state.win ? state.guesses.length : 0)}</div>`
-          : `<div class="wd-kb">${kb}</div><div class="row mt-s" style="justify-content:center"><button class="btn sm ghost" data-hint ${state.hint ? "disabled" : ""}>💡 看中文提示</button></div>`}
+          : `<div class="wd-kb">${kb}</div><div class="row mt-s wd-help" style="justify-content:center;gap:6px;flex-wrap:wrap">
+              <button class="btn sm ghost" data-hint ${state.hint ? "disabled" : ""}>💡 中文提示</button>
+              <button class="btn sm ghost" data-reveal title="把一个字母放到它正确的位置上">🔤 揭示一个字母${(state.rev || []).length ? `（${state.rev.length}）` : ""}</button>
+              <button class="btn sm ghost" data-giveup>🏳️ 看答案</button></div>
+            <div class="center small faint">每用一次提示，猜中时少得一点经验</div>`}
       </div>`;
       bindGameWords(box);
       if (state.hint) $$("[data-gmean-hint]", box).forEach(async (el) => { if (!el.textContent) el.textContent = await GameWords.meaning(answer); });
@@ -169,7 +176,7 @@ App.pages.games = {
         state.done = true;
         state.win = state.guesses[state.guesses.length - 1] === answer;
         if (state.win) (rec.dist ||= [0, 0, 0, 0, 0, 0, 0])[state.guesses.length]++;
-        GameStats.end("wordle", { win: state.win, xp: state.win ? 12 - state.guesses.length - (state.hint ? 2 : 0) : 2 });
+        GameStats.end("wordle", { win: state.win, xp: state.win ? Math.max(2, 12 - state.guesses.length - (state.hint ? 2 : 0) - 2 * (state.rev || []).length) : 2 });
         Sound.play(state.win ? "achv" : "bad");
       }
       rec.t = Date.now();
@@ -188,6 +195,25 @@ App.pages.games = {
       const b = e.target.closest("[data-k]");
       if (b) key(b.dataset.k);
       if (e.target.closest("[data-hint]")) { state.hint = true; rec.t = Date.now(); Store.save(); draw(); }
+      if (e.target.closest("[data-reveal]")) {
+        // 还没猜对、也没揭示过的位置里挑最左边的；只剩最后一个就不揭示了（等于直接给答案）
+        const known = new Set(state.rev || []);
+        state.guesses.forEach((g) => colors(g).forEach((c, i) => { if (c === "correct") known.add(i); }));
+        const left = [0, 1, 2, 3, 4].filter((i) => !known.has(i));
+        if (left.length <= 1) return msg(left.length ? "只剩最后一个字母了，自己猜猜，或者看答案" : "所有字母都已经知道了");
+        (state.rev ||= []).push(left[0]);
+        rec.t = Date.now();
+        Store.save();
+        draw();
+      }
+      if (e.target.closest("[data-giveup]") && !state.done) {
+        state.done = true; state.win = false; state.gaveUp = true;
+        GameStats.end("wordle", { win: false, xp: 1 });
+        rec.t = Date.now();
+        Store.save();
+        draw();
+        TTS.speak(answer);
+      }
     }, { signal });
     onKey(signal, (e) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -229,9 +255,9 @@ App.pages.games = {
       box.innerHTML = `<div class="card ladder" style="max-width:520px;margin:0 auto">
         <div class="row small muted"><span>最少 ${best} 步</span><span class="spacer"></span><span>已走 ${path.length - 1} 步</span></div>
         <div class="ld-rungs">
-          ${shown.map((w, i) => `<div class="ld-rung ${i === 0 ? "start" : ""}">${[...w].map((c, k) => `<span class="${i && path[i - 1][k] !== c ? "chg" : ""}">${c}</span>`).join("")}<small data-gmean="${w}">${esc(GameWords.item(w) ? shortMeaning(GameWords.item(w)) : "")}</small>${i === path.length - 1 && i > 0 && !won ? `<button class="btn sm ghost" data-undo title="退一步">↶</button>` : ""}</div>`).join("")}
-          ${won ? "" : `<div class="ld-rung input"><input class="input en" id="ld-in" maxlength="4" autocomplete="off" spellcheck="false" placeholder="改一个字母"></div><div class="ld-dots">⋮</div>`}
-          <div class="ld-rung end ${won ? "won" : ""}">${[...end].map((c) => `<span>${c}</span>`).join("")}<small data-gmean="${end}">${esc(GameWords.item(end) ? shortMeaning(GameWords.item(end)) : "")}</small></div>
+          ${shown.map((w, i) => `<div class="ld-rung ${i === 0 ? "start" : ""}"><span class="ld-side">${i === 0 ? `<em class="ld-tag">起点</em>` : i === path.length - 1 && !won ? `<button class="btn sm ghost" data-undo title="退一步">↶</button>` : ""}</span><span class="ld-word">${[...w].map((c, k) => `<span class="${i && path[i - 1][k] !== c ? "chg" : ""}">${c}</span>`).join("")}</span><small data-gmean="${w}">${esc(GameWords.item(w) ? shortMeaning(GameWords.item(w)) : "")}</small></div>`).join("")}
+          ${won ? "" : `<div class="ld-rung ld-typing"><span class="ld-side"></span><input class="input en" id="ld-in" maxlength="4" autocomplete="off" spellcheck="false" placeholder="改一个字母"><small class="faint">下一步：只改一个字母</small></div><div class="ld-dots" title="中间还要走几步">⋮</div>`}
+          <div class="ld-rung end ${won ? "won" : ""}"><span class="ld-side"><em class="ld-tag end">🎯 终点</em></span><span class="ld-word">${[...end].map((c) => `<span>${c}</span>`).join("")}</span><small data-gmean="${end}">${esc(GameWords.item(end) ? shortMeaning(GameWords.item(end)) : "")}</small></div>
         </div>
         <div class="center small" id="ld-msg">${note}</div>
         ${won ? `<div class="center"><b>${gaveUp ? "这是一条最短路线，记住这些词，下一题自己走！" : path.length - 1 === best ? "🏆 最短路线！" : `🎉 走到了！用了 ${path.length - 1} 步（最少 ${best} 步）`}</b></div>

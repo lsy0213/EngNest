@@ -28,7 +28,8 @@ const SayBtn = {
     b.classList.toggle("saying", state === "playing");
     b.classList.toggle("say-paused", state === "paused");
     // 只换掉 🔊 这个图标；🐢（慢速）之类的按钮只靠样式提示
-    b.innerHTML = state ? b.dataset.sayIco.replace("🔊", state === "playing" ? "⏸" : "▶") : b.dataset.sayIco;
+    // 🔊 可能已经被换成了图标（icons.js）：连同图标一起换成暂停 / 播放，再由 icons.js 换成对应的图标
+    b.innerHTML = state ? b.dataset.sayIco.replace(/🔊|<svg[^>]*data-e="🔊"[\s\S]*?<\/svg>/, state === "playing" ? "⏸" : "▶") : b.dataset.sayIco;
     b.title = state === "playing" ? "暂停" : state === "paused" ? "继续" : b.dataset.sayTitle;
   },
   async click(b) {

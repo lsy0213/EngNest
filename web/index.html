@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- 内容安全策略：脚本只能来自软件自己的文件（不允许内联脚本和 eval），就算 AI 回复或下载的资料里混进了脚本也不会执行。
        样式允许内联（模板里大量 style 属性）；图片、音视频可以来自网络（维基配图、VOA 原声、在线视频）。 -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file:; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data: blob: https:; media-src 'self' file: data: blob: https:; connect-src 'self' file: https: data: blob:; font-src 'self' file: data:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file:; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data: blob: https:; media-src 'self' file: data: blob: https:; connect-src 'self' file: https: data: blob:; font-src 'self' file: data:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'self' blob:">
   <title>EngNest · 英语小窝</title>
   <!-- 手机通过局域网打开时可以「添加到主屏幕」 -->
   <link rel="manifest" href="manifest.webmanifest">
@@ -20,6 +20,8 @@
   <link rel="stylesheet" href="css/skin-starry.css">
   <link rel="stylesheet" href="css/skin-cabinet.css">
   <link rel="stylesheet" href="css/skin-mintchoco.css">
+  <link rel="stylesheet" href="css/font-serif-sc.css">
+  <link rel="stylesheet" href="css/skin-porcelain.css">
 </head>
 <body>
   <div id="app">
@@ -39,13 +41,13 @@
       </div>
     </aside>
     <!-- 手机：侧边栏完全收起，左上角的 ☰ 打开抽屉 -->
-    <div class="nav-fab" aria-label="导航">
+    <div class="nav-fab liquid-glass" aria-label="导航">
       <button id="nav-burger" title="菜单" aria-label="打开菜单" aria-expanded="false">☰</button>
       <button id="nav-fab-search" title="查单词" aria-label="查单词">🔍</button>
     </div>
     <div class="nav-backdrop" id="nav-backdrop"></div>
     <main id="view"><div class="loading">正在打开小窝…</div></main>
-    <nav id="bottom-nav" class="bottom-nav" aria-label="常用功能"></nav>
+    <nav id="bottom-nav" class="bottom-nav liquid-glass" aria-label="常用功能"></nav>
   </div>
   <div class="skin-deco" aria-hidden="true">
     <i class="deco-festoon"></i><i class="deco-corner c-tl"></i><i class="deco-corner c-tr"></i><i class="deco-corner c-bl"></i><i class="deco-corner c-br"></i><i class="deco-vine"></i><i class="deco-yarn"></i><i class="deco-sprig"></i><i class="deco-lace"></i><i class="deco-lace2"></i><i class="deco-flower"></i>
@@ -166,6 +168,8 @@
   <script src="js/packs-loader.js"></script>
   <script src="js/vendor/ts-fsrs.umd.js"></script>
   <script src="js/core.js"></script>
+  <script src="js/vendor/icons.js"></script>
+  <script src="js/icons.js"></script>
   <script src="js/fsrs_opt.js"></script>
   <script src="js/components.js"></script>
   <script src="js/shadow.js"></script>

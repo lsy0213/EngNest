@@ -69,6 +69,18 @@ App.pages.home = {
   },
 
 
+  // 白瓷星轨主题的首页顶部（其他主题里 .hero-3d 是隐藏的）：只放黏土字星轨、透明的角色和今天的经验值，不写问候语和日期
+  hero3d(t, goal, pct, st) {
+    return `<div class="hero-3d">
+      <div class="h3d-art" aria-hidden="true"></div>
+      <a class="h3d-day" href="#/stats" title="${st ? `已经连续学习 ${st} 天` : "今天开始新的连续天数"} · 今天 ${t.xp} / ${goal} XP">
+        <span class="h3d-streak">${st ? `Day <b>${st}</b>` : "New <b>Day</b>"}<span class="h3d-heart">♥</span></span>
+        <span class="h3d-goal"><svg class="h3d-ring" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8"/><circle class="fg" cx="10" cy="10" r="8" pathLength="100" stroke-dasharray="${Math.round(pct * 100)} 100"/></svg><b>${t.xp}</b> / ${goal} XP</span>
+      </a>
+      ${Store.prefs.skin === "porcelain" ? `<img class="h3d-figure" src="img/skin/private/porcelain-angel.webp" alt="" aria-hidden="true" decoding="async">` : ""}
+    </div>`;
+  },
+
   render(root) {
     const d = Store.data;
     const t = dayRec();
@@ -108,6 +120,7 @@ App.pages.home = {
           <img class="hero-yarn" src="img/skin/yarn-ornament.png" alt="">
           <img class="hero-cat" src="img/companions/flower-cat-kitten.png" alt="">
         </div>
+        ${this.hero3d(t, goal, pct, st)}
       </div>
 
       ${!Store.prefs.onboarded && !Store.data.level ? this.onboarding() : ""}
@@ -119,8 +132,8 @@ App.pages.home = {
           <div class="card-title">📋 今日学习计划 <span class="spacer"></span>
             <button class="btn sm ghost" id="goal-btn" title="换个学习目标" aria-label="换个学习目标">🎯 换目标</button></div>
           <div class="small muted" style="margin:-6px 0 10px">目标：${(GOALS.find((g) => g[0] === (Store.prefs.goal || "general")) || GOALS[0])[2]} · 剩下的大约 ${plan.filter((x) => !x.done).reduce((s, x) => s + x.min, 0)} 分钟</div>
-          <div class="stack" style="gap:10px">
-            ${plan.map((x) => task(x.href, x.ico, x.title, x.done ? "今天已完成" : x.sub, x.done)).join("")}
+          <div class="stack plan-list" style="gap:10px">
+            ${(() => { const nx = plan.find((x) => !x.done); return plan.map((x, i) => task(x.href, x.ico, x.title, x.done ? "今天已完成" : x.sub, x.done, { no: i + 1, min: x.min, next: x === nx })).join(""); })()}
           </div>
         </div>
         <div class="stack">
@@ -152,6 +165,7 @@ App.pages.home = {
     Docs.library().then(() => { const el = $("#home-shelf", root); if (el) el.innerHTML = Shelf.homeHtml(); });
 
     Weekly.bind(root, () => {});
+    $(".h3d-figure", root)?.addEventListener("error", (e) => e.target.remove()); // 角色图片是可选的（不在公开仓库里）
     // 新手引导和学习目标
     root.onclick = (e) => {
       const g = e.target.closest("[data-goal]");
@@ -164,11 +178,14 @@ App.pages.home = {
       }
     };
 
-    function task(href, ico, title, sub, done) {
-      return `<a class="task ${done ? "done" : ""}" href="${href}">
+    function task(href, ico, title, sub, done, extra = {}) {
+      return `<a class="task ${done ? "done" : ""} ${extra.next ? "next" : ""}" href="${href}">
+        ${extra.no ? `<div class="task-no">${String(extra.no).padStart(2, "0")}</div>` : ""}
         <div class="task-ico">${done ? "✅" : ico}</div>
         <div class="task-body"><div class="task-title">${title}</div><div class="task-sub">${esc(sub)}</div></div>
-        <span class="faint">›</span></a>`;
+        ${extra.min && !done ? `<div class="task-min">${extra.min} 分钟</div>` : ""}
+        ${extra.next ? `<div class="task-go">开始</div>` : ""}
+        <span class="faint task-arrow">›</span></a>`;
     }
 
     function heat() {
